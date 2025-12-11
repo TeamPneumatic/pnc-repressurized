@@ -1,0 +1,19 @@
+{
+  "name": "Condição: Widget de Redstone",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_redstone_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O $(thing)Condição: Redstone/$ permite que você verifique (remotamente) se o nível de Redstone do(s) bloco(s) no widget $(l:programming/area)Área/$ conectado corresponde ao limiar de Redstone configurado."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_redstone_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Redstone/$"
+    }
+  ]
+}

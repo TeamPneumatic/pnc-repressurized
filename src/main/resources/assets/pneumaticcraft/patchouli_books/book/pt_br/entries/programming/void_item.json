@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Anular Item",
+  "icon": "pneumaticcraft:textures/progwidgets/void_item_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Isto destruirá imediata e permanentemente itens no inventário do drone - cuidado! É fortemente recomendado usar isso em conjunto com um $(l:programming/item_filter)Filtro de Item/$. Com um filtro, apenas os itens permitidos pelo filtro serão anulados (voided).$(p)A execução do widget é concluída quando nenhum dos itens aplicáveis permanece no inventário do $(item)Drone/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/void_item_piece.png"
+      ],
+      "text": "$(italic)Eu nem queria mesmo/$"
+    }
+  ]
+}

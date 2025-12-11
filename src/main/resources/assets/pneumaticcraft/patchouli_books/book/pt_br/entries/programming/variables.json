@@ -1,0 +1,79 @@
+{
+  "name": "Variáveis",
+  "icon": "minecraft:paper",
+  "category": "pneumaticcraft:programming",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Variáveis/$ permitem que programas de drone armazenem e manipulem posições de bloco (também conhecidas como coordenadas) para fornecer alguma funcionalidade avançada ao drone.$(p)Para criar ou manipular variáveis dentro de um programa de drone, use os widgets $(l:programming/coordinate_operator)Operador de Coordenada/$ e $(l:programming/coordinate)Coordenada/$, e para executar testes em variáveis, use o widget $(l:programming/condition_coordinate)Condição: Coordenada/$."
+    },
+    {
+      "type": "text",
+      "text": "No widget $(l:programming/area)Área/$ você pode, em vez de usar uma coordenada GPS, usar um nome de $(thing)variável/$.$(p)Essas $(thing)variáveis/$ persistem em recarregamentos de mundo, então poderiam ser usadas para criar um programa de mineração sem fim, por exemplo, onde a posição de escavação do Drone é rastreada por uma $(thing)variável/$.$(p)Para um tutorial antigo, mas ainda relevante, veja $(l:https://www.youtube.com/watch?v=FIjEdD_Yj9Y)este vídeo do YouTube por MineMaarten/$."
+    },
+    {
+      "type": "text",
+      "text": "Embora as $(thing)variáveis/$ apenas armazenem coordenadas (uma tripla X/Y/Z), se você pensar bem, perceberá que também pode trabalhar com $(thing)números inteiros/$ e $(thing)booleanos/$. Basta usar apenas um eixo para inteiros, e para booleanos, defina algo como '0' = falso, e todo o resto = verdadeiro. Divirta-se!"
+    },
+    {
+      "type": "text",
+      "title": "Variáveis de Item",
+      "text": "Na página anterior, mencionamos que as variáveis só podem armazenar coordenadas. Bem, isso foi uma pequena mentira: também existe algo como $(thing)variáveis de item/$, que armazenam (você adivinhou) um valor de item. Elas são criadas com os widgets $(l:programming/item_assign)Atribuir Item/$ e $(l:programming/for_each_item)Para Cada Item/$, e usadas pelo widget $(l:programming/item_filter)Filtro de Item/$."
+    },
+    {
+      "type": "text",
+      "title": "Tipos de Variável",
+      "text": "Existem três tipos de variável:$(li)$(thing)Variáveis Locais/$: estas são armazenadas por drone e são referenciadas simplesmente como 'nomedavar'.$(li)$(thing)Variáveis Globais/$: estas são globais para todos os drones e podem ser usadas para compartilhar dados. Elas são referenciadas como '#nomedavar' ou '%nomedavar' (veja as páginas seguintes).$(li)$(thing)Variáveis Especiais/$ podem ser usadas para recuperar alguns metadados sobre o drone e são referenciadas como '$nomedavar'."
+    },
+    {
+      "type": "text",
+      "anchor": "global",
+      "title": "Variáveis Globais",
+      "text": "Variáveis normais são exclusivas por $(l:tools/drone)Drone/$; elas não podem ser compartilhadas. $(thing)Variáveis Globais/$, no entanto, $(italic)podem/$ ser compartilhadas. Isso permite que os Drones se comuniquem uns com os outros.$(p)Além disso, $(l:tools/gps_tool)Ferramentas GPS/$ podem se ligar a elas e modificá-las, o $(l:machines/universal_sensor)Sensor Universal/$ pode emitir um $(#f00)sinal de redstone/$ baseado nelas, e o $(l:tools/remote)Controle Remoto/$ pode exibi-las e modificá-las."
+    },
+    {
+      "type": "text",
+      "title": "Variáveis Globais (cont.)",
+      "text": "$(ttcolor)$(t:Variáveis globais de jogador foram adicionadas no PNC:R 3.0.0, MC 1.18.1)Existem dois tipos de variável global/$: $(thing)global de jogador/$ e $(thing)global de servidor/$.$(li)As variáveis globais de jogador são prefixadas com '#'. Elas são compartilhadas entre os drones de um jogador, mas são privadas para cada jogador.$(li)As variáveis globais de servidor são prefixadas com '%'. Essas variáveis são compartilhadas entre $(italic)todos/$ os jogadores no servidor.$(p)Nota: nas versões anteriores do mod, existia apenas a global de servidor, com um prefixo de '#'."
+    },
+    {
+      "type": "text",
+      "title": "Comandos de Variável",
+      "text": "Vários comandos existem (utilizáveis por qualquer jogador) para manipular variáveis globais:$(li)/pncr global_var set <varname> <x> <y> <z>$(li)/pncr global_var set <varname> <item-registry-id>$(li)/pncr global_var get <varname>$(li)/pncr global_var list$(li)/pncr global_var delete <varname>"
+    },
+    {
+      "type": "text",
+      "anchor": "special",
+      "title": "Variáveis Especiais",
+      "text": "As seguintes variáveis especiais são reconhecidas:$(li)$(thing)$owner_pos/$: a posição de bloco (cabeça) do jogador que possui o $(l:tools/drone)Drone/$, ou (0,0,0) se o proprietário estiver offline.$(li)$(thing)$drone_pos/$: a posição de bloco do próprio drone.$(li)$(thing)$player_pos=<name>/$: a posição de bloco (cabeça) do jogador '<name>' (sem distinção entre maiúsculas e minúsculas), ou (0,0,0) para nomes de jogadores inválidos ou offline."
+    },
+    {
+      "type": "text",
+      "anchor": "special",
+      "title": "Variáveis Especiais (cont.)",
+      "text": "$(li)$(thing)$owner_look/$: um vetor que representa a direção do jogador proprietário em cada eixo; cada valor será -1, 0 ou 1.$(li)$(thing)$controller_pos/$: a posição de bloco do bloco $(l:programming/programmable_controller)Controlador Programável/$, ou (0,0,0) se o drone for um drone real, em vez de um Controlador Programável."
+    },
+    {
+      "type": "text",
+      "anchor": "special",
+      "title": "Variáveis Especiais (cont.)",
+      "text": "Várias variáveis mais antigas também existem e permanecem utilizáveis por razões de compatibilidade (mas é recomendado usar as variáveis na página anterior):$(li)$(thing)$owner/$: um apelido para $(thing)$owner_pos/$.$(li)$(thing)$drone/$: obtém a posição de bloco $(italic)acima/$ do drone, por razões históricas.$(li)$(thing)$player=<name>/$: um apelido para $(thing)$player_pos/$."
+    },
+    {
+      "type": "text",
+      "title": "Depuração",
+      "text": "Às vezes, é útil exibir o valor de uma variável para fins de depuração. Você pode exibir o valor de uma variável de algumas maneiras:$(li)Usando o widget $(l:programming/rename)Renomear/$ para mostrar a variável como a placa de identificação de um drone$(li)Escrevendo texto com o widget $(l:programming/edit_sign)Editar Placa/$$(li)Usando um $(l:tools/remote#label)rótulo/$ em um $(l:tools/remote)Controle Remoto/$."
+    },
+    {
+      "type": "text",
+      "title": "Depuração (cont.)",
+      "text": "Para interpolar uma variável em texto exibido por um dos métodos acima, use a sintaxe $(thing)${varname}/$.$(p)Note que os prefixos de variável especial e global ainda se aplicam aqui, então para interpolar a posição de um drone, você usaria $(thing)${$drone_pos}/$, e para interpolar uma variável global, você usaria $(thing)${#globalvarname}/$ ou $(thing)${%globalvarname}/$."
+    },
+    {
+      "type": "text",
+      "title": "Depuração (cont.)",
+      "text": "Você também pode exibir apenas o componente X, Y ou Z da coordenada, adicionando o sufixo $(thing).x/$, $(thing).y/$ ou $(thing).z/$ ao nome da variável, respectivamente. Por exemplo, para mostrar a coordenada Y do proprietário do drone, use $(thing)${$owner_pos.y}/$.$(p)Se a variável for uma $(thing)variável de item/$, um sufixo $(thing).id/$ obterá o ID de registro do item em vez do seu nome de exibição (que é o padrão). Isso é particularmente útil para exibir um item em um $(l:machines/aphorism_tile#items)Ladrilho de Aforismo/$."
+    }
+  ]
+}

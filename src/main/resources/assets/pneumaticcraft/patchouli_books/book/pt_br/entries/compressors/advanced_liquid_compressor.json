@@ -1,0 +1,17 @@
+{
+  "name": "Compressor Líquido Avançado",
+  "icon": "pneumaticcraft:advanced_liquid_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Líquido Avançado/$ é a versão de $(l:base_concepts/pressure_tiers)nível 2/$ do $(l:compressors/liquid_compressor)Compressor Líquido/$, com uma pressão segura máxima de 20 bar. Ele gera uma base de 50mL de ar/tick, e pode ser aprimorado com $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$.$(p)No entanto, este gerador deve ser $(l:base_concepts/heat)resfriado/$, pois sua eficiência cairá à medida que a temperatura aumentar, até o ponto em que nenhum ar será gerado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor Líquido Avançado/$",
+      "recipe": "pneumaticcraft:advanced_liquid_compressor"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Compressor Solar",
+  "icon": "pneumaticcraft:solar_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Solar/$ gera $(l:base_concepts/pressure)ar comprimido/$ e $(l:base_concepts/heat)calor/$ a partir da $(thing)luz solar/$. Para funcionar, ele requer uma visão clara da luz solar direta. Isso significa que ele é incapaz de funcionar em ambientes fechados, durante a noite ou durante tempestades."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor Solar/$.",
+      "recipe": "pneumaticcraft:solar_compressor"
+    },
+    {
+      "type": "text",
+      "text": "Enquanto o $(item)Compressor Solar/$ gera ar comprimido, ele também gera calor proporcionalmente a quanto ar comprimido é gerado. O gerenciamento adequado de calor é necessário para alcançar o potencial total do $(item)Compressor Solar/$: pouco calor e o compressor mal gerará ar comprimido, muito calor e o compressor superaquecerá e quebrará, exigindo reparos manuais com $(l:components/solar_cell)Células Solares/$."
+    },
+    {
+      "type": "text",
+      "text": "$(l:machines/heat_sink)Dissipadores de Calor/$, $(l:machines/heat_pipe)Tubos de Calor/$, e $(l:tubes/air_grate_module)Módulos de Grade de Ar/$ são as melhores ferramentas para gerenciar e remover o calor gerado pelo $(item)Compressor Solar/$. $(l:machines/vortex_tube)Tubos de Vórtex/$ também são úteis para gerenciamento de calor, pois podem ser usados para gerar calor adicional para atingir a eficiência máxima. Com a configuração certa, até $(item)Compressores Solares/$ com $(l:base_concepts/upgrades#speed)velocidade máxima/$ podem atingir um equilíbrio térmico na eficiência máxima."
+    },
+    {
+      "type": "text",
+      "text": "O compressor possui preenchimento térmico integrado que ativa sempre que ele é incapaz de gerar ar comprimido, impedindo-o de ganhar ou perder calor enquanto inativo.$(br2)O compressor atinge eficiência máxima a $(thing)350°C/$, e superaquece a $(thing)425°C/$."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Baú Inteligente",
+  "icon": "pneumaticcraft:smart_chest",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Baú Inteligente/$ é um baú de 72 slots que (como seu irmão mais novo, o $(l:machines/reinforced_chest)Baú Reforçado/$) tem resistência à explosão de nível obsidiana e mantém seu inventário quando quebrado. No entanto, ele tem alguns outros recursos muito poderosos..."
+    },
+    {
+      "type": "text",
+      "title": "Filtragem de Slot",
+      "text": "$(li)Se você $(thing)Alt+Clique Esquerdo/$ em um slot com um item, o Baú Inteligente começará a filtrar esse slot para aceitar apenas esse item.$(li)Você pode $(thing)Alt+Clique Esquerdo/$ em um slot filtrado para remover a filtragem novamente.$(li)Se você $(thing)Alt+Clique Esquerdo/$ em um slot vazio, esse slot e todos os slots subsequentes serão fechados, reduzindo efetivamente o tamanho do inventário.$(li)Se você $(thing)Alt+Clique Esquerdo/$ no primeiro slot fechado, todos os slots fechados serão reabertos."
+    },
+    {
+      "type": "text",
+      "title": "Empurrando Itens",
+      "text": "Cada face do Baú Inteligente pode ser configurada separadamente para empurrar itens, puxar itens ou não fazer nada (o padrão). Para configurar as faces, abra a aba da GUI $(thing)Configuração Lateral/$.$(p)Faces configuradas para empurrar itens tentarão enviar itens do Baú Inteligente para um inventário adjacente nessa face. Com um $(item)Aprimoramento de Dispensador/$ instalado, o baú ejetará itens no mundo se não houver inventário adjacente."
+    },
+    {
+      "type": "text",
+      "title": "Puxando Itens",
+      "text": "Faces configuradas para puxar itens tentarão puxar itens de um inventário adjacente nessa face.$(p)Se você instalar um $(l:base_concepts/upgrades#magnet)Aprimoramento de Ímã/$, o baú pode absorver itens próximos no chão. Isso só funciona para faces que foram configuradas para puxar itens; a área de coleta padrão é um cubo 3x3x3 adjacente à face de puxar, que pode ser aumentada com $(l:base_concepts/upgrades#range)Aprimoramentos de Alcance/$."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Baú Inteligente",
+      "recipe": "pneumaticcraft:smart_chest"
+    }
+  ]
+}

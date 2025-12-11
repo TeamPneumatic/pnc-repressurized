@@ -1,0 +1,19 @@
+{
+  "name": "Condição do Drone: Widget de RF",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_drone_rf_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição do Drone: RF/$ permite que você verifique a quantidade de $(thing)Forge Energy (FE)/$ transportada por este $(l:tools/drone)Drone/$.$(p)$(italic)Apesar do nome, este widget verifica FE, e não RF (Redstone Flux). O nome é histórico./$"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_drone_rf_piece.png"
+      ],
+      "text": "$(italic)Condição do Drone: Widget de RF/$"
+    }
+  ]
+}

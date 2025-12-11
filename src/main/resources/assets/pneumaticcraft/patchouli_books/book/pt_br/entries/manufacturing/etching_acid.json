@@ -1,0 +1,16 @@
+{
+  "name": "Ácido Corrosivo",
+  "icon": "pneumaticcraft:etching_acid_bucket",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O Ácido Corrosivo é usado para revelar quimicamente $(l:components/pcb)PCBs/$. O Ácido Corrosivo é feito em uma $(l:manufacturing/pressure_chamber)Câmara de Pressão/$ e usado no $(l:manufacturing/etching_tank)Tanque de Corrosão/$.$(p)Veja a entrada de $(l:components/pcb)PCBs/$ para mais informações sobre a produção de PCB."
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "recipe": "pneumaticcraft:pressure_chamber/etching_acid"
+    }
+  ]
+}

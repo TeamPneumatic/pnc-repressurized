@@ -1,0 +1,25 @@
+{
+  "name": "Lampião de Querosene",
+  "icon": "pneumaticcraft:kerosene_lamp",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:refinery",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Lampião de Querosene/$ é uma poderosa fonte de luz que funciona com... você adivinhou, $(l:manufacturing/refinery)Querosene/$. É semelhante às fontes de luz de longo alcance às quais você pode estar acostumado, como o $(thing)Lampião Arcano do Thaumcraft/$.$(p)$(italic)Tecnicamente, o lampião funcionará com qualquer combustível queimável, mas Querosene é mais eficiente do que qualquer outro combustível neste lampião, até mesmo GLP./$"
+    },
+    {
+      "type": "text",
+      "text": "O $(item)Lampião de Querosene/$ tem um alcance padrão de 10 blocos. No entanto, isso pode ser ajustado na GUI até um máximo de 30 blocos. Observe que quanto maior o alcance, mais combustível o lampião usará, de forma quadrática. Portanto, quando você dobra o alcance, o uso de combustível é multiplicado por 4!$(p)No entanto, o lampião usa apenas uma pequena quantidade de combustível. Com 1000mB de Querosene e o alcance padrão de 10 blocos, o Lampião pode funcionar por cerca de $(ttcolor)$(t:A eficiência do Lampião pode ser alterada na config do mod: veja 'D:keroseneLampFuelEfficiency')40 minutos reais/$."
+    },
+    {
+      "type": "text",
+      "text": "O $(item)Lampião de Querosene/$ pode ser controlado por $(thing)redstone/$ como a maioria dos blocos $(pncr)$. Além dos modos usualmente ligado/desligado, há também um modo $(bold)Sinal Interpolado/$. Este (como o nome diz) irá interpolar o alcance do lampião com base na força do sinal.$(p)Ex: assumindo o alcance máximo padrão de 10 blocos, quando um $(#f00)sinal de redstone/$ de 8 (de 15) é aplicado, o Lampião terá um alcance de 5."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Lampião de Querosene",
+      "recipe": "pneumaticcraft:kerosene_lamp"
+    }
+  ]
+}

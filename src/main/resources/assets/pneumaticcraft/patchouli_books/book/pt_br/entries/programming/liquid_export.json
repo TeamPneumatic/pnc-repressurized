@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Exportação de Fluido",
+  "icon": "pneumaticcraft:textures/progwidgets/liquid_export_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O oposto de $(l:programming/liquid_import)Importação de Fluido/$: o $(l:tools/drone)Drone/$ se moverá para o tanque mais próximo dentro da $(l:programming/area)Área/$ especificada para descarregar fluido do seu próprio tanque.$(p)Além disso, o $(item)Drone/$ pode colocar fluido no mundo: para fazer isso, marque a opção $(thing)Colocar fluido no mundo/$ na GUI do widget. Cuidado, $(item)Drones/$ podem se prender facilmente ao fazer isso!"
+    },
+    {
+      "type": "text",
+      "text": "Você pode especificar para qual(is) lado(s) do tanque o Drone deve enviar seus itens na GUI do widget; você também pode especificar uma quantidade máxima de fluido exportado (em mB).$(p)Você pode $(ttcolor)$(t:Conecte à direita para lista de permissões, à esquerda para lista de bloqueios)conectar/$ um $(l:programming/liquid_filter)Filtro de Fluido/$ para limitar o que pode ser exportado pelo Drone.$(p)Este widget é concluído quando o tanque do $(item)Drone/$ está vazio (de fluidos aplicáveis), ou quando não há tanque dentro da área que aceite o fluido."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/liquid_export_piece.png"
+      ],
+      "text": "$(italic)Widget de Exportação de Fluido/$\""
+    }
+  ]
+}

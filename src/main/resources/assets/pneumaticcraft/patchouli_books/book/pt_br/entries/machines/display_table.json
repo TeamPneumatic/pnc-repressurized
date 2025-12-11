@@ -1,0 +1,21 @@
+{
+  "name": "Mesa de Exibição",
+  "icon": "pneumaticcraft:display_table",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Mesa de Exibição/$ é um inventário simples que pode armazenar (e exibir) um único item. Ela é parcialmente destinada a fins decorativos, mas também pode ser útil para automação, já que o inventário da mesa pode ser interagido com funis, drones e outros sistemas de encanamento."
+    },
+    {
+      "type": "text",
+      "text": "As Mesas Expositoras, quando colocadas uma ao lado da outra, se conectarão visualmente e não exibirão as pernas adjacentes, formando uma mesa maior. Isso exige que ambos os blocos tenham exatamente a mesma rotação; se a rotação for diferente, a mesa não se conectará dessa maneira.$(p)Mesas conectadas visualmente ainda têm um inventário separado de 1 item para cada mesa."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Mesa de Exibição",
+      "recipe": "pneumaticcraft:display_table"
+    }
+  ]
+}

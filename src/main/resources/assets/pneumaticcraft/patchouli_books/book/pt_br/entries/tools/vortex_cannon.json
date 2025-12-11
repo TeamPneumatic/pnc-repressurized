@@ -1,0 +1,22 @@
+{
+  "name": "Canhão de Vórtice",
+  "icon": "pneumaticcraft:vortex_cannon[pneumaticcraft:air=30000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Canhão de Vórtice/$ é uma arma que atira $(thing)vórtices/$: ar girando de uma forma que não tem muito atrito e pode ser principalmente estável.$(p)Você pode usar isso para atirar rajadas no alvo de escolha: para repelir inimigos, empurrar animais, arrancar plantas e folhas, ou tosquiar entidades."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:vortex_cannon",
+      "text": "Quanto mais o $(item)Canhão de Vórtice/$ estiver pressurizado, mais impacto ele tem em seus alvos e maior é o seu alcance.$(p)Note que é possível se pegar em um vórtice disparado, o que pode ser muito útil para transporte rápido. Mas cuidado: ele não fornece proteção contra dano de queda!"
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Canhão de Vórtice",
+      "recipe": "pneumaticcraft:vortex_cannon"
+    }
+  ]
+}

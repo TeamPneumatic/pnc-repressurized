@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Filtro de Item",
+  "icon": "pneumaticcraft:textures/progwidgets/item_filter_piece.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Filtro de Item/$ é um widget usado exclusivamente como $(thing)parâmetro/$ para outros widgets. Você pode usá-lo para especificar quais blocos e itens podem ser pegos / colocados / minerados / etc.$(p)Comece clicando com o $(thing)botão direito/$ no widget. Em seguida, você pode procurar um item no jogo clicando em $(thing)Pesquisar Item.../$ ou pode selecionar um item do seu inventário clicando em $(thing)Pesquisar Inventário.../$\""
+    },
+    {
+      "type": "text",
+      "text": "Em seguida, você pode aplicar algumas opções de filtro extras para controlar como a correspondência é feita; como essas opções funcionam é exibido nas dicas de ferramentas das caixas de seleção na GUI.$(p)Como de costume, colocar este widget à $(italic)direita/$ do seu pai atua como uma lista de permissões (whitelist), e colocá-lo à $(italic)esquerda/$ atua como uma lista de bloqueios (blacklist)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/item_filter_piece.png"
+      ],
+      "text": "$(italic)Widget de Filtro de Item/$"
+    }
+  ]
+}

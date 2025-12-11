@@ -1,0 +1,17 @@
+{
+  "name": "Cano de Canhão",
+  "icon": "pneumaticcraft:cannon_barrel",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de fabricação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Cano de Canhão",
+      "recipe": "pneumaticcraft:cannon_barrel"
+    }
+  ]
+}

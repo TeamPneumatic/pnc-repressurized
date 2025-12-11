@@ -1,0 +1,19 @@
+{
+  "name": "Condição: Widget de Fluido",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_liquid_inventory_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O $(thing)Condição: Fluido/$ permite que você verifique (remotamente) tanque(s) ou bloco(s) de fluido no widget $(l:programming/area)Área/$ conectado para uma certa quantidade de fluido. Ele contará apenas o fluido permitido por um widget $(l:programming/liquid_filter)Filtro de Fluido/$ conectado (omita o filtro para permitir qualquer fluido)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_liquid_inventory_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Fluido/$"
+    }
+  ]
+}

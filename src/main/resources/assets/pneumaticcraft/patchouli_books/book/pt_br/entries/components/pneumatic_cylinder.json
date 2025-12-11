@@ -1,0 +1,17 @@
+{
+  "name": "Cilindro Pneumático",
+  "icon": "pneumaticcraft:pneumatic_cylinder",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de criação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Cilindro Pneumático",
+      "recipe": "pneumaticcraft:pneumatic_cylinder"
+    }
+  ]
+}

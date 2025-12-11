@@ -1,0 +1,49 @@
+{
+  "name": "Compressor Térmico",
+  "icon": "pneumaticcraft:thermal_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Térmico/$ é um compressor simples que usa o diferencial de $(l:base_concepts/heat)temperatura/$ em lados opostos (horizontais) para produzir $(l:base_concepts/pressure)ar comprimido/$. Quanto maior o gradiente de temperatura, mais ar é produzido.$(p)Nota: tentar operar este compressor puramente a partir de um $(l:machines/vortex_tube)Tubo de Vórtice/$ não funcionará; você terá uma perda líquida de pressão."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/thermal_compressor.png"
+      ],
+      "border": "true",
+      "text": "$(italic)Um Compressor Térmico usando Lava e Gelo Compactado para fornecer um gradiente de temperatura/$"
+    },
+    {
+      "type": "text",
+      "text": "As faces Norte-Sul e Leste-Oeste do $(item)Compressor Térmico/$ são termicamente conectadas umas às outras, mas não há conexão cruzada entre N-S ou L-O, então você pode ter dois gradientes de temperatura independentes em um compressor.$(p)O calor se equalizará através das conexões, então algum esforço será necessário para manter um diferencial de temperatura útil."
+    },
+    {
+      "type": "text",
+      "title": "Aplicações",
+      "text": "Há três situações principais onde o $(item)Compressor Térmico/$ pode ser útil:$(li)Para utilizar calor residual (ou frio!) de $(italic)um/$ lado de um $(item)Tubo de Vórtice/$. Normalmente você usaria apenas o lado quente ou frio de um Tubo de Vórtice, e ventilaria o outro lado via um $(l:machines/heat_sink)Dissipador de Calor/$. No entanto, o $(item)Compressor Térmico/$ oferece a oportunidade de recuperar parte desse calor ou frio residual como pressão de ar."
+    },
+    {
+      "type": "text",
+      "title": "Aplicações (cont.)",
+      "text": "$(li)Para utilizar o calor residual de compressores avançados, como o $(l:compressors/advanced_air_compressor)Compressor de Ar Avançado/$. Normalmente você descartaria esse calor na atmosfera usando um ou mais $(l:tools/heat_sink)Dissipadores de Calor/$, mas com o Compressor Térmico, também é possível recuperar parte desse calor residual como pressão."
+    },
+    {
+      "type": "text",
+      "title": "Aplicações (cont.)",
+      "text": "$(li)Se você tiver os meios para obter grandes quantidades de substâncias naturalmente quentes ou frias, ex: $(l:base_concepts/heat_sources)lava, ou blocos de outros mods/$, você pode ser capaz de usá-las para gerar pressão. Você provavelmente também precisará ser capaz de automatizar a colocação e remoção de fontes de calor e fontes gastas; $(l:tools/drone)Drones/$ podem fazer isso, assim como muitas outras soluções de mods."
+    },
+    {
+      "type": "text",
+      "title": "Controle de Redstone",
+      "text": "Este compressor pode ser controlado por um $(#f00)sinal de redstone/$; se desativado, a geração de pressão para, e a resistência térmica entre as faces Norte-Sul e Leste-Oeste aumenta muito (um pouco de calor ainda vazará, mas muito menos do que quando o compressor está funcionando). Isso pode ser útil para armazenar energia como um diferencial de calor quando a pressão não é necessária, ex: quando sua rede de tubos estiver totalmente pressurizada."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um $(item)Compressor Térmico/$",
+      "recipe": "pneumaticcraft:thermal_compressor"
+    }
+  ]
+}

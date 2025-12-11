@@ -1,0 +1,36 @@
+{
+  "name": "Módulo de Grade de Ar",
+  "icon": "pneumaticcraft:air_grate_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este módulo é usado para atrair/repelir entidades para/do módulo. Com $(l:base_concepts/pressure)pressão/$ positiva, o tubo soprará as entidades para longe e com pressão $(thing)negativa/$ ele sugará as entidades em sua direção. Pressão negativa é alcançada com uma $(l:machines/vacuum_pump)Bomba de Vácuo/$. Quando as entidades de item estiverem próximas o suficiente, elas serão inseridas automaticamente em qualquer inventário adjacente, respeitando inventários com lados (como Fornalhas)."
+    },
+    {
+      "type": "text",
+      "text": "O alcance do módulo pode ser expresso com estas fórmulas:$(p)Com pressão positiva:$(p)  $(#272)Alcance = 4 x pressão (bar)/$$(p)Com pressão negativa:$(p)  $(#272)Alcance = -16 x pressão (bar)/$$(p)Ex: a 2 bar ele repele a 4x2=8 blocos. A -0.5 bar, ele atrai a -16x-0.5=8 blocos."
+    },
+    {
+      "type": "text",
+      "text": "A Grade de Ar afetará apenas entidades em uma área cúbica, na direção que estiver enfrentando. O módulo também deve ter linha de visão para uma entidade.$(p)Você pode clicar com o botão direito no módulo para mostrar o alcance afetado por alguns segundos."
+    },
+    {
+      "type": "text",
+      "title": "Resfriamento de Dissipador",
+      "anchor": "active_cooling",
+      "text": "Um Módulo de Grade de Ar também pode ser usado para resfriar ativamente $(l:machines/heat_sink)Dissipadores de Calor/$. O alcance no qual os Dissipadores são resfriados é um cubo de 3x3x3 na frente da Grade de Ar. Este alcance é visualizado quando o módulo é colocado.$(p)A Grade de Ar resfriará Dissipadores apenas quando tiver um alcance de 3 blocos ou mais (ou seja, 0.75 bar)."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Ao aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$, você ganha controle sobre quais entidades são afetadas pelo módulo.$(p)Você pode configurá-lo, por exemplo, para que apenas um determinado jogador seja afetado, ou apenas Creepers, ou apenas itens. Isso pode ser feito clicando com o botão direito no módulo melhorado para abrir uma GUI permitindo definir um $(l:base_concepts/entity_filter)filtro de entidade/$."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo de Grade de Ar",
+      "recipe": "pneumaticcraft:air_grate_module"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Condições",
+  "icon": "minecraft:comparator",
+  "category": "pneumaticcraft:programming",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Condições/$ são uma coleção de widgets que permitem verificar algo e saltar para outra parte do seu programa se a verificação for bem-sucedida.$(p)Cada widget de $(thing)Condição/$ recebe um parâmetro de widget $(l:programming/text)Texto/$ (que é sempre o parâmetro mais abaixo) configurado com um $(thing)nome de rótulo/$."
+    },
+    {
+      "type": "text",
+      "text": "Quando uma condição é avaliada como $(thing)verdadeiro/$, a $(l:programming/flow_control)execução do programa/$ saltará para um widget $(l:programming/label)Rótulo/$ com o mesmo nome que o parâmetro $(thing)Texto/$ no seu lado $(italic)direito/$. Quando a condição for $(thing)falso/$, saltará para um $(thing)Rótulo/$ com o mesmo nome que o parâmetro $(thing)Texto/$ no seu lado $(italic)esquerdo/$.$(p)Quando o widget $(thing)Condição/$ não consegue encontrar um parâmetro $(thing)Texto/$ válido, ele simplesmente prosseguirá para o próximo widget (conectado $(italic)abaixo/$)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/condition_widget.png"
+      ],
+      "border": "true",
+      "text": "$(italic)Um widget de Condição de Redstone que mata o drone se o sinal for >= 10/$"
+    },
+    {
+      "type": "text",
+      "text": "A maioria dos widgets de $(thing)Condição/$ pode ser $(thing)clicada com o botão direito/$ para abrir uma GUI de configuração. A GUI geralmente conterá opções '='/'>=' e um campo de texto onde você pode inserir um número.$(p)Com isso, você pode configurar condições (como contagem de itens em um baú) para serem, por exemplo, exatamente 10 (modo '=' e campo de texto 10), mais de 20 (modo '>=' e campo de texto '21'), ou menos de 12 (modo '>=' e campo de texto '12', mas verificando se a condição é $(thing)falso/$)."
+    },
+    {
+      "type": "text",
+      "title": "Medição",
+      "text": "Todas as GUI's de widget de $(thing)Condição/$ (exceto $(l:programming/condition_item)Condição: Filtro de Item/$) têm um campo de texto $(thing)Medir/$, onde você pode inserir o nome de uma $(l:programming/variables)variável/$. Se um nome de variável for fornecido aqui, qualquer medição feita pelo drone será armazenada no campo X da variável.$(p)Isso pode ser usado posteriormente como qualquer outra variável, por exemplo, você pode medir o nível de um tanque de fluido e escrevê-lo em uma placa."
+    },
+    {
+      "type": "text",
+      "title": "Medição (cont.)",
+      "text": "Se um nome de variável de medição for fornecido, não será mais um erro não ter widgets de Texto de ramificação no widget de Condição (normalmente, pelo menos um ramo é necessário). Isso significa que o widget de Condição pode ser usado puramente para medir uma quantidade; a execução simplesmente prosseguirá para baixo como normal.$(p)Nota: as condições de medição de pressão armazenam a pressão medida em milibares (por exemplo, 5.5 bars seriam 5500)."
+    },
+    {
+      "type": "text",
+      "title": "Tipos de Condição",
+      "text": "As Condições podem ser divididas em duas categorias: $(thing)Condições do Mundo/$ e $(thing)Condições do Drone/$.$(p)Condições do Mundo são usadas para verificar coisas no mundo, por exemplo, um $(item)Baú/$ tem um certo número de itens, ou um bloco existe em algum lugar?$(p)Condições do $(thing)Drone/$ visam especificamente o $(l:tools/drone)Drone/$, por exemplo, o Drone tem um certo item, ou tem uma certa pressão?"
+    },
+    {
+      "type": "text",
+      "text": "Todas as $(thing)Condições do Mundo/$ baseadas em bloco têm uma opção de bloco $(thing)Qualquer/Todos/$. Isso é usado quando você está verificando vários blocos de cada vez.$(li)No modo $(thing)Qualquer/$, apenas $(italic)um/$ dos blocos na $(l:programming/area)área/$ selecionada precisa corresponder para que a condição seja $(thing)verdadeiro/$.$(li)No modo $(thing)Todos/$, $(italic)todos/$ os blocos devem corresponder para que a condição seja $(thing)verdadeiro/$."
+    },
+    {
+      "type": "relations",
+      "title": "Condições do Mundo",
+      "entries": [
+        "pneumaticcraft:programming/condition_block",
+        "pneumaticcraft:programming/condition_coordinate",
+        "pneumaticcraft:programming/condition_entity",
+        "pneumaticcraft:programming/condition_item",
+        "pneumaticcraft:programming/condition_item_inventory",
+        "pneumaticcraft:programming/condition_liquid_inventory",
+        "pneumaticcraft:programming/condition_pressure",
+        "pneumaticcraft:programming/condition_redstone",
+        "pneumaticcraft:programming/condition_rf"
+      ]
+    },
+    {
+      "type": "relations",
+      "title": "Condições do Drone",
+      "entries": [
+        "pneumaticcraft:programming/drone_condition_item",
+        "pneumaticcraft:programming/drone_condition_liquid",
+        "pneumaticcraft:programming/drone_condition_entity",
+        "pneumaticcraft:programming/drone_condition_pressure",
+        "pneumaticcraft:programming/drone_condition_rf"
+      ]
+    }
+  ]
+}

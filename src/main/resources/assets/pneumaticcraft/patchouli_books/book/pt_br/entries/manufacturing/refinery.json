@@ -1,0 +1,52 @@
+{
+  "name": "Refinaria",
+  "icon": "pneumaticcraft:refinery",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:oil_bucket",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Refinaria/$ é uma máquina multibloco que usa $(l:base_concepts/heat)calor/$ para refinar $(l:base_concepts/oil)Petróleo/$ em vários combustíveis. Ela começa a funcionar a 100°C. Quanto maior a temperatura aplicada, mais rápido ela refina. Os combustíveis que podem ser produzidos são, ordenados do mais leve ao mais pesado:$(li)$(thing)GLP (Gás Liquefeito de Petróleo)/$$(li)$(thing)Gasolina/$$(li)$(thing)Querosene/$$(li)$(thing)Diesel/$"
+    },
+    {
+      "type": "text",
+      "text": "A $(thing)Refinaria/$ é uma estrutura multibloco: coloque um $(item)Controlador de Refinaria/$, depois empilhe 2-4 $(item)Saídas de Refinaria/$ em cima ou ao lado do Controlador. $(p)Diferentes tamanhos de multibloco dão rendimentos diferentes; dado 10mB de petróleo como entrada:$(p)$(bold)2 Saídas/$$(li)$(thing)GLP/$ (2mB)$(li)$(thing)Diesel/$ (4mB)$(br)$(bold)3 Saídas/$$(li)$(thing)GLP/$ (2mB)$(li)$(thing)Querosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)"
+    },
+    {
+      "type": "text",
+      "text": "$(bold)4 Saídas/$$(li)$(thing)GLP/$ (2mB)$(li)$(thing)Gasolina/$ (3mB)$(li)$(thing)Querosene/$ (3mB)$(li)$(thing)Diesel/$ (2mB)$(p)O combustível mais leve sempre acabará na $(item)Saída de Refinaria/$ superior, o mais pesado na inferior. Se você adicionar mais $(item)Saídas de Refinaria/$ a uma pilha existente, o multibloco fará o seu melhor para reorganizar automaticamente quaisquer líquidos de saída existentes em seus blocos corretos, para manter o sistema funcionando."
+    },
+    {
+      "type": "text",
+      "text": "Todos os líquidos produzidos podem ser usados como combustível em um $(l:compressors/liquid_compressor)Compressor Líquido/$ (sendo os combustíveis mais leves de melhor qualidade).$(p)No entanto, existem dois outros usos muito importantes:$(li)$(thing)GLP/$ é usado para fazer $(l:components/plastic)Plástico/$ líquido$(li)$(thing)Diesel/$ é usado para fazer $(l:components/lubricant)Lubrificante/$ para $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$.$(p)Uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$ é usada para ambos os processos."
+    },
+    {
+      "type": "text",
+      "title": "Suporte a Comparador",
+      "text": "A $(item)Refinaria/$ funcionará com um $(item)Comparador/$: um Comparador acoplado emitirá uma força de sinal de 15 quando a $(item)Refinaria/$ tiver trabalho, e 0 se não. Ela tem trabalho quando há $(thing)Petróleo/$ para refinar $(italic)e/$ espaço nos tanques de saída para os produtos refinados.$(p)Isso pode ser usado para automatizar o desligamento do suprimento de ar para um $(l:machines/vortex_tube)Tubo de Vórtice/$, por exemplo, para economizar ar."
+    },
+    {
+      "type": "text",
+      "title": "Dicas de Configuração",
+      "text": "Como a $(item)Refinaria/$ é um multibloco com muitas faces expostas ao ar, ela pode perder $(l:base_concepts/heat)Calor/$ muito rapidamente se não for bem isolada. Portanto, é fortemente recomendado cobrir todas as faces não utilizadas do multibloco para maximizar a eficiência. Note que quaisquer blocos não condutores de calor podem ser usados, incluindo blocos semi-sólidos como $(item)lajes/$ ou $(item)alçapões/$, mas $(l:machines/thermal_lagging)Revestimento Térmico/$ é especialmente recomendado."
+    },
+    {
+      "type": "text",
+      "text": "Você pode usar um $(l:machines/vortex_tube)Tubo de Vórtice/$ para aquecer a $(item)Refinaria/$, ou colocar fluidos quentes (Lava...) ou blocos (Magma...) próximos a quaisquer blocos da $(item)Refinaria/$. Note que tais fluidos e blocos serão consumidos (seu calor é drenado), então você pode desejar encontrar uma maneira de automatizar a produção e colocação desses recursos."
+    },
+    {
+      "type": "link",
+      "flag": "mod:crafttweaker",
+      "title": "CraftTweaker",
+      "text": "A $(item)Refinaria/$ possui suporte ao $(l:https://minecraft.curseforge.com/projects/crafttweaker)CraftTweaker/$: receitas podem ser adicionadas e removidas. Siga o link abaixo para mais informações.",
+      "url": "https://docs.blamejared.com/1.16/en/mods/PneumaticCraft-Repressurized/Refinery",
+      "link_text": "Docs do CraftTweaker"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Refinaria",
+      "recipe": "pneumaticcraft:refinery",
+      "recipe2": "pneumaticcraft:refinery_output"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Widget Programa Externo",
+  "icon": "pneumaticcraft:textures/progwidgets/external_program_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget irá procurar por qualquer inventário na $(l:programming/area)Área/$ especificada. Para cada inventário, ele percorrerá cada slot. Quando um $(l:tools/drone)Drone/$ ou $(l:components/network_components#network_api)API de Rede/$ for encontrado, ele executará o programa armazenado naquele item.$(p)Quando o programa terminar, o $(item)Drone/$ passará para o próximo slot e/ou inventário."
+    },
+    {
+      "type": "text",
+      "text": "Este widget pode ser usado para depurar programas de $(item)Drone/$, pois $(l:programming/programmer)Programadores/$ também contam como um inventário. Basta programar um $(item)Drone/$ com o widget $(thing)Programa Externo/$ com uma área de (apenas) o $(item)Programador/$, e colocá-lo no chão.$(p)Agora coloque um $(item)Drone/$ ou $(item)API de Rede/$ no programador e crie seu programa. Quando você clicar no botão $(thing)⟶ (exportar)/$ no $(item)Programador/$, o $(item)Drone/$ implantado executará imediatamente seu programa."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/external_program_piece.png"
+      ],
+      "text": "$(italic)Programação dentro de Programação.../$"
+    }
+  ]
+}

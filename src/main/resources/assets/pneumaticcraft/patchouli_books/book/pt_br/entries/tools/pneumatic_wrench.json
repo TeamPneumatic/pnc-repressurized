@@ -1,0 +1,21 @@
+{
+  "name": "Chaves Inglesas Pneumática",
+  "icon": "pneumaticcraft:pneumatic_wrench[pneumaticcraft:air=30000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A Chaves Inglesas Pneumática é o item de $(thing)chave inglesa/$ para o $(pncr). Você pode usá-la para uma variedade de tarefas, incluindo:$(p)$(li)$(thing)Clicar com o botão direito/$ em blocos vanilla e modificados para girá-los$(li)$(thing)Agachar + clique com o botão direito/$ em máquinas do $(pncr) para derrubá-las como itens, preservando quaisquer melhorias e ar armazenados na máquina."
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(thing)Clicar com o botão direito/$ em $(l:base_concepts/drones)Drones/$ para desmontá-los, derrubando-os como um item.$(li)$(thing)Clicar com o botão direito/$ em $(l:tubes/pressure_tubes)Tubos de Pressão/$ para fechar/reabrir seções para isolá-las umas das outras.$(p)A $(item)Chaves Inglesas Pneumática/$ deve ser pressurizada em uma $(l:machines/charging_station)Estação de Carregamento/$ antes do uso."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Chaves Inglesas Pneumática",
+      "recipe": "pneumaticcraft:pneumatic_wrench"
+    }
+  ]
+}

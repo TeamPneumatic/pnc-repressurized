@@ -1,0 +1,78 @@
+{
+  "name": "Visão Geral da Armadura Pneumática",
+  "icon": "minecraft:written_book",
+  "category": "pneumaticcraft:armor",
+  "priority": "true",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O que acontece se você misturar o $(pncr) com o HUD do $(thing)Homem de Ferro/$? Você obtém a $(thing)Armadura Pneumática/$!$(p)Embora esta armadura tenha sido inspirada no brinquedo do Tony Stark, isso não significa que ela seja invencível de forma alguma: por padrão, a armadura tem proteção e durabilidade apenas ligeiramente melhores do que a peça equivalente de $(thing)Armadura de Ferro/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/pneumatic_armor.png"
+      ],
+      "border": "true",
+      "text": "Homem de Ferro Comprimido"
+    },
+    {
+      "type": "text",
+      "text": "No entanto, esta armadura é altamente aprimorável. Para usar melhorias (e para pressurizar a armadura), coloque a armadura em uma $(l:machines/charging_station)Estação de Carregamento/$.$(p)Melhorias comuns a todas as peças são descritas nas páginas a seguir. Melhorias específicas de peças são descritas separadamente nas páginas de cada peça da armadura."
+    },
+    {
+      "type": "text",
+      "text": "Quando você equipa uma peça de armadura, ela irá $(thing)inicializar/$ dentro de alguns segundos. Você pode pressionar $(thing)$(k:pneumaticcraft.armor.options)/$ para abrir uma GUI, que permite configurar as melhorias instaladas e ajustar o HUD da armadura. Com mais melhorias instaladas, mais opções aparecerão na GUI.$(p)Note que todas as melhorias podem ser ativadas/desativadas através das caixas de seleção da GUI, e você pode até vincular uma tecla a cada caixa de seleção para alternar recursos rapidamente quando estiver fora da GUI."
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:anvil",
+      "title": "Reparando",
+      "text": "Existem algumas maneiras de manter sua valiosa armadura em boas condições:$(li)Ela pode ser reparada em uma $(thing)Bigorna/$ com Barras de Ferro Comprimido$(li)Adicione $(thing)Melhorias de Vida do Item/$ a cada peça para que ela se repare sozinha$(li)Aplique o encantamento $(thing)Remendo/$ a cada peça"
+    },
+    {
+      "type": "text",
+      "title": "Colorindo",
+      "text": "Cada peça de armadura é recolorível dinamicamente a partir da textura cinza padrão; cada peça tem uma cor $(thing)primária/$ e $(thing)secundária/$ que podem ser ajustadas independentemente, e o $(thing)visor/$ do Capacete também pode ter sua própria cor.$(p)Para ajustar as cores, basta usar a tela $(bold)Cores.../$ no menu principal da GUI da armadura. Nenhuma melhoria especial é necessária para isso; é uma funcionalidade embutida!"
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:speed_upgrade",
+      "text": "$(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$ reduzem o tempo de inicialização de cada peça de armadura. Além disso, reduzem o tempo de trava do $(l:armor/pneumatic_helmet)Capacete/$ para o $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$ e $(l:base_concepts/upgrades#block_tracker)Rastreador de Bloco/$, e aumentam a velocidade de corrida das $(l:armor/pneumatic_leggings)Calças/$, mas a um $(l:base_concepts/pressure)custo de ar/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:volume_upgrade",
+      "text": "$(l:base_concepts/upgrades#volume)Melhorias de Volume/$ aumentam a $(l:base_concepts/pressure)capacidade de armazenamento de ar/$ de cada peça de armadura, fazendo com que demorem mais para carregar, mas percam pressão mais lentamente quando em uso. Melhorias de Volume são limitadas a 25, e há retornos decrescentes conforme você adiciona mais e mais melhorias."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:armor_upgrade",
+      "text": "$(l:base_concepts/upgrades#armor)Melhorias de Armadura/$ aumentam a proteção e a dureza de cada peça de armadura. Com 2 melhorias instaladas, cada peça é tão boa quanto a peça correspondente de $(thing)Armadura de Diamante/$. Com o máximo de 4 melhorias, a proteção é, portanto, superior à $(thing)Armadura de Diamante/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:item_life_upgrade",
+      "text": "$(l:base_concepts/upgrades#item_life)Melhorias de Vida do Item/$ reparam lentamente a peça de armadura, a um custo de $(l:base_concepts/pressure)ar/$. Até 5 melhorias podem ser instaladas em cada peça, proporcionando reparo incrementalmente mais rápido (mas menos eficiente em termos de ar)."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:gilded_upgrade",
+      "text": "Uma $(l:base_concepts/upgrades#gilded)Melhoria Dourada/$ pode ser instalada em qualquer peça de armadura, e engana $(thing)Piglins/$ fazendo-os acreditar que você está realmente usando $(thing)Armadura de Ouro/$. Piglins bobos."
+    },
+    {
+      "type": "spotlight",
+      "flag": "mod:mekanism",
+      "title": "Radiação do Mekanism",
+      "item": "pneumaticcraft:radiation_shielding_upgrade",
+      "text": "A $(l:base_concepts/upgrades#radiation_shielding)Melhoria de Proteção contra Radiação/$ fornece proteção contra os efeitos nocivos da radiação do Mekanism, o mesmo que a própria $(l:https://wiki.aidancbrady.com/wiki/Radiation_Shielding_Unit)Unidade de Proteção contra Radiação/$ do Mekanism. Note que você deve ter uma Melhoria de Proteção em cada peça de armadura para receber proteção total."
+    },
+    {
+      "type": "text",
+      "title": "Thaumcraft",
+      "flag": "mod:thaumcraft",
+      "text": "$(l:base_concepts/upgrades#thaumcraft)Melhorias do Thaumcraft/$ fornecem à peça de armadura o desconto de vis equivalente à correspondente $(thing)armadura de Taumaturgo/$. Além disso, uma Melhoria do Thaumcraft instalada no $(l:armor/helmet)Capacete/$ age como um $(item)Óculos de Revelação/$, mostrando $(thing)nodos de aura/$ e exibindo quantidades de $(thing)aspectos/$ em recipientes."
+    }
+  ]
+}

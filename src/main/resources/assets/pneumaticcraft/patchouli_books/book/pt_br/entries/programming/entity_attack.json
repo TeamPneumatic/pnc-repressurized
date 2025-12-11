@@ -1,0 +1,40 @@
+{
+  "name": "Widget de Ataque de Entidade",
+  "icon": "pneumaticcraft:textures/progwidgets/attack_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ atacará qualquer entidade viva dentro da área.$(p)Lembre-se de que quaisquer widgets $(l:programming/area)Área/$ conectados a este widget devem ter um tipo de área $(thing)Caixa/$; este é o único formato suportado. É possível, no entanto, criar formatos diferentes usando múltiplos widgets de Área no lado da lista de permissões (direito) ou no lado da lista de bloqueios (esquerdo)."
+    },
+    {
+      "type": "text",
+      "title": "Filtrando Entidades",
+      "text": "Você pode especificar quais criaturas podem ser atacadas usando widgets $(l:programming/text)Texto/$ como um $(l:base_concepts/entity_filter)Filtro de Entidade/$. Por exemplo, se você quiser que o $(thing)Drone/$ ataque todos os jogadores, conecte um widget $(thing)Texto/$ à $(italic)direita/$ do widget $(thing)Ataque de Entidade/$ contendo $(#600)@player/$.$(p)Se você não quiser ser atacado, conecte um widget $(thing)Texto/$ à $(italic)esquerda/$ contendo o seu nome de jogador."
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:diamond_sword",
+      "title": "Ataques Corpo a Corpo",
+      "text": "$(l:tools/drone)Drones/$ equiparão e usarão qualquer arma corpo a corpo em seu inventário para atacar. Se um $(thing)Drone/$ tiver múltiplas armas em seu inventário, ele equipará a mais danosa. $(p)Você pode usar um widget $(l:programming/inventory_import)Importação de Inventário/$ para fornecer uma arma ao Drone, o que é altamente recomendado - seu ataque corpo a corpo desarmado é fraco."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:minigun_upgrade",
+      "text": "Insira uma $(l:base_concepts/upgrades#minigun)Melhoria de Minigun/$ no $(l:tools/drone)Drone/$ para dar a ele uma $(l:tools/minigun)Minigun/$. Quando fornecido com $(l:tools/minigun_ammo)Munição de Arma/$ (usando um widget $(l:programming/inventory_import)Importação de Inventário/$), o $(thing)Drone/$ usará esta Minigun para ataques à distância.$(p)O alcance padrão é de 16 blocos, que pode ser aprimorado inserindo até 16 $(l:base_concepts/upgrades#range_upgrade)Melhorias de Alcance/$, para um alcance máximo de 32 blocos."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:micromissiles",
+      "text": "Drones também sabem como disparar $(l:tools/micromissiles)Micromísseis/$: se o $(thing)Drone/$ estiver segurando um $(item)Micromíssil/$ quando este widget for executado, ele disparará um míssil em seu alvo atual. Qualquer $(l:base_concepts/entity_filter)filtro de entidade/$ conectado é copiado para o próprio filtro de entidade do Micromíssil pelo drone."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/attack_piece.png"
+      ],
+      "text": "$(italic)Eu voltarei/$"
+    }
+  ]
+}

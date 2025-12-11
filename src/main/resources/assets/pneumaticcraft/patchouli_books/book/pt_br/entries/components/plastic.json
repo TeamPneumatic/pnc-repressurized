@@ -1,0 +1,69 @@
+{
+  "name": "Plástico",
+  "icon": "pneumaticcraft:plastic_bucket",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Plástico/$ é um componente de criação importante no $(pncr).$(p)$(item)Plástico Derretido/$ é feito de $(l:manufacturing/refinery)GLP/$ e $(item)Carvão/$, ou $(l:renewables/biodiesel)Biodiesel/$ e $(item)Carvão Vegetal/$ na $(l:manufacturing/thermopneumatic_processing_plant)Usina de Processamento Termopneumática/$."
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/plastic_from_lpg"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/plastic_from_biodiesel"
+    },
+    {
+      "type": "spotlight",
+      "title": "Folha de Plástico",
+      "item": "pneumaticcraft:plastic",
+      "flag": "pneumaticcraft:inWorldPlasticSolidification",
+      "text": "$(item)Plástico Derretido/$ pode ser solidificado simplesmente despejando-o no mundo; ele se transformará em uma $(item)Folha de Plástico/$ dentro de meio segundo ou mais. Isso é muito facilmente automatizado com um $(l:machines/liquid_hopper)Funil de Líquidos/$ com uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$, e um $(l:machines/omnidirectional_hopper)Funil Omnidirecional/$."
+    },
+    {
+      "type": "spotlight",
+      "title": "Folha de Plástico",
+      "item": "pneumaticcraft:plastic",
+      "flag": "!pneumaticcraft:inWorldPlasticSolidification",
+      "text": "$(item)Folhas de Plástico/$ são produzidas colocando um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ anexada, e resfriando a Estrutura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
+    },
+    {
+      "type": "text",
+      "title": "Melhorando Rendimentos",
+      "flag": "pneumaticcraft:inWorldPlasticSolidification",
+      "text": "Uma maneira alternativa de solidificar $(item)Folhas de Plástico/$ é colocar um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ anexada, e resfriar a Estrutura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
+    },
+    {
+      "type": "text",
+      "title": "Uma Nota sobre Tanques",
+      "text": "Embora os Tanques de Fluido do $(pncr) tenham slots de inventário, e permitam que $(thing)Estruturas de Calor/$ sejam colocadas neles, simplesmente anexar uma Estrutura de Calor a um tanque cheio de Plástico Derretido não funcionará; o tanque de fluido deve estar em forma de item em um inventário (baú, etc.) com uma Estrutura de Calor anexada."
+    },
+    {
+      "type": "spotlight",
+      "title": "Tijolo de Construção de Plástico™",
+      "item": "pneumaticcraft:plastic_brick_red",
+      "text": "Estes tijolos são formados com $(item)Folhas de Plástico/$ e qualquer corante, e são adequados para construção.$(p)Não ande sobre eles com os pés descalços, porque dói uma quantidade irracional!$(p)$(italic)Compatível com outras marcas líderes de tijolo de construção./$"
+    },
+    {
+      "type": "spotlight",
+      "title": "Tijolo de Construção de Plástico Liso™",
+      "item": "pneumaticcraft:smooth_plastic_brick_red",
+      "text": "A versão lisa do $(item)Tijolo de Construção de Plástico/$ também é adequada para construção.$(p)Estes tijolos também têm a vantagem de fazer um excelente piso, já que eles aumentarão sua velocidade de caminhada!"
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:plastic_brick_red",
+      "recipe2": "pneumaticcraft:smooth_plastic_brick_red",
+      "text": "Você pode adivinhar as receitas para as outras cores"
+    },
+    {
+      "type": "smelting",
+      "recipe": "pneumaticcraft:plastic_sheet_from_brick",
+      "recipe2": "pneumaticcraft:plastic_sheet_from_smooth_brick",
+      "text": "Você pode fundir tijolos de volta em folhas de plástico"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Componentes de Rede",
+  "icon": "pneumaticcraft:network_api",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Estes componentes são usados principalmente para configurar uma $(l:programming/security_station)Estação de Segurança/$, mas alguns também são usados como componentes de fabricação, e o $(l:components/network_components#network_storage)Armazenamento de Dados de Rede/$ e $(l:components/network_components#network_api)API de Rede/$ podem ser usados para armazenar programas de $(l:tools/drone)Drone/$."
+    },
+    {
+      "type": "crafting",
+      "anchor": "diagnostic",
+      "text": "A $(item)Sub-rotina de Diagnóstico/$ é um componente necessário em uma $(l:machines/security_station)Estação de Segurança/$.$(br)É responsável por rastrear $(l:machines/security_station#hacking)tentativas de hack/$ de volta ao hacker. Se todas as $(item)Sub-rotinas de Diagnóstico/$ forem hackeadas, sua $(item)Estação de Segurança/$ foi comprometida.",
+      "recipe": "pneumaticcraft:diagnostic_subroutine"
+    },
+    {
+      "type": "crafting",
+      "anchor": "io_port",
+      "text": "A $(item)Porta de E/S de Rede/$ é um componente necessário em uma $(l:machines/security_station)Estação de Segurança/$.$(br)Este é o ponto de entrada para tentativas de hack em sua $(item)Estação de Segurança/$." ,
+      "recipe": "pneumaticcraft:network_io_port"
+    },
+    {
+      "type": "crafting",
+      "anchor": "registry",
+      "text": "O $(item)Registro de Rede/$ é um componente necessário em uma $(l:machines/security_station)Estação de Segurança/$.$(br)Este é um alvo para hackers; se $(italic)todos/$ os Registros forem hackeados, sua $(item)Estação de Segurança/$ foi comprometida.",
+      "recipe": "pneumaticcraft:network_registry"
+    },
+    {
+      "type": "crafting",
+      "anchor": "node",
+      "text": "O $(item)Nó de Rede/$ é um componente genérico em uma $(l:machines/security_station)Estação de Segurança/$, usado para formar caminhos entre os componentes necessários.",
+      "recipe": "pneumaticcraft:network_node"
+    },
+    {
+      "type": "crafting",
+      "anchor": "network_api",
+      "text": "A $(item)API de Rede/$ pode ser usada para armazenar programas de $(l:tools/drone)Drone/$. Requer $(l:programming/puzzle_pieces)Peças de Quebra-cabeça/$ para programar, e pode ser usada para rodar programas no $(l:programming/programmable_controller)Controlador Programável/$ ou pelo widget de $(l:programming/external_program)Programa Externo/$.",
+      "recipe": "pneumaticcraft:network_api"
+    },
+    {
+      "type": "crafting",
+      "anchor": "network_storage",
+      "text": "O $(item)Armazenamento de Dados de Rede/$ pode ser usado para armazenar programas de $(l:tools/drone)Drone/$. Ele $(italic)não/$ requer $(l:programming/puzzle_pieces)Peças de Quebra-cabeça/$ para programar, então não pode ser usado para rodar programas; no entanto, é útil se você deseja armazenar uma biblioteca de programas, ou trocar programas com outros jogadores.",
+      "recipe": "pneumaticcraft:network_data_storage"
+    }
+  ]
+}

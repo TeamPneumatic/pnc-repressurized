@@ -1,0 +1,59 @@
+{
+  "name": "Filtros de Entidade",
+  "icon": "minecraft:player_head",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Filtros de Entidade/$ são usados em vários lugares no $(pncr), onde há a necessidade de especificar quais $(thing)Entidades/$ uma máquina ou ferramenta deve afetar de alguma forma.$(p)Na maioria dos lugares onde um filtro pode ser inserido, uma ajuda pop-up pode ser mostrada pressionando e segurando a tecla $(thing)F1/$."
+    },
+    {
+      "type": "text",
+      "text": "Para corresponder entidades por seu tipo de entidade, apenas especifique o nome do tipo (ex: $(#800)creeper/$ corresponde a $(thing)minecraft:creeper/$. Para corresponder uma entidade com um nome personalizado (incluindo jogadores), coloque o nome da entidade entre aspas, ex: $(#800)'Minemaarten'/$ ou $(#800)'desht'/$.$(p)Quando você quiser especificar um certo $(italic)tipo/$ de entidade (ex: animais, mobs agressivos, jogadores em geral), coloque um '@' na frente. Uma lista completa de exemplos, incluindo $(thing)Especificadores @/$ aceitos, segue abaixo."
+    },
+    {
+      "type": "text",
+      "title": "Exemplos",
+      "text": "$(li)$(#800)@player/$ corresponde a todos os jogadores$(li)$(#800)@mob/$ corresponde a todas as criaturas agressivas$(li)$(#800)@animal/$ corresponde a todas as criaturas passivas (animais)$(li)$(#800)@animal(age=adult)/$ corresponde a todos os animais adultos$(li)$(#800)@animal(age=baby)/$ corresponde a todos os animais bebês$(li)$(#800)@animal(breedable=yes)/$ corresponde a todos os animais que podem reproduzir agora$(li)$(#800)sheep(shearable=yes)/$ corresponde a todas as ovelhas que podem ser tosquiadas"
+    },
+    {
+      "type": "text",
+      "title": "Exemplos (cont.)",
+      "text": "$(li)$(#800)sheep(shearable=yes,color=black)/$ corresponde a todas as ovelhas pretas que podem ser tosquiadas$(li)$(#800)wolf(color=blue)/$ corresponde a todos os lobos/cães com uma coleira azul. $(li)$(#800)cat(color=white)/$ corresponde a todos os gatos com uma coleira branca.$(li)$(#800)@minecart/$ corresponde a Carrinhos de Mina$(li)$(#800)@boat/$ corresponde a Barcos$(li)$(#800)@living/$ corresponde a todas as entidades vivas$(li)$(#800)@item/$ corresponde a entidades de item$(li)$(#800)@orb/$ corresponde a orbes de experiência"
+    },
+    {
+      "type": "text",
+      "title": "Exemplos (cont.)",
+      "text": "$(li)$(#800)@drone/$ corresponde a $(l:tools/drone)Drones/$$(li)$(#800)@mob(mod=minecraft)/$ corresponde a mobs, mas apenas do namespace $(thing)minecraft/$$(li)$(#800)Creeper/$ corresponde a creepers$(li)$(#800)'MineMaarten'/$ (ou $(#800)\"Minemaarten\"/$) corresponde a uma entidade chamada 'MineMaarten'$(li)$(#800)c*/$ corresponde a qualquer entidade começando com a letra 'c' (como Creepers, ou Cows). $(li)$(#800)*pig*/$ corresponde a qualquer entidade que inclui 'pig' no nome (como Pig ou Zombie Pigman)."
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(#800)@player(team=team1)/$ corresponde a jogadores no time do placar vanilla \"team1\"$(li)$(#800)@player(holding=stick)/$ corresponde a jogadores que estão segurando um graveto agora$(li)$(#800)@player(holding=#minecraft:planks)/$ corresponde a jogadores segurando qualquer item na tag de item $(thing)minecraft:planks/$"
+    },
+    {
+      "type": "text",
+      "flag": "mod:ftbteams",
+      "text": "$(li)$(#800)@player(ftbteam=<uuid>|<shortname>)/$ corresponde a jogadores que são membros de um time do $(l:https://www.curseforge.com/minecraft/mc-mods/ftb-teams-forge)FTB Teams/$ com o UUID ou nome curto fornecido.$(p)Você também pode usar os modificadores de jogador $(#800)ftbteam_officer/$, $(#800)ftbteam_owner/$ e $(#800)ftbteam_ally/$ para corresponder a jogadores que são (pelo menos) oficiais, donos ou aliados do time, e $(#800)ftbteam_enemy/$ para corresponder a jogadores que são especificamente marcados como inimigos do time."
+    },
+    {
+      "type": "text",
+      "text": "Todas as correspondências não diferenciam maiúsculas de minúsculas, ex: tanto $(#800)zombie/$ quanto $(#800)Zombie/$ corresponderão a zumbis.$(p)Você pode especificar uma $(thing)sequência/$ de filtros com o separador ';' (ponto e vírgula) - esta é uma função $(italic)corresponder qualquer/$:$(li)$(#800)creeper;zombie/$ corresponde tanto a Creepers $(italic)quanto/$ Zumbis."
+    },
+    {
+      "type": "text",
+      "text": "Você pode prefixar um filtro com '!' para negar o filtro:$(li)$(#800)!@player/$ corresponde a qualquer coisa que $(italic)não/$ seja um jogador$(li)$(#800)!Creeper;Zombie/$ corresponde a qualquer coisa que não seja nem um Creeper $(italic)nem/$ um Zumbi$(li)$(#800)Creeper;!Zombie/$ é $(#f00)inválido/$: '!' só pode ir bem no início de um filtro/$$(p)$(bold)Nota:/$ para filtros de entidade de $(l:tools/drone)Drone/$ usando o widget de programação de $(l:programming/text)Texto/$, '!' não é suportado; conecte o widget de Texto à esquerda, como normal."
+    },
+    {
+      "type": "relations",
+      "entries": [
+        "pneumaticcraft:tools/micromissiles",
+        "pneumaticcraft:tubes/air_grate_module",
+        "pneumaticcraft:armor/pneumatic_helmet",
+        "pneumaticcraft:machines/sentry_turret",
+        "pneumaticcraft:machines/universal_sensor",
+        "pneumaticcraft:programming/text"
+      ],
+      "text": "$(italic)Máquinas e ferramentas que usam filtragem de entidade/$"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Renováveis",
+  "description": "O $(pncr) tem uma coleção de processos para produzir alguns recursos renováveis, em particular Biodiesel.",
+  "icon": "pneumaticcraft:biodiesel_bucket",
+  "sortnum": 11
+}

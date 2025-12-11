@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Logística",
+  "icon": "pneumaticcraft:textures/progwidgets/logistics_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget faz com que o $(l:tools/drone)Drone/$ se comporte como um $(l:logistics/logistics_drone)Drone de Logística/$, mas permite alguma flexibilidade extra sobre a funcionalidade básica do Drone de Logística:$(li)Pode ser usado com outros widgets, por exemplo, um $(l:programming/standby)Widget de Espera/$ para um uso mais eficiente de ar.$(li)Uma $(l:programming/area)Área/$ personalizada pode ser definida (um Drone de Logística padrão tem uma área de 33x33x33 centrada no drone, que não pode ser alterada)"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/logistics_piece.png"
+      ],
+      "text": "$(italic)Widget de Logística/$\""
+    }
+  ]
+}

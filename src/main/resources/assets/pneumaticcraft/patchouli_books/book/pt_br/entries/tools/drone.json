@@ -1,0 +1,47 @@
+{
+  "name": "Drone",
+  "icon": "pneumaticcraft:drone[pneumaticcraft:air=120000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Drones são robôs voadores programáveis poderosos, que podem ser usados para todos os tipos de automação. Eles precisam de programação antes de fazerem qualquer coisa; para isso, você também precisará de um $(l:programming/programmer)Programador/$ e algumas $(l:programming/puzzle_pieces)Peças de Quebra-Cabeça/$.$(p)Quando você coloca um Drone programado e $(l:base_concepts/pressure)pressurizado/$, ele executará suas tarefas programadas."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:drone",
+      "offset": -0.3
+    },
+    {
+      "type": "text",
+      "anchor": "charging",
+      "title": "Carregamento Automático",
+      "text": "Drones são inteligentes: quando estão com pouco ar, eles param seu programa principal e procuram uma $(l:machines/charging_station)Estação de Carregamento/$ que tenha uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$ e pelo menos 1 bar de pressão, a uma distância menor que $(ttcolor)$(t:Veja 'max_drone_charging_station_search_range' na config do mod)80 blocos/$.$(p)Quando encontrada, o $(item)Drone/$ irá para esta $(item)Estação de Carregamento/$ e ficará carregando até que a estação não possa fornecer mais ar. Depois disso, o $(item)Drone/$ retomará seu programa principal."
+    },
+    {
+      "type": "text",
+      "title": "Carregamento Automático (cont.)",
+      "text": "Em um servidor multiplayer, você pode querer permitir que apenas seus Drones carreguem em sua(s) Estação(ões) de Carregamento. Você pode tornar sua $(item)Estação de Carregamento/$ privada cobrindo-a com uma $(l:machines/security_station)Estação de Segurança/$.$(p)Agora, apenas os $(item)Drones/$ colocados por jogadores que estão na lista branca em sua $(item)Estação de Segurança/$ terão permissão para carregar."
+    },
+    {
+      "type": "text",
+      "text": "Quando o ar do $(item)Drone/$ acabar, suas hélices pararão e ele cairá direto no chão. Cuidado: drones podem sofrer dano de queda! Um $(item)Drone/$ destruído dropará a si mesmo em forma de item.$(p)Você pode tingir um $(item)Drone/$ fabricando-o com um pedaço de $(item)corante/$. Você também pode tingir um $(item)Drone/$ no mundo, $(thing)clicando com o botão direito/$ nele com um pedaço de $(item)corante/$. Essa coloração é apenas cosmética, mas pode ajudar a distinguir drones à primeira vista."
+    },
+    {
+      "type": "text",
+      "title": "Depuração",
+      "text": "Hmm, por que aquele $(item)Drone/$ age dessa maneira? Por que ele não faz nada? Você pode depurar seu programa usando um $(l:armor/pneumatic_helmet)Capacete Pneumático/$, com as Melhorias de $(l:base_concepts/upgrades#dispenser)Ejetor/$ e $(l:base_concepts/upgrades#entity_tracker)Rastreador de Entidade/$ instaladas. Com o $(item)Drone/$ na mira e o $(thing)Rastreador de Entidade/$ ativo, pressione a tecla $(thing)$(k:pneumaticcraft.helmet.debugging.drone)/$. Então, abrir a página do $(thing)Depurador de Drone/$ na interface da Armadura Pneumática mostrará o programa desse drone, incluindo o widget atual e quaisquer erros."
+    },
+    {
+      "type": "text",
+      "title": "Depuração (cont.)",
+      "text": "Existem alguns outros pequenos truques para estar ciente:$(li)Clicar com o botão direito em um Drone com uma $(l:tools/gps_tool)Ferramenta GPS/$ faz com que ele vá para a posição do bloco armazenada na Ferramenta GPS; pode ser útil para testar a rota do Drone.$(li)Hackear um Drone (usando a $(l:base_concepts/upgrades#security)Melhoria de Segurança/$ no Capacete Pneumático) faz com que ele suspenda seu programa e venha até você; útil se seu programa o deixou em um local de difícil acesso. Hackeá-lo novamente retomará o programa."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Drone",
+      "recipe": "pneumaticcraft:drone"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Espera",
+  "icon": "pneumaticcraft:textures/progwidgets/standby_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Quando este widget é executado, o $(l:tools/drone)Drone/$ desligará seus propulsores e cairá do céu. Este widget pode ser usado para economizar $(l:base_concepts/pressure)ar/$, já que o Drone não usa ar no modo de espera.$(p)O $(thing)Drone/$ continuará executando outros widgets, no entanto; assim que executar qualquer widget que o faça realizar algum trabalho real, o $(thing)Drone/$ ligará seus propulsores novamente."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/standby_piece.png"
+      ],
+      "text": "$(italic)Bela Adormecida/$"
+    }
+  ]
+}

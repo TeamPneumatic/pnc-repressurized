@@ -1,0 +1,26 @@
+{
+  "name": "Caixa de Luz UV",
+  "icon": "pneumaticcraft:uv_light_box",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:pcb_blueprint",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A $(item)Caixa de Luz UV/$ é uma máquina na qual você pode expor $(l:components/pcb)PCBs/$ à luz UV, em certos lugares (o que é determinado pelo $(l:components/pcb_blueprint)Esquema/$ colocado em cima da PCB).$(p)O processo de exposição leva no máximo 10 minutos; menos se você adicionar $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$ à máquina."
+    },
+    {
+      "type": "text",
+      "text": "Após os 10 minutos completos, você terá 100% de chance de que a $(item)PCB/$ seja corroída com sucesso em $(l:manufacturing/etching_acid)Ácido Corrosivo/$. Você pode, no entanto, expor a PCB por um tempo menor, o que resultará em uma chance menor de a PCB ser corroída com sucesso.$(p)Note que o progresso da exposição é mais rápido quando o progresso total é menor, e mais lento no final."
+    },
+    {
+      "type": "text",
+      "title": "Automação de Limiar",
+      "text": "Você pode ajustar manualmente o limiar de conclusão através do controle deslizante da GUI, mas também é possível definir isso através de um sinal de redstone; defina o modo de redstone para $(thing)Interpolar Limiar/$. Neste modo, o limiar é fixado em 25% + 5% por nível de sinal (embora um sinal de 0 desabilite a máquina, então 30%-100% na prática).$(p)Isso pode ser útil se você quiser definir o limiar de muitas caixas de luz de uma só vez."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando uma Caixa de Luz UV",
+      "recipe": "pneumaticcraft:uv_light_box"
+    }
+  ]
+}

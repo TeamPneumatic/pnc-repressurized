@@ -1,0 +1,34 @@
+{
+  "name": "Widget de Cavar",
+  "icon": "pneumaticcraft:textures/progwidgets/dig_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ irá cavar/minerar os blocos dentro da $(l:programming/area)Área/$ especificada. Itens que são derrubados dos blocos não serão pegos pelo $(item)Drone/$. A ordem em que os blocos serão cavados é semelhante ao widget $(l:programming/place)Colocar/$. Também em comum com o widget $(thing)Colocar/$, você pode controlar se a área deve ser cavada camada por camada (de cima para baixo ou de baixo para cima)."
+    },
+    {
+      "type": "text",
+      "title": "Usando Ferramentas",
+      "text": "Você pode fazer com que o $(item)Drone/$ $(l:programming/inventory_import)importe/$ uma picareta/pá/etc. para fazê-lo usar essa ferramenta. Quando o $(item)Drone/$ carrega múltiplas ferramentas, a ferramenta mais adequada é usada automaticamente para o bloco que está sendo cavado.$(p)Você pode impedir que o Drone tente cavar sem uma ferramenta (o que é realmente lento) marcando a caixa de seleção $(thing)Requer ferramenta de escavação/$."
+    },
+    {
+      "type": "text",
+      "title": "Limitando a Contagem de Escavação",
+      "text": "A quantidade de ações de escavação pode ser limitada a um número especificado, marcando a caixa de seleção $(thing)Limitar interações de bloco/$ na GUI e definindo um limite. Ex: se definido como 1, o $(item)Drone/$ cavará apenas um bloco (independentemente de quantos blocos estejam na área), antes de passar para o próximo widget no programa. Isso pode ser usado para cavar apenas alguns blocos e, em seguida, verificar a durabilidade de uma ferramenta, para repará-la antes que ela quebre."
+    },
+    {
+      "type": "text",
+      "title": "Filtrando Blocos",
+      "text": "Por fim, você pode especificar quais blocos podem ser minerados usando um $(l:programming/item_filter)Filtro de Item/$.$(p)Quando usado com blocos como plantações, filtre pelo item que você obteria ao quebrar a plantação (portanto, $(item)Sementes/$ para uma plantação de $(item)Trigo/$). A exceção seriam blocos que $(italic)nunca/$ deixam cair um item (mesmo com Toque Suave), para os quais existe a opção específica $(thing)Corresponder por bloco/$ na GUI de configuração do filtro."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/dig_piece.png"
+      ],
+      "text": "$(italic)Oi-ho, oi-ho, para o trabalho nós vamos!/$"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Conceitos da Interface",
+  "icon": "pneumaticcraft:textures/gui/icon/gui_mouse.png",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "A maioria das máquinas no $(pncr) tem uma Interface com várias $(thing)abas laterais/$. Algumas abas são comuns à maioria ou a todas as máquinas, enquanto algumas são exclusivas de certas máquinas. Aqui está uma lista de algumas abas comuns:"
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(bold)Comportamento de Redstone/$: Aqui você pode selecionar como uma máquina responde a redstone ou quando ela deve emitir redstone.$(li)$(bold)Informação /$: A aba de informações mostra informações (estáticas) sobre para que a máquina é usada.$(li)$(bold)Melhorias /$: Aqui você pode ler sobre as melhorias que esta máquina aceita e o que elas fazem no contexto da máquina."
+    },
+    {
+      "type": "text",
+      "text": "$(li)$(bold)Status da Pressão/$: Aqui você pode encontrar a pressão atual sob a qual a máquina está e o volume da máquina.$(li)$(bold)Problemas /$: Se a máquina não funcionar, esta aba apontará a direção certa sobre o que está errado."
+    },
+    {
+      "type": "image",
+      "text": "Uma Interface mostrando 3 abas laterais: Status da Pressão, Problemas (nenhum aqui) e um Status do Controlador de Montagem específico da máquina",
+      "images": [
+        "pneumaticcraft:textures/patchouli/gui_tabs.png"
+      ],
+      "border": "false"
+    }
+  ]
+}

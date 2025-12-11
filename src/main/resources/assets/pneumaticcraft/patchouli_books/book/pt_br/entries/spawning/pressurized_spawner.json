@@ -1,0 +1,21 @@
+{
+  "name": "Gerador de Criaturas Pressurizado",
+  "icon": "pneumaticcraft:pressurized_spawner",
+  "category": "pneumaticcraft:spawning",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Gerador de Criaturas Pressurizado/$ é um dispositivo poderoso que usa $(l:base_concepts/pressure)pressão/$ para gerar criaturas. Ele não se importa com níveis de luz ou proximidade do jogador, e pode ser ativado/desativado via redstone.$(p)Para usar um Gerador de Criaturas Pressurizado, você precisará de um $(l:spawning/spawner_core)Núcleo de Gerador de Criaturas/$ contendo alguma essência de criatura capturada, e pelo menos 10 bar de pressão."
+    },
+    {
+      "type": "text",
+      "text": "Quando um Núcleo contém múltiplas essências de criatura, uma criatura aleatório será escolhido. Ex.: se seu Núcleo é 50% zumbi, 25% creeper e 25% vazio, então em cada tentativa de geração, você tem 50% de chance de um zumbi, 25% para um creeper e 25% para nada.$(p)Ar ainda é usado se nada for gerado, então Núcleos parcialmente vazios não são muito eficientes (mas, novamente, um Núcleo com 50% de chance de uma criatura rara é melhor que nenhum Núcleo...)"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Gerador de Criaturas Pressurizado.",
+      "recipe": "pneumaticcraft:pressurized_spawner"
+    }
+  ]
+}

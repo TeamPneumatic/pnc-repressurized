@@ -1,0 +1,17 @@
+{
+  "name": "Manômetro",
+  "icon": "pneumaticcraft:pressure_gauge",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente de criação para outros dispositivos. Ele não tem uso por si só."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Manômetro",
+      "recipe": "pneumaticcraft:pressure_gauge"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "Visão Geral do Biodiesel",
+  "icon": "minecraft:book",
+  "category": "pneumaticcraft:renewables",
+  "priority": "true",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um guia muito rápido para produzir $(thing)Biodiesel/$ renovável. Siga as etapas aqui e consulte outras páginas nesta seção para obter mais detalhes sobre tópicos específicos (outras páginas podem estar bloqueadas por progresso, mas serão desbloqueadas conforme você completa as etapas de pré-requisito)."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:yeast_culture_bucket",
+      "text": "Passo 1a: Faça um pouco de $(thing)Cultura de Levedura/$: pegue alguns cogumelos e água, e combine-os em uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$. Você precisará garantir que a Usina tenha uma temperatura entre 30°C e 60°C, o que pode ser fácil ou complicado dependendo do seu bioma e altitude."
+    },
+    {
+      "type": "spotlight",
+      "item": "minecraft:sugar",
+      "text": "Passo 1b (opcional): Assim que você tiver pelo menos um balde de Cultura de Levedura, você pode produzir mais de uma maneira mais rápida despejando-o em uma poça no mundo, jogando um pouco de açúcar na poça e despejando um balde de água em um espaço de bloco adjacente à cultura; a cultura se replicará na água que você despejou."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:ethanol_bucket",
+      "text": "Passo 2: Faça um pouco de $(thing)Etanol/$ adicionando sua $(thing)Cultura de Levedura/$ e um pouco de $(thing)Açúcar/$ a uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$. Isso é dependente de temperatura de uma maneira muito semelhante ao passo 1a."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:vegetable_oil_bucket",
+      "text": "Passo 3: Faça um pouco de $(thing)Óleo Vegetal/$ espremendo $(thing)sementes/$ ou $(thing)plantações/$ em uma $(l:manufacturing/thermopneumatic_processing_plant)Usina Termopneumática/$ com um pouco de pressão."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:biodiesel_bucket",
+      "text": "Passo 4: Combine seu $(thing)Etanol/$ e $(thing)Óleo Vegetal/$ em um $(l:manufacturing/fluid_mixer)Misturador de Fluidos/$ para produzir o $(thing)Biodiesel/$ final."
+    }
+  ]
+}

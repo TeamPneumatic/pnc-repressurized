@@ -1,0 +1,24 @@
+{
+  "name": "Widget para cada item",
+  "icon": "pneumaticcraft:textures/progwidgets/for_each_item.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget avançado executará uma sub-rotina para cada $(l:programming/item_filter)Filtro de Item/$ conectado. Para cada filtro, ele definirá a variável especificada para esse filtro e saltará para o $(l:programming/label)Rótulo/$ que corresponde ao widget $(l:programming/text)Texto/$ conectado. Quando essa rotina terminar a execução (quando chegar ao final de um programa onde normalmente saltaria de volta para $(l:programming/start)Início/$), ela voltará a este widget e fará o mesmo para o próximo $(thing)Filtro de Item/$."
+    },
+    {
+      "type": "text",
+      "title": "Quebra",
+      "text": "Você pode sair do loop definindo a variável de item usada pelo $(thing)Para Cada Item/$ para um filtro vazio (use o widget $(l:programming/item_assign)Atribuir Item/$ para fazer isso). Na próxima vez, quando o programa saltar de volta para o $(thing)Para Cada Item/$, ele notará isso e cancelará a travessia subsequente dos filtros."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/for_each_item.png"
+      ],
+      "text": "$(italic)Widget Para Cada Item/$\n"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Gerador Pneumático",
+  "icon": "pneumaticcraft:pneumatic_generator",
+  "category": "pneumaticcraft:machines",
+  "flag": "pneumaticcraft:pneumaticGeneratorEnabled",
+  "advancement": "pneumaticcraft:advanced_pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O Gerador Pneumático pode gerar $(thing)IndustrialCraft 2 EU/$ de $(l:base_concepts/pressure)ar comprimido/$. Esta é uma máquina de nível dois, indicada por sua pressão mínima de trabalho de 15 bar. Por padrão, ele tem uma eficiência de 40%, mas isso pode ser $(ttcolor)$(t:Veja 'I:pneumaticGeneratorEfficiency')alterado na config/$.$(p)Sem quaisquer $(l:base_concepts/upgrades#speed)Aprimoramentos de Velocidade/$, ele emite a uma taxa de 32 EU/tick; com um aprimoramento inserido: 128 EU/tick e com dois: 512 EU/tick."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:pneumatic_generator",
+      "text": "O uso de ar (mL/tick) é:$(p)$(formula)  taxa de saída / E * 400/$$(p)onde $(formula)E/$ é a eficiência em porcentagem. Ex: para eficiência padrão de 40%, e uma taxa de saída de 32EU/tick, o uso de ar = $(formula)32 / 40 * 400 = 320mL/tick/$."
+    },
+    {
+      "type": "text",
+      "text": "Um fator importante que influencia a eficiência é a $(l:base_concepts/heat)temperatura/$ do Gerador. O Gerador precisa ser $(thing)resfriado/$, ou sua eficiência cairá à medida que a temperatura sobe, até o ponto em que nenhum ar é gerado."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Gerador Pneumático",
+      "recipe": "pneumaticcraft:pneumatic_generator"
+    }
+  ]
+}

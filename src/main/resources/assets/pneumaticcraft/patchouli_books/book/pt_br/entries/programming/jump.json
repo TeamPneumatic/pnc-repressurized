@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Salto",
+  "icon": "pneumaticcraft:textures/progwidgets/jump_piece.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget está puramente focado no $(l:programming/flow_control)fluxo do programa/$. Quando o programa atinge um $(thing)Widget de Salto/$, ele procurará o $(l:programming/text)Widget de Texto/$ conectado e tentará pular para um $(l:programming/label)Widget de Rótulo/$ com um nome correspondente. Se falhar por qualquer motivo, a execução retornará ao $(l:programming/start)Widget de Início/$. (Este comportamento de fallback nunca deve ocorrer normalmente)."
+    },
+    {
+      "type": "text",
+      "text": "Um $(thing)Widget de Salto/$ pode ser usado para mesclar múltiplas $(italic)ramificações/$ no fluxo do programa (usando dois ou mais saltos que pulam todos para o mesmo $(l:programming/label)Rótulo/$), ou simplesmente para organizar seu programa separando seções em suas próprias 'sub-rotinas'. Uma dica útil é marcar a caixa de seleção $(bold)Mostrar Fluxo/$ no canto inferior esquerdo da GUI do $(l:programming/programmer)Programador/$; ela mostrará linhas ligando widgets $(thing)Salto/Condição/Rótulo/$ com o mesmo nome."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/jump_piece.png"
+      ],
+      "text": "$(italic)Pode muito bem/$"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Módulo de Vácuo",
+  "icon": "pneumaticcraft:vacuum_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Módulo de Vácuo/$ faz o mesmo trabalho que a $(l:machines/vacuum_pump)Bomba de Vácuo/$ - fornecer pressão negativa - mas de uma forma um pouco mais compacta. Ele pode ser colocado em um tubo vertical, diferente da bomba de tamanho normal, que só pode ser orientada horizontalmente.$(p)A vantagem é a compacidade; a desvantagem é a capacidade de melhoria mais limitada em termos de velocidade e volume."
+    },
+    {
+      "type": "text",
+      "title": "Colocação",
+      "text": "O Módulo de Vácuo é um módulo $(thing)em linha/$. Coloque-o na extremidade do tubo que deve ser o lado do vácuo. Fornecer um mínimo de 2 bar de pressão para a extremidade larga/verde do tubo fará o módulo girar, removendo ar de quaisquer tubos após a extremidade estreita/vermelha.$(p)Aplicar um $(#f00)sinal de redstone/$ impede o funcionamento do módulo."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ aumenta a velocidade do módulo, aproximadamente equivalente a adicionar 4 $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$ a uma Bomba de Vácuo. Semelhante a adicionar Melhorias de Velocidade, isso vem com uma redução na eficiência em termos de uso de ar no lado positivo."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo de Vácuo",
+      "recipe": "pneumaticcraft:vacuum_module"
+    }
+  ]
+}

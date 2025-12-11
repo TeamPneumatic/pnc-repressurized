@@ -1,0 +1,23 @@
+{
+  "name": "Agitador de Gerador de Criaturas",
+  "icon": "pneumaticcraft:spawner_agitator",
+  "category": "pneumaticcraft:spawning",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Quando colocado em um $(item)Gerador de Criaturas/$ Vanilla, este item $(thing)agita/$ o Gerador de Criaturas:$(li)O Gerador de Criaturas continuará gerando enquanto nenhum jogador estiver perto$(li)Ele impede que entidades geradas desapareçam quando os jogadores saem da área$(p)Farm de Cristura, alguém?$(p)$(thing)Clique com Shift+Direito/$ com um $(l:logistics/logistics_configurator)Configurador Logístico/$ ou outro agitador para removê-lo."
+    },
+    {
+      "type": "text",
+      "flag": "mod:apotheosis",
+      "title": "Apotheosis",
+      "text": "$(thing)Apotheosis/$ é um mod que adiciona (entre outras coisas) personalização poderosa de Gerador de Criaturas Vanilla. Ele altera os componentes internos do Gerador de Criaturas o suficiente para que os Agitadores de Gerador de Criaturas não possam interagir totalmente com eles. Já que você tem o Apotheosis instalado, a funcionalidade do Agitador de Gerador de Criaturas é limitada a impedir que criaturas desapareçam quando os jogadores estão longe; para permitir que criaturas sejam gerados quando nenhum jogador estiver perto, use a funcionalidade do Apotheosis."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Agitador de Gerador de Criaturas",
+      "recipe": "pneumaticcraft:spawner_agitator"
+    }
+  ]
+}

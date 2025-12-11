@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Anular Fluido",
+  "icon": "pneumaticcraft:textures/progwidgets/void_fluid_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Assim como o $(l:programming/void_item)Widget de Anular Item/$, este destruirá imediata e permanentemente qualquer fluido no tanque do drone - cuidado! É fortemente recomendado usar isso em conjunto com um $(l:programming/liquid_filter)Filtro de Fluido/$. Com um filtro, apenas o fluido permitido pelo filtro será anulado (voided)."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/void_fluid_piece.png"
+      ],
+      "text": "$(italic)Tudo esgotado/$"
+    }
+  ]
+}

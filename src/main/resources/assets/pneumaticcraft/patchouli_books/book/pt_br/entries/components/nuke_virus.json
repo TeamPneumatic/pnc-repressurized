@@ -1,0 +1,17 @@
+{
+  "name": "Vírus Nuke",
+  "icon": "pneumaticcraft:nuke_virus",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente especial, usado apenas ao tentar hackear $(l:machines/security_station)Estações de Segurança/$. Não é fabricável e só pode ser encontrado em espólios de masmorras, ou (raramente) como uma troca de aldeão."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:nuke_virus",
+      "text": "Aplicar um $(thing)Vírus Nuke/$ a um nó enquanto hackeia irá bombardear o nó, hackeando-o instantaneamente. Note que o Vírus Nuke tem um tempo de recarga de 3 segundos entre usos repetidos."
+    }
+  ]
+}

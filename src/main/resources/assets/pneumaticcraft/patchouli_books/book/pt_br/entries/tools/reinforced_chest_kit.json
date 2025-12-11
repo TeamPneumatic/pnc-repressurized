@@ -1,0 +1,17 @@
+{
+  "name": "Kit de Melhoria de Baú Reforçado",
+  "icon": "pneumaticcraft:reinforced_chest_kit",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Kit de Melhoria de Baú Reforçado/$ é uma conveniência que permite atualizar qualquer baú de madeira para um $(l:machines/reinforced_chest)Baú Reforçado/$ no local, mantendo os itens do baú. Apenas $(thing)Agache + clique com o botão direito/$ com o kit de melhoria contra qualquer baú de madeira para atualizá-lo.$(p)Nota: Você receberá o $(item)baú de madeira/$ no qual usou o kit de melhoria de volta como um item dropado."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Kit de Melhoria de Baú Reforçado.$(p)Note que o Baú Reforçado deve estar completamente vazio.",
+      "recipe": "pneumaticcraft:reinforced_chest_kit"
+    }
+  ]
+}

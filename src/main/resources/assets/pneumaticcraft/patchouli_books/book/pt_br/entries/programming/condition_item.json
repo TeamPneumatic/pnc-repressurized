@@ -1,0 +1,27 @@
+{
+  "name": "Condição: Widget de Filtro de Item",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_item.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição: Filtro de Item/$ permite que você compare $(l:programming/item_filter)Filtros de Item/$. Isso é principalmente útil quando você está usando Filtros de Item com $(l:programming/variables)variáveis/$.$(p)O widget examina o item em um único widget $(l:programming/item_filter)Filtro de Item/$ conectado na linha superior, lado direito, e verifica se esse item corresponde ao filtro especificado por $(thing)Filtro(s) de Item/$ na segunda linha."
+    },
+    {
+      "type": "text",
+      "text": "Como de costume, use o lado direito para incluir na lista branca (significando que o item deve corresponder a este filtro), e o lado esquerdo para incluir na lista negra (dizendo que este item $(italic)não/$ deve corresponder a este filtro). Se corresponder, a condição é avaliada como $(thing)true/$. Caso contrário, a condição é avaliada como $(thing)false/$."
+    },
+    {
+      "type": "text",
+      "text": "Você pode adicionar mais de um item para verificar. Ao conectar múltiplos $(l:programming/item_filter)Filtros de Item/$ de segunda linha no lado direito, a condição só será avaliada como $(thing)true/$ se $(italic)todos/$ os itens corresponderem ao filtro. $(l:programming/item_filter)Filtros de Item/$ colocados no lado esquerdo devem $(italic)não/$ corresponder ao Filtro para que a condição seja avaliada como $(thing)true/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_item.png"
+      ],
+      "text": "$(italic)Condição: Widget de Filtro de Item/$"
+    }
+  ]
+}

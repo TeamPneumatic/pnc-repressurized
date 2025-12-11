@@ -1,0 +1,23 @@
+{
+  "name": "Condição: Widget de Entidade",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_entity_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um widget de $(l:programming/conditions)Condição/$.$(p)O widget $(thing)Condição: Entidade/$ permite que você conte entidades no widget $(l:programming/area)Área/$ conectado. Estas podem ser filtradas conectando um widget $(l:programming/text)Texto/$ opcional usado como um $(l:base_concepts/entity_filter)Filtro de Entidade/$."
+    },
+    {
+      "type": "text",
+      "text": "Lembre-se de que quaisquer widgets $(l:programming/area)Área/$ conectados a este widget devem ter um tipo de área $(thing)Box/$; esta é a única forma suportada. É possível criar formas diferentes, no entanto, usando a inclusão/exclusão de áreas na lista branca/negra."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_entity_piece.png"
+      ],
+      "text": "$(italic)Condição: Widget de Entidade/$"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Compressor Criativo",
+  "icon": "pneumaticcraft:creative_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Criativo/$ é um $(l:base_concepts/pressure)compressor de ar/$ não fabricável.$(p)Simplesmente selecione a pressão desejada na GUI do compressor, e ele manterá essa pressão em todos os tubos e máquinas conectados."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:creative_compressor",
+      "text": "$(italic)Receita? Que receita?/$"
+    }
+  ]
+}

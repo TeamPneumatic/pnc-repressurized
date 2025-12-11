@@ -1,0 +1,23 @@
+{
+  "name": "Widget de Importação de Fluido",
+  "icon": "pneumaticcraft:textures/progwidgets/liquid_import_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(thing)Widget de Importação de Fluido/$ fará com que o $(l:tools/drone)Drone/$ se mova para o tanque mais próximo dentro da $(l:programming/area)área/$ especificada, extraia fluido desse tanque e o coloque em seu próprio tanque.$(p)Ele também pode sugar fluidos de blocos de fluido no mundo, fazendo com que o $(item)Drone/$ atue como uma bomba portátil."
+    },
+    {
+      "type": "text",
+      "text": "Clique com o $(thing)botão direito/$ no widget para abrir a GUI de configuração, onde você pode especificar de qual(is) lado(s) o Drone deve extrair os fluidos, e a quantidade máxima de fluido importado por operação (em mB).$(p)Você pode $(ttcolor)$(t:Conecte à direita para lista de permissões, à esquerda para lista de bloqueios)conectar/$ um $(l:programming/liquid_filter)Filtro de Fluido/$ para limitar o que pode ser importado pelo Drone.$(p)Este widget é concluído quando o tanque do $(item)Drone/$ está cheio ou quando não há mais líquidos (aplicáveis) que possam ser encontrados nos tanques."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/liquid_import_piece.png"
+      ],
+      "text": "$(italic)Gole/$\""
+    }
+  ]
+}

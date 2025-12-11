@@ -1,0 +1,17 @@
+{
+  "name": "Projeto de PCI",
+  "icon": "pneumaticcraft:pcb_blueprint",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Projeto de PCI/$ é um componente especial, necessário na criação da $(l:manufacturing/uv_light_box)Caixa de Luz UV/$.$(p)Ele não pode ser criado normalmente, mas deve ser obtido por troca, geralmente via $(l:tools/amadron_tablet)Tablet Amadron/$, mas possivelmente também via $(l:base_concepts/villagers)Mecânicos de Pressão/$."
+    },
+    {
+      "type": "pneumaticcraft:amadron_trade",
+      "recipe": "pneumaticcraft:amadron/pcb_blueprint",
+      "text": "Trocando pelo $(item)Projeto de PCI/$."
+    }
+  ]
+}

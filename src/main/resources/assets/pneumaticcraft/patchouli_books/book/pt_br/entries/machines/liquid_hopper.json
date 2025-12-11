@@ -1,0 +1,28 @@
+{
+  "name": "Funil de Líquido",
+  "icon": "pneumaticcraft:liquid_hopper",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Funil de Líquido/$ é um dispositivo que você pode usar para transferir fluidos. Assim como o $(l:machines/omnidirectional_hopper)Funil Omnidirecional/$, sua entrada e saída podem apontar em qualquer direção, e ele usa as mesmas regras de colocação e rotação. Você pode adicionar $(l:base_concepts/upgrades#speed)Aprimoramentos de Velocidade/$ para aumentar a taxa de transferência."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:liquid_hopper",
+      "text": "O $(item)Funil de Líquido/$ também tentará drenar fluidos de quaisquer itens no chão na frente do seu lado de $(9)entrada/$ e inserir fluidos em quaisquer itens na frente do seu lado de $(6)saída/$, por exemplo, baldes de água, baldes de lava ou contêineres de fluido de mods."
+    },
+    {
+      "type": "text",
+      "title": "Aprimoramento de Dispensador",
+      "flag": "pneumaticcraft:liquidHopperDispenser",
+      "text": "Se um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$ for inserido no $(item)Funil de Líquido/$, ele sugará qualquer bloco de líquido (1000mB) no lado de $(9)entrada/$, e dispensará 1000mB de qualquer líquido armazenado no lado de $(6)saída/$. Isso pode ser usado, por exemplo, como uma bomba d'água."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Funil de Líquido",
+      "recipe": "pneumaticcraft:liquid_hopper"
+    }
+  ]
+}

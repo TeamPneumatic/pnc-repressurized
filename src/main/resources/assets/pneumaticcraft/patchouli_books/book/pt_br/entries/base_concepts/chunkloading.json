@@ -1,0 +1,30 @@
+{
+  "name": "Carregamento de Chunks",
+  "icon": "minecraft:ender_eye",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "É uma mecânica fundamental do Minecraft que apenas partes do mundo sejam carregadas na memória por vez. Isso é essencial para o desempenho; nenhum computador acessível poderia manter um mundo inteiro (especialmente um modificado) carregado e funcionando de uma só vez. O mundo é assim dividido em $(thing)chunks/$ de 16x16 (nos eixos horizontais), dos quais apenas alguns são carregados de cada vez."
+    },
+    {
+      "type": "text",
+      "text": "Isso tem ramificações importantes para projetar construções modificadas confiáveis; se você quiser que o processamento aconteça quando você não estiver em sua base, você precisa $(thing)carregar o chunk/$ das máquinas relevantes. As informações a seguir pretendem ser dicas para obter construções confiáveis no $(pncr), mas muito disso se aplica a outros mods também."
+    },
+    {
+      "type": "text",
+      "title": "Métodos de Carregamento",
+      "text": "$(li)O Vanilla tem um comando $(thing)/forceload/$ para forçar um ou mais chunks a permanecerem sempre carregados, mas isso requer privilégios de op para usar$(li)Muitos mods oferecem soluções de carregamento de chunk utilizáveis pelo jogador, ex: $(thing)FTB Chunks/$, $(thing)Chicken Chunks/$, $(thing)Weirding Gadgets/$ e mais.$(li)O $(l:programming/programmable_controller)Controlador Programável/$ deste mod oferece alguma funcionalidade limitada de carregamento de chunk também."
+    },
+    {
+      "type": "text",
+      "title": "Segurança de Carregamento",
+      "text": "As dicas a seguir ajudarão na construção de sistemas confiáveis com chunks carregados:$(li)$(thing)Tente manter suas construções dentro dos limites do chunk/$. Se parte da sua construção estiver em um chunk carregado e parte não, os resultados podem ser altamente imprevisíveis. Tenha tudo ou nada carregado.$(li)$(thing)Use Melhorias de Segurança nas máquinas./$ Isso evita explosões; mesmo com um bom controle de redstone, problemas de carregamento de chunk ou desempenho do servidor podem ser problemáticos."
+    },
+    {
+      "type": "text",
+      "title": "Segurança de Carregamento (cont)",
+      "text": "$(li)$(thing)Mantenha multiblocos dentro de um único chunk se possível./$ Mesmo quando todos os chunks relevantes estão carregados, não é ideal ter multiblocos como a $(l:manufacturing/pressure_chamber)Câmara de Pressão/$ abrangendo dois ou mais chunks."
+    }
+  ]
+}

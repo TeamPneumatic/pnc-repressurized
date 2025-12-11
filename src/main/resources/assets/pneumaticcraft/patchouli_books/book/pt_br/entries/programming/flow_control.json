@@ -1,0 +1,25 @@
+{
+  "name": "Controle de Fluxo",
+  "icon": "pneumaticcraft:textures/progwidgets/jump_piece.png",
+  "category": "pneumaticcraft:programming",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Quando um $(l:tools/drone)Drone/$ é implantado, ele começa imediatamente a executar seu programa armazenado. O fluxo de execução ocorre da seguinte forma:$(li)O programa $(italic)sempre/$ começa no widget $(l:programming/start)Início/$, do qual só pode haver um.$(li)O fluxo normalmente prossegue $(italic)para baixo/$; para o widget conectado à parte inferior do widget atual."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Um widget executa sua operação fornecida até decidir que está $(italic)pronto/$ - a definição de 'pronto' varia de widget para widget e é descrita nas páginas para cada widget individual.$(li)Quando não há widget conectado à parte inferior do widget atual, a execução retorna ao widget $(l:programming/start)Início/$.$(p)Estes são os conceitos básicos. Existem alguns casos especiais, no entanto, descritos a seguir..."
+    },
+    {
+      "type": "text",
+      "title": "Widgets de Controle de Fluxo",
+      "text": "$(li)O widget $(l:programming/label)Rótulo/$ atua como um ponto no programa para o qual se deve saltar.$(li)O widget $(l:programming/jump)Salto/$ aciona um salto imediato e incondicional para um widget $(thing)Rótulo/$ correspondente.$(li)Widgets $(l:programming/conditions)Condição/$ podem acionar um salto, com base na condição que estão testando.$(li)Os widgets avançados $(l:programming/for_each_item)Para Cada Item/$ e $(l:programming/for_each_coordinate)Para Cada Coordenada/$ saltam repetidamente para um $(thing)Rótulo/$, para sua lista de entradas."
+    },
+    {
+      "type": "text",
+      "text": "Existem mais alguns widgets especiais, que afetam o controle de fluxo:$(li)O widget $(l:programming/standby)Espera/$, que coloca o drone para 'dormir' até que outro widget realmente tenha algo a fazer.$(li)O widget $(l:programming/suicide)Suicídio/$, que derruba o $(thing)Drone/$ como um item, encerrando imediatamente a execução."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Drone de Colheita",
+  "icon": "pneumaticcraft:harvesting_drone[pneumaticcraft:air=120000]",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:pressure_chamber",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Drone de Colheita/$ é um tipo especializado não programável de $(l:tools/drone)Drone/$ que realizará tarefas de $(l:programming/harvest)colheita de plantações/árvores/$ em um cubo de 17x17x17 centralizado no bloco em que for implantado. O Drone $(italic)não/$ pegará os itens colhidos."
+    },
+    {
+      "type": "spotlight",
+      "title": "Carregamento Automático",
+      "item": "pneumaticcraft:charging_station",
+      "text": "Assim como todos os tipos de Drone, esses drones requerem $(l:base_concepts/pressure)pressão/$ para operar e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carregamento com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
+    },
+    {
+      "type": "entity",
+      "entity": "pneumaticcraft:harvesting_drone",
+      "offset": -0.3
+    },
+    {
+      "type": "text",
+      "title": "Uso de Ferramenta",
+      "text": "Se você implantar o $(item)Drone de Colheita/$ usando $(thing)agachar+clique com o botão direito/$ contra um inventário contendo (apenas) uma $(item)Enxada/$ de qualquer tipo, o drone usará essa enxada para replantar automaticamente as plantações e não tentará fazer nenhum trabalho sem uma enxada equipada. Se você não se importa com o replantio, apenas implante o drone contra qualquer outro bloco."
+    },
+    {
+      "type": "crafting",
+      "text": "Note que Drones de Colheitas descobriram como derrubar árvores com uma enxada em vez de um machado; eles são espertos assim.",
+      "recipe": "pneumaticcraft:harvesting_drone"
+    }
+  ]
+}

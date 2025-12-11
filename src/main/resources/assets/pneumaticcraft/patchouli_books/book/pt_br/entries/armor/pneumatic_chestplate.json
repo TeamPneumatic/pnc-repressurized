@@ -1,0 +1,78 @@
+{
+  "name": "Peitoral Pneumático",
+  "icon": "pneumaticcraft:pneumatic_chestplate",
+  "category": "pneumaticcraft:armor",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+
+    {
+      "type": "text",
+      "text": "O $(item)Peitoral Pneumático/$ é uma das quatro peças da $(thing)Armadura Pneumática/$.$(p)Ele tem um $(l:base_concepts/pressure)volume de ar/$ maior do que as outras três peças."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:pneumatic_chestplate",
+      "text": "Criando um Peitoral Pneumático"
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:security_upgrade",
+      "text": "Com uma $(l:base_concepts/upgrades#security)Melhoria de Segurança/$ instalada, o peitoral concede a você proteção contra fogo e lava, a um custo significativo de ar: o ar é rapidamente despejado do peitoral para extinguir chamas próximas e mantê-lo resfriado. Ele até solidificará lentamente a lava próxima."
+    },
+    {
+      "type": "text",
+      "title": "Melhoria de Segurança (cont)",
+      "text": "Nota: esta proteção é ativada se você estiver prestes a levar dano de fogo, então se você já estiver protegido (ex: via uma poção), esta melhoria não fará nada."
+    },
+    {
+      "type": "spotlight",
+      "flag": "mod:immersiveengineering",
+      "title": "Immersive Engineering",
+      "item": "immersiveengineering:wirecoil_copper",
+      "text": "A $(item)Melhoria de Segurança/$ também fornecerá proteção contra fiação não isolada do $(l:https://minecraft.curseforge.com/projects/immersive-engineering)Immersive Engineering/$; você não será ferido por choques elétricos de tais fios, mas isso custa ar do peitoral, proporcional ao dano negado. Isso não previne nenhuma repulsão."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:magnet_upgrade",
+      "text": "Com uma ou mais $(l:base_concepts/upgrades#magnet)Melhorias de Ímã/$ instaladas, itens próximos e orbes de XP serão atraídos para você a um custo de ar muito pequeno. O alcance base é de 5 blocos, mas isso pode ser aumentado até 10 blocos adicionando melhorias extras."
+    },
+    {
+      "type": "text",
+      "title": "Melhoria de Ímã (cont.)",
+      "text": "A Melhoria de Ímã respeita a flor $(item)Solegnolia/$ do Botania, e também não tentará puxar itens de $(item)correias transportadoras/$ do Immersive Engineering."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:charging_upgrade",
+      "text": "Com uma ou mais $(l:base_concepts/upgrades#charging)Melhorias de Carregamento/$ instaladas, o peitoral ganha a habilidade de pressurizar qualquer outro item pneumático em seu inventário, tanto vestido quanto carregado. O peitoral só carregará itens até seu próprio nível de pressão. Adicionar Melhorias de Carregamento extras (até 6) aumenta a taxa de carregamento."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:dispenser_upgrade",
+      "text": "Uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$ permite que itens/blocos sejam lançados do seu slot de mão secundária pressionando e soltando $(thing)$(k:pneumaticcraft.chestplate.launcher)/$, semelhante a um $(l:machines/air_cannon)Canhão de Ar/$. Leva 15 ticks (0,75 segundos) para carregar totalmente o lançador; soltar a tecla antes lançará com velocidade reduzida."
+    },
+    {
+      "type": "text",
+      "title": "Melhoria de Ejetor (cont.)",
+      "text": "$(li)Alguns blocos têm comportamento especial tipo $(item)Ejetor/$, como $(item)TNT/$, ou $(item)Flechas/...$(li)Outros blocos (como $(item)Tochas/$) serão disparados como blocos 'cambaleantes' que se reformam como blocos quando atingem algo.$(li)Outros itens serão simplesmente disparados como entidades de item."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:range_upgrade",
+      "text": "Uma $(l:base_concepts/upgrades#range)Melhoria de Alcance/$ instalada em seu peitoral aumenta sua distância de alcance para interações com blocos (não ataques corpo a corpo) em 3,5 blocos enquanto estiver ativa. No entanto, isso vem com um pequeno custo contínuo de ar."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:air_conditioning_upgrade",
+      "flag": "mod:toughasnails",
+      "title": "Melhoria de A/C",
+      "text": "Com até quatro $(l:base_concepts/upgrades#air_conditioning)Melhorias de Ar Condicionado/$ instaladas, você ganhará alguma proteção contra extremos de temperatura ambiental adicionados pelo mod $(l:https://minecraft.curseforge.com/projects/tough-as-nails)Tough As Nails/$. O Ar Condicionado será ativado automaticamente se detectar que a temperatura do seu corpo está mais alta ou mais baixa que o normal, e desativará quando o equilíbrio for restaurado."
+    },
+    {
+      "type": "text",
+      "flag": "mod:toughasnails",
+      "title": "Melhoria de A/C (cont.)",
+      "text": "No entanto, isso vem com um custo moderado de pressão, que depende do nível de aquecimento ou resfriamento necessário e do número de melhorias instaladas. Dependendo do ambiente em que você está trabalhando, você pode não precisar das quatro melhorias completas para permanecer confortável."
+    }
+  ]
+}

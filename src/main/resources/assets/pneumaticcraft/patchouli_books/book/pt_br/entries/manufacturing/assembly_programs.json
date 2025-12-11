@@ -1,0 +1,18 @@
+{
+  "name": "Programas de Montagem",
+  "icon": "pneumaticcraft:assembly_program_laser",
+  "category": "pneumaticcraft:manufacturing",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Programas de Montagem/$ devem ser inseridos no $(l:manufacturing/assembly_system)Controlador de Montagem/$ para informar que tipo de operação precisa ser realizada. Eles não podem ser fabricados, mas devem ser trocados; seja com $(thing)Aldeões Mecânicos/$, ou via $(l:tools/amadron_tablet)Tablet Amadron/$."
+    },
+    {
+      "type": "spotlight",
+      "title": "Broca e Laser",
+      "item": "pneumaticcraft:assembly_program_drill_laser",
+      "text": "O $(item)Programa de Montagem: Broca e Laser/$ é um pouco especial. Ele não lida com receitas de broca e laser separadamente; em vez disso, fornece um método de programa único para receitas de duas etapas que envolvem perfuração $(italic)e/$ corte a laser, ex.: $(l:tubes/pressure_tubes#advanced)Tubos de Pressão Avançados/$."
+    }
+  ]
+}

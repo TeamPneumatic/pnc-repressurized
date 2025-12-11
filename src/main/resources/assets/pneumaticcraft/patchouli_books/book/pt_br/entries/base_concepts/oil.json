@@ -1,0 +1,31 @@
+{
+  "name": "Petróleo Bruto",
+  "icon": "pneumaticcraft:oil_bucket",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "No $(pncr), a única geração de mundo é $(thing)Petróleo Bruto/$. Ele é gerado de forma semelhante aos lagos de água; a diferença é que os lagos de Petróleo são muito mais propensos a aparecer nas profundezas do subsolo do que na superfície. Por causa disso, a assistência de ferramentas como um $(l:tools/seismic_sensor)Sensor Sísmico/$ é altamente recomendada."
+    },
+    {
+      "type": "text",
+      "text": "O Petróleo Bruto tem dois propósitos: ser $(l:manufacturing/refinery)refinado/$ em combustíveis de alta qualidade que podem ser usados em $(l:compressors/liquid_compressor)Compressores Líquidos/$, e para fazer $(l:components/plastic)Plástico/$ e $(l:components/lubricant)Lubrificante/$.$(p)$(item)Plástico/$ é usado em muitas receitas no $(pncr), e $(item)Lubrificante/$ é necessário para fazer $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$."
+    },
+    {
+      "type": "text",
+      "text": "Uma vez que você encontrou algum Petróleo Bruto, você precisará extraí-lo e transportá-lo. A maneira recomendada do $(pncr) para extrair petróleo é com um $(l:machines/gas_lift)Elevador a Gás/$, embora bombas de fluidos de outros mods também possam ser usadas. Se você estiver bombeando longe de sua base, uma solução de início de jogo para transporte é um simples $(l:machines/tanks)Tanque Pequeno/$, que pode conter até 32.000mB de fluido e mantém seu conteúdo quando quebrado. (Até o Elevador a Gás pode ser usado para esse propósito, já que também mantém seu conteúdo de fluido)."
+    },
+    {
+      "type": "image",
+      "images": [
+          "pneumaticcraft:textures/patchouli/oil_pumping.png"
+      ],
+      "text": "$(italic)Bombeando Petróleo com um Elevador a Gás, com um Funil de Líquidos acima/$"
+    },
+    {
+      "type": "text",
+      "title": "Integração de Mods",
+      "text": "O $(pncr) não é, claro, o único mod a adicionar $(thing)Petróleo/$; vários outros mods também o fazem (incluindo $(thing)BuildCraft/$ e $(thing)Immersive Petroleum/$).$(p)Dependendo das configurações do seu mundo e pacote de mods, pode haver apenas um tipo de Petróleo gerado, ou vários. O $(pncr) deve ser capaz de trabalhar com qualquer fluido marcado como $(thing)forge:crude_oil/$."
+    }
+  ]
+}

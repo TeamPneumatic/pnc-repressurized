@@ -1,0 +1,30 @@
+{
+  "name": "Calor",
+  "icon": "minecraft:blaze_powder",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(pncr) adiciona um sistema de $(thing)calor/$. Ele se espalha de bloco para bloco de forma semelhante a como o calor se espalha na vida real. Tem algumas semelhanças com como a $(l:base_concepts/pressure)pressão se dispersa/$ também:$(li)O calor se dispersa de objetos mais quentes para objetos mais frios.$(li)Os blocos só espalharão calor para blocos adjacentes que suportem o conceito de calor (veja $(l:base_concepts/heat_sources)Fontes de Calor/$)."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Quanto maior a diferença de temperatura, mais rápida é a dispersão de calor.$(li)Objetos diferentes têm uma $(thing)resistência térmica/$ diferente. $(item)Tochas/$ e $(item)Ar/$ têm uma alta resistência, enquanto $(l:base_concepts/basic_materials#compressed_iron_block)Blocos de Ferro Comprimido/$ têm uma resistência muito baixa. A $(thing)Resistência térmica/$ determina quão rápido o calor pode se espalhar de um objeto para outro."
+    },
+    {
+      "type": "text",
+      "text": "$(li)Objetos diferentes têm uma $(thing)capacidade térmica/$ diferente. Quanto maior a capacidade, mais lentamente a temperatura aumentará para o ganho de calor fornecido. Da mesma forma, mais lentamente a temperatura cairá para a perda de calor fornecida. Em outras palavras, é preciso mais $(thing)calor/$ para aumentar a $(thing)temperatura/$ de um bloco de maior capacidade, mas sua temperatura também cairá mais lentamente quando ele perder calor."
+    },
+    {
+      "type": "text",
+      "title": "Isolamento",
+      "anchor": "insulation",
+      "text": "Máquinas perderão calor para o ar se deixadas expostas; isso é particularmente perceptível com a $(l:manufacturing/refinery)Refinaria/$, que tem muitas faces expostas, mas também é verdade para qualquer bloco condutor de calor, incluindo $(l:base_concepts/basic_materials#compressed_iron_block)Blocos de Ferro Comprimido/$.$(p)Para evitar essa perda de calor, certifique-se de que nenhuma face esteja exposta a blocos de ar; qualquer bloco não condutor servirá. Não precisa ser um bloco completo também - $(item)Alçapões/$ e $(item)lajes/$ funcionarão bem."
+    },
+    {
+      "type": "text",
+      "title": "Fontes de Calor",
+      "text": "Algumas máquinas no $(pncr) produzem Calor que precisa ser dissipado, e algumas requerem Calor para funcionar.$(p)Portanto, você precisará $(l:base_concepts/heat_sources)encontrar maneiras/$ de manipular a temperatura dessas máquinas..."
+    }
+  ]
+}

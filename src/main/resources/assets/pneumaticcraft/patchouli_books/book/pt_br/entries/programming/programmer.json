@@ -1,0 +1,84 @@
+{
+  "name": "Programador",
+  "icon": "pneumaticcraft:programmer",
+  "category": "pneumaticcraft:programming",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Programador/$ é uma máquina usada para programar $(l:tools/drone)Drones/$, utilizando um sistema de programação visual onde $(l:programming/puzzle_pieces)Peças de Quebra-Cabeça/$ são montadas em uma GUI de programação. O $(thing)Programador/$ não requer $(l:base_concepts/pressure)pressão/$ para operar.O restante da categoria $(thing)Programação/$ tem muito mais informações sobre como escrever programas de Drone."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Programador",
+      "recipe": "pneumaticcraft:programmer"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/programmer_gui.png"
+      ],
+      "text": "$(italic)GUI do Programador: veja as páginas seguintes para informações sobre cada seção/$"
+    },
+    {
+      "type": "text",
+      "text": "$(bold)1. Área Principal de Programação/$$(p)Esta área é onde o seu programa real é construído. Widgets são arrastados para cá da $(thing)bandeja de widgets (área 2)/$ e 'encaixados' para formar programas.$(p)Você pode dar zoom in e zoom out na área de programação com a roda do mouse, ou com a barra de rolagem no lado direito."
+    },
+    {
+      "type": "text",
+      "text": "$(bold)2. Bandeja de Widgets/$$(p)Esta área contém os widgets que você usará para construir seu programa. Ela contém mais widgets do que os mostrados; você pode alternar entre as páginas com os botões de seta sob a bandeja, ou expandir a bandeja para mostrar todos os widgets com $(thing)Space/$ ou $(thing)Tab/$.$(p)Quando expandida, a bandeja também mostrará um campo de texto acima onde você pode inserir uma string de filtro para procurar widgets."
+    },
+    {
+      "type": "text",
+      "text": "$(bold)3. Slot do Drone/$$(p)Coloque o $(l:tools/drone)Drone/$ (ou $(l:components/network_components)Armazenamento/API de Rede/$) a ser programado aqui. Quando estiver pronto para programar o Drone, pressione o botão $(thing)⟶/$ para gravar o programa. Você pode usar o campo de texto à esquerda para nomear o Drone, se desejar. Você ouvirá feedback audível se for bem-sucedido.$(p)Você também pode usar o botão $(thing)⟵/$ para importar um programa de um Drone (ou Armazenamento/API de Rede)."
+    },
+    {
+      "type": "text",
+      "text": "$(bold)4. Seleção de Dificuldade/$$(p)Estes botões de rádio controlam quais dos widgets de programação estão disponíveis na bandeja. Eles também ativam/desativam alguns recursos avançados, como $(l:programming/coordinate_operator)variáveis/$.$(p)$(bold)5. Inventário do Jogador/$$(p)Seu próprio inventário; se você tiver quaisquer $(l:tools/gps_tool)Ferramentas GPS/$ ou $(l:tools/gps_area_tool)Ferramentas de Área GPS/$, você pode clicar nelas nos widgets $(l:programming/area)Área/$ ou $(l:programming/coordinate)Coordenada/$ para transferir suas configurações para o widget."
+    },
+    {
+      "type": "text",
+      "text": "$(bold)6. Opções de Navegação e Exibição/$$(p)Você pode usar estes botões para:$(li)Navegar até o widget $(l:programming/start)Início/$ do seu programa$(li)Navegar até o último widget que você colocou$(li)Alternar a exibição de informações extras em cada widget$(li)Alternar a exibição de linhas de conexão entre os widgets $(l:programming/jump)Salto/$ e $(l:programming/label)Rótulo/$"
+    },
+    {
+      "type": "text",
+      "text": "$(bold)7. Botões Diversos/$$(p)Os botões ao longo da borda esquerda da GUI permitem (em ordem):$(li)$(thing)Desfazer/$ as últimas 20 ações$(li)$(thing)Refazer/$ o Desfazer anterior$(li)$(thing)Importar ou Exportar/$ seu programa como um arquivo JSON para $(l:https://pastebin.com)pastebin.com/$ (Login no Pastebin opcional)$(li)$(thing)Excluir/$ seu programa inteiro (pode ser desfeito)$(li)$(thing)Converter/$ seu programa para coordenadas $(thing)Relativas/$ (veja $(l:programming/programmer#convert_relative)esta página/$ para mais informações)"
+    },
+    {
+      "type": "text",
+      "anchor": "ids",
+      "title": "IDs de Widget de Programação",
+      "text": "Se você ativar informações estendidas de dica de ferramenta com $(thing)F3+H/$, você notará que a dica de ferramenta para cada widget de programação também inclui o ID interno do widget no final. Isso é principalmente benéfico se você pretende fazer qualquer programação de drone com a $(l:machines/drone_interface)Interface de Drone/$ - o método Lua $(thing)setAction()/$ na Interface de Drone aceita esses IDs (o prefixo $(thing)pneumaticcraft:/$ é opcional) como um parâmetro."
+    },
+    {
+      "type": "text",
+      "title": "Compartilhando Programas",
+      "text": "Se você quiser compartilhar seus programas com outros jogadores, você tem algumas opções:$(li)Você pode usar o botão $(thing)Pastebin/$ para exportar seu programa para $(l:https://pastebin.com)pastebin.com/$$(li)A GUI $(thing)Pastebin/$ também permite gravar o programa na área de transferência para copiar e colar$(li)Você pode salvar seu programa em um $(l:tools/drone)Drone/$ ou $(l:components/network_components)Armazenamento/API de Rede/$ e dar o item para outro jogador no seu servidor."
+    },
+    {
+      "type": "text",
+      "anchor": "convert_relative",
+      "title": "Converter para Relativo",
+      "text": "Digamos que você projetou um programa que executa uma fazenda automatizada e deseja compartilhá-lo. Pessoas em um mundo diferente terão sua fazenda em coordenadas diferentes, então teriam que mudar cada widget $(l:programming/area)Área/$; que aborrecimento.$(p)O botão $(thing)Converter para Relativo/$ torna isso mais fácil; ele também fornece dicas de ferramenta indicando o que você precisa fazer para converter seu programa."
+    },
+    {
+      "type": "text",
+      "anchor": "convert_relative",
+      "title": "Converter para Relativo (cont.)",
+      "text": "Você precisará adicionar um widget $(l:programming/coordinate_operator)Operador de Coordenada/$ fixo, juntamente com um widget $(l:programming/coordinate)Coordenada/$ contendo uma $(thing)posição base/$ (por exemplo, a posição de um baú de entrada). Em seguida, ele converte quaisquer posições absolutas (área ou coordenada) usadas em seu programa para coordenadas relativas a essa posição base.$(p)Agora, os usuários do seu programa precisarão ajustar apenas uma única coordenada para usar seu programa!"
+    },
+    {
+      "type": "text",
+      "flag": "mod:jei",
+      "anchor": "jei",
+      "title": "Integração JEI",
+      "text": "Se o JEI estiver instalado, você notará um botão '+' (Mover Itens) se abrir a exibição de receita do JEI enquanto a GUI do Programador estiver aberta. Clicar nele adicionará widgets $(l:programming/item_filter)Filtro de Item/$ para cada item de entrada na receita. Se você tiver um widget $(l:programming/crafting)Criação/$ na área de programação sem Filtros de Item anexados, Filtros de Item serão adicionados ao Widget de Criação para configurar uma receita de forma rápida e fácil. Caso contrário, eles serão adicionados em uma linha no canto superior esquerdo da área de programação."
+    },
+    {
+      "type": "text",
+      "flag": "mod:jei",
+      "title": "Integração JEI (cont.)",
+      "text": "Por padrão, apenas um Filtro de Item é adicionado para cada tipo de item único (por exemplo, para uma receita de $(item)Stone Slab/$, apenas um filtro de $(item)Stone/$ será criado, não três). Lembre-se que widgets podem ser copiados clicando com o botão do meio e arrastando. Se você quiser adicionar um Filtro de Item para cada item na receita, incluindo duplicatas, segure Shift ao clicar no botão '+' no JEI."
+    }
+  ]
+}

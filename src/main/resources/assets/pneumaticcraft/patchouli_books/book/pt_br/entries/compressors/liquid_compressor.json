@@ -1,0 +1,17 @@
+{
+  "name": "Compressor Líquido",
+  "icon": "pneumaticcraft:liquid_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Líquido/$ é um gerador simples que pode produzir $(l:base_concepts/pressure)ar comprimido/$. Ele queima combustíveis líquidos para fazer isso; para ver quais combustíveis você pode usar e sua eficácia, abra a aba $(bold)Combustíveis Disponíveis/$ na GUI do Compressor Líquido. Note que isso também inclui fluidos de alta temperatura, como lava."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor Líquido/$",
+      "recipe": "pneumaticcraft:liquid_compressor"
+    }
+  ]
+}

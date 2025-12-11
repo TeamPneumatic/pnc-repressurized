@@ -1,0 +1,25 @@
+{
+  "name": "Tubo de Calor",
+  "icon": "pneumaticcraft:heat_pipe",
+  "category": "pneumaticcraft:machines",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Tubo de Calor/$ é um núcleo isolado de ferro comprimido que pode transmitir calor entre blocos, sem qualquer conexão térmica com blocos de ar ou fluido adjacentes. É uma alternativa mais compacta (e barata) de usar $(thing)Blocos de Ferro Comprimido/$ para transmitir calor.$(p)Você pode ocultar os Tubos de Calor com o $(l:tools/camo_applicator)Aplicador de Camuflagem/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/patchouli/heat_sinks.png"
+      ],
+      "border": "true",
+      "text": "$(italic)PENDÊNCIA: imagem do Tubo de Calor/$"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Tubo de Calor",
+      "recipe": "pneumaticcraft:heat_pipe"
+    }
+  ]
+}

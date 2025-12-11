@@ -1,0 +1,17 @@
+{
+  "name": "Lubrificante",
+  "icon": "pneumaticcraft:lubricant_bucket",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:tp_plant",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Lubrificante/$ é necessário para criar $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$.$(p)É criado em uma $(l:manufacturing/thermopneumatic_processing_plant)Usina de Processamento Termopneumático/$ com $(l:manufacturing/refinery)Diesel/$ (ou $(l:renewables/biodiesel)Biodiesel/$) e $(item)Redstone/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:lubricant_bucket",
+      "text": "$(italic)Coisa escorregadia/$"
+    }
+  ]
+}

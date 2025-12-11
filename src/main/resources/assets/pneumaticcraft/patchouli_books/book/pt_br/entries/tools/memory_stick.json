@@ -1,0 +1,27 @@
+{
+  "name": "Pente de Memória",
+  "icon": "pneumaticcraft:memory_stick",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:plastic",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Um $(item)Pente de Memória/$ é um dispositivo portátil útil para extrair, armazenar e restaurar níveis de experiência do jogador:$(li)$(thing)Clique com o botão direito/$: move um nível de experiência de você para o pente$(li)$(thing)Shift + Clique com o botão direito/$: move um nível de experiência do pente para você$(li)$(thing)Clique com o botão esquerdo/$: alterna a auto-absorção de XP, onde quaisquer orbes de XP que você coletar são automaticamente absorvidos pelo pente"
+    },
+    {
+      "type": "text",
+      "text": "A experiência armazenada no Pente de Memória também pode ser extraída como fluido $(l:base_concepts/memory_essence)Essência de Memória/$. Para fazer isso, simplesmente $(thing)clique com o botão direito/$ em qualquer $(l:machines/tanks)Tanque de Fluido/$ para transferir XP para ou do tanque (tanques de fluidos de outros mods também devem funcionar bem aqui). Clicar com o botão direito em um tanque vazio tentará transferir Essência de Memória do pente para o tanque; clicar com o botão direito em um tanque com qualquer Essência de Memória tentará transferir do tanque para o pente."
+    },
+    {
+      "type": "text",
+      "title": "Curios",
+      "flag": "mod:curios",
+      "text": "Com o mod $(thing)Curios/$ instalado, você pode armazenar o Pente de Memória em qualquer slot Curios, para economizar espaço no inventário. Isso é particularmente útil com a auto-absorção de XP ligada."
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Pente de Memória",
+      "recipe": "pneumaticcraft:memory_stick"
+    }
+  ]
+}

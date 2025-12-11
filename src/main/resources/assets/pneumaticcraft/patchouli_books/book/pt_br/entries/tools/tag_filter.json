@@ -1,0 +1,12 @@
+{
+  "name": "Filtro de Marcação",
+  "icon": "pneumaticcraft:tag_filter",
+  "category": "pneumaticcraft:tools",
+  "advancement": "pneumaticcraft:root",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Veja a $(l:machines/tag_workbench)Bancada de Marcação/$. "
+    }
+  ]
+}

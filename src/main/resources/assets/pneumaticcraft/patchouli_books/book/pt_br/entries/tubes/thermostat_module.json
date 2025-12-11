@@ -1,0 +1,30 @@
+{
+  "name": "Módulo de Termostato",
+  "icon": "pneumaticcraft:thermostat_module",
+  "category": "pneumaticcraft:tubes",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este módulo de tubo mede a temperatura do bloco que está enfrentando e fornece um sinal de redstone no canal configurado (use um $(l:tubes/redstone_module)Módulo de Redstone/$ no modo de saída para emitir o sinal) se a temperatura for maior que o limite definido."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:module_expansion_card",
+      "text": "Aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Termostato desbloqueia a GUI avançada para fornecer muito mais controle sobre a emissão de $(#f00)sinal de redstone/$. Por padrão, você pode fornecer um nível limite: o sinal estará desligado abaixo desse nível e totalmente ligado acima dele (ou vice-versa). Se você selecionar a opção $(bold)Config Avançada/$ na GUI, você ganha ainda mais controle (veja a seguir)."
+    },
+    {
+      "type": "image",
+      "images": [
+          "pneumaticcraft:textures/patchouli/thermostat_gui.png"
+      ],
+      "text": "$(italic)<0°C = 0 redstone, >1000°C = 15 redstone, 0-1000°C = interpolar (ex: 200°C = 3 redstone)/$",
+      "anchor": "img"
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um Módulo de Termostato",
+      "recipe": "pneumaticcraft:thermostat_module"
+    }
+  ]
+}

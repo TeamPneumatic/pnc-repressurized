@@ -1,0 +1,29 @@
+{
+  "name": "Widget Importar Entidade",
+  "icon": "pneumaticcraft:textures/progwidgets/entity_import_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ irá até a entidade mais próxima na $(l:programming/area)Área/$ especificada que corresponda a um $(l:base_concepts/entity_filter)Filtro de Entidade/$ (opcional) anexado em um widget $(l:programming/text)Texto/$ conectado, e irá pegá-la para ser transportada.$(p)Isso inclui jogadores, embora jogadores possam facilmente escapar de um $(item)Drone/$ $(thing)furtivando/$ para desmontar. Dito isso, ser carregado por uma entidade voadora que você pode controlar tem suas vantagens..."
+    },
+    {
+      "type": "text",
+      "title": "Orbes de Experiência",
+      "text": "Drones também são capazes de importar $(thing)Orbes de Experiência/$ usando este widget; o filtro de entidade $(item)@orb/$ irá corresponder a orbes de XP. Orbes importados são convertidos em $(l:base_concepts/memory_essence)Essência de Memória/$ e armazenados no tanque interno do drone; você pode então usar o widget $(l:programming/liquid_export)Exportar Fluido/$ para transferir isso para um tanque de fluido."
+    },
+    {
+      "type": "text",
+      "title": "Limitações de Área",
+      "text": "Tenha em mente que quaisquer widgets $(l:programming/area)Área/$ conectados a este widget devem ter um tipo de área $(thing)Caixa/$; este é o único formato suportado. É possível criar diferentes formatos, no entanto, usando a lista branca/lista negra de áreas."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/entity_import_piece.png"
+      ],
+      "text": "$(italic)Vou levar isso/$\n"
+    }
+  ]
+}

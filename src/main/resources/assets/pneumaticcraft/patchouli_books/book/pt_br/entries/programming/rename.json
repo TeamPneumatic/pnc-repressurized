@@ -1,0 +1,24 @@
+{
+  "name": "Widget de Renomear",
+  "icon": "pneumaticcraft:textures/progwidgets/rename_piece.png",
+  "category": "pneumaticcraft:widget_other",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget renomeia o $(l:tools/drone)Drone/$, como se você tivesse $(thing)clicado com o botão direito/$ nele com uma $(item)Etiqueta de Nome/$. O nome é inserido no widget $(l:programming/text)Texto/$ anexado."
+    },
+    {
+      "type": "text",
+      "title": "Variáveis",
+      "text": "Você também pode inserir o valor de uma $(l:programming/variables)variável/$, incluindo $(thing)${<var_name>}/$ no texto, por exemplo:$(p)  $(formula)Contador: ${counter}/$$(p)iria se expandir para $(thing)Contador: 1, 2, 3/$ se a variável $(thing)counter/$ fosse definida como $(thing)x=1,y=2,z=3/$. $(l:programming/variables#special)Variáveis Especiais/$ e $(l:programming/variables#global)Globais/$ também podem ser usadas aqui."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/rename_piece.png"
+      ],
+      "text": "$(italic)Quem é você novamente?/$"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Condição do Drone: Widget de Melhorias",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_drone_upgrades_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O widget $(thing)Condição do Drone: Melhorias/$ permite que você verifique o número de melhorias instaladas neste $(l:tools/drone)Drone/$. Especifique a(s) melhoria(s) a serem verificadas usando um ou mais widgets $(l:programming/item_filter)Filtro de Item/$ conectados, definidos para o(s) item(ns) de melhoria a serem verificados; sem qualquer filtro, todas as melhorias instaladas de todos os tipos serão contadas."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_drone_upgrades_piece.png"
+      ],
+      "text": "$(italic)Condição do Drone: Widget de Melhorias/$"
+    }
+  ]
+}

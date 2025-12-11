@@ -1,0 +1,52 @@
+{
+  "name": "Botas Pneumáticas",
+  "icon": "pneumaticcraft:pneumatic_boots",
+  "category": "pneumaticcraft:armor",
+  "advancement": "pneumaticcraft:printed_circuit_board",
+  "pages": [
+    {
+      "type": "text",
+      "text": "As $(item)Botas Pneumáticas/$ são uma das quatro peças da $(thing)Armadura Pneumática/$.$(p)As botas fornecem proteção contra quedas embutida a um custo modesto de ar (proporcional ao dano de queda negado).$(p)Você também recebe assistência de degrau de 1 bloco gratuitamente (sem custo de ar). Note que isso é assistência de degrau, não pulo automático, e é um recurso alternável."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:pneumatic_boots",
+      "text": "Criando Botas Pneumáticas"
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:jet_boots_upgrade_1",
+      "text": "Se você sempre quis voar pelo ar sem se preocupar com nada (exceto quanta pressão lhe resta), a $(l:base_concepts/upgrades#jet_boots_1)Melhoria de Botas a Jato/$ é para você. Existem 5 níveis de Melhoria de Botas a Jato para voo progressivamente mais rápido e maior uso de ar."
+    },
+    {
+      "type": "text",
+      "title": "Botas a Jato (cont.)",
+      "text": "Quando a melhoria está ativa, simplesmente segure a tecla $(k:pneumaticcraft.boots.jet_boots) para impulsionar na direção em que você está olhando.$(p)$(thing)Botas a Jato/$ são $(bold)grandes/$ consumidoras de ar; é fortemente recomendado adicionar múltiplas $(l:base_concepts/upgrades#volume)Melhorias de Volume/$ às suas botas (e $(l:armor/pneumatic_chestplate)peitoral/$, com $(l:base_concepts/upgrades#charging)Melhorias de Carregamento/).$(p)O uso de uma $(l:machines/aerial_interface)Interface Aérea/$ também é aconselhado quando possível, junto com uma boa infraestrutura de carregamento em sua base."
+    },
+    {
+      "type": "text",
+      "title": "Botas a Jato (cont.)",
+      "text": "Com $(l:base_concepts/upgrades#jet_boots_3)Melhorias de Botas a Jato: Nível III/$ ou superior, você também terá acesso ao $(thing)Modo Construtor/$, que permite um controle de voo mais estilo criativo (mas mais lento) e velocidade de escavação aérea melhorada.$(p)Isso pode ser ativado e desativado via GUI da armadura (e vinculado a uma tecla de alternância)."
+    },
+    {
+      "type": "text",
+      "title": "Botas a Jato (cont.)",
+      "text": "Com $(l:base_concepts/upgrades#jet_boots_4)Melhorias de Botas a Jato: Nível IV/$ ou superior, você também ganha acesso a $(thing)Estabilizadores de Voo/$, que irão pará-lo imediatamente quando você soltar a tecla de impulso (a um custo de ar proporcional à velocidade em que você estava viajando).$(p)Como o Modo Construtor, isso também pode ser ativado e desativado via GUI da armadura (e vinculado a uma tecla de alternância)."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:dispenser_upgrade",
+      "text":  "Ao adicionar até 4 $(l:base_concepts/upgrades#dispenser)Melhorias de Ejetor/$ às botas, você ganha a habilidade de executar um $(bold)chute pneumático/$. Isso causará dano moderado a entidades (e não apenas entidades vivas!), mas também infligirá forte repulsão, a um custo modesto de ar.$(p)Pressione $(thing)$(k:pneumaticcraft.boots.kick)/$ para chutar."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:flippers_upgrade",
+      "text":  "Com uma $(l:base_concepts/upgrades#flippers)Melhoria de Pés de Pato/$ instalada, você desfrutará de um benefício moderado na sua velocidade de nado. Isso não tem custo extra de ar, então é uma alternativa muito mais barata às Botas a Jato quando estiver na água."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:stomp_upgrade",
+      "text":  "Com uma $(l:base_concepts/upgrades#stomp)Melhoria de Pisão/$ instalada e ativa, você pode fazer chover destruição sobre seus inimigos. Se você atingir o chão rápido o suficiente para levar dano (mesmo se esse dano for absorvido por suas botas), mobs próximos serão feridos, proporcionalmente à velocidade que você chegou. Isso consome um pouco de ar para cada mob que for ferido dessa forma."
+    }
+  ]
+}

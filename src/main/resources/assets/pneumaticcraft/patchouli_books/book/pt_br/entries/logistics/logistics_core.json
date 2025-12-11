@@ -1,0 +1,25 @@
+{
+  "name": "Núcleo Logístico",
+  "icon": "pneumaticcraft:logistics_core",
+  "category": "pneumaticcraft:logistics",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este é um componente base de fabricação para todos os itens e dispositivos relacionados à $(l:logistics/overview)Logística/$."
+    },
+    {
+      "type": "relations",
+      "entries": [
+        "pneumaticcraft:logistics/frames",
+        "pneumaticcraft:logistics/logistics_drone",
+        "pneumaticcraft:tubes/logistics_module"
+      ]
+    },
+    {
+      "type": "crafting",
+      "text": "Criando um Núcleo Logístico",
+      "recipe": "pneumaticcraft:logistics_core"
+    }
+  ]
+}

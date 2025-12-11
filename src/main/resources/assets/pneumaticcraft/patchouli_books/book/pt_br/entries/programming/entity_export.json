@@ -1,0 +1,19 @@
+{
+  "name": "Widget de Exportação de Entidade",
+  "icon": "pneumaticcraft:textures/progwidgets/entity_export_piece.png",
+  "category": "pneumaticcraft:widget_interact",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(l:tools/drone)Drone/$ irá para a $(l:programming/area)Área/$ especificada e soltará a entidade que está carregando, desde que seja permitido por um (opcional) $(l:base_concepts/entity_filter)Filtro de Entidade/$ especificado em um widget $(l:programming/text)Texto/$ conectado.$(p)Veja também o widget $(l:programming/entity_import)Importação de Entidade/$."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/entity_export_piece.png"
+      ],
+      "text": "$(italic)Widget de Exportação de Entidade/$"
+    }
+  ]
+}

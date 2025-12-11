@@ -1,0 +1,16 @@
+{
+  "name": "Essência da Memória",
+  "icon": "pneumaticcraft:memory_essence_bucket",
+  "category": "pneumaticcraft:base_concepts",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(item)Essência da Memória/$ é um fluido que representa as memórias e experiências de um jogador em forma líquida. Pode ser extraída e armazenada para uso posterior, seja para encantamento vanilla, ou para certos processos de criação do $(pncr).$(p)Existem duas maneiras de obter $(item)Essência da Memória/$:$(li)1. Com um $(l:tools/memory_stick)Memory Stick/$$(li)2. Com uma $(l:machines/aerial_interface)Interface Aérea/$."
+    },
+    {
+      "type": "spotlight",
+      "item": "pneumaticcraft:memory_essence_bucket",
+      "text": "$(italic)Você é experiente?/$"
+    }
+  ]
+}

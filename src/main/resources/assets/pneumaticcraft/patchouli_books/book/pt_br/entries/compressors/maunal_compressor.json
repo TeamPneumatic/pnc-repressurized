@@ -1,0 +1,17 @@
+{
+  "name": "Compressor Manual",
+  "icon": "pneumaticcraft:manual_compressor",
+  "category": "pneumaticcraft:compressors",
+  "advancement": "pneumaticcraft:pressure_tube",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Compressor Manual/$ é um compressor de início de jogo que produz $(l:base_concepts/pressure)ar comprimido/$ a partir de trabalho manual e fome. Segure o clique direito no compressor para bombear ar e comprimi-lo. Quanto maior a pressão do compressor, mais tempo cada bombeada leva, até se tornar impossível bombear mais ar."
+    },
+    {
+      "type": "crafting",
+      "text": "Fabricando um $(item)Compressor Manual/$",
+      "recipe": "pneumaticcraft:manual_compressor"
+    }
+  ]
+}

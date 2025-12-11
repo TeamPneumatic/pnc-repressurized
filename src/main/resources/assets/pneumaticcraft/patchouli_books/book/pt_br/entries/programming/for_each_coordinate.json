@@ -1,0 +1,24 @@
+{
+  "name": "Widget Para Cada Coordenada",
+  "icon": "pneumaticcraft:textures/progwidgets/for_each_coordinate.png",
+  "category": "pneumaticcraft:widget_flow",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "Este widget avançado irá percorrer cada coordenada individual na $(l:programming/area)Área/$ especificada. Para cada coordenada, ele definirá a $(ttcolor)$(t:Clique com o botão direito no widget para configurar a variável)variável especificada/$ para essa coordenada e saltará para o $(l:programming/label)Rótulo/$ que corresponde ao widget $(l:programming/text)Texto/$ conectado. Quando essa rotina terminar a execução (quando chegar ao final de um programa onde normalmente saltaria de volta para $(l:programming/start)Início/$), ele retornará a este widget e repetirá para a próxima coordenada."
+    },
+    {
+      "type": "text",
+      "title": "Quebra",
+      "text": "Você pode sair do loop definindo a variável de coordenada usada pelo $(thing)Para Cada Coordenada/$ para qualquer posição de bloco fora da altura de construção do mundo atual. Na próxima vez, quando o programa saltar de volta para o $(thing)Para Cada Coordenada/$, ele notará isso e cancelará a travessia subsequente das coordenadas.$(p)$(italic)Este comportamento mudou no MC 1.18+ devido à nova funcionalidade de altura do mundo; (0,0,0) costumava ser considerado inválido, o que sempre foi duvidoso (mundos vazios), mas ainda mais agora./$"
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/for_each_coordinate.png"
+      ],
+      "text": "$(italic)Widget Para Cada Coordenada/$\n"
+    }
+  ]
+}

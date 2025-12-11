@@ -1,0 +1,7 @@
+{
+  "name": "Widgets de Controle de Fluxo",
+  "description": "Widgets que afetam o fluxo do programa.",
+  "icon": "pneumaticcraft:textures/progwidgets/start_piece.png",
+  "parent": "pneumaticcraft:programming",
+  "sortnum": 1
+}

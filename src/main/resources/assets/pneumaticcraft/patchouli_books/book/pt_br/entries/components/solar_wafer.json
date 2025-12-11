@@ -1,0 +1,16 @@
+{
+  "name": "Wafer Solar",
+  "icon": "pneumaticcraft:solar_wafer",
+  "category": "pneumaticcraft:components",
+  "advancement": "pneumaticcraft:assembly_controller",
+  "pages": [
+    {
+      "type": "text",
+      "text": "O $(item)Wafer Solar/$ é um componente de criação intermediário da $(l:components/solar_cell)Célula Solar/$."
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "recipe": "pneumaticcraft:pressure_chamber/solar_wafer"
+    }
+  ]
+}
