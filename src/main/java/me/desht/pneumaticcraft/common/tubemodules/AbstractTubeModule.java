@@ -220,9 +220,8 @@ public abstract class AbstractTubeModule {
                     .append(Component.translatable("pneumaticcraft.gui.tubeModule.installed"))
                     .withStyle(ChatFormatting.GREEN));
         }
-        if (this instanceof INetworkedModule) {
-            int colorChannel = ((INetworkedModule) this).getColorChannel();
-            String key = "color.minecraft." + DyeColor.byId(colorChannel);
+        if (this instanceof INetworkedModule net) {
+            String key = "color.minecraft." + DyeColor.byId(net.getColorChannel());
             curInfo.add(Component.translatable("pneumaticcraft.waila.logisticsModule.channel").append(" ")
                     .append(Component.translatable(key).withStyle(ChatFormatting.YELLOW)));
         }
