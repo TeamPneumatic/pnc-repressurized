@@ -6,6 +6,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.15]
+
+### Added
+* Added `zh_cn` translation (thanks to CFPAOrg)
+  * Note that the `src/main/resources/assets/pneumaticcraft/lang/zh_cn.json` file is licensed under cc-BY-NC-SA 4.0#
+
+### Changed
+* Updated `ru_ru` translation for 1.21 (thanks @Argonas24)
+
 ## [8.2.14]
 
 ### Added
