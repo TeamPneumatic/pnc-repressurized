@@ -50,7 +50,7 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     public static PNCFluidRenderProps texture(String textureBase, int colorTint) {
-        return new PNCFluidRenderProps(textureBase + "_still", textureBase + "_flowing", colorTint);
+        return new PNCFluidRenderProps(textureBase + "_still", textureBase + "_flow", colorTint);
     }
 
     @Override
