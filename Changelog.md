@@ -15,6 +15,9 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Changed
 * Updated `ru_ru` translation for 1.21 (thanks @Argonas24)
 
+### Fixed
+* Fixed broken textures for flowing oil, plastic and memory essence fluids
+
 ## [8.2.14]
 
 ### Added
