@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release (and all future releases) is built for [Neoforge](https://neoforged.net/), and will _not_ work on [MinecraftForge](https://files.minecraftforge.net/)!
 
+## [7.0.5]
+
+### Fixed
+* Fix crash in Refinery fluid redistribution
+
 ## [7.0.4]
 
 ### Fixed
