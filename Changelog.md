@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.16]
+
+### Fixed
+* Fixed CME related to chunk unloading and semiblock entities under some circumstances
+* Made recipes which use potions to craft (Pneumatic Armor night vision/jump/jet boots upgrades) more lenient
+  * Only checking for the specific potion data component on ingredients now, not all default data components of the potion item 
+  * Fixes compat issues with mods like Sensible Stackables
+
 ## [8.2.15]
 
 ### Added
