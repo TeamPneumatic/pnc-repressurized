@@ -24,7 +24,10 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
@@ -36,6 +39,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -1047,12 +1051,11 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(ModUpgrades.VOLUME.get(), ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).save(consumer);
 
         // non-standard upgrade patterns
-        ItemStack nightVisionPotion = PotionContents.createItemStack(Items.POTION, Potions.LONG_NIGHT_VISION);
         shaped(ModUpgrades.NIGHT_VISION.get().getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LNL/GNG/LNL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
-                'N', DataComponentIngredient.of(true, nightVisionPotion)
+                'N', DataComponentIngredient.of(false, potionComponent(Potions.NIGHT_VISION), Items.POTION)
         ).save(consumer);
 
         shaped(ModUpgrades.CHUNKLOADER.get().getItem(), ModItems.DRONE.get(),
@@ -1097,7 +1100,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'N', Items.NETHER_STAR,
                 'M', Items.PHANTOM_MEMBRANE,
                 'V', ModItems.VORTEX_CANNON.get(),
-                'P', DataComponentIngredient.of(true, slowFallPotion),
+                'P', DataComponentIngredient.of(false, potionComponent(Potions.SLOW_FALLING), Items.POTION),
                 'U', ModUpgrades.JET_BOOTS.get().getItem(3)
         ).save(consumer);
         shaped(ModUpgrades.JET_BOOTS.get().getItem(5), ModItems.PNEUMATIC_BOOTS.get(),
@@ -1124,19 +1127,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
-        ItemStack jumpBoostPotion1 = PotionContents.createItemStack(Items.POTION, Potions.LEAPING);
         shaped(ModUpgrades.JUMPING.get().getItem(3), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', ModUpgrades.JUMPING.get().getItem(2),
-                'J', DataComponentIngredient.of(true, jumpBoostPotion1),
+                'J', DataComponentIngredient.of(false, potionComponent(Potions.LEAPING), Items.POTION),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
-        ItemStack jumpBoostPotion2 = PotionContents.createItemStack(Items.POTION, Potions.STRONG_LEAPING);
         shaped(ModUpgrades.JUMPING.get().getItem(4), ModItems.PNEUMATIC_LEGGINGS.get(),
                 "PCP/JUJ/ J ",
                 'U', ModUpgrades.JUMPING.get().getItem(3),
-                'J', DataComponentIngredient.of(true, jumpBoostPotion2),
+                'J', DataComponentIngredient.of(false, potionComponent(Potions.STRONG_LEAPING), Items.POTION),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
@@ -1882,5 +1883,9 @@ public class ModRecipeProvider extends RecipeProvider {
     private <T extends ItemLike> String safeName(T required) {
         ResourceLocation key = BuiltInRegistries.ITEM.getKey(required.asItem());
         return key.getPath().replace('/', '_');
+    }
+
+    private DataComponentMap potionComponent(Holder<Potion> potion) {
+        return DataComponentMap.builder().set(DataComponents.POTION_CONTENTS, new PotionContents(potion)).build();
     }
 }
