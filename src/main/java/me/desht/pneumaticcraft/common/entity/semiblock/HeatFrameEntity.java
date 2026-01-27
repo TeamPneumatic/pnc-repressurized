@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
@@ -42,7 +43,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -142,6 +146,18 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
                     case COOKING -> ClientUtils.emitParticles(level(), getBlockPos(), level().random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
                     case COOLING -> ClientUtils.emitParticles(level(), getBlockPos(), ParticleTypes.SPIT);
                 }
+            }
+        }
+    }
+
+    @Override
+    protected void doExtraCleanupTasks(boolean removingSemiblock) {
+        if (removingSemiblock) {
+            Level level = level();
+            BlockPos pos = getBlockPos();
+            if (level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false) instanceof LevelChunk lc) {
+                // make heat pipes disconnect
+                level.markAndNotifyBlock(pos, lc, getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             }
         }
     }

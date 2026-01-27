@@ -84,7 +84,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     private static final float MAX_HEALTH = 40.0F;
 
     private BlockEntity cachedTE;
-    private boolean beingRemoved = false;
+    protected boolean beingRemoved = false;
     private AABB blockBounds;
     private BlockPos blockPos;
     private Vec3 dropOffset = Vec3.ZERO;
@@ -340,10 +340,6 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
 
             if (beingRemoved) {
                 getDrops().forEach(this::dropItem);
-            }
-
-            if (level.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false) instanceof LevelChunk lc) {
-                level.markAndNotifyBlock(blockPos, lc, getBlockState(), getBlockState(), Block.UPDATE_ALL, 512);
             }
         }
 
