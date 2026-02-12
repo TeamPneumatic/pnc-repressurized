@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.render.pressure_gauge;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.TextScaler;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -61,11 +62,11 @@ public class PressureGaugeRenderer3D {
         Matrix3f normal = matrixStack.last().normal();
 
         // Draw the green and red surface in the gauge.
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.TRIANGLE_FAN, (posMat, builder) ->
+        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.TRIANGLES, (posMat, builder) ->
                 drawGaugeBackground(posMat, builder, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos));
 
         // Draw the surrounding circle in the foreground colour
-        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINE_STRIP, (posMat, builder) ->
+        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINES, (posMat, builder) ->
                 drawGaugeSurround(posMat, normal, builder, xPos, yPos, fgColor));
 
         // Draw the scale
@@ -75,7 +76,7 @@ public class PressureGaugeRenderer3D {
                 drawScale(posMat, normal, builder, minPressure, maxPressure, xPos, yPos, currentScale, textScalers));
 
         // Draw the needle.
-        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINE_STRIP, (posMat, builder) -> {
+        RenderUtils.renderWithType(matrixStack, buffer, RenderType.LINES, (posMat, builder) -> {
                     float angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
                     angleIndicator = -angleIndicator / CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
                     drawNeedle(posMat, normal, builder, xPos, yPos, angleIndicator, fgColor);
@@ -86,10 +87,7 @@ public class PressureGaugeRenderer3D {
     }
 
     private static void drawGaugeBackground(Matrix4f posMat, VertexConsumer builder, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, int xPos, int yPos) {
-        // vertex builder is set up to draw GL_TRIANGLE_FAN
         float[] color = RED;
-
-        builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.1f, 1f).endVertex();
 
         int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
@@ -100,20 +98,23 @@ public class PressureGaugeRenderer3D {
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? YELLOW : GREEN;
-                builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
-                i--;
                 changedColorGreen = true;
             }
             if (i == workingBoundary && !changedColorYellow) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? GREEN : YELLOW;
-                builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
-                i--;
                 changedColorYellow = true;
             }
             float angle = -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
+            float angle2 = -(i + 1) / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
+
+            builder.vertex(posMat, xPos, yPos, 0f).color(0.5f, 0.5f, 0.1f, 1f).endVertex();
+            
             builder.vertex(posMat, Mth.cos(angle) * RADIUS + xPos, Mth.sin(angle) * RADIUS + yPos, 0f)
-                    .color(color[0], color[1], color[2], color[3])
-                    .endVertex();
+                .color(color[0], color[1], color[2], color[3])
+                .endVertex();
+            builder.vertex(posMat, Mth.cos(angle2) * RADIUS + xPos, Mth.sin(angle2) * RADIUS + yPos, 0f)
+            	.color(color[0], color[1], color[2], color[3])
+            	.endVertex();
         }
     }
 
@@ -127,19 +128,19 @@ public class PressureGaugeRenderer3D {
     }
 
     private static void drawGaugeSurround(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, int xPos, int yPos, int fgColor) {
-        // vertex builder is set up for VertexMode.LINE_STRIP
+        // vertex builder is set up for VertexMode.LINES
         float[] cols = RenderUtils.decomposeColorF(fgColor);
         for (int i = 0; i < CIRCLE_POINTS; i++) {
             RenderUtils.normalLine(builder, posMat, normal,
                     GAUGE_SURROUND[i][0] + xPos, GAUGE_SURROUND[i][1] + yPos, 0f,
                     GAUGE_SURROUND[i + 1][0] + xPos, GAUGE_SURROUND[i + 1][1] + yPos, 0f,
                     cols[0], cols[1], cols[2], cols[3],
-                    true);
+                    false);
         }
     }
 
     private static void drawScale(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, float minPressure, float maxPressure, int xPos, int yPos, int currentScale, List<TextScaler> textScalers) {
-        // vertex builder is set up for VertexMode.LINE
+        // vertex builder is set up for VertexMode.LINES
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             float angle = -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
             if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
@@ -159,20 +160,37 @@ public class PressureGaugeRenderer3D {
     }
 
     private static void drawNeedle(Matrix4f posMat, Matrix3f normal, VertexConsumer builder, int xPos, int yPos, float angle, int fgColor) {
-        // vertex builder is set up for VertexMode.LINE_STRIP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
 
         float x1 = Mth.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos;
         float y1 = Mth.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos;
+
         float x2 = Mth.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos;
         float y2 = Mth.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos;
+
         float x3 = Mth.cos(angle) * RADIUS * 0.8F + xPos;
         float y3 = Mth.sin(angle) * RADIUS * 0.8F + yPos;
 
-        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x2, y2, 0f, x3, y3, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x3, y3, 0f, x1, y1, 0f, cols[0], cols[1], cols[2], cols[3], true);
-        RenderUtils.normalLine(builder, posMat, normal, x1, y1, 0f, x2, y2, 0f, cols[0], cols[1], cols[2], cols[3], true);
+        // Edge 1: x1 -> x2
+        RenderUtils.normalLine(builder, posMat, normal,
+                x1, y1, 0f,
+                x2, y2, 0f,
+                cols[0], cols[1], cols[2], cols[3],
+                false);
+
+        // Edge 2: x2 -> x3
+        RenderUtils.normalLine(builder, posMat, normal,
+                x2, y2, 0f,
+                x3, y3, 0f,
+                cols[0], cols[1], cols[2], cols[3],
+                false);
+
+        // Edge 3: x3 -> x1
+        RenderUtils.normalLine(builder, posMat, normal,
+                x3, y3, 0f,
+                x1, y1, 0f,
+                cols[0], cols[1], cols[2], cols[3],
+                false);
     }
 
     private static void drawText(PoseStack matrixStack, MultiBufferSource buffer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
