@@ -59,8 +59,6 @@ public class PressureGaugeRenderer3D {
      * @param fgColor color to draw the surround, needle and text
      */
     public static void drawPressureGauge(PoseStack poseStack, MultiBufferSource buffer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
-        Matrix3f normal = poseStack.last().normal();
-
         // Draw the green and red surface in the gauge.
         RenderUtils.renderWithType(poseStack, buffer, ModRenderTypes.TRIANGLES, (posMat, builder) ->
                 drawGaugeBackground(posMat, builder, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos));

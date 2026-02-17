@@ -11,7 +11,7 @@ public class FFSSetup {
         Item ftbFilterItem = FTBFilterSystemAPI.api().filterItem();
         if (ftbFilterItem != Items.AIR) {
             event.registerItem(PNCCapabilities.ITEM_FILTERING, (stack, ctx) ->
-                    (filterStack, item) -> FTBFilterSystemAPI.api().doesFilterMatch(filterStack, item),
+                    (filterStack, item) -> FTBFilterSystemAPI.api().doesFilterMatch(filterStack, item, null),
                     ftbFilterItem);
         }
     }
