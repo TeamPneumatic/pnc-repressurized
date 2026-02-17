@@ -200,6 +200,15 @@ public class ModRenderTypes extends RenderType {
                     .createCompositeState(false)
     );
 
+    public static final RenderType TRIANGLES = create("triangles",
+                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES, 256,
+                false, false,
+                RenderType.CompositeState.builder()
+                        .setTextureState(NO_TEXTURE)
+                        .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
+                        .createCompositeState(false)
+    );
+
     private static final Function<ResourceLocation, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
