@@ -188,13 +188,9 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
 
             PriorityQueue<LogisticsTask> tasks = manager.getTasks(null, false);
             for (LogisticsTask task : tasks) {
-                if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
-                    if (!task.transportingItem.isEmpty()) {
-                        handleItems(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
-                    } else {
-                        handleFluids(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task);
-                    }
-                }
+                task.resource
+                        .ifLeft(itemStack -> handleItems(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task, itemStack))
+                        .ifRight(fluidStack -> handleFluids(frame2module.get(task.provider.getId()), frame2module.get(task.requester.getId()), task, fluidStack));
             }
         }
     }
@@ -213,11 +209,11 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         }
     }
 
-    private void handleItems(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task) {
+    private void handleItems(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task, ItemStack itemStack) {
         IOHelper.getInventoryForBlock(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
-            ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, task.transportingItem, true);
-            if (remainder.getCount() != task.transportingItem.getCount()) {
-                ItemStack toBeExtracted = task.transportingItem.copy();
+            ItemStack remainder = ItemHandlerHelper.insertItem(requestingHandler, itemStack, true);
+            if (remainder.getCount() != itemStack.getCount()) {
+                ItemStack toBeExtracted = itemStack.copy();
                 toBeExtracted.shrink(remainder.getCount());
                 IOHelper.getInventoryForBlock(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryItemTransfer(providingModule, requestingModule, providingHandler, requestingHandler, toBeExtracted));
@@ -254,11 +250,11 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         });
     }
 
-    private void handleFluids(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task) {
+    private void handleFluids(LogisticsModule providingModule, LogisticsModule requestingModule, LogisticsTask task, FluidStack fluidStack) {
         IOHelper.getFluidHandlerForBlock(task.requester.getCachedTileEntity(), requestingModule.dir.getOpposite()).ifPresent(requestingHandler -> {
-            int amountFilled = requestingHandler.fill(task.transportingFluid, IFluidHandler.FluidAction.SIMULATE);
+            int amountFilled = requestingHandler.fill(fluidStack, IFluidHandler.FluidAction.SIMULATE);
             if (amountFilled > 0) {
-                FluidStack drainingFluid = task.transportingFluid.copy();
+                FluidStack drainingFluid = fluidStack.copy();
                 drainingFluid.setAmount(amountFilled);
                 IOHelper.getFluidHandlerForBlock(task.provider.getCachedTileEntity(), providingModule.dir.getOpposite())
                         .ifPresent(providingHandler -> tryFluidTransfer(providingModule, providingHandler, requestingModule, requestingHandler, drainingFluid));

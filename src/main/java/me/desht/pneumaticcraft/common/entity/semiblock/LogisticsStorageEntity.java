@@ -31,6 +31,8 @@ import net.neoforged.neoforge.fluids.FluidStack;
 public class LogisticsStorageEntity extends AbstractLogisticsFrameEntity implements ISpecificProvider, ISpecificRequester {
     private int minItems = 1;
     private int minFluid = 1;
+    private int keepItemsStocked = 0;
+    private int keepFluidStocked = 0;
 
     public LogisticsStorageEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
@@ -64,6 +66,26 @@ public class LogisticsStorageEntity extends AbstractLogisticsFrameEntity impleme
     @Override
     public boolean canProvide(FluidStack providingStack) {
         return passesFilter(providingStack.getFluid());
+    }
+
+    @Override
+    public int getKeepItemsStocked() {
+        return keepItemsStocked;
+    }
+
+    @Override
+    public int getKeepFluidStocked() {
+        return keepFluidStocked;
+    }
+
+    @Override
+    public void setKeepItemsStocked(int keepStocked) {
+        this.keepItemsStocked = keepStocked;
+    }
+
+    @Override
+    public void setKeepFluidsStocked(int keepStocked) {
+        this.keepFluidStocked = keepStocked;
     }
 
     @Override

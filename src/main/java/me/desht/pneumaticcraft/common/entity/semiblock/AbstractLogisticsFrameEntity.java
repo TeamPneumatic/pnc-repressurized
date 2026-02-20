@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
@@ -347,6 +348,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
             spr.setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
             spr.setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
         }
+        if (this instanceof ISpecificProvider spp) {
+            spp.setKeepItemsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_ITEMS));
+            spp.setKeepFluidsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_FLUID));
+        }
     }
 
     @Override
@@ -367,6 +372,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (this instanceof ISpecificRequester spr) {
             tag1.putInt(ISpecificRequester.NBT_MIN_ITEMS, spr.getMinItemOrderSize());
             tag1.putInt(ISpecificRequester.NBT_MIN_FLUID, spr.getMinFluidOrderSize());
+        }
+        if (this instanceof ISpecificProvider spp) {
+            tag1.putInt(ISpecificProvider.NBT_STOCK_ITEMS, spp.getKeepItemsStocked());
+            tag1.putInt(ISpecificProvider.NBT_STOCK_FLUID, spp.getKeepFluidStocked());
         }
 
         return tag1;
@@ -460,6 +469,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
             payload.writeVarInt(spr.getMinItemOrderSize());
             payload.writeVarInt(spr.getMinFluidOrderSize());
         }
+        if (this instanceof ISpecificProvider spp) {
+            payload.writeVarInt(spp.getKeepItemsStocked());
+            payload.writeVarInt(spp.getKeepFluidStocked());
+        }
     }
 
     @Override
@@ -481,6 +494,10 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (this instanceof ISpecificRequester spr) {
             spr.setMinItemOrderSize(payload.readVarInt());
             spr.setMinFluidOrderSize(payload.readVarInt());
+        }
+        if (this instanceof ISpecificProvider spp) {
+            spp.setKeepItemsStocked(payload.readVarInt());
+            spp.setKeepFluidsStocked(payload.readVarInt());
         }
     }
 

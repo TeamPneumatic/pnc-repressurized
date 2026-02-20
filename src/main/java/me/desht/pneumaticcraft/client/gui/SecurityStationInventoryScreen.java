@@ -91,8 +91,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
 
         sharedUserTextField = new WidgetTextField(font, 20, 15, 80);
 
-        accessStat.addSubWidget(sharedUserTextField);
-        accessStat.addSubWidget(addUserButton);
+        accessStat.addSubWidget(sharedUserTextField, addUserButton);
         accessStat.setMinimumExpandedDimensions(125, 40);
 
         addRenderableWidget(rebootButton = new WidgetButtonExtended(leftPos + 110, topPos + 17, 60, 20, xlate("pneumaticcraft.gui.securityStation.reboot")).withTag("reboot"));

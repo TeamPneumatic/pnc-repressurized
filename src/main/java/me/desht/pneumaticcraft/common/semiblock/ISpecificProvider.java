@@ -21,9 +21,14 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public interface ISpecificProvider {
+    String NBT_STOCK_ITEMS = "itemsStocked";
+    String NBT_STOCK_FLUID = "fluidStocked";
 
     boolean canProvide(ItemStack providingStack);
+    int getKeepItemsStocked();
+    void setKeepItemsStocked(int keepStocked);
 
     boolean canProvide(FluidStack providingStack);
-
+    int getKeepFluidStocked();
+    void setKeepFluidsStocked(int keepStocked);
 }

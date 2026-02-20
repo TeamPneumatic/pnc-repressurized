@@ -28,6 +28,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class LogisticsActiveProviderEntity extends AbstractLogisticsFrameEntity implements ISpecificProvider {
+    private int keepItemsStocked = 0;
+    private int keepFluidStocked = 0;
+
     public LogisticsActiveProviderEntity(EntityType<?> entityTypeIn, Level worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -60,5 +63,25 @@ public class LogisticsActiveProviderEntity extends AbstractLogisticsFrameEntity 
     @Override
     public boolean canProvide(FluidStack providingStack) {
         return passesFilter(providingStack.getFluid());
+    }
+
+    @Override
+    public int getKeepItemsStocked() {
+        return keepItemsStocked;
+    }
+
+    @Override
+    public int getKeepFluidStocked() {
+        return keepFluidStocked;
+    }
+
+    @Override
+    public void setKeepItemsStocked(int keepStocked) {
+        this.keepItemsStocked = keepStocked;
+    }
+
+    @Override
+    public void setKeepFluidsStocked(int keepStocked) {
+        this.keepFluidStocked = keepStocked;
     }
 }

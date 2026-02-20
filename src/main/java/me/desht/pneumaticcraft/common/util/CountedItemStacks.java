@@ -79,4 +79,10 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
         });
         return coalesced;
     }
+
+    public int adjust(ItemStack stack, int amount) {
+        int adjusted = Math.max(0, getOrDefault(stack, 0) + amount);
+        put(stack, adjusted);
+        return adjusted;
+    }
 }

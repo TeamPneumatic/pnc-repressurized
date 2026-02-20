@@ -97,10 +97,10 @@ public class DroneAILogistics extends Goal {
         if (curTask == null) return false;
         if (!curAI.canContinueToUse()) {
             if (curAI instanceof DroneEntityAIInventoryImport) {
-                curTask.requester.clearIncomingStack(curTask.transportingItem);
+                curTask.requester.clearIncomingStack(curTask.itemStack());
                 return clearAIAndProvideAgain();
             } else if (curAI instanceof DroneAILiquidImport) {
-                curTask.requester.clearIncomingStack(curTask.transportingFluid);
+                curTask.requester.clearIncomingStack(curTask.fluidStack());
                 return clearAIAndProvideAgain();
             } else {
                 curAI = null;
@@ -123,23 +123,20 @@ public class DroneAILogistics extends Goal {
     }
 
     public boolean execute(LogisticsTask task) {
-        if (!drone.getInv().getStackInSlot(0).isEmpty() && !task.transportingItem.isEmpty()) {
+        if (!drone.getInv().getStackInSlot(0).isEmpty() && !task.itemStack().isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
-            curAI = new DroneEntityAIInventoryExport(drone,
-                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.transportingItem));
-        } else if (drone.getFluidTank().getFluidAmount() > 0 && !task.transportingFluid.isEmpty()) {
+            curAI = new DroneEntityAIInventoryExport(drone, FakeWidgetLogistics.requestItem(task));
+        } else if (drone.getFluidTank().getFluidAmount() > 0 && !task.fluidStack().isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
-            curAI = new DroneAILiquidExport<>(drone,
-                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.transportingFluid));
-        } else if (!task.transportingItem.isEmpty()) {
+            curAI = new DroneAILiquidExport<>(drone, FakeWidgetLogistics.requestFluid(task));
+        } else if (!task.itemStack().isEmpty()) {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
-            curAI = new DroneEntityAIInventoryImport(drone,
-                    new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getSide(), task.transportingItem));
+            curAI = new DroneEntityAIInventoryImport(drone, FakeWidgetLogistics.provideItem(task));
         } else {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
-            curAI = new DroneAILiquidImport<>(drone,
-                    new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getSide(), task.transportingFluid));
+            curAI = new DroneAILiquidImport<>(drone, FakeWidgetLogistics.provideFluid(task));
         }
+
         if (curAI.canUse()) {
             task.informRequester();
             return true;
@@ -184,6 +181,22 @@ public class DroneAILogistics extends Goal {
             this.fluid = fluid;
             this.area = Set.copyOf(area);
             System.arraycopy(sides, 0, this.sides, 0, 6);
+        }
+
+        private static FakeWidgetLogistics requestItem(LogisticsTask task) {
+            return new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.itemStack());
+        }
+
+        private static FakeWidgetLogistics requestFluid(LogisticsTask task) {
+            return new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.fluidStack());
+        }
+
+        private static FakeWidgetLogistics provideItem(LogisticsTask task) {
+            return new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getSide(), task.itemStack());
+        }
+
+        private static FakeWidgetLogistics provideFluid(LogisticsTask task) {
+            return new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getSide(), task.fluidStack());
         }
 
         @Override

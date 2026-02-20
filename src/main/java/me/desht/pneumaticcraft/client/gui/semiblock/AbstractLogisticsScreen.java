@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.inventory.slot.PhantomSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
+import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -42,8 +43,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -64,8 +66,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     private WidgetButtonExtended itemWhitelist;
     private WidgetButtonExtended fluidWhitelist;
     private final List<WidgetFluidStack> fluidWidgets = new ArrayList<>();
-    private WidgetTextFieldNumber minItemsField;
-    private WidgetTextFieldNumber minFluidField;
+    private LimitFields minFields, stockFields;
 
     public AbstractLogisticsScreen(LogisticsMenu menu, Inventory inv, Component displayString) {
         super(menu, inv, displayString);
@@ -140,45 +141,57 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         addFilterTab();
         addJeiFilterInfoTab();
 
-        if (logistics instanceof ISpecificRequester) {
-            addMinOrderSizeTab();
+        if (logistics instanceof ISpecificRequester sr) {
+            minFields = addLimitsTab("min", Items.CHEST, sr.getMinItemOrderSize(), sr.getMinFluidOrderSize(), 1);
+        }
+        if (logistics instanceof ISpecificProvider sp) {
+            stockFields = addLimitsTab("stock", Items.BARREL, sp.getKeepItemsStocked(), sp.getKeepFluidStocked(), 0);
         }
     }
 
-    private void addMinOrderSizeTab() {
-        WidgetAnimatedStat minAmountStat = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.min_amount"), new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
+    private LimitFields addLimitsTab(String what, Item iconItem, int itemAmount, int fluidAmount, int min) {
+        String baseKey = "pneumaticcraft.gui.logistics_frame." + what;
+        var stat = addAnimatedStat(
+                xlate(baseKey + "_amount"), iconItem.getDefaultInstance(), 0xFFC0C080, false
+        );
 
-        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.logistics_frame.min_items"));
-        minItemsLabel.setTooltipText(xlate("pneumaticcraft.gui.logistics_frame.min_items.tooltip"));
-        minAmountStat.addSubWidget(minItemsLabel);
-        minItemsField = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
-                .setRange(1, 64)
+        var itemLabel = new WidgetLabel(5, 20, xlate(baseKey + "_items"))
+                .setTooltipText(xlate(baseKey + "_items.tooltip"));
+        var itemField = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
+                .setRange(min, 64)
                 .setAdjustments(1, 10)
-                .setValue(((ISpecificRequester) logistics).getMinItemOrderSize());
-        minItemsField.setResponder(s -> sendDelayed(8));
-        minAmountStat.addSubWidget(minItemsField);
+                .setValue(itemAmount);
+        itemField.setResponder(s -> sendDelayed(8));
 
-        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, xlate("pneumaticcraft.gui.logistics_frame.min_fluid"));
-        minFluidLabel.setTooltipText(xlate("pneumaticcraft.gui.logistics_frame.min_fluid.tooltip"));
-        minAmountStat.addSubWidget(minFluidLabel);
-        minFluidField = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
-                .setRange(1, 16000)
+        var fluidLabel = new WidgetLabel(5, 47, xlate(baseKey + "_fluid"))
+                .setTooltipText(xlate(baseKey + "_fluid.tooltip"));
+        var fluidField = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
+                .setRange(min, 16000)
                 .setAdjustments(100, 1000)
-                .setValue(((ISpecificRequester) logistics).getMinFluidOrderSize());
-        minFluidField.setResponder(s -> sendDelayed(8));
-        minAmountStat.addSubWidget(minFluidField);
+                .setValue(fluidAmount);
+        fluidField.setResponder(s -> sendDelayed(8));
 
-        int w = Math.max(minItemsLabel.getWidth(), minFluidLabel.getWidth());
-        minAmountStat.setMinimumExpandedDimensions(w, 75);
+        stat.addSubWidget(itemLabel, itemField, fluidLabel, fluidField);
+        int w = Math.max(itemLabel.getWidth(), fluidLabel.getWidth());
+        stat.setMinimumExpandedDimensions(w, 75);
+
+        return new LimitFields(itemField, fluidField);
     }
 
     @Override
     protected void doDelayedAction() {
+        boolean sync = false;
         if (logistics instanceof ISpecificRequester s) {
-            s.setMinItemOrderSize(minItemsField.getIntValue());
-            s.setMinFluidOrderSize(minFluidField.getIntValue());
-            syncToServer();
+            s.setMinItemOrderSize(minFields.items.getIntValue());
+            s.setMinFluidOrderSize(minFields.fluids.getIntValue());
+            sync = true;
         }
+        if (logistics instanceof ISpecificProvider p) {
+            p.setKeepItemsStocked(stockFields.items.getIntValue());
+            p.setKeepFluidsStocked(stockFields.fluids.getIntValue());
+            sync = true;
+        }
+        if (sync) syncToServer();
     }
 
     public void updateItemFilter(int slot, ItemStack stack) {
@@ -238,7 +251,6 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         })
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")
                 .setChecked(logistics.isMatchDurability());
-        filterTab.addSubWidget(matchDurability);
 
         WidgetCheckBox matchComponents = new WidgetCheckBox(5, 36, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchComponents"), b -> {
             logistics.setMatchComponents(b.checked);
@@ -246,7 +258,6 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         })
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchComponents.tooltip")
                 .setChecked(logistics.isMatchComponents());
-        filterTab.addSubWidget(matchComponents);
 
         WidgetCheckBox matchModId = new WidgetCheckBox(5, 52, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> {
             logistics.setMatchModId(b.checked);
@@ -254,7 +265,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         })
                 .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")
                 .setChecked(logistics.isMatchModId());
-        filterTab.addSubWidget(matchModId);
+
+        filterTab.addSubWidget(matchDurability, matchComponents, matchModId);
     }
 
     @Override
@@ -324,5 +336,8 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
                 .findFirst()
                 .orElse(null);
 
+    }
+
+    private record LimitFields(WidgetTextFieldNumber items, WidgetTextFieldNumber fluids) {
     }
 }

@@ -17,14 +17,16 @@
 
 package me.desht.pneumaticcraft.common.drone;
 
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.BlockEntityAndFace;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
+import me.desht.pneumaticcraft.common.util.CountedFluidStacks;
+import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -36,6 +38,15 @@ import java.util.PriorityQueue;
 import java.util.stream.IntStream;
 
 public class LogisticsManager {
+    /**
+     * 4 priority levels:
+     * <ul>
+     * <li>Active/passive provider: 0</li>
+     * <li>Default Storage: 1</li>
+     * <li>Storage: 2</li>
+     * <li>Requester: 3</li>
+     * </ul>
+     */
     private static final int N_PRIORITIES = 4;
 
     private final List<List<AbstractLogisticsFrameEntity>> logistics = new ArrayList<>();
@@ -55,8 +66,9 @@ public class LogisticsManager {
     public PriorityQueue<LogisticsTask> getTasks(Object holdingStack, boolean droneAccess) {
         this.droneAccess = droneAccess;
 
-        ItemStack item = holdingStack instanceof ItemStack ? (ItemStack) holdingStack : ItemStack.EMPTY;
-        FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
+        ItemStack item = holdingStack instanceof ItemStack is ? is : ItemStack.EMPTY;
+        FluidStack fluid = holdingStack instanceof FluidStack fs ? fs : FluidStack.EMPTY;
+
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
             for (int requesterId = 0; requesterId < logistics.get(priority).size(); requesterId++) {
@@ -74,24 +86,27 @@ public class LogisticsManager {
                             if (!item.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, item, false);
                                 if (requestedAmount > 0) {
-                                    ItemStack stack = item.copy();
-                                    stack.setCount(requestedAmount);
-                                    tasks.add(new LogisticsTask(provider, requester, stack));
+                                    tasks.add(new LogisticsTask(provider, requester, item.copyWithCount(requestedAmount)));
                                     return tasks;
                                 }
                             } else if (!fluid.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, fluid, false);
                                 if (requestedAmount > 0) {
-                                    fluid = fluid.copy();
-                                    fluid.setAmount(requestedAmount);
-                                    tasks.add(new LogisticsTask(provider, requester, fluid));
+                                    tasks.add(new LogisticsTask(provider, requester, fluid.copyWithAmount(requestedAmount)));
                                     return tasks;
                                 }
                             }
                             // it could be that the drone is carrying some item or fluid it can't drop off right now
                             // however it might still be able to transfer the other resource type (i.e. transfer items if
                             // it's holding a fluid, and vice versa)
-                            tryProvide(provider, requester, tasks, item.isEmpty(), fluid.isEmpty());
+                            if (provider.getCachedTileEntity() != null) {
+                                if (item.isEmpty()) {
+                                    tryProvideItems(provider, requester, tasks);
+                                }
+                                if (fluid.isEmpty()) {
+                                    tryProvideFluids(provider, requester, tasks);
+                                }
+                            }
 
                             // if we provided something to the requester, move the requester and provider to last in their
                             // lists so another frame gets selected first, effectively round-robin.
@@ -107,131 +122,158 @@ public class LogisticsManager {
                 }
             }
         }
+
         return tasks;
     }
 
-    private void tryProvide(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, PriorityQueue<LogisticsTask> tasks, boolean tryItems, boolean tryFluids) {
-        if (provider.getCachedTileEntity() == null) return;
+    private void tryProvideItems(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, PriorityQueue<LogisticsTask> tasks) {
+        IOHelper.getInventoryForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(providerHandler -> {
+            if (requester instanceof IProvidingInventoryListener prov) {
+                prov.notify(new BlockEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
+            }
+            CountedItemStacks counted;
+            int keepStock = 0;
+            if (provider instanceof ISpecificProvider sp && sp.getKeepItemsStocked() > 0) {
+                counted = new CountedItemStacks(providerHandler);
+                keepStock = sp.getKeepItemsStocked();
+            } else {
+                counted = null;
+            }
 
-        if (tryItems) {
-            IOHelper.getInventoryForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(itemHandler -> {
-                if (requester instanceof IProvidingInventoryListener)
-                    ((IProvidingInventoryListener) requester).notify(new BlockEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
-                for (int i = 0; i < itemHandler.getSlots(); i++) {
-                    ItemStack providingStack = itemHandler.extractItem(i, 64, true);
-                    if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                        int requestedAmount = getRequestedAmount(requester, providingStack, true);
-                        if (requestedAmount > 0) {
-                            ItemStack stack = providingStack.copy();
-                            stack.setCount(requestedAmount);
-                            tasks.add(new LogisticsTask(provider, requester, stack));
-                            if (droneAccess) {
-                                // a logistics drone just handles the first applicable task, so we can bail here
-                                // - but logistics modules process all applicable tasks!
-                                return;
+            for (int i = 0; i < providerHandler.getSlots(); i++) {
+                ItemStack providedStack = providerHandler.extractItem(i, 64, true);
+                if (!providedStack.isEmpty() && (!(provider instanceof ISpecificProvider sp) || sp.canProvide(providedStack))) {
+                    int requested = getRequestedAmount(requester, providedStack, true);
+                    if (requested > 0) {
+                        if (counted != null) {
+                            int remaining = counted.getInt(providedStack) - requested - keepStock;
+                            if (remaining < 0) {
+                                // reduce amount if needed so stock levels are honoured
+                                requested += remaining;
                             }
+                            counted.adjust(providedStack, -requested);
+                        }
+                        tasks.add(new LogisticsTask(provider, requester, providedStack.copyWithCount(requested)));
+                        if (droneAccess) {
+                            // a logistics drone just handles the first applicable task, so we can bail here
+                            // - but logistics modules process all applicable tasks!
+                            return;
                         }
                     }
                 }
-            });
-        }
-
-        if (tryFluids) {
-            IOHelper.getFluidHandlerForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(fluidHandler -> {
-                FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
-                if (!providingStack.isEmpty()) {
-                    boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
-                    if (canDrain &&
-                            (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                        int requestedAmount = getRequestedAmount(requester, providingStack, true);
-                        if (requestedAmount > 0) {
-                            FluidStack stack = providingStack.copy();
-                            stack.setAmount(requestedAmount);
-                            tasks.add(new LogisticsTask(provider, requester, stack));
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, ItemStack providingStack, boolean honourMin) {
-        BlockEntity te = requester.getCachedTileEntity();
-        if (te == null) return 0;
-
-        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getMaxStackSize();
-        int minOrderSize = honourMin && requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).getMinItemOrderSize() : 1;
-
-        if (requestedAmount < minOrderSize) return 0;
-        providingStack = providingStack.copy();
-        if (requestedAmount < providingStack.getCount()) providingStack.setCount(requestedAmount);
-        ItemStack remainder = providingStack.copy();
-        remainder.grow(requester.getIncomingItems(providingStack));
-        remainder = IOHelper.insert(te, remainder, requester.getSide(), true);
-        providingStack.shrink(remainder.getCount());
-        return providingStack.getCount() < minOrderSize ? 0 : Math.max(providingStack.getCount(), 0);
-    }
-
-    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, FluidStack providingStack, boolean honourMin) {
-        BlockEntity te = requester.getCachedTileEntity();
-        if (te == null) return 0;
-
-        int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getAmount();
-        int minOrderSize = honourMin && requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).getMinFluidOrderSize() : 1;
-
-        if (requestedAmount < minOrderSize) return 0;
-        providingStack = providingStack.copy();
-        if (requestedAmount < providingStack.getAmount()) providingStack.setAmount(requestedAmount);
-        FluidStack remainder = providingStack.copy();
-        remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
-        IOHelper.getFluidHandlerForBlock(te, requester.getSide()).ifPresent(fluidHandler -> {
-            int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
-            if (fluidFilled > 0) {
-                remainder.shrink(fluidFilled);
             }
         });
-        providingStack.shrink(remainder.getAmount());
-        return providingStack.getAmount() < minOrderSize ? 0 : providingStack.getAmount();
+    }
+
+    private static void tryProvideFluids(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, PriorityQueue<LogisticsTask> tasks) {
+        IOHelper.getFluidHandlerForBlock(provider.getCachedTileEntity(), provider.getSide()).ifPresent(providerHandler -> {
+            CountedFluidStacks counted;
+            int keepStock = 0;
+            if (provider instanceof ISpecificProvider sp && sp.getKeepFluidStocked() > 0) {
+                counted = new CountedFluidStacks(providerHandler);
+                keepStock = sp.getKeepFluidStocked();
+            } else {
+                counted = null;
+            }
+
+            FluidStack providingStack = providerHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
+            if (!providingStack.isEmpty()) {
+                boolean canDrain = IntStream.range(0, providerHandler.getTanks()).anyMatch(i -> providerHandler.isFluidValid(i, providingStack));
+                if (canDrain && (!(provider instanceof ISpecificProvider sp) || sp.canProvide(providingStack))) {
+                    int requested = getRequestedAmount(requester, providingStack, true);
+                    if (requested > 0) {
+                        if (counted != null) {
+                            int remaining = counted.getInt(providingStack) - requested - keepStock;
+                            if (remaining < 0) {
+                                // reduce amount if needed so stock levels are honoured
+                                requested += remaining;
+                            }
+                            counted.adjust(providingStack, -requested);
+                        }
+                        tasks.add(new LogisticsTask(provider, requester, providingStack.copyWithAmount(requested)));
+                    }
+                }
+            }
+        });
+    }
+
+    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, ItemStack providedStack, boolean honourMin) {
+        int requestedAmount = requester instanceof ISpecificRequester sr ? sr.amountRequested(providedStack) : providedStack.getCount();
+        int minOrderSize = honourMin && requester instanceof ISpecificRequester sr ? sr.getMinItemOrderSize() : 1;
+
+        if (requestedAmount >= minOrderSize) {
+            ItemStack toProvide = providedStack.copyWithCount(Math.min(providedStack.getCount(), requestedAmount));
+            ItemStack remainder = toProvide.copyWithCount(toProvide.getCount() + requester.getIncomingItems(toProvide));
+            ItemStack excess = IOHelper.insert(requester.getCachedTileEntity(), remainder, requester.getSide(), true);
+            toProvide.shrink(excess.getCount());
+            if (toProvide.getCount() >= minOrderSize) {
+                return Math.max(toProvide.getCount(), 0);
+            }
+        }
+        return 0;
+    }
+
+    private static int getRequestedAmount(AbstractLogisticsFrameEntity requester, FluidStack providedStack, boolean honourMin) {
+        int requestedAmount = requester instanceof ISpecificRequester sr ? sr.amountRequested(providedStack) : providedStack.getAmount();
+        int minOrderSize = honourMin && requester instanceof ISpecificRequester sr ? sr.getMinFluidOrderSize() : 1;
+
+        if (requestedAmount >= minOrderSize) {
+            FluidStack toProvide = providedStack.copyWithAmount(Math.min(providedStack.getAmount(), requestedAmount));
+            FluidStack remainder = toProvide.copyWithAmount(toProvide.getAmount() + requester.getIncomingFluid(toProvide.getFluid()));
+            IOHelper.getFluidHandlerForBlock(requester.getCachedTileEntity(), requester.getSide()).ifPresent(fluidHandler -> {
+                int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
+                if (fluidFilled > 0) {
+                    remainder.shrink(fluidFilled);
+                }
+            });
+            toProvide.shrink(remainder.getAmount());
+            if (toProvide.getAmount() >= minOrderSize) {
+                return Math.max(toProvide.getAmount(), 0);
+            }
+        }
+
+        return 0;
     }
 
     public static class LogisticsTask implements Comparable<LogisticsTask> {
         public final AbstractLogisticsFrameEntity provider, requester;
-        public final ItemStack transportingItem;
-        public final FluidStack transportingFluid;
+        public final Either<ItemStack,FluidStack> resource;
 
         LogisticsTask(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester, @Nonnull ItemStack transportingItem) {
             this.provider = provider;
             this.requester = requester;
-            this.transportingItem = transportingItem;
-            this.transportingFluid = FluidStack.EMPTY;
+            this.resource = Either.left(transportingItem);
         }
 
         LogisticsTask(AbstractLogisticsFrameEntity provider, AbstractLogisticsFrameEntity requester,
                       FluidStack transportingFluid) {
             this.provider = provider;
             this.requester = requester;
-            this.transportingItem = ItemStack.EMPTY;
-            this.transportingFluid = transportingFluid;
+            this.resource = Either.right(transportingFluid);
         }
 
         public void informRequester() {
-            if (!transportingItem.isEmpty()) {
-                requester.informIncomingStack(transportingItem);
-            } else {
-                requester.informIncomingStack(transportingFluid);
-            }
+            resource.ifLeft(requester::informIncomingStack).ifRight(requester::informIncomingStack);
+        }
+
+        public ItemStack itemStack() {
+            return resource.left().orElse(ItemStack.EMPTY);
+        }
+
+        public FluidStack fluidStack() {
+            return resource.right().orElse(FluidStack.EMPTY);
         }
 
         public boolean isStillValid(Object stack) {
-            if (stack instanceof ItemStack) {
-                if (!transportingItem.isEmpty()) {
-                    int requestedAmount = getRequestedAmount(requester, (ItemStack) stack, false);
-                    return requestedAmount == ((ItemStack) stack).getCount();
+            if (stack instanceof ItemStack is) {
+                if (!itemStack().isEmpty()) {
+                    int requestedAmount = getRequestedAmount(requester, is, false);
+                    return requestedAmount == is.getCount();
                 }
-            } else if (stack instanceof FluidStack) {
-                if (!transportingFluid.isEmpty()) {
-                    int requestedAmount = getRequestedAmount(requester, (FluidStack) stack, false);
-                    return requestedAmount == ((FluidStack) stack).getAmount();
+            } else if (stack instanceof FluidStack fs) {
+                if (!fluidStack().isEmpty()) {
+                    int requestedAmount = getRequestedAmount(requester, fs, false);
+                    return requestedAmount == fs.getAmount();
                 }
             } else {
                 throw new IllegalArgumentException("arg must be ItemStack or FluidStack! " + stack);
@@ -240,9 +282,9 @@ public class LogisticsManager {
         }
 
         @Override
-        public int compareTo(LogisticsTask task) {
-            int value = !transportingItem.isEmpty() ? transportingItem.getCount() * 100 : transportingFluid.getAmount();
-            int otherValue = !task.transportingItem.isEmpty() ? task.transportingItem.getCount() * 100 : task.transportingFluid.getAmount();
+        public int compareTo(LogisticsTask otherTask) {
+            int value = resource.map(stack -> stack.getCount() * 100, FluidStack::getAmount);
+            int otherValue = otherTask.resource.map(stack -> stack.getCount() * 100, FluidStack::getAmount);
             return otherValue - value;
         }
 

@@ -61,6 +61,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -177,8 +178,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void addSubWidget(AbstractWidget widget) {
-        subWidgets.add(widget);
+    public void addSubWidget(AbstractWidget... widget) {
+        subWidgets.addAll(Arrays.asList(widget));
     }
 
     public void removeSubWidget(AbstractWidget widget) {

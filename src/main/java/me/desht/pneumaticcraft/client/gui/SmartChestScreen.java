@@ -140,12 +140,14 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
         stat.setMinimumExpandedDimensions(80, 80);
 
         int yTop = 15, xLeft = 25;
-        stat.addSubWidget(makePushPullButton(RelativeFace.TOP, xLeft + 22, yTop));
-        stat.addSubWidget(makePushPullButton(RelativeFace.LEFT, xLeft, yTop + 22));
-        stat.addSubWidget(makePushPullButton(RelativeFace.FRONT, xLeft + 22, yTop + 22));
-        stat.addSubWidget(makePushPullButton(RelativeFace.RIGHT, xLeft + 44, yTop + 22));
-        stat.addSubWidget(makePushPullButton(RelativeFace.BOTTOM, xLeft + 22, yTop + 44));
-        stat.addSubWidget(makePushPullButton(RelativeFace.BACK, xLeft + 44, yTop + 44));
+        stat.addSubWidget(
+                makePushPullButton(RelativeFace.TOP, xLeft + 22, yTop),
+                makePushPullButton(RelativeFace.LEFT, xLeft, yTop + 22),
+                makePushPullButton(RelativeFace.FRONT, xLeft + 22, yTop + 22),
+                makePushPullButton(RelativeFace.RIGHT, xLeft + 44, yTop + 22),
+                makePushPullButton(RelativeFace.BOTTOM, xLeft + 22, yTop + 44),
+                makePushPullButton(RelativeFace.BACK, xLeft + 44, yTop + 44)
+        );
     }
 
     private WidgetButtonExtended makePushPullButton(RelativeFace face, int x, int y) {

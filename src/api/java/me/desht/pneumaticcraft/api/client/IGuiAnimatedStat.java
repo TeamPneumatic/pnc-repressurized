@@ -304,7 +304,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
      * added to your GUI separately.
      * @param widget the subwidget
      */
-    void addSubWidget(AbstractWidget widget);
+    void addSubWidget(AbstractWidget... widget);
 
     /**
      * Define X offsets for subwidget rendering. You should not normally need to call this method.
