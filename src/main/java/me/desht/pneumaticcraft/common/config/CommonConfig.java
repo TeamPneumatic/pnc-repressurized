@@ -42,6 +42,7 @@ public class CommonConfig {
     public static class Worldgen {
         public ModConfigSpec.ConfigValue<List<? extends String>> oilWorldGenDimensionWhitelist;
         public ModConfigSpec.ConfigValue<List<? extends String>> oilWorldGenDimensionBlacklist;
+        public ModConfigSpec.BooleanValue noOilLakesInStructures;
     }
     public static class Machines {
         public ModConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -257,6 +258,10 @@ public class CommonConfig {
                 .comment("Oil worldgen blacklist by dimension ID: add dimension ID's to this list if you don't want oil lake worldgen to happen there. You can wildcard this; e.g 'modid:*' blacklists ALL dimensions of namespace 'modid'.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist")
                 .defineList("oil_world_gen_dimension_blacklist", Lists.newArrayList(), () -> "", WildcardedRLMatcher::isValidRL);
+        worldgen.noOilLakesInStructures = builder
+                .comment("If true, oil lakes will not generate within the bounds of any structure. If false, the structure tag 'pneumaticcraft:no_oil_lakes' is used to define which structures should not have oil lakes in them")
+                .translation("pneumaticcraft.config.common.general.no_oil_lakes_in_structures")
+                .define("no_oil_lakes_in_structures", true);
         builder.pop();
 
         builder.push("machines");

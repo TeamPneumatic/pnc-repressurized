@@ -38,20 +38,25 @@ public class OilLakeFilter extends PlacementFilter {
             return false;
         }
 
-        // don't allow oil lakes to generate within any structure feature in pneumaticcraft:no_oil_lakes tag
         if (context.getLevel() instanceof WorldGenRegion region) {
             SectionPos sectionPos = SectionPos.of(origin);
             ChunkAccess chunkAccess = region.getChunk(origin);
 
             Registry<Structure> reg = region.registryAccess().registryOrThrow(Registries.STRUCTURE);
-            StructureManager sfManager = region.getLevel().structureManager().forWorldGenRegion(region);
+            StructureManager manager = region.getLevel().structureManager().forWorldGenRegion(region);
 
+            if (ConfigHelper.common().worldgen.noOilLakesInStructures.get() && manager.hasAnyStructureAt(origin)) {
+                return false;
+            }
+
+            // don't allow oil lakes to generate within any structure in pneumaticcraft:no_oil_lakes tag
             for (Holder<Structure> structureHolder : reg.getOrCreateTag(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
-                StructureStart startForFeature = sfManager.getStartForStructure(sectionPos, structureHolder.value(), chunkAccess);
-                if (startForFeature != null && startForFeature.isValid()) {
+                StructureStart start = manager.getStartForStructure(sectionPos, structureHolder.value(), chunkAccess);
+                if (start != null && start.isValid()) {
                     return false;
                 }
             }
+
         }
 
         return true;

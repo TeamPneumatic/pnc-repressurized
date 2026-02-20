@@ -991,6 +991,7 @@
    "pneumaticcraft.config.common.general.min_fluid_fuel_temperature" : "Min temperature for fluid fueling",
    "pneumaticcraft.config.common.general.oil_world_gen_dimension_blacklist" : "Oil lake dimension blacklist",
    "pneumaticcraft.config.common.general.oil_world_gen_dimension_whitelist" : "Oil lake dimension whitelist",
+   "pneumaticcraft.config.common.general.no_oil_lakes_in_structures" : "Disable oil lake generation in all structures",
    "pneumaticcraft.config.common.general.plastic_brick_damage" : "Plastic construction brick damage",
    "pneumaticcraft.config.common.general.use_up_dyes_when_coloring" : "Use up dyes when coloring?",
    "pneumaticcraft.config.common.integration.cofh_holding_multiplier" : "CoFH Holding Enchantment multiplier",
