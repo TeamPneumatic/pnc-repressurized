@@ -329,12 +329,19 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         }
 
         private static void handleInput(InputConstants.Key key) {
-            Optional.ofNullable(in2checkbox.get(InputRecord.forKey(key))).ifPresent(WidgetKeybindCheckBox::handleClick);
+            if (key.getValue() != -1) {
+                WidgetKeybindCheckBox cb = in2checkbox.get(InputRecord.forKey(key));
+                if (cb != null) {
+                    cb.handleClick();
+                }
+            }
         }
 
         private static void updateBinding(KeyMapping mapping, WidgetKeybindCheckBox widget) {
             in2checkbox.values().remove(widget);
-            in2checkbox.put(InputRecord.forKeyMapping(mapping), widget);
+            if (mapping.getKey().getValue() != -1) {
+                in2checkbox.put(InputRecord.forKeyMapping(mapping), widget);
+            }
         }
     }
 
