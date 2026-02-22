@@ -243,7 +243,9 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
 
             return ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack)).map(holder -> {
                 HeatFrameCoolingRecipe recipe = holder.value();
-                boolean extractedOK = recipe.getInput().map(
+                ItemStack result = recipe.getOutput().copyWithCount(recipe.calculateOutputQuantity(logic.getTemperature()));
+                boolean spaceForOutput = ItemHandlerHelper.insertItem(handler, result, true).isEmpty();
+                boolean extractedOK = spaceForOutput && recipe.getInput().map(
                         ingredient -> handler.extractItem(slot, 1, false).getCount() == 1,
                         fluidIngredient -> {
                             if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
@@ -259,7 +261,6 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
                             }).orElse(false);
                         });
                 if (extractedOK) {
-                    ItemStack result = recipe.getOutput().copyWithCount(recipe.calculateOutputQuantity(logic.getTemperature()));
                     ItemHandlerHelper.insertItem(handler, result, false);
                     lastValidSlot = slot;
                 }
