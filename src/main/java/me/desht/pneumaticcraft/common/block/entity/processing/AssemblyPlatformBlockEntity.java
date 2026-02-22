@@ -29,7 +29,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
@@ -142,20 +141,12 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     @Override
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         super.onNeighborBlockUpdate(fromPos);
-        invalidateSystem();
+
+        AssemblyControllerBlockEntity.invalidateSystem(nonNullLevel(), controllerPos);
     }
 
     @Override
     public IItemHandler getItemHandler(@Nullable Direction dir) {
         return itemHandler;
-    }
-
-    private void invalidateSystem() {
-        if (controllerPos != null) {
-            BlockEntity te = nonNullLevel().getBlockEntity(controllerPos);
-            if (te instanceof AssemblyControllerBlockEntity) {
-                ((AssemblyControllerBlockEntity) te).invalidateAssemblySystem();
-            }
-        }
     }
 }

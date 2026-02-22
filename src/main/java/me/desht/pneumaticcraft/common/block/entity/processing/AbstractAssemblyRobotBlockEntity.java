@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.block.entity.processing;
 import me.desht.pneumaticcraft.common.block.entity.AbstractTickingBlockEntity;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
@@ -58,7 +57,6 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
         System.arraycopy(targetAngles, 0, oldAngles, 0, targetAngles.length);
     }
 
-
     @Override
     public void setControllerPos(BlockPos controllerPos) {
         this.controllerPos = controllerPos;
@@ -68,10 +66,15 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         super.onNeighborBlockUpdate(fromPos);
 
-        if (controllerPos != null) {
-            nonNullLevel().getBlockEntity(controllerPos, ModBlockEntityTypes.ASSEMBLY_CONTROLLER.get())
-                    .ifPresent(AssemblyControllerBlockEntity::invalidateAssemblySystem);
-        }
+        AssemblyControllerBlockEntity.invalidateSystem(nonNullLevel(), controllerPos);
+    }
+
+    @Override
+    public void onBlockRotated() {
+        super.onBlockRotated();
+
+        reset();
+        gotoHomePosition();
     }
 
     @Override
@@ -80,19 +83,18 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
 
         System.arraycopy(angles, 0, oldAngles, 0, angles.length);
 
-        // move the arms and claw toward their destination
+        // move the arms and claw toward their destination, choosing the shortest path
         for (int i = 0; i < angles.length; i++) {
-            if (angles[i] > targetAngles[i]) {
-                angles[i] = Math.max(angles[i] - BlockEntityConstants.ASSEMBLY_IO_UNIT_ARM_SPEED * (slowMode ? 0.1F : 1) * speed, targetAngles[i]);
-            } else if (angles[i] < targetAngles[i]) {
-                angles[i] = Math.min(angles[i] + BlockEntityConstants.ASSEMBLY_IO_UNIT_ARM_SPEED * (slowMode ? 0.1F : 1) * speed, targetAngles[i]);
-            }
+            float delta = canonicalAngle(targetAngles[i] - angles[i]);
+            float adjust = Math.min(Math.abs(delta), BlockEntityConstants.ASSEMBLY_IO_UNIT_ARM_SPEED * (slowMode ? 0.1F : 1) * speed)
+                    * Math.signum(delta);
+            angles[i] += adjust;
         }
     }
 
     public void gotoHomePosition() {
         for (EnumAngles angle: EnumAngles.values()) {
-            targetAngles[angle.getIndex()] = angle.getHomeAngle();
+            targetAngles[angle.getIndex()] = angle.getHomeAngle(this);
         }
     }
 
@@ -206,7 +208,7 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
 
     boolean isDoneMoving() {
         for (int i = 0; i < angles.length; i++) {
-            if (!PneumaticCraftUtils.epsilonEquals(angles[i], targetAngles[i])) return false;
+            if (!PneumaticCraftUtils.epsilonEquals(canonicalAngle(angles[i]), canonicalAngle(targetAngles[i]))) return false;
         }
         return true;
     }
@@ -263,6 +265,16 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
         this.speed = speed;
     }
 
+    private static float canonicalAngle(float angle) {
+        while (angle <= -180f) {
+            angle += 360f;
+        }
+        while (angle > 180f) {
+            angle -= 360f;
+        }
+        return angle;
+    }
+
     enum EnumAngles {
         TURN(0),
         BASE(1),
@@ -286,8 +298,8 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
             return idx;
         }
 
-        public float getHomeAngle() {
-            return homeAngle;
+        public float getHomeAngle(AbstractAssemblyRobotBlockEntity be) {
+            return this == TURN ? canonicalAngle(be.getRotation().toYRot()) : homeAngle;
         }
     }
 

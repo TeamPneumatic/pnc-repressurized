@@ -47,6 +47,11 @@ public class AssemblyDrillBlock extends AbstractPneumaticCraftBlock implements P
     }
 
     @Override
+    public boolean isRotatable() {
+        return true;
+    }
+
+    @Override
     protected boolean isWaterloggable() {
         return true;
     }

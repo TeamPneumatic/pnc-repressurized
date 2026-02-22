@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -254,6 +255,13 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     @Override
     public AbstractContainerMenu createMenu(int i, Inventory playerInventory, Player playerEntity) {
         return new AssemblyControllerMenu(i, playerInventory, getBlockPos());
+    }
+
+    public static void invalidateSystem(Level level, @Nullable BlockPos controllerPos) {
+        if (controllerPos != null) {
+            level.getBlockEntity(controllerPos, ModBlockEntityTypes.ASSEMBLY_CONTROLLER.get())
+                    .ifPresent(AssemblyControllerBlockEntity::invalidateAssemblySystem);
+        }
     }
 
     public static class AssemblySystem {

@@ -47,6 +47,11 @@ public abstract class AbstractAssemblyIOUnitBlock extends AbstractPneumaticCraft
     }
 
     @Override
+    public boolean isRotatable() {
+        return true;
+    }
+
+    @Override
     protected boolean isWaterloggable() {
         return true;
     }

@@ -109,7 +109,7 @@ public class AssemblyLaserBlockEntity extends AbstractAssemblyRobotBlockEntity {
     @Override
     public boolean gotoNeighbour(TargetDirections targetDirections) {
         boolean diagonal = super.gotoNeighbour(targetDirections);
-        targetAngles[EnumAngles.TURN.getIndex()] -= ITEM_SIZE * 0.45D;
+        targetAngles[EnumAngles.TURN.getIndex()] -= ITEM_SIZE * 0.45F;
         return diagonal;
     }
 
