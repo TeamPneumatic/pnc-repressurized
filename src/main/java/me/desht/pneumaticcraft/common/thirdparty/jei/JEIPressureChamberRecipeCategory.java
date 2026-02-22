@@ -171,8 +171,14 @@ public class JEIPressureChamberRecipeCategory extends AbstractPNCCategory<Pressu
 
     @Override
     public void draw(PressureChamberRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
+        boolean tierTwo = recipe.getCraftingPressureForDisplay() > 5f;
         float pressure = recipe.getCraftingPressureForDisplay() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        PressureGaugeRenderer2D.drawPressureGauge(graphics, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
+
+        PressureGaugeRenderer2D.drawPressureGauge(graphics, Minecraft.getInstance().font, -1,
+                tierTwo ? PneumaticValues.MAX_PRESSURE_TIER_TWO : PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER,
+                tierTwo ? PneumaticValues.DANGER_PRESSURE_TIER_TWO : PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER,
+                recipe.getCraftingPressureForDisplay(), pressure, 130, 27
+        );
     }
 
     @Override

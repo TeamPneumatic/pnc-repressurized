@@ -177,7 +177,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
         public Serializer(IFactory<T> factory) {
             codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                     SizedIngredient.FLAT_CODEC.listOf().fieldOf("inputs").forGetter(PressureChamberRecipe::getInputs),
-                    Codec.floatRange(-1f, 5f).fieldOf("pressure").forGetter(PressureChamberRecipe::getPressure),
+                    Codec.floatRange(-1f, 20f).fieldOf("pressure").forGetter(PressureChamberRecipe::getPressure),
                     ItemStack.CODEC.listOf().fieldOf("results").forGetter(PressureChamberRecipe::getOutputs)
             ).apply(builder, factory::create));
             streamCodec = StreamCodec.composite(
