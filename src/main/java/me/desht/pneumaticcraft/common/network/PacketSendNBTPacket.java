@@ -24,6 +24,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
@@ -60,6 +61,10 @@ public record PacketSendNBTPacket(BlockPos pos, CompoundTag tag) implements Cust
         if (te != null) {
             try {
                 te.loadCustomOnly(message.tag(), ctx.player().registryAccess());
+                if (te instanceof RandomizableContainer r && !message.tag().contains("LootTable")) {
+                    // bit of a kludge to ensure loot table data gets cleared clientside
+                    r.setLootTable(null);
+                }
             } catch (Throwable e) {
                 TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
             }

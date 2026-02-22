@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
 import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockEntity;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -29,6 +30,9 @@ public enum BlockTrackLootable {
         // vanilla chests and related blocks
         addLootable((player, blockEntity) -> {
             if (blockEntity instanceof RandomizableContainerBlockEntity r && r.canOpen(player)) {
+                r.unpackLootTable(player);
+            } else if (blockEntity instanceof RandomizableContainer r) {
+                // decorated pots
                 r.unpackLootTable(player);
             }
         });
