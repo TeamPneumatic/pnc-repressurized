@@ -132,7 +132,10 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
 
-        builder.set(ModDataComponents.BLOCK_ENTITY_SAVED_INV, inventory.toContainerContents());
+        ItemContainerContents contents = inventory.toContainerContents();
+        if (contents != ItemContainerContents.EMPTY) {
+            builder.set(ModDataComponents.BLOCK_ENTITY_SAVED_INV, contents);
+        }
     }
 
     @Nullable
