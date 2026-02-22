@@ -72,6 +72,7 @@ public class ModItems {
     public static final DeferredItem<Item> RAW_SALMON_TEMPURA = register("raw_salmon_tempura");
     public static final DeferredItem<Item> UNASSEMBLED_NETHERITE_DRILL_BIT = register("unassembled_netherite_drill_bit");
     public static final DeferredItem<Item> COPPER_NUGGET = register("copper_nugget");
+    public static final DeferredItem<Item> UNASSEMBLED_REINFORCED_PRESSURE_CHAMBER_VALVE = register("unassembled_reinforced_pressure_chamber_valve");
 
     public static final DeferredItem<Item> SOURDOUGH_BREAD = registerFood("sourdough_bread", ModFoods.SOURDOUGH);
     public static final DeferredItem<Item> CHIPS = registerFood("chips", ModFoods.CHIPS);

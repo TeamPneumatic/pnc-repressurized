@@ -1,0 +1,40 @@
+{
+	"variants": {
+		"formed=false,facing=up": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve", "x": 90
+		},
+		"formed=true,facing=up": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed", "x": 90
+		},
+		"formed=false,facing=down": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve", "x": 270
+		},
+		"formed=true,facing=down": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed", "x": 270
+		},
+		"formed=false,facing=east": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve", "y": 90
+		},
+		"formed=true,facing=east": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed", "y": 90
+		},
+		"formed=false,facing=north": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve"
+		},
+		"formed=true,facing=north": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed"
+		},
+		"formed=false,facing=west": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve", "y": 270
+		},
+		"formed=true,facing=west": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed", "y": 270
+		},
+		"formed=false,facing=south": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve", "y": 180
+		},
+		"formed=true,facing=south": {
+			"model": "pneumaticcraft:block/reinforced_pressure_chamber_valve_formed", "y": 180
+		}
+	}
+}

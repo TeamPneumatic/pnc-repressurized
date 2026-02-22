@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.registry;
 
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.block.entity.tube.AdvancedPressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
@@ -92,7 +93,9 @@ public class ModBlocks {
     public static final DeferredBlock<PressureChamberGlassBlock> PRESSURE_CHAMBER_GLASS = register("pressure_chamber_glass",
             PressureChamberGlassBlock::new, IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     public static final DeferredBlock<PressureChamberValveBlock> PRESSURE_CHAMBER_VALVE = register("pressure_chamber_valve",
-            PressureChamberValveBlock::new, defaultProps());
+            props -> new PressureChamberValveBlock(props, PressureTier.TIER_ONE), defaultProps());
+    public static final DeferredBlock<PressureChamberValveBlock> REINFORCED_PRESSURE_CHAMBER_VALVE = register("reinforced_pressure_chamber_valve",
+            props -> new PressureChamberValveBlock(props, PressureTier.TIER_TWO), defaultProps());
     public static final DeferredBlock<PressureChamberInterfaceBlock> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
             PressureChamberInterfaceBlock::new, defaultProps());
     public static final DeferredBlock<ChargingStationBlock> CHARGING_STATION = register("charging_station",

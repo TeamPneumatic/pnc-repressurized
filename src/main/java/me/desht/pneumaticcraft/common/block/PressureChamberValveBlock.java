@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.block.PNCBlockStateProperties;
+import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
@@ -38,9 +39,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock implements IBlockPressureChamber, PneumaticCraftEntityBlock {
-    public PressureChamberValveBlock(Properties props) {
+    private final PressureTier tier;
+
+    public PressureChamberValveBlock(Properties props, PressureTier tier) {
         super(props);
+
+        this.tier = tier;
         registerDefaultState(defaultBlockState().setValue(PNCBlockStateProperties.FORMED, false));
+    }
+
+    public PressureTier getTier() {
+        return tier;
     }
 
     @Override
@@ -124,6 +133,8 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return new PressureChamberValveBlockEntity(pPos, pState);
+        return tier == PressureTier.TIER_TWO ?
+                new PressureChamberValveBlockEntity.TierTwo(pPos, pState) :
+                new PressureChamberValveBlockEntity.TierOne(pPos, pState);
     }
 }

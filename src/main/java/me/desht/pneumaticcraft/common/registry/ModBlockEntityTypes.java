@@ -72,7 +72,9 @@ public class ModBlockEntityTypes {
     public static final Supplier<BlockEntityType<PressureChamberWallBlockEntity>> PRESSURE_CHAMBER_WALL
             = register("pressure_chamber_wall", PressureChamberWallBlockEntity::new, ModBlocks.PRESSURE_CHAMBER_WALL, ModBlocks.PRESSURE_CHAMBER_GLASS);
     public static final Supplier<BlockEntityType<PressureChamberValveBlockEntity>> PRESSURE_CHAMBER_VALVE
-            = register("pressure_chamber_valve", PressureChamberValveBlockEntity::new, ModBlocks.PRESSURE_CHAMBER_VALVE);
+            = register("pressure_chamber_valve", PressureChamberValveBlockEntity.TierOne::new, ModBlocks.PRESSURE_CHAMBER_VALVE);
+    public static final Supplier<BlockEntityType<PressureChamberValveBlockEntity>> REINFORCED_PRESSURE_CHAMBER_VALVE
+            = register("reinforced_pressure_chamber_valve", PressureChamberValveBlockEntity.TierTwo::new, ModBlocks.REINFORCED_PRESSURE_CHAMBER_VALVE);
     public static final Supplier<BlockEntityType<ChargingStationBlockEntity>> CHARGING_STATION
             = register("charging_station", ChargingStationBlockEntity::new, ModBlocks.CHARGING_STATION);
     public static final Supplier<BlockEntityType<ElevatorBaseBlockEntity>> ELEVATOR_BASE

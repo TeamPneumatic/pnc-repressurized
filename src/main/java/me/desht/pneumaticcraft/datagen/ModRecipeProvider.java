@@ -999,6 +999,10 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shapeless(Items.PAPER, Items.PAPER, ModItems.TAG_FILTER.get()).save(consumer, RL("paper_from_tag_filter"));
 
+        shapeless(ModItems.UNASSEMBLED_REINFORCED_PRESSURE_CHAMBER_VALVE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                ModBlocks.ADVANCED_PRESSURE_TUBE.get(), ModBlocks.PRESSURE_CHAMBER_VALVE.get()
+        ).save(consumer);
+
         // network components
         networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_RED).save(consumer);
         networkComponent(ModItems.NETWORK_API.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_BLUE).save(consumer);
@@ -1555,6 +1559,10 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(SizedIngredient.of(ModItems.SOLAR_WAFER.get(), 1), new ItemStack(ModItems.SOLAR_CELL.get()),
                 AssemblyProgramType.DRILL)
                 .save(consumer, RL("assembly/solar_cell"));
+        assembly(SizedIngredient.of(ModItems.UNASSEMBLED_REINFORCED_PRESSURE_CHAMBER_VALVE.get(), 1),
+                new ItemStack(ModBlocks.REINFORCED_PRESSURE_CHAMBER_VALVE.get()),
+                AssemblyProgramType.LASER)
+                .save(consumer, RL("assembly/reinforced_pressure_chamber_valve"));
 
         // amadron (core static offers only)
         amadronStatic(

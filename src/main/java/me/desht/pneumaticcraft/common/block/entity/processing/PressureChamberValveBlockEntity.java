@@ -72,6 +72,7 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
@@ -86,7 +87,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEntity
+public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IAirListener, MenuProvider {
     private static final int CHAMBER_INV_SIZE = 18;
     private static final int OUTPUT_INV_SIZE = 9;
@@ -132,8 +133,10 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
     //   the base volume of the air handler changes
     private int savedMultiblockSize = 0;
 
-    public PressureChamberValveBlockEntity(BlockPos pos, BlockState state) {
-        super(ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
+    protected PressureChamberValveBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state, PressureTier tier) {
+        super(type, pos, state, tier,
+                PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4
+        );
         accessoryValves = new ArrayList<>();
         nbtValveList = new ArrayList<>();
     }
@@ -769,6 +772,18 @@ public class PressureChamberValveBlockEntity extends AbstractAirHandlingBlockEnt
         ApplicableRecipe(PressureChamberRecipe recipe, IntCollection slots) {
             this.recipe = recipe;
             this.slots = new IntArrayList(slots);
+        }
+    }
+
+    public static class TierOne extends PressureChamberValveBlockEntity {
+        public TierOne(BlockPos pos, BlockState state) {
+            super(ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_ONE);
+        }
+    }
+
+    public static class TierTwo extends PressureChamberValveBlockEntity {
+        public TierTwo(BlockPos pos, BlockState state) {
+            super(ModBlockEntityTypes.REINFORCED_PRESSURE_CHAMBER_VALVE.get(), pos, state, PressureTier.TIER_TWO);
         }
     }
 }

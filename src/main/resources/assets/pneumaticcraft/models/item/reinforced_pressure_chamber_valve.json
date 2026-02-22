@@ -1,0 +1,7 @@
+{
+  "parent": "pneumaticcraft:block/reinforced_pressure_chamber_valve",
+  "textures": {
+    "side": "pneumaticcraft:block/pressure_chamber/valve_side",
+    "end": "pneumaticcraft:block/pressure_chamber/reinforced_valve"
+  }
+}
