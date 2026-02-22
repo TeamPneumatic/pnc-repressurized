@@ -86,9 +86,11 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
 
         chunkTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading"),
                 new ItemStack(Items.ENDER_EYE), 0xFF804080, false);
-        chunkTab.addSubWidget(chunkloadSelf = new WidgetCheckBox(5, 15, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.self")).setChecked(te.chunkloadSelf()).withTag("chunkload_self"));
-        chunkTab.addSubWidget(chunkloadWork = new WidgetCheckBox(5, 27, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.work")).setChecked(te.chunkloadWorkingChunk()).withTag("chunkload_work"));
-        chunkTab.addSubWidget(chunkloadWork3x3 = new WidgetCheckBox(10, 39, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.work_3x3")).setChecked(te.chunkloadWorkingChunk3x3()).withTag("chunkload_work_3x3"));
+        chunkTab.addSubWidget(
+                chunkloadSelf = new WidgetCheckBox(5, 15, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.self")).setChecked(te.chunkloadSelf()).withTag("chunkload_self"),
+                chunkloadWork = new WidgetCheckBox(5, 27, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.work")).setChecked(te.chunkloadWorkingChunk()).withTag("chunkload_work"),
+                chunkloadWork3x3 = new WidgetCheckBox(10, 39, 0x303030, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chunkLoading.work_3x3")).setChecked(te.chunkloadWorkingChunk3x3()).withTag("chunkload_work_3x3")
+        );
         chunkTab.setReservedLines(5);
         int w = Math.max(chunkloadSelf.getWidth(), Math.max(chunkloadWork.getWidth(), chunkloadWork3x3.getWidth() + 5));
         chunkTab.setMinimumExpandedDimensions(w, 70);

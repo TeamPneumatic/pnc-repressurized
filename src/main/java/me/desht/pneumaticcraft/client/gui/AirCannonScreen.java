@@ -62,10 +62,12 @@ public class AirCannonScreen extends AbstractPneumaticCraftContainerScreen<AirCa
         strengthTab = this.addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult),
                 new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
         strengthTab.setMinimumExpandedDimensions(85, 40);
-        strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
-        strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));
-        strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
-        strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
+        strengthTab.addSubWidget(
+                new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"),
+                new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"),
+                new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"),
+                new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++")
+        );
 
         addLabel(Component.literal("GPS"),  leftPos + 50, topPos + 20);
     }

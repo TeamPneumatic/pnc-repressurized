@@ -300,8 +300,8 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
     void setLineSpacing(int spacing);
 
     /**
-     * Add a subwidget to the panel. Subwidgets are automatically rendered by the panel itself, and don't need to be
-     * added to your GUI separately.
+     * Add one or more subwidgets to the panel. Subwidgets are automatically rendered by the panel itself, and don't
+     * need to be added to your GUI separately.
      * @param widget the subwidget
      */
     void addSubWidget(AbstractWidget... widget);

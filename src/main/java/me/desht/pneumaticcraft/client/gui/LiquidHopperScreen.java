@@ -60,17 +60,15 @@ public class LiquidHopperScreen extends AbstractPneumaticCraftContainerScreen<Li
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, Component.empty()).withTag("empty");
-        button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty")));
-        optionStat.addSubWidget(button);
-        modeButtons[0] = button;
+        modeButtons[0] = new WidgetButtonExtended(20, 20, 20, 20, Component.empty()).withTag("empty");
+        modeButtons[0].setRenderStacks(new ItemStack(Items.BUCKET));
+        modeButtons[0].setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty")));
 
-        button = new WidgetButtonExtended(45, 20, 20, 20, Component.empty()).withTag("leave");
-        button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid")));
-        optionStat.addSubWidget(button);
-        modeButtons[1] = button;
+        modeButtons[1] = new WidgetButtonExtended(45, 20, 20, 20, Component.empty()).withTag("leave");
+        modeButtons[1].setRenderStacks(new ItemStack(Items.WATER_BUCKET));
+        modeButtons[1].setTooltip(Tooltip.create(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid")));
+
+        optionStat.addSubWidget(modeButtons);
     }
 
     @Override
