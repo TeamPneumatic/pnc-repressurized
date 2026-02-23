@@ -280,6 +280,7 @@ public class PneumaticCraftRepressurizedClient {
         event.registerBlockEntityRenderer(ModBlockEntityTypes.PROGRAMMER.get(), ProgrammerRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.REFINERY.get(), RenderRefineryController::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
+        event.registerBlockEntityRenderer(ModBlockEntityTypes.REINFORCED_PRESSURE_CHAMBER_VALVE.get(), PressureChamberRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.REINFORCED_PRESSURE_TUBE.get(), PressureTubeModuleRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.SENTRY_TURRET.get(), SentryTurretRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.SPAWNER_EXTRACTOR.get(), SpawnerExtractorRenderer::new);
