@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:heat_properties",
+  "description": "pneumaticcraft.gui.jei.description.create_new_age_heater.seething",
+  "block": "create_new_age:heater",
+  "statePredicate": {
+    "blaze": "seething"
+  },
+  "temperature": 1700,
+  "thermalResistance": 50
+}
