@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHa
 import me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.util.KeyModifierUtil;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -191,7 +192,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyMapping keyBinding) {
-        return keyBinding.getKeyModifier() == KeyModifier.getActiveModifier() ?
+        return keyBinding.getKeyModifier() == KeyModifierUtil.oneModifierAtMost() ?
                 Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName())) :
                 Optional.empty();
     }

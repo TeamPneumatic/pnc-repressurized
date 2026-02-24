@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoreCompon
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.KeyModifierUtil;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
@@ -56,7 +57,10 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -227,7 +231,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
                     .getClientHandler(CommonUpgradeHandlers.coreComponentsHandler, CoreComponentsClientHandler.class)
                     .onResolutionChanged();
         } else {
-            Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5f);
+            ClientUtils.getClientPlayer().playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5f);
         }
     }
 
@@ -277,12 +281,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         isListeningForBinding = false;
         KeyMapping mapping = ClientArmorRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         if (mapping != null) {
-            KeyModifier mod = input == InputConstants.UNKNOWN ? KeyModifier.NONE : KeyModifier.getActiveModifier();
+            KeyModifier mod = input == InputConstants.UNKNOWN ? KeyModifier.NONE : KeyModifierUtil.oneModifierAtMost();
             mapping.setKeyModifierAndCode(mod, input);
             Minecraft.getInstance().options.setKey(mapping, input);
             KeyMapping.resetMapping();
             KeyDispatcher.updateBinding(mapping, this);
-            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
+            ClientUtils.getClientPlayer().playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
         buildTooltip();
@@ -301,14 +305,14 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         @SubscribeEvent
         public static void onKeyPress(InputEvent.Key event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                handleInput(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()));
+                handleInput(InputConstants.Type.KEYSYM.getOrCreate(event.getKey()), KeyModifierUtil.oneModifierAtMost(event.getModifiers()));
             }
         }
 
         @SubscribeEvent
         public static void onMouseClick(InputEvent.MouseButton.Post event) {
             if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                handleInput(InputConstants.Type.MOUSE.getOrCreate(event.getButton()));
+                handleInput(InputConstants.Type.MOUSE.getOrCreate(event.getButton()), KeyModifierUtil.oneModifierAtMost(event.getModifiers()));
             }
         }
 
@@ -328,9 +332,9 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             }
         }
 
-        private static void handleInput(InputConstants.Key key) {
+        private static void handleInput(InputConstants.Key key, KeyModifier modifier) {
             if (key.getValue() != -1) {
-                WidgetKeybindCheckBox cb = in2checkbox.get(InputRecord.forKey(key));
+                WidgetKeybindCheckBox cb = in2checkbox.get(InputRecord.forKey(key, modifier));
                 if (cb != null) {
                     cb.handleClick();
                 }
@@ -345,13 +349,13 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         }
     }
 
-    private record InputRecord(int key, KeyModifier modifier, InputConstants.Type type) {
+    private record InputRecord(InputConstants.Key key, KeyModifier modifier, InputConstants.Type type) {
         private static InputRecord forKeyMapping(KeyMapping keyMapping) {
-            return new InputRecord(keyMapping.getKey().getValue(), keyMapping.getKeyModifier(), keyMapping.getKey().getType());
+            return new InputRecord(keyMapping.getKey(), keyMapping.getKeyModifier(), keyMapping.getKey().getType());
         }
 
-        private static InputRecord forKey(InputConstants.Key key) {
-            return new InputRecord(key.getValue(), KeyModifier.getActiveModifier(), key.getType());
+        private static InputRecord forKey(InputConstants.Key key, KeyModifier modifier) {
+            return new InputRecord(key, modifier, key.getType());
         }
     }
 }

@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IKeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.KeyModifierUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -88,7 +89,7 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
             } else {
                 InputConstants.Key input = type.getOrCreate(keyCode);
                 modifier = KeyModifier.isKeyCodeModifier(input);
-                keyBinding.setKeyModifierAndCode(KeyModifier.getActiveModifier(), input);
+                keyBinding.setKeyModifierAndCode(KeyModifierUtil.oneModifierAtMost(), input);
                 Minecraft.getInstance().options.setKey(keyBinding, input);
                 action = Action.ADD;
             }
