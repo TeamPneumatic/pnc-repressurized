@@ -6,6 +6,42 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.17]
+
+### Added
+* The Pressure Chamber can now act as a tier 2 air storage and crafting system
+  * Added new block: Reinforced Pressure Chamber Valve
+  * Added new item: Unassembled Reinforced Pressure Chamber Valve (crafting component for the block)
+  * Reinforced Pressure Chamber Valve allows pressures up to 20 bar
+  * No need to switch out walls/glass/interfaces, just valves
+* Added mod compat for the Cold Sweat mod
+  * The Air Conditioning module makes a return; it can mitigate environmental temperature extremes
+  * PNC heat-handling blocks now act as Cold Sweat heat sources, so take care...
+* Assembly system improvements...
+  * All robot arms (I/O, Drill & Laser) now take the shortest direction when swinging toward a target (no more rotating 270° instead of 90°)
+  * Robot arms now have a block facing direction, set when placed, which controls their resting/home orientation
+  * Any existing robot arms should be picked up and replaced to take advantage of this change (can also be rotated with the Pneumatic Wrench)
+* All Logistics Provider and Storage frames now support a minimum stock level
+  * By default, this is 0 but can be raised via the logistics configuration GUI (item and fluid amounts can be configured independently)
+  * If >0, Logistics Drones and Logistics Modules will leave at least this amount of resources in the inventory/tank when taking resources out
+
+### Changed
+* All drones are now immune to radiation by default; they are added to the `c:radiation_immune` entity tag
+  * In practice, this means Mekanism radiation leaks will no longer hurt drones
+* Oil lakes should now never generate within the bounds of any structure (not just villages anymore)
+  * See new common config setting `no_oil_lakes_in_structures`, true by default
+  * If set to false, the `pneumaticcraft:no_oil_lakes` structure tag is used to blacklist structures, as before
+
+### Fixed
+* Added missing translation key for Muffler Upgrade in the Charging Station / Drone upgrade screen
+* Fixed support for current release of FTB Filter System (21.1.4)
+* Pneumatic Armor Block Tracker upgrade now properly handles Decorated Pots (as found in trial chambers)
+* Hopefully fix media keys sometimes wrongly toggling Pneumatic Armor upgrades
+* Fixed Heat Frame Cooling voiding fluids if there was no room in the inventory for the result
+* Fixed empty dropped Reinforced Chests not being stackable with newly-crafted ones
+* Reworked Pressure Gauge in-world rendering to work nicely with all versions of Oculus/Sodium/Embeddium etc. (thanks @iskandaralex2)
+* Documented the drone special variable `$deploy_pos` in the manual (see "Variables" page in the "Drone Programming" section)
+
 ## [8.2.16]
 
 ### Fixed
