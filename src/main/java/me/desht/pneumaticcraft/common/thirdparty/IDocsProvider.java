@@ -39,7 +39,9 @@ public interface IDocsProvider {
         return false;
     }
 
-    class NoDocsProvider implements IDocsProvider {
+    enum None implements IDocsProvider {
+        INSTANCE;
+
         @Override
         public void showDocsPage(String path) {
         }

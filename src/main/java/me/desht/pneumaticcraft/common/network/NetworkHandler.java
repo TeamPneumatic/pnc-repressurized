@@ -123,6 +123,8 @@ public class NetworkHandler {
 				PacketMinigunStop::handle);
 		registrar.playToClient(PacketClearRecipeCache.TYPE, PacketClearRecipeCache.STREAM_CODEC,
 				PacketClearRecipeCache::handle);
+		registrar.playToClient(PacketPlayerTemperatureDelta.TYPE, PacketPlayerTemperatureDelta.STREAM_CODEC,
+				PacketPlayerTemperatureDelta::handle);
 		
 		// misc bi-directional
 		registrar.playBidirectional(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,

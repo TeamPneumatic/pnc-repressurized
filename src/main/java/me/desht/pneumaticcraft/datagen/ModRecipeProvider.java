@@ -1098,7 +1098,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 'V', ModItems.VORTEX_CANNON.get(),
                 'U', ModUpgrades.JET_BOOTS.get().getItem(2)
         ).save(consumer);
-        ItemStack slowFallPotion = PotionContents.createItemStack(Items.POTION, Potions.LONG_SLOW_FALLING);
         shaped(ModUpgrades.JET_BOOTS.get().getItem(4), ModItems.PNEUMATIC_BOOTS.get(),
                 "MNM/VUV/P P",
                 'N', Items.NETHER_STAR,
@@ -1153,6 +1152,15 @@ public class ModRecipeProvider extends RecipeProvider {
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'R', mekRadShield
         ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
+
+        shaped(ModUpgrades.AIR_CONDITIONING.get().getItem(), ModItems.PNEUMATIC_CHESTPLATE.get(),
+                "LML/HPH/LIL",
+                'M', Items.MAGMA_BLOCK,
+                'I', Items.BLUE_ICE,
+                'H', ModBlocks.HEAT_SINK.get(),
+                'P', ModBlocks.HEAT_PIPE.get(),
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS
+        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.COLD_SWEAT)));
 
         // bricks etc.
         shaped(ModBlocks.REINFORCED_STONE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),

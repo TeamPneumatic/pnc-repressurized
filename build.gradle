@@ -196,6 +196,8 @@ dependencies {
 
 	localImplementation("curse.maven:jade-324717:${jade_curse_id}")
 
+	localImplementation("curse.maven:cold-sweat-506194:${cold_sweat_curse_id}-sources-${cold_sweat_curse_sources_id}")
+
 	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.21.1:${crafttweaker_version}")
 
 	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")

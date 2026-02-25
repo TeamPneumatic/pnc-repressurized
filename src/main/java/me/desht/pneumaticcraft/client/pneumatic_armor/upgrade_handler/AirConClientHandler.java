@@ -64,7 +64,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
 
         if (acStat.isStatOpen()) {
             int ac = Mth.clamp(currentAC, -MAX_AC, MAX_AC);
-            String bar = (ac < 0 ? ChatFormatting.BLUE : ChatFormatting.GOLD)
+            String bar = (ac < 0 ? ChatFormatting.AQUA : ChatFormatting.GOLD)
                     + Strings.repeat("|", Math.abs(ac))
                     + ChatFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));

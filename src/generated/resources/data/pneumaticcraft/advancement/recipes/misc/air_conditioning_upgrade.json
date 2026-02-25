@@ -1,0 +1,38 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cold_sweat"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_printed_circuit_board": {
+      "conditions": {
+        "items": [
+          {
+            "items": "pneumaticcraft:printed_circuit_board"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "pneumaticcraft:air_conditioning_upgrade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_printed_circuit_board"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:air_conditioning_upgrade"
+    ]
+  }
+}

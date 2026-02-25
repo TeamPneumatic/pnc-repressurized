@@ -26,7 +26,7 @@ public enum BuiltinUpgrade {
     NIGHT_VISION("night_vision"),
     SCUBA("scuba"),
     CREATIVE("creative"),
-    AIR_CONDITIONING("air_conditioning", 1, ModIds.TOUGH_AS_NAILS),
+    AIR_CONDITIONING("air_conditioning", 1, ModIds.COLD_SWEAT),
     INVENTORY("inventory"),
     JUMPING("jumping", 4),
     FLIPPERS("flippers"),

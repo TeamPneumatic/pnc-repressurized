@@ -18,9 +18,15 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 //import toughasnails.api.temperature.TemperatureHelper;
 
 public class ToughAsNails implements IThirdParty {
+    @Override
+    public ThirdPartyManager.ModType modType() {
+        return ThirdPartyManager.ModType.TEMPERATURE;
+    }
+
     @Override
     public void init() {
 //        NetworkHandler.registerMessage(PacketPlayerTemperatureDelta.class,

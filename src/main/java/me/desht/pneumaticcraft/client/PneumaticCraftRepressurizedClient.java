@@ -443,7 +443,7 @@ public class PneumaticCraftRepressurizedClient {
         cr.registerUpgradeHandler(CommonUpgradeHandlers.magnetHandler, new MagnetClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.chargingHandler, new ChargingClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
-//        cr.registerUpgradeHandler(CommonUpgradeHandlers.airConHandler, new AirConClientHandler());
+        cr.registerUpgradeHandler(CommonUpgradeHandlers.airConHandler, new AirConClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.reachDistanceHandler, new ReachDistanceClientHandler());
         cr.registerUpgradeHandler(CommonUpgradeHandlers.elytraHandler, new ElytraClientHandler());
 

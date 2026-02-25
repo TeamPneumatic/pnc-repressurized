@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
+import me.desht.pneumaticcraft.common.thirdparty.coldsweat.ColdSweat;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.create.Create;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
@@ -47,8 +48,9 @@ public enum ThirdPartyManager {
     private static final IThirdParty IMPLICIT_INIT = new IThirdParty() {};
 
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
-    private IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
-    private final Set<ModType> loadedModTypes = EnumSet.noneOf(ModType.class);
+    private IDocsProvider docsProvider = IDocsProvider.None.INSTANCE;
+    private ITemperatureProvider temperatureProvider = ITemperatureProvider.None.INSTANCE;
+    private final Map<ModType, List<IThirdParty>> loadedModTypes = new EnumMap<>(ModType.class);
 
     public static ThirdPartyManager instance() {
         return INSTANCE;
@@ -56,6 +58,10 @@ public enum ThirdPartyManager {
 
     public IDocsProvider getDocsProvider() {
         return docsProvider;
+    }
+
+    public ITemperatureProvider getTemperatureProvider() {
+        return temperatureProvider;
     }
 
     private void discoverMods() {
@@ -78,6 +84,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.FUSION, Fusion::new);
             thirdPartyClasses.put(ModIds.FFS, FTBFilterSystem::new);
             thirdPartyClasses.put(ModIds.FTB_TEAMS, FTBTeams::new);
+            thirdPartyClasses.put(ModIds.COLD_SWEAT, ColdSweat::new);
 
             // these were supported in 1.12.2 and may or may not come back...
 
@@ -88,7 +95,6 @@ public enum ThirdPartyManager {
 //            }
 //            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
 //            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
-//            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
@@ -105,7 +111,15 @@ public enum ThirdPartyManager {
             if (ThirdPartyConfig.isEnabled(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
                 IThirdParty mod = entry.getValue().get();
                 thirdPartyMods.add(mod);
-                if (mod.modType() != null) loadedModTypes.add(mod.modType());
+                if (mod.modType() != null) {
+                    loadedModTypes.computeIfAbsent(mod.modType(), k -> new ArrayList<>()).add(mod);
+                }
+                // TODO: priority system or selectable in config?  right now, last provider found wins
+                switch (mod) {
+                    case IDocsProvider doc -> docsProvider = doc;
+                    case ITemperatureProvider temp -> temperatureProvider = temp;
+                    default -> {}
+                }
                 modNames.add(entry.getKey());
             }
         }
@@ -164,10 +178,6 @@ public enum ThirdPartyManager {
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();
-                if (thirdParty instanceof IDocsProvider) {
-                    // TODO: priority system or selectable in config?  right now, last docs provider found wins
-                    docsProvider = (IDocsProvider) thirdParty;
-                }
             } catch (Throwable e) {
                 logError(e, thirdParty.getClass(), "Client Init");
             }
@@ -180,7 +190,7 @@ public enum ThirdPartyManager {
     }
 
     public boolean isModTypeLoaded(ModType modType) {
-        return loadedModTypes.contains(modType);
+        return loadedModTypes.containsKey(modType);
     }
 
     /**
@@ -190,6 +200,7 @@ public enum ThirdPartyManager {
      */
     public enum ModType {
         COMPUTER,
-        DOCUMENTATION
+        DOCUMENTATION,
+        TEMPERATURE
     }
 }

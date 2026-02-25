@@ -15,7 +15,7 @@
  *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
+package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.AirConClientHandler;
 import net.minecraft.network.FriendlyByteBuf;

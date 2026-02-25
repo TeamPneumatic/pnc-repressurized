@@ -91,6 +91,9 @@ public class CommonConfig {
         public ModConfigSpec.DoubleValue ieExternalHeaterHeatPerFE;
         public ModConfigSpec.IntValue ieExternalHeaterFEperTick;
         public ModConfigSpec.DoubleValue cofhHoldingMultiplier;
+        public ModConfigSpec.DoubleValue coldSweatMinBlockEffect;
+        public ModConfigSpec.DoubleValue coldSweatMaxBlockEffect;
+        public ModConfigSpec.DoubleValue coldSweatAirConEfficiency;
     }
     public static class Advanced {
         public ModConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
@@ -211,7 +214,7 @@ public class CommonConfig {
         general.fuelBucketEfficiency = builder
                 .comment("Efficiency of fuel buckets as furnace fuel (default 0.05 means 1 bucket of LPG smelts 450 items in a vanilla furnace)")
                 .translation("pneumaticcraft.config.common.general.fuel_bucket_efficiency")
-                .defineInRange("fuel_bucket_efficiency", 0.05, 0.0, Double.MAX_VALUE);
+                .defineInRange("fuel_bucket_efficiency", 0.05, 0.0, Double.POSITIVE_INFINITY);
         general.maxProgrammingArea = builder
                 .comment("Maximum number of blocks in the area defined in an Area Programming Puzzle Piece")
                 .translation("pneumaticcraft.config.common.general.max_programming_area")
@@ -236,11 +239,11 @@ public class CommonConfig {
         general.bandageHealthRestored = builder
                 .comment("Health points restored on bandage use (1 health = half a heart).")
                 .translation("pneumaticcraft.config.common.general.bandage_health_restored")
-                .defineInRange("bandage_health_restored", 6.0, 1.0, Double.MAX_VALUE);
+                .defineInRange("bandage_health_restored", 6.0, 1.0, Double.POSITIVE_INFINITY);
         general.plasticBrickDamage = builder
                 .comment("Damage inflicted by stepping on a Plastic Construction Brick™ without any protection")
                 .translation("pneumaticcraft.config.common.general.plastic_brick_damage")
-                .defineInRange("plastic_brick_damage", 3.0, 0.0, Double.MAX_VALUE);
+                .defineInRange("plastic_brick_damage", 3.0, 0.0, Double.POSITIVE_INFINITY);
         general.topShowsFluids = builder
                 .comment("Show tank fluids with the The One Probe when sneaking? Note that TOP has its own support for showing tanks, which by default requires a Probe to be held, or a Probe-enabled helmet to be worn.")
                 .translation("pneumaticcraft.config.common.general.top_shows_fluids")
@@ -272,7 +275,7 @@ public class CommonConfig {
         machines.cropSticksGrowthBoostChance = builder
                 .comment("Chance per tick of Crop Supports causing a growth tick. The default, 0.002, is roughly 2.5 times faster than the vanilla growth rate")
                 .translation("pneumaticcraft.config.common.machine_properties.crop_sticks_growth_boost_chance")
-                .defineInRange("crop_sticks_growth_boost_chance", 0.002, 0, Double.MAX_VALUE);
+                .defineInRange("crop_sticks_growth_boost_chance", 0.002, 0, Double.POSITIVE_INFINITY);
         machines.electricCompressorEfficiency = builder
                 .comment("Changing this value will alter the pressurized air production of the Electric Compressor. The input, EU, will stay the same")
                 .translation("pneumaticcraft.config.common.machine_properties.electric_compressor_efficiency")
@@ -292,7 +295,7 @@ public class CommonConfig {
         machines.solarCompressorMultiplier = builder
                 .comment("The amount to multiply the air production of the solar compressor by.")
                 .translation("pneumaticcraft.config.common.machine_properties.solar_compressor_multiplier")
-                .defineInRange("solar_compressor_multiplier", 1.0, 0, Double.MAX_VALUE);
+                .defineInRange("solar_compressor_multiplier", 1.0, 0, Double.POSITIVE_INFINITY);
         machines.keroseneLampCanUseAnyFuel = builder
                 .comment("Can the Kerosene Lamp burn any kind of fuel?  If false, only Kerosene can be burnt")
                 .translation("pneumaticcraft.config.common.machine_properties.kerosene_lamp_can_use_any_fuel")
@@ -300,7 +303,7 @@ public class CommonConfig {
         machines.keroseneLampFuelEfficiency = builder
                 .comment("Kerosene Lamp fuel efficiency: higher values mean fuel will last longer in the lamp")
                 .translation("pneumaticcraft.config.common.machine_properties.kerosene_lamp_fuel_efficiency")
-                .defineInRange("kerosene_lamp_fuel_efficiency", 1.0, 0, Double.MAX_VALUE);
+                .defineInRange("kerosene_lamp_fuel_efficiency", 1.0, 0, Double.POSITIVE_INFINITY);
         machines.kineticCompressorEfficiency = builder
                 .comment("The amount of air produced by using 100 MJ (Minecraft Joules) in the flux compressor")
                 .translation("pneumaticcraft.config.common.machine_properties.kinetic_compressor_efficiency")
@@ -415,7 +418,7 @@ public class CommonConfig {
         armor.scubaAirUsagePerBlockDepth = builder
                 .comment("Extra air usage (on top of 'scuba_multiplier') per block below the threshold depth (see 'scuba_min_air_usage_increase_depth')")
                 .translation("pneumaticcraft.config.common.armor.scuba_air_usage_per_block_depth")
-                .defineInRange("scuba_air_usage_per_block_depth", 0.0, 0.0, Double.MAX_VALUE);
+                .defineInRange("scuba_air_usage_per_block_depth", 0.0, 0.0, Double.POSITIVE_INFINITY);
         builder.pop();
 
         builder.push("advanced");
@@ -437,7 +440,7 @@ public class CommonConfig {
         micromissiles.baseExplosionDamage = builder
                 .comment("Base explosion damage (modified by missile setup)")
                 .translation("pneumaticcraft.config.common.micromissile_properties.base_explosion_damage")
-                .defineInRange("base_explosion_damage", 1, 0, Double.MAX_VALUE);
+                .defineInRange("base_explosion_damage", 1, 0, Double.POSITIVE_INFINITY);
         micromissiles.damageTerrain = builder
                 .comment("Do micromissile explosions cause terrain damage? Note: when set to true, the 'tntExplosionDropDecay' gamerule is used to determine block drops.")
                 .translation("pneumaticcraft.config.common.micromissile_properties.damage_terrain")
@@ -468,7 +471,7 @@ public class CommonConfig {
         minigun.apAmmoDamageMultiplier = builder
                 .comment("Armor Piercing Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.ap_ammo_damage_multiplier")
-                .defineInRange("ap_ammo_damage_multiplier", 1.25, 0, Double.MAX_VALUE);
+                .defineInRange("ap_ammo_damage_multiplier", 1.25, 0, Double.POSITIVE_INFINITY);
         minigun.apAmmoIgnoreArmorChance = builder
                 .comment("Armor Piercing Ammo percentage chance to ignore target's armor")
                 .translation("pneumaticcraft.config.common.minigun_properties.ap_ammo_ignore_armor_chance")
@@ -480,7 +483,7 @@ public class CommonConfig {
         minigun.baseDamage = builder
                 .comment("Base bullet damage of the Sentry Gun, Handheld Minigun, and Drone Minigun, before ammo bonuses are considered")
                 .translation("pneumaticcraft.config.common.minigun_properties.base_damage")
-                .defineInRange("base_damage", 6, 0, Double.MAX_VALUE);
+                .defineInRange("base_damage", 6, 0, Double.POSITIVE_INFINITY);
         minigun.baseRange = builder
                 .comment("Base range of Minigun, before Range Upgrades are considered")
                 .translation("pneumaticcraft.config.common.minigun_properties.base_range")
@@ -492,7 +495,7 @@ public class CommonConfig {
         minigun.explosiveAmmoDamageMultiplier = builder
                 .comment("Minigun Explosive Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_damage_multiplier")
-                .defineInRange("explosive_ammo_damage_multiplier", 0.2, 0, Double.MAX_VALUE);
+                .defineInRange("explosive_ammo_damage_multiplier", 0.2, 0, Double.POSITIVE_INFINITY);
         minigun.explosiveAmmoExplosionChance = builder
                 .comment("Explosive Ammo base percentage chance to cause an explosion")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_explosion_chance")
@@ -500,7 +503,7 @@ public class CommonConfig {
         minigun.explosiveAmmoExplosionPower = builder
                 .comment("Minigun Explosive Ammo explosion power (ref: 2 = creeper, 4 = TNT")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_explosion_power")
-                .defineInRange("explosive_ammo_explosion_power", 1.5, 0, Double.MAX_VALUE);
+                .defineInRange("explosive_ammo_explosion_power", 1.5, 0, Double.POSITIVE_INFINITY);
         minigun.explosiveAmmoTerrainDamage = builder
                 .comment("Does Minigun Explosive Ammo damage terrain?")
                 .translation("pneumaticcraft.config.common.minigun_properties.explosive_ammo_terrain_damage")
@@ -544,7 +547,7 @@ public class CommonConfig {
         minigun.weightedAmmoAirUsageMultiplier = builder
                 .comment("Weighted Ammo air usage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_air_usage_multiplier")
-                .defineInRange("weighted_ammo_air_usage_multiplier", 8.0, 0, Double.MAX_VALUE);
+                .defineInRange("weighted_ammo_air_usage_multiplier", 8.0, 0, Double.POSITIVE_INFINITY);
         minigun.weightedAmmoCartridgeSize = builder
                 .comment("Weighted Ammo cartridge size")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_cartridge_size")
@@ -552,11 +555,11 @@ public class CommonConfig {
         minigun.weightedAmmoDamageMultiplier = builder
                 .comment("Weighted Ammo damage multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_damage_multiplier")
-                .defineInRange("weighted_ammo_damage_multiplier", 2.5, 0, Double.MAX_VALUE);
+                .defineInRange("weighted_ammo_damage_multiplier", 2.5, 0, Double.POSITIVE_INFINITY);
         minigun.weightedAmmoRangeMultiplier = builder
                 .comment("Weighted Ammo range multiplier (relative to standard ammo)")
                 .translation("pneumaticcraft.config.common.minigun_properties.weighted_ammo_range_multiplier")
-                .defineInRange("weighted_ammo_range_multiplier", 0.2, 0, Double.MAX_VALUE);
+                .defineInRange("weighted_ammo_range_multiplier", 0.2, 0, Double.POSITIVE_INFINITY);
         minigun.blockHitParticles = builder
                 .comment("Show particles when a block is hit by minigun fire? Looks good, but consumes some network bandwidth.")
                 .translation("pneumaticcraft.config.common.minigun_properties.block_hit_particles")
@@ -571,7 +574,7 @@ public class CommonConfig {
         integration.ieExternalHeaterHeatPerFE = builder
                 .comment("Immersive Engineering: External Heater heat/FE.  The amount of PneumaticCraft heat added by using 1 FE in the heater.")
                 .translation("pneumaticcraft.config.common.integration.ie_external_heater_heat_per_fe")
-                .defineInRange("ie_external_heater_heat_per_fe", 0.01, 0.0, Double.MAX_VALUE);
+                .defineInRange("ie_external_heater_heat_per_fe", 0.01, 0.0, Double.POSITIVE_INFINITY);
         integration.ieExternalHeaterFEperTick = builder
                 .comment("Immersive Engineering: External Heater FE/t. Set to 0 to disable External Heater integration entirely.")
                 .translation("pneumaticcraft.config.common.integration.ie_external_heater_fe_per_tick")
@@ -579,15 +582,29 @@ public class CommonConfig {
         integration.mekThermalResistanceFactor = builder
                 .comment("Mekanism thermal resistance multiplier. Larger values mean slower heat transfer between Mekanism and PneumaticCraft blocks.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_resistance_factor")
-                .defineInRange("mek_thermal_resistance_factor", 5.0, 1.0, Double.MAX_VALUE);
+                .defineInRange("mek_thermal_resistance_factor", 5.0, 1.0, Double.POSITIVE_INFINITY);
         integration.mekThermalEfficiencyFactor = builder
                 .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Set to 0 to disable Mekanism heat integration entirely. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
+        integration.coldSweatMinBlockEffect = builder
+                .gameRestart()
+                .comment("Floor value for the cooling effect of cold heat-handling blocks. Lower this to make the effect of very cold blocks more pronounced.")
+                .translation("pneumaticcraft.config.common.integration.cold_sweat_block_cooling")
+                .defineInRange("cold_sweat_block_cooling", -2.0, Double.NEGATIVE_INFINITY, 0.0);
+        integration.coldSweatMaxBlockEffect = builder
+                .gameRestart()
+                .comment("Ceiling value for the heating effect of hot heat-handling blocks. Raise this to make the effect of very hot blocks more pronounced.")
+                .translation("pneumaticcraft.config.common.integration.cold_sweat_block_heating")
+                .defineInRange("cold_sweat_block_heating", 2.0, 0.0, Double.POSITIVE_INFINITY);
+        integration.coldSweatAirConEfficiency = builder
+                .comment("How efficient is the Air Conditioning upgrade in the PNC Armor?")
+                .translation("pneumaticcraft.config.common.integration.cold_sweat_air_con_efficiency")
+                .defineInRange("cold_sweat_air_con_efficiency", 1.0, 0.01, 10.0);
 //        integration.cofhHoldingMultiplier = builder
 //                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items being enchanted with the Holding enchantment at all.")
 //                .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")
-//                .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.MAX_VALUE);
+//                .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
         builder.pop();
 
         builder.push("recipes");
@@ -644,15 +661,15 @@ public class CommonConfig {
         heat.blockThermalResistance = builder
                 .comment("Default thermal resistance for solid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.blockThermalResistance")
-                .defineInRange("block_thermal_resistance", 500.0, Double.MIN_VALUE, Double.MAX_VALUE);
+                .defineInRange("block_thermal_resistance", 500.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         heat.fluidThermalResistance = builder
                 .comment("Default thermal resistance for fluid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.fluidThermalResistance")
-                .defineInRange("fluid_thermal_resistance", 100.0, Double.MIN_VALUE, Double.MAX_VALUE);
+                .defineInRange("fluid_thermal_resistance", 100.0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
         heat.airThermalResistance = builder
                 .comment("Thermal resistance of air; controls how fast blocks lose heat to air when exposed")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.airThermalResistance")
-                .defineInRange("air_thermal_resistance", 100.0, 1.0, Double.MAX_VALUE);
+                .defineInRange("air_thermal_resistance", 100.0, 1.0, Double.POSITIVE_INFINITY);
         heat.defaultFluidHeatCapacity = builder
                 .comment("Default heat capacity for fluid blocks")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.defaultFluidHeatCapacity")
@@ -675,11 +692,11 @@ public class CommonConfig {
         logistics.itemTransportCost = builder
                 .comment("Logistics Module air usage per item per block distance")
                 .translation("pneumaticcraft.config.common.logistics.itemTransportCost")
-                .defineInRange("item_transport_cost", 1.0, 0.0, Double.MAX_VALUE);
+                .defineInRange("item_transport_cost", 1.0, 0.0, Double.POSITIVE_INFINITY);
         logistics.fluidTransportCost = builder
                 .comment("Logistics Module air usage per mB of fluid per block distance")
                 .translation("pneumaticcraft.config.common.logistics.fluidTransportCost")
-                .defineInRange("fluid_transport_cost", 0.02, 0.0, Double.MAX_VALUE);
+                .defineInRange("fluid_transport_cost", 0.02, 0.0, Double.POSITIVE_INFINITY);
         logistics.minPressure = builder
                 .comment("Minimum pressure for a Logistics Module to function")
                 .translation("pneumaticcraft.config.common.logistics.minPressure")

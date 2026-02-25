@@ -1,0 +1,36 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "cold_sweat"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "pneumaticcraft:heat_sink"
+    },
+    "I": {
+      "item": "minecraft:blue_ice"
+    },
+    "L": {
+      "tag": "pneumaticcraft:upgrade_components"
+    },
+    "M": {
+      "item": "minecraft:magma_block"
+    },
+    "P": {
+      "item": "pneumaticcraft:heat_pipe"
+    }
+  },
+  "pattern": [
+    "LML",
+    "HPH",
+    "LIL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "pneumaticcraft:air_conditioning_upgrade"
+  }
+}

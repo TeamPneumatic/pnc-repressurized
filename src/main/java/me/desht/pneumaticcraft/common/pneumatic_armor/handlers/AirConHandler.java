@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -45,11 +46,18 @@ public class AirConHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
 
     @Override
     public float getIdleAirUsage(ICommonArmorHandler armorHandler) {
-        return 0;
+        return 1;
     }
 
     @Override
     public EquipmentSlot getEquipmentSlot() {
         return EquipmentSlot.CHEST;
+    }
+
+    @Override
+    public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
+        if (enabled) {
+            ThirdPartyManager.instance().getTemperatureProvider().tickAirConditioning(commonArmorHandler.getPlayer());
+        }
     }
 }
