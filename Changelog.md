@@ -31,6 +31,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Oil lakes should now never generate within the bounds of any structure (not just villages anymore)
   * See new common config setting `no_oil_lakes_in_structures`, true by default
   * If set to false, the `pneumaticcraft:no_oil_lakes` structure tag is used to blacklist structures, as before
+* Heat Pipes can now alternatively be crafted with copper blocks, rather than compressed iron blocks (which still work)
+  * Added `pneumaticcraft:heat_pipe_conductors` item tag for this
 
 ### Fixed
 * Added missing translation key for Muffler Upgrade in the Charging Station / Drone upgrade screen
