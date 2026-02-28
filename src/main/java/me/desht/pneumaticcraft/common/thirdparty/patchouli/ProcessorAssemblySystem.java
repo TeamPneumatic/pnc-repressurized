@@ -28,15 +28,21 @@ import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
 
+import java.util.Objects;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 @SuppressWarnings("unused")
 public class ProcessorAssemblySystem implements IComponentProcessor {
     private AssemblyRecipe recipe = null;
+    private String title = null;
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
+        title = iVariableProvider.has("title") ?
+                iVariableProvider.get("title", level.registryAccess()).asString() :
+                null;
 
         ModRecipeTypes.ASSEMBLY_DRILL_LASER.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(h -> recipe = h.value(),
@@ -55,7 +61,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
             case "input" -> PatchouliAccess.getStacks(recipe.getInput(), level.registryAccess());
             case "output" -> IVariable.from(recipe.getOutput(), level.registryAccess());
             case "program" -> IVariable.from(programStack, level.registryAccess());
-            case "name" -> IVariable.wrap(recipe.getOutput().getHoverName().getString(), level.registryAccess());
+            case "name" -> IVariable.wrap(Objects.requireNonNullElseGet(title, () -> recipe.getOutput().getHoverName().getString()), level.registryAccess());
             case "desc" -> IVariable.wrap(xlate("pneumaticcraft.patchouli.processor.assembly.desc",
                     recipe.getOutput().getHoverName(),
                     programStack.getHoverName()

@@ -7,11 +7,11 @@
   ],
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_printed_circuit_board": {
+    "has_pneumatic_chestplate": {
       "conditions": {
         "items": [
           {
-            "items": "pneumaticcraft:printed_circuit_board"
+            "items": "pneumaticcraft:pneumatic_chestplate"
           }
         ]
       },
@@ -27,7 +27,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_printed_circuit_board"
+      "has_pneumatic_chestplate"
     ]
   ],
   "rewards": {

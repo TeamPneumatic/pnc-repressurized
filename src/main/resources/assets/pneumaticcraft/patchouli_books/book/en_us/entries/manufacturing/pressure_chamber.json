@@ -51,18 +51,38 @@
     },
     {
       "type": "crafting",
+      "title": "Wall & Glass",
       "recipe": "pneumaticcraft:pressure_chamber_wall",
       "recipe2": "pneumaticcraft:pressure_chamber_glass"
     },
     {
       "type": "crafting",
+      "title": "Interface & Valve",
       "recipe": "pneumaticcraft:pressure_chamber_interface",
       "recipe2": "pneumaticcraft:pressure_chamber_valve_x1"
     },
     {
       "type": "crafting",
+      "title": "Valves",
       "recipe": "pneumaticcraft:pressure_chamber_valve_x4",
       "recipe2": "pneumaticcraft:pressure_chamber_valve"
+    },
+    {
+      "type": "spotlight",
+      "title": "Reinforced Valve",
+      "item": "pneumaticcraft:reinforced_pressure_chamber_valve",
+      "text": "The $(item)Reinforced Pressure Chamber Valve/$ is an advanced block which can be used to upgrade the maximum air pressure in the Pressure Chamber from the default 5 bar to 20 bar, allowing the Pressure Chamber to store 4 times the air, and possibly unlocking $(ttcolor)$(t:By default all Pressure Chamber recipes require a max of 5 bar, but modpacks may change this)new recipes/$."
+    },
+    {
+      "type": "crafting",
+      "title": "Unassembled Reinf. Valve",
+      "recipe": "pneumaticcraft:unassembled_reinforced_pressure_chamber_valve",
+      "text": "Note that you don't need to upgrade any $(item)interfaces/$, $(item)walls/$, or $(item)glass/$."
+    },
+    {
+      "type": "pneumaticcraft:assembly_system",
+      "title": "Reinforced Valve",
+      "recipe": "pneumaticcraft:assembly/reinforced_pressure_chamber_valve"
     }
   ]
 }

@@ -1000,7 +1000,8 @@ public class ModRecipeProvider extends RecipeProvider {
         shapeless(Items.PAPER, Items.PAPER, ModItems.TAG_FILTER.get()).save(consumer, RL("paper_from_tag_filter"));
 
         shapeless(ModItems.UNASSEMBLED_REINFORCED_PRESSURE_CHAMBER_VALVE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
-                ModBlocks.ADVANCED_PRESSURE_TUBE.get(), ModBlocks.PRESSURE_CHAMBER_VALVE.get()
+                ModBlocks.PRESSURE_CHAMBER_VALVE.get(),
+                ModItems.REINFORCED_AIR_CANISTER_ARRAY.get()
         ).save(consumer);
 
         // network components

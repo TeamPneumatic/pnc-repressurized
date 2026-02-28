@@ -3,10 +3,10 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "pneumaticcraft:advanced_pressure_tube"
+      "item": "pneumaticcraft:pressure_chamber_valve"
     },
     {
-      "item": "pneumaticcraft:pressure_chamber_valve"
+      "item": "pneumaticcraft:reinforced_air_canister_array"
     }
   ],
   "result": {
