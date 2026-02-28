@@ -24,6 +24,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * All Logistics Provider and Storage frames now support a minimum stock level
   * By default, this is 0 but can be raised via the logistics configuration GUI (item and fluid amounts can be configured independently)
   * If >0, Logistics Drones and Logistics Modules will leave at least this amount of resources in the inventory/tank when taking resources out
+* Added block heat properties for the Create: Low Heated Basic Burner
 
 ### Changed
 * All drones are now immune to radiation by default; they are added to the `c:radiation_immune` entity tag
