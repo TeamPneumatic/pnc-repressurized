@@ -446,7 +446,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.HEAT_PIPE.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "WWW/BBB/WWW",
                 'W', ModBlocks.THERMAL_LAGGING.get(),
-                'B', PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON
+                'B', PneumaticCraftTags.Items.HEAT_PIPE_CONDUCTORS
         ).save(consumer);
 
         shaped(ModBlocks.HEAT_SINK.get(), ModItems.COMPRESSED_IRON_INGOT.get(),

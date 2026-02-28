@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "B": {
-      "tag": "c:storage_blocks/compressed_iron"
+      "tag": "pneumaticcraft:heat_pipe_conductors"
     },
     "W": {
       "item": "pneumaticcraft:thermal_lagging"

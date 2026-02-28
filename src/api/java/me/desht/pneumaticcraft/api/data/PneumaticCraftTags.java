@@ -95,6 +95,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> LOGISTIC_FRAMES = modTag("logistics_frames");
         public static final TagKey<Item> UPGRADES = modTag("upgrades");
         public static final TagKey<Item> MINIGUN_AMMO = modTag("minigun_ammo");
+        public static final TagKey<Item> HEAT_PIPE_CONDUCTORS = modTag("heat_pipe_conductors");
 
         public static final TagKey<Item> INGOTS_COMPRESSED_IRON = commonTag("ingots/compressed_iron");
         public static final TagKey<Item> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");

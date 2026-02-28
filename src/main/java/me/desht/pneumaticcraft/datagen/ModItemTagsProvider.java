@@ -31,6 +31,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
@@ -126,6 +127,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_HELMET);
 
         appendToTag(ItemTags.FREEZE_IMMUNE_WEARABLES, PneumaticCraftTags.Items.COMPRESSED_IRON_ARMOR, PneumaticCraftTags.Items.PNEUMATIC_ARMOR);
+
+        appendToTag(PneumaticCraftTags.Items.HEAT_PIPE_CONDUCTORS, Tags.Items.STORAGE_BLOCKS_COPPER, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
 
         ModItems.ITEMS.getEntries().forEach(h -> {
             if (h.get() instanceof UpgradeItem u) {
