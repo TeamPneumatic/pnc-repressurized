@@ -78,13 +78,7 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 WidgetAnimatedStat xpStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title"),
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText()).setForegroundColor(0xFF000000);
-                xpButton = new WidgetButtonExtended(20, 15, 20, 20, Component.empty(), b -> {
-                    te.curXPFluidIndex++;
-                    if (te.curXPFluidIndex >= availableXp.size()) {
-                        te.curXPFluidIndex = -1;
-                    }
-                    setupXPButton();
-                }).withTag("xpType");
+                xpButton = new WidgetButtonExtended(20, 15, 20, 20, Component.empty()).withTag("xpType");
                 setupXPButton();
                 xpStat.addSubWidget(xpButton);
                 xpStat.setReservedLines(3);
@@ -146,7 +140,16 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
         }
     }
 
+    @Override
+    public void onGuiUpdate() {
+        setupXPButton();
+    }
+
     private void setupXPButton() {
+        if (xpButton == null) {
+            return;
+        }
+
         List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
         Fluid fluid = te.curXPFluidIndex >= 0 && te.curXPFluidIndex < availableXp.size() ?
                 availableXp.get(te.curXPFluidIndex) : Fluids.EMPTY;
