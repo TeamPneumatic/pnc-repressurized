@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "createlowheated"
+    }
+  ],
   "type": "pneumaticcraft:heat_properties",
   "description": "pneumaticcraft.gui.jei.description.create_blaze_burner.smouldering",
   "block": "createlowheated:basic_burner",
