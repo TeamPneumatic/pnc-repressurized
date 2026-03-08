@@ -167,7 +167,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             case PULL -> button.setRenderStacks(new ItemStack(Blocks.STICKY_PISTON));
         }
         button.setTooltipText(ImmutableList.of(
-                Component.literal(face.toString()).withStyle(ChatFormatting.YELLOW),
+                xlate(face.getTranslationKey()).withStyle(ChatFormatting.YELLOW),
                 xlate(mode.getTranslationKey()))
         );
     }

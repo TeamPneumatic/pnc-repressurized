@@ -49,8 +49,10 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
                         xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").withStyle(ChatFormatting.WHITE),
-                        Component.literal( sOut + "x" + sOut + "x" + sOut + " (outside)").withStyle(ChatFormatting.BLACK),
-                        Component.literal( sIn + "x" + sIn + "x" + sIn + " (inside)").withStyle(ChatFormatting.BLACK)
+                        Component.literal( sOut + "x" + sOut + "x" + sOut + " ").append("pneumaticcraft.gui.tab.pressureChamber.chamberSize.outside")
+                                .withStyle(ChatFormatting.BLACK),
+                        Component.literal( sIn + "x" + sIn + "x" + sIn + " ").append("pneumaticcraft.gui.tab.pressureChamber.chamberSize.outside")
+                                .withStyle(ChatFormatting.BLACK)
                 ));
     }
 

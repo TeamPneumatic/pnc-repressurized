@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Direction;
@@ -240,7 +241,7 @@ public class SideConfigurator<T> {
     public static final StreamCodec<FriendlyByteBuf,Map<String,Saved>> STREAM_CODEC
         = ByteBufCodecs.map(Maps::newHashMapWithExpectedSize, ByteBufCodecs.STRING_UTF8, Saved.STREAM_CODEC);
 
-    public enum RelativeFace implements StringRepresentable {
+    public enum RelativeFace implements StringRepresentable, ITranslatableEnum {
         BOTTOM("bottom"),
         TOP("top"),
         LEFT("left"),
@@ -267,6 +268,11 @@ public class SideConfigurator<T> {
         @Override
         public String getSerializedName() {
             return name;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.relative." + name;
         }
     }
 

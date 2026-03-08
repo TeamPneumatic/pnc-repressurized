@@ -63,7 +63,7 @@ public class AssemblyProgramItem extends Item {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
-        infoList.add(Component.literal("Required Machines:"));
+        infoList.add(Component.translatable("item.pneumaticcraft.assembly_program.required"));
         infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
         Arrays.stream(getProgram().getRequiredMachines())
                 .map(machine -> bullet().append(xlate(machine.getMachineBlock().getDescriptionId())))
