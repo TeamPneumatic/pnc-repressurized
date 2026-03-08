@@ -83,7 +83,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         if (player instanceof ServerPlayer sp) {
-            return level.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get()).map(te -> {
+            if (level.getBlockEntity(pos) instanceof PressureChamberValveBlockEntity te) {
                 if (te.multiBlockSize > 0) {
                     sp.openMenu(te, pos);
                 } else if (!te.accessoryValves.isEmpty()) {
@@ -98,7 +98,9 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
                     return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
                 }
                 return ItemInteractionResult.CONSUME;
-            }).orElse(ItemInteractionResult.FAIL);
+            } else {
+                return ItemInteractionResult.FAIL;
+            }
         } else {
             return level.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get())
                     .filter(te -> te.multiBlockSize > 0)

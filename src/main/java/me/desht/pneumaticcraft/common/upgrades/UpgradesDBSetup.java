@@ -192,6 +192,9 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
+        db.addApplicableUpgrades(ModBlockEntityTypes.REINFORCED_PRESSURE_CHAMBER_VALVE.get(), new Builder()
+                .with(ModUpgrades.SECURITY.get(), 1)
+                .with(ModUpgrades.VOLUME.get(), MAX_VOLUME));
         db.addApplicableUpgrades(ModBlockEntityTypes.VACUUM_PUMP.get(), new Builder()
                 .with(ModUpgrades.SECURITY.get(), 1)
                 .with(ModUpgrades.VOLUME.get(), MAX_VOLUME)
