@@ -82,7 +82,7 @@ public class AphorismTileScreen extends Screen {
     @Override
     public void init() {
         int yPos = (height - PANEL_HEIGHT) / 2;
-        addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  Component.literal("Margin: "), Component.empty(),
+        addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  xlate("pneumaticcraft.gui.misc.margin").append(": "), Component.empty(),
                 0, 9, blockEntity.getMarginSize(), true, slider -> blockEntity.setMarginSize(slider.getValueInt())));
 
         WidgetCheckBox cb;
@@ -114,7 +114,7 @@ public class AphorismTileScreen extends Screen {
     }
 
     private void openItemSelector() {
-        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), Component.literal("Searcher"));
+        ClientUtils.openContainerGui(ModMenuTypes.ITEM_SEARCHER.get(), xlate("pneumaticcraft.gui.misc.searchItem"));
         if (minecraft.screen instanceof ItemSearcherScreen scr) {
             itemSearchGui = scr;
         }

@@ -64,6 +64,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -806,7 +807,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         .withStyle(ChatFormatting.GREEN));
             }
             if (required != 0 && ClientUtils.getClientPlayer().isCreative()) {
-                exportButtonTooltip.add(Component.literal("(Creative mode)").withStyle(ChatFormatting.LIGHT_PURPLE));
+                exportButtonTooltip.add(ComponentUtils.wrapInSquareBrackets(xlate("gameMode.creative")).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
             if (effectiveRequired > available) {
                 exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.notEnoughPieces")

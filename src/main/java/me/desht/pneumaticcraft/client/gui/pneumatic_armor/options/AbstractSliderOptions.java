@@ -33,6 +33,8 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T> {
     private Integer pendingVal = null;
 
@@ -55,9 +57,13 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
      */
     protected abstract DataComponentType<Integer> getIntegerComponent();
 
-    protected abstract Component getPrefix();
+    protected Component getPrefix() {
+        return xlate("pneumaticcraft.armor.gui.misc.power").append(": ");
+    }
 
-    protected abstract Component getSuffix();
+    protected Component getSuffix() {
+        return Component.literal("%");
+    }
 
     EquipmentSlot getSlot() {
         return getClientUpgradeHandler().getCommonHandler().getEquipmentSlot();

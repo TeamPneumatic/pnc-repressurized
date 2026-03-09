@@ -34,7 +34,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlot;
 
@@ -109,16 +108,6 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
         checkBoxBuilderMode.asWidget().active = nUpgrades >= JetBootsHandler.BUILDER_MODE_LEVEL;
         checkBoxStabilizers.asWidget().active = nUpgrades >= JetBootsHandler.STABILIZERS_LEVEL;
-    }
-
-    @Override
-    protected Component getPrefix() {
-        return Component.literal("Power: ");
-    }
-
-    @Override
-    protected Component getSuffix() {
-        return Component.literal("%");
     }
 
     @Override

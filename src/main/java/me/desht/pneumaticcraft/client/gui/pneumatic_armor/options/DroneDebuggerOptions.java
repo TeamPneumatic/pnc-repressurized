@@ -227,7 +227,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             if (entry != null) {
                 long elapsed = (System.currentTimeMillis() - entry.receivedTime()) / 50;
                 tooltip.add((xlate("pneumaticcraft.gui.progWidget.debug.lastMessage",
-                                PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(ChatFormatting.AQUA)
+                        PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).withStyle(ChatFormatting.AQUA)
                 );
                 tooltip.add(Component.literal("  \"")
                         .append(xlate(entry.message()))
@@ -240,11 +240,13 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {
-                    tooltip.add(Component.literal("Right-Click: ")
+                    tooltip.add(xlate("programmingPuzzle.pneumaticcraft.block_right_click.name")
+                            .append(": ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
                             .withStyle(ChatFormatting.GREEN));
                 } else {
-                    tooltip.add(Component.literal("Right-Click: ")
+                    tooltip.add(xlate("programmingPuzzle.pneumaticcraft.block_right_click.name")
+                            .append(": ")
                             .append(xlate("pneumaticcraft.gui.programmer.button.showArea"))
                             .withStyle(ChatFormatting.GREEN));
                 }

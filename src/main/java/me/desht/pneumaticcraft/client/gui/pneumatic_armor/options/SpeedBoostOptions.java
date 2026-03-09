@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.SpeedBoostClientHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.network.chat.Component;
 
 public class SpeedBoostOptions extends AbstractSliderOptions<SpeedBoostClientHandler> {
     public SpeedBoostOptions(IGuiScreen screen, SpeedBoostClientHandler handler) {
@@ -31,15 +30,5 @@ public class SpeedBoostOptions extends AbstractSliderOptions<SpeedBoostClientHan
     @Override
     protected DataComponentType<Integer> getIntegerComponent() {
         return ModDataComponents.SPEED_BOOST_PCT.get();
-    }
-
-    @Override
-    protected Component getPrefix() {
-        return Component.literal("Boost: ");
-    }
-
-    @Override
-    protected Component getSuffix() {
-        return Component.literal("%");
     }
 }

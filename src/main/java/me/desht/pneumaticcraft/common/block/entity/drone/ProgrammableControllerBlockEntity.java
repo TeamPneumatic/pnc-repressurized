@@ -61,6 +61,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -99,6 +100,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, IDroneBase, ISideConfigurable, MenuProvider {
@@ -372,8 +374,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public UUID getOwnerUUID() {
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
-            ownerName = Component.literal("[Programmable Controller]");
-            Log.warning("Programmable controller with owner '{}' has no UUID! Substituting a random UUID ({}).", ownerName, ownerID);
+            ownerName = ComponentUtils.wrapInSquareBrackets(xlate("block.pneumaticcraft.programmable_controller"));
+            Log.warning("Programmable controller at '{}' has no UUID! Substituting a random UUID ({}).",
+                    PneumaticCraftUtils.posToString(getBlockPos()), ownerID);
         }
         return ownerID;
     }

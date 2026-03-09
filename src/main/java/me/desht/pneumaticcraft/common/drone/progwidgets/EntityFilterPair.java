@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 /**
  * Represents a pair of entity filters: a whitelist and a blacklist, as used by programming puzzle pieces.
  */
@@ -46,10 +48,10 @@ public class EntityFilterPair<T extends IEntityProvider & IProgWidget> {
     public static <T extends IEntityProvider & IProgWidget> void addErrors(T widget, List<Component> errors) {
         EntityFilterPair<T> filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
-            errors.add(Component.literal("Invalid whitelist filter: " + filter.errorWhite));
+            errors.add(xlate("pneumaticcraft.gui.progWidget.entityFilter.badWhitelist", filter.errorWhite));
         }
         if (!filter.errorBlack.isEmpty()) {
-            errors.add(Component.literal("Invalid blacklist filter: " + filter.errorBlack));
+            errors.add(xlate("pneumaticcraft.gui.progWidget.entityFilter.badBlacklist", filter.errorBlack));
         }
     }
 

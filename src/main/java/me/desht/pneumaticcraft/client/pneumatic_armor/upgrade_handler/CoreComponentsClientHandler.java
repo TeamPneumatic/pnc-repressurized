@@ -56,6 +56,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
     private static final int MAX_BARS = 40;
@@ -237,7 +238,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public IGuiAnimatedStat getTestMessageStat() {
         if (testMessageStat == null) {
             StatPanelLayout messageLayout = ArmorHUDLayout.INSTANCE.getLayoutFor(CoreComponentsHandler.getMessageID(), CoreComponentsClientHandler.getDefaultMessageLayout());
-            testMessageStat = new WidgetAnimatedStat(null, Component.literal("Test Message: keep in mind that messages can be long!"),
+            testMessageStat = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.gui.misc.testMessage"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, messageLayout);
             testMessageStat.openStat();
         }

@@ -155,14 +155,14 @@ public class ModCommands {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(source.getPlayerOrException());
             if (handler.upgradeUsable(upgrade.get(), false)) {
                 handler.setUpgradeEnabled(upgrade.get(), enabled);
-                source.sendSuccess(() -> Component.literal(id + " enabled = " + enabled), false);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.armorUpgrade.changed", id, enabled), false);
                 return 1;
             } else {
-                source.sendFailure(Component.literal("Upgrade " + id + " is not inserted!").withStyle(ChatFormatting.RED));
+                source.sendFailure(xlate("pneumaticcraft.command.armorUpgrade.notInserted", id).withStyle(ChatFormatting.RED));
                 return 0;
             }
         } else {
-            source.sendFailure(Component.literal("Unknown upgrade ID: " + id).withStyle(ChatFormatting.RED));
+            source.sendFailure(xlate("pneumaticcraft.command.armorUpgrade.unknown", id).withStyle(ChatFormatting.RED));
             return 0;
         }
     }
@@ -294,7 +294,7 @@ public class ModCommands {
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
             });
         } catch (CommandSyntaxException e) {
-            source.sendFailure(Component.literal("Player-globals require player context!"));
+            source.sendFailure(xlate("pneumaticcraft.command.globalVariable.contextError"));
         }
 
         return 1;
@@ -329,7 +329,7 @@ public class ModCommands {
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
             }
         } catch (CommandSyntaxException e) {
-            source.sendFailure(Component.literal("Player-globals require player context!"));
+            source.sendFailure(xlate("pneumaticcraft.command.globalVariable.contextError"));
         }
         return 1;
     }

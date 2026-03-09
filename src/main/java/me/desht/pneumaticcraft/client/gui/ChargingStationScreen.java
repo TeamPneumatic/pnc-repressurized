@@ -21,6 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -51,8 +52,8 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
 
-    private static final Component UPGRADE_ONLY_ON = Component.literal("⬆").withStyle(ChatFormatting.AQUA);
-    private static final Component UPGRADE_ONLY_OFF = Component.literal("⬆").withStyle(ChatFormatting.GRAY);
+    private static final Component UPGRADE_ONLY_ON = Component.literal(Symbols.ARROW_UP_SHORT).withStyle(ChatFormatting.AQUA);
+    private static final Component UPGRADE_ONLY_OFF = Component.literal(Symbols.ARROW_UP_SHORT).withStyle(ChatFormatting.GRAY);
 
     public ChargingStationScreen(ChargingStationMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);

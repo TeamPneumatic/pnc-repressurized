@@ -29,7 +29,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -46,12 +45,13 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
 
         int sOut = te.multiBlockSize;
         int sIn = te.multiBlockSize - 2;
-        addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
+        String key = "pneumaticcraft.gui.tab.pressureChamber.chamberSize";
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), ModBlocks.PRESSURE_CHAMBER_WALL.asItem(), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
-                        xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").withStyle(ChatFormatting.WHITE),
-                        Component.literal( sOut + "x" + sOut + "x" + sOut + " ").append("pneumaticcraft.gui.tab.pressureChamber.chamberSize.outside")
+                        xlate(key).withStyle(ChatFormatting.WHITE),
+                        Component.literal( volStr(sOut) + " ").append(Component.translatable(key + ".outside"))
                                 .withStyle(ChatFormatting.BLACK),
-                        Component.literal( sIn + "x" + sIn + "x" + sIn + " ").append("pneumaticcraft.gui.tab.pressureChamber.chamberSize.outside")
+                        Component.literal( volStr(sIn) + " ").append(Component.translatable(key + ".inside"))
                                 .withStyle(ChatFormatting.BLACK)
                 ));
     }
@@ -60,8 +60,12 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
     protected void renderLabels(GuiGraphics graphics, int x, int y) {
         super.renderLabels(graphics, x, y);
 
-        Component title = xlate("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
+        Component title = xlate("pneumaticcraft.gui.pressureChamberTitle", volStr(te.multiBlockSize));
         graphics.drawString(font, title, (imageWidth - font.width(title)) / 2, 6, 0x404040, false);
+    }
+
+    private static String volStr(int n) {
+        return n + "x" + n + "x" + n;
     }
 
     @Override

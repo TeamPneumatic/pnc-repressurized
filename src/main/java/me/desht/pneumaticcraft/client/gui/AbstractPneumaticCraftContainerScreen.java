@@ -63,6 +63,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -145,6 +146,10 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         }
         statWidgets.add(stat);
         return stat;
+    }
+
+    protected WidgetAnimatedStat addAnimatedStat(Component title, @Nonnull Item icon, int backgroundColor, boolean leftSided) {
+        return addAnimatedStat(title, StatIcon.of(icon), backgroundColor, leftSided);
     }
 
     protected WidgetAnimatedStat addAnimatedStat(Component title, @Nonnull ItemStack icon, int backgroundColor, boolean leftSided) {

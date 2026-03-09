@@ -177,7 +177,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private static final EntityDataAccessor<ItemStack> HELD_ITEM = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Integer> TARGET_ID = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
-    private static final MutableComponent DEF_DRONE_NAME = Component.literal("Drone");
+    private static final MutableComponent DEF_DRONE_NAME = Component.translatable("entity.pneumaticcraft.drone");
 
     private static final HashMap<Component, Integer> LASER_COLOR_MAP = new HashMap<>();
     static {

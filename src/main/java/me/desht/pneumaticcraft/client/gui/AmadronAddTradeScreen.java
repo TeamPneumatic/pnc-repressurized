@@ -41,6 +41,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -158,7 +159,8 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
                     Component.literal(" @ " + posToString(p.pos())), 0xFFFFFFFF)).setScale(0.5f);
         }
         if (positions[slot] == null) {
-            addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 130, Component.literal("[Default]"), 0xFFC0C0C0)).setScale(0.5f);
+            Component def = ComponentUtils.wrapInSquareBrackets(xlate("generator.minecraft.normal"));
+            addRenderableWidget(new WidgetLabel(leftPos + 32 + xOffset, topPos + 130, def, 0xFFC0C0C0)).setScale(0.5f);
         }
     }
 
