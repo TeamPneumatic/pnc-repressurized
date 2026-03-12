@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item.minigun;
 
+import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
@@ -42,8 +43,10 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -67,6 +70,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -174,12 +179,17 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     private Minigun getMinigun(ItemStack stack, Player player, ItemStack ammo) {
-        boolean isCreative = UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) > 0;
+        IntList l = UpgradableItemUtils.getUpgradeList(stack, ModUpgrades.CREATIVE.get(), ModUpgrades.ITEM_LIFE.get());
+        boolean isCreative = l.getInt(0) > 0;
+        boolean hasLifeUpgrades = l.getInt(1) > 0;
+        Holder<Enchantment> unbreaking = EnchantmentUtils.getEnchantment(player.registryAccess(), Enchantments.UNBREAKING);
+
         return new ItemMinigunImpl(player, stack)
                 .setAmmoStack(ammo)
                 .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM), isCreative ? 0 : PneumaticValues.USAGE_ITEM_MINIGUN)
                 .setWorld(player.level())
-                .setInfiniteAmmo(isCreative);
+                .setInfiniteAmmo(isCreative)
+                .setPreventAmmoBreakage(hasLifeUpgrades || ammo.getEnchantmentLevel(unbreaking) > 0);
     }
 
     @NotNull
@@ -231,7 +241,9 @@ public class MinigunItem extends PressurizableItem implements
             Minigun minigun = getMinigun(stack, player, ammo);
             // an item life upgrade will prevent the stack from being destroyed
             boolean usedUpAmmo = minigun.tryFireMinigun(null).ammoUsedUp() && minigun.getUpgrades(ModUpgrades.ITEM_LIFE.get()) == 0;
-            if (usedUpAmmo) ammo.setCount(0);
+            if (usedUpAmmo) {
+                ammo.setCount(0);
+            }
             if (usedUpAmmo || ammo.getDamageValue() != prevDamage) {
                 magazineHandler.save();
             }

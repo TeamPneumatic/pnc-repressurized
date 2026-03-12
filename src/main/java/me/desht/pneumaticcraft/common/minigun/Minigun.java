@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
@@ -41,7 +40,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -82,6 +80,7 @@ public abstract class Minigun {
     private LivingEntity attackTarget;
     private float idleYaw;
     private boolean infiniteAmmo = false;
+    private boolean preventAmmoBreakage = false;
 
     public Minigun(Player player, boolean requiresTarget) {
         this.player = player;
@@ -238,11 +237,20 @@ public abstract class Minigun {
         return  this;
     }
 
+    public boolean isPreventAmmoBreakage() {
+        return preventAmmoBreakage;
+    }
+
+    public Minigun setPreventAmmoBreakage(boolean preventAmmoBreakage) {
+        this.preventAmmoBreakage = preventAmmoBreakage;
+        return this;
+    }
+
     public FiringResult tryFireMinigun(Entity target) {
         final MutableInt ammoCost = new MutableInt(0);
         final MutableBoolean lastShotOfAmmo = new MutableBoolean(false);
         if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammoItem
-                && ammoStack.getDamageValue() < ammoStack.getMaxDamage()
+                && ammoStack.getDamageValue() < ammoStack.getMaxDamage() - 1
                 && (airCapability == null || airCapability.getPressure() > 0))
         {
             setMinigunTriggerTimeOut(10);
@@ -272,11 +280,14 @@ public abstract class Minigun {
                     roundsUsed = ammoItem.onBlockHit(this, ammoStack, brtr);
                 }
                 ammoCost.setValue(roundsUsed * ammoItem.getAmmoCost(ammoStack));
+                if (isPreventAmmoBreakage()) {
+                    int durability = ammoStack.getMaxDamage() - ammoStack.getDamageValue();
+                    ammoCost.setValue(Math.min(ammoCost.intValue(), durability - 1));
+                }
                 if (!isInfiniteAmmo() && player instanceof ServerPlayer serverPlayer) {
-                    boolean hasUnbreaking = player.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolder(Enchantments.UNBREAKING)
-                            .map(ench -> ammoStack.getEnchantmentLevel(ench) > 0).orElse(false);
                     ammoStack.hurtAndBreak(ammoCost.intValue(), serverPlayer.serverLevel(), serverPlayer,
-                            item -> lastShotOfAmmo.setValue(hasUnbreaking));
+                            item -> lastShotOfAmmo.setValue(true)
+                    );
                 }
             }
         }
