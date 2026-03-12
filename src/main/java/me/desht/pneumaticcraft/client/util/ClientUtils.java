@@ -44,6 +44,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -167,6 +168,10 @@ public class ClientUtils {
 
     public static Optional<Player> getOptionalClientPlayer() {
         return Optional.ofNullable(Minecraft.getInstance().player);
+    }
+
+    public static boolean isLocalPlayer(Entity e) {
+        return e instanceof LocalPlayer;
     }
 
     public static boolean hasShiftDown() {
