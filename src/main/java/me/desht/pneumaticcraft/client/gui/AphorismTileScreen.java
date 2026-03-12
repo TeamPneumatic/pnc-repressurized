@@ -43,12 +43,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AphorismTileScreen extends Screen {
-    private static final int PANEL_HEIGHT = 88;
+    private static final int PANEL_HEIGHT = 108;
     public final AphorismTileBlockEntity blockEntity;
     private String[] textLines;
     public int cursorY;
@@ -65,7 +66,6 @@ public class AphorismTileScreen extends Screen {
         blockEntity.needMaxLineWidthRecalc();
         if (ConfigHelper.client().general.aphorismDrama.get() && placing && textLines.length == 1 && textLines[0].isEmpty()) {
             generateDrama();
-//            NetworkHandler.sendToServer(PacketAphorismTileUpdate.forBlockEntity(blockEntity));
         }
 
         Pair<Integer,Integer> cursor = blockEntity.getCursorPos();
@@ -85,25 +85,33 @@ public class AphorismTileScreen extends Screen {
         addRenderableWidget(new PNCForgeSlider(5, yPos, 90, 16,  xlate("pneumaticcraft.gui.misc.margin").append(": "), Component.empty(),
                 0, 9, blockEntity.getMarginSize(), true, slider -> blockEntity.setMarginSize(slider.getValueInt())));
 
-        WidgetCheckBox cb;
-        WidgetButtonExtended itemButton, rsButton;
-
-        addRenderableWidget(cb = new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> blockEntity.setInvisible(b.checked))
+        addRenderableWidget(new WidgetCheckBox(5, yPos + 22, 0xFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.invisible"), b -> blockEntity.setInvisible(b.checked))
                 .setChecked(blockEntity.isInvisible()));
 
         addRenderableWidget(new WidgetLabel(5, yPos + 38, xlate("pneumaticcraft.gui.aphorismTile.insert"), 0xFFFFFF80));
 
         Component txt = xlate("pneumaticcraft.gui.aphorismTile.insertItem");
-        addRenderableWidget(itemButton = new WidgetButtonExtended(10, yPos + 50, font.width(txt) + 10, 18, txt, b -> openItemSelector()));
+        addRenderableWidget(new WidgetButtonExtended(10, yPos + 50, font.width(txt) + 10, 18, txt, b -> openItemSelector()));
 
         txt = xlate("pneumaticcraft.gui.redstone");
-        addRenderableWidget(rsButton = new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
+        addRenderableWidget(new WidgetButtonExtended(10, yPos + 70, font.width(txt) + 10, 18, txt, b -> {
             textLines[cursorY] = textLines[cursorY] + "{redstone}";
             blockEntity.setTextLines(textLines);
         }));
 
-        panelWidth = Math.max(100, Math.max(cb.getWidth(), Math.max(rsButton.getWidth(), itemButton.getWidth()))) + 5;
+        txt = xlate("pneumaticcraft.gui.misc.clipboard");
+        addRenderableWidget(new WidgetButtonExtended(10, yPos + 90, font.width(txt) + 10, 18, txt, b -> {
+            pasteClipboard();
+            blockEntity.setTextLines(textLines);
+        }));
+
+        panelWidth = children().stream()
+                .map(r -> r.getRectangle().width())
+                .max(Comparator.naturalOrder())
+                .orElse(100) + 5;
+
         if (itemSearchGui != null && !itemSearchGui.getSearchStack().isEmpty()) {
+            // returning from the item selector screen
             ResourceLocation regName = PneumaticCraftUtils.getRegistryName(itemSearchGui.getSearchStack().getItem()).orElseThrow();
             String text = "{item:" + regName + "}";
             textLines[cursorY] = text;
@@ -250,9 +258,30 @@ public class AphorismTileScreen extends Screen {
                 }
             }
         }
+
+        if (Screen.isPaste(keyCode)) {
+            pasteClipboard();
+            updateTE = true;
+        }
+
         blockEntity.setCursorPos(cursorX, cursorY);
         if (updateTE) blockEntity.setTextLines(textLines);
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private void pasteClipboard() {
+        String[] clip = Minecraft.getInstance().keyboardHandler.getClipboard().split("\n");
+        clip[0] = textLines[cursorY].substring(0, cursorX) + clip[0];
+        String trailing = textLines[cursorY].substring(cursorX);
+        clip[clip.length - 1] = clip[clip.length - 1] + trailing;
+        int pos = clip[clip.length - 1].length() - trailing.length();
+        textLines = ArrayUtils.remove(textLines, cursorY);
+        for (String s : clip) {
+            textLines = insertLine(s, cursorY);
+            cursorY++;
+        }
+        cursorY = Math.min(textLines.length - 1, cursorY);
+        cursorX = pos;
     }
 
     @Override
