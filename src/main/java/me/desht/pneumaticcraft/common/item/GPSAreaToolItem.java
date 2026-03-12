@@ -84,9 +84,9 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide && !playerIn.isCrouching()) {
+        if (worldIn.isClientSide && !playerIn.isShiftKeyDown()) {
             GPSAreaToolScreen.showGUI(stack, handIn, 0);
-        } else if (playerIn.isCrouching()) {
+        } else if (playerIn.isShiftKeyDown()) {
             setActiveIndex(playerIn, stack, 0);
         }
         return InteractionResultHolder.success(stack);
@@ -313,7 +313,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         @SubscribeEvent
         public static void onLeftClickAir(PlayerInteractEvent.LeftClickEmpty event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get())
-                if (!event.getEntity().isCrouching()) {
+                if (!event.getEntity().isShiftKeyDown()) {
                     GPSAreaToolScreen.showGUI(event.getItemStack(), event.getHand(), 1);
                 } else {
                     NetworkHandler.sendToServer(PacketLeftClickEmpty.INSTANCE);

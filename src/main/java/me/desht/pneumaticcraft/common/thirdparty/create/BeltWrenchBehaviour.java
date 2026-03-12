@@ -23,7 +23,7 @@ public class BeltWrenchBehaviour implements BiFunction<UseOnContext, BlockState,
                         brtr, new BeltSlicer.Feedback());
             }
         } else if (state.getBlock() instanceof IWrenchable wrenchable) {
-            return ctx.getPlayer() != null && ctx.getPlayer().isCrouching() ?
+            return ctx.getPlayer() != null && ctx.getPlayer().isShiftKeyDown() ?
                     wrenchable.onSneakWrenched(state, ctx) :
                     wrenchable.onWrenched(state, ctx);
         }

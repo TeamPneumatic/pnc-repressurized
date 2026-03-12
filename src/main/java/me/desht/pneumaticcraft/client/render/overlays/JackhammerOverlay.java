@@ -21,7 +21,7 @@ public class JackhammerOverlay implements LayeredDraw.Layer {
         long timeDelta = player.level().getGameTime() - JackHammerItem.getLastModeSwitchTime();
         JackHammerItem.DigMode digMode = JackHammerItem.getDigMode(player.getMainHandItem());
         boolean showHud = ConfigHelper.client().general.jackHammerHud.get();
-        if (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) && showHud || timeDelta < 30 || player.isCrouching()) {
+        if (digMode.atLeast(JackHammerItem.DigMode.MODE_1X2) && showHud || timeDelta < 30 || player.isShiftKeyDown()) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.setShaderColor(1f, 1f, 1f, 0.25f);

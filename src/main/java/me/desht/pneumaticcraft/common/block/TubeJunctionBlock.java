@@ -67,7 +67,7 @@ public class TubeJunctionBlock extends AbstractPneumaticCraftBlock implements Pn
 
     @Override
     public boolean onWrenched(Level world, Player player, BlockPos pos, Direction side, InteractionHand hand) {
-        if (player != null && player.isCrouching()) {
+        if (player != null && player.isShiftKeyDown()) {
             return super.onWrenched(world, player, pos, side, hand);
         } else {
             BlockState state = world.getBlockState(pos);

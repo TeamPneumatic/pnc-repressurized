@@ -120,7 +120,7 @@ public class PneumaticProvider {
                     iTooltip.add(xlate("pneumaticcraft.gui.tooltip.pressureMax", pressureStr, dangerPressureStr));
                 }
                 handleHeatData(iTooltip, tag);
-                if (blockAccessor.getPlayer().isCrouching()) {
+                if (blockAccessor.getPlayer().isShiftKeyDown()) {
                     handleFluidData(iTooltip, tag, blockAccessor.getLevel().registryAccess());
                 }
             }

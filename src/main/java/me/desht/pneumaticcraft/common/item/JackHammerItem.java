@@ -238,7 +238,7 @@ public class JackHammerItem extends PressurizableItem
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (!playerIn.isCrouching() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
+        if (!playerIn.isShiftKeyDown() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
         if (playerIn instanceof ServerPlayer sp) {
             sp.openMenu(new MenuProvider() {
                 @Override

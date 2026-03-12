@@ -45,7 +45,7 @@ public class ThermalLaggingBlock extends AbstractPneumaticCraftBlock {
             ItemStack stack = livingEntity.getMainHandItem();
             return ModdedWrenchUtils.getInstance().isWrench(stack)
                     || stack.getItem().canPerformAction(stack, ItemAbilities.PICKAXE_DIG)
-                    || livingEntity.isCrouching() ?
+                    || livingEntity.isShiftKeyDown() ?
                     SHAPES[getRotation(state).get3DDataValue()] : Shapes.empty();
         }
         return SHAPES[getRotation(state).get3DDataValue()];

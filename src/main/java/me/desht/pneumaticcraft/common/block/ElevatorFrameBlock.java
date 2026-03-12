@@ -237,7 +237,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        if (!player.isCrouching() && heldItem.getItem() == this.asItem()) {
+        if (!player.isShiftKeyDown() && heldItem.getItem() == this.asItem()) {
             // build it scaffolding-style
             if (!world.isClientSide) {
                 BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());

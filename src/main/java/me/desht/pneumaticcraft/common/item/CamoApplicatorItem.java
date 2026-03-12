@@ -83,7 +83,7 @@ public class CamoApplicatorItem extends PressurizableItem {
         Player player = ctx.getPlayer();
 
         if (player != null && !level.isClientSide) {
-            if (player.isCrouching()) {
+            if (player.isShiftKeyDown()) {
                 // sneak-right-click: clear camo
                 setCamoState(stack, null);
                 level.playSound(null, ctx.getClickedPos(), ModSounds.CHIRP.get(), SoundSource.PLAYERS, 1f, 1f);

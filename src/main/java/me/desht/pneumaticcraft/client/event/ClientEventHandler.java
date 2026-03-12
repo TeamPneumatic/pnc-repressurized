@@ -60,6 +60,7 @@ import java.util.List;
 @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ClientEventHandler {
     private static float currentScreenRoll = 0F;
+    private static int crouchSelected = -1;  // selected hotbar slot when player starts to sneak
 
     @SubscribeEvent
     public static void screenTilt(ViewportEvent.ComputeCameraAngles event) {
@@ -195,7 +196,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollingEvent event) {
         Player player = ClientUtils.getClientPlayer();
-        if (player.isCrouching() && crouchSelected >= 0 && player.getInventory().selected == crouchSelected) {
+        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().selected == crouchSelected) {
             if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
@@ -211,12 +212,10 @@ public class ClientEventHandler {
         return false;
     }
 
-    private static int crouchSelected = -1;
-
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
-        if (event.getEntity().level().isClientSide) {
-            if (event.getEntity().isCrouching()) {
+        if (event.getEntity().level().isClientSide()) {
+            if (event.getEntity().isShiftKeyDown()) {
                 if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().selected;
             } else {
                 crouchSelected = -1;

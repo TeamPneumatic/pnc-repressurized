@@ -74,7 +74,7 @@ public class RemoteItem extends Item {
         BlockPos pos = ctx.getClickedPos();
         ItemStack remote = ctx.getItemInHand();
 
-        if (world.getBlockEntity(pos) instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isCrouching() && isAllowedToEdit(player, remote)) {
+        if (world.getBlockEntity(pos) instanceof SecurityStationBlockEntity teSS && player instanceof ServerPlayer && player.isShiftKeyDown() && isAllowedToEdit(player, remote)) {
             if (teSS.doesAllowPlayer(player)) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                 setSecurityStationPos(remote, gPos);
@@ -107,7 +107,7 @@ public class RemoteItem extends Item {
     }
 
     private void openGui(ServerPlayer player, ItemStack remote, InteractionHand hand) {
-        if (player.isCrouching()) {
+        if (player.isShiftKeyDown()) {
             if (isAllowedToEdit(player, remote)) {
                 player.openMenu(new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
             }

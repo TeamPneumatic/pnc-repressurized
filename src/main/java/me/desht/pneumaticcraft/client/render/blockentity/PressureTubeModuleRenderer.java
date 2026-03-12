@@ -70,7 +70,7 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
 
         if (moduleItem != null && Minecraft.getInstance().hitResult instanceof BlockHitResult blockHitResult) {
             // "fake" module is for showing a preview of where the module would be placed
-            Direction face = player.isCrouching() ? blockHitResult.getDirection().getOpposite() : blockHitResult.getDirection();
+            Direction face = player.isShiftKeyDown() ? blockHitResult.getDirection().getOpposite() : blockHitResult.getDirection();
             if (blockHitResult.getBlockPos().equals(tile.getBlockPos())
                     && player.level().getBlockEntity(blockHitResult.getBlockPos()) == tile
                     && tile.getModule(face) == null) {
