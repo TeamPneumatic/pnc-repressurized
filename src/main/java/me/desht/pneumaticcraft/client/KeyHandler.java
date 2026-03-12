@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -31,7 +32,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public enum KeyHandler {
     INSTANCE;
 
@@ -84,12 +84,16 @@ public enum KeyHandler {
 
     @SubscribeEvent
     public void onKey(InputEvent.Key event) {
-        knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+            knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
+        }
     }
 
     @SubscribeEvent
     public void onMouse(InputEvent.MouseButton.Post event) {
-        knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+            knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
+        }
     }
 
     private void registerKeyListener(IKeyListener listener) {
