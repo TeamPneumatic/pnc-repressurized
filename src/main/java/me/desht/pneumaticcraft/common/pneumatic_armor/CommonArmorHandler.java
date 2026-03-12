@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
@@ -159,6 +160,15 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::reset);
                 }
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+            if (ClientUtils.isLocalPlayer(event.getEntity())) {
+                // client player entered new level
+                ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.ENTITY_TRACKER).reset();
+                ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.BLOCK_TRACKER).reset();
             }
         }
     }
