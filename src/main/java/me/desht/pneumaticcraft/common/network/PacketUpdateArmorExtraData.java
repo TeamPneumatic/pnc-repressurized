@@ -72,6 +72,7 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
         addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_BUILDER_MODE.get());
         addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_HOVER.get());
         addKey(map, EquipmentSlot.FEET, ModDataComponents.JET_BOOTS_SMART_HOVER.get());
+        addKey(map, EquipmentSlot.CHEST, ModDataComponents.CHARGING_MODE.get());
     });
 
     private static void addKey(Map<EquipmentSlot, Set<DataComponentType<?>>> map, EquipmentSlot slot, DataComponentType<?> type) {
@@ -93,7 +94,6 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
                     IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
                     if (upgradeHandler != null) {
                         upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), entry.getValue().orElse(null));
-//                        entry.getValue().ifPresent(val -> upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), val));
                     }
                 }
             });

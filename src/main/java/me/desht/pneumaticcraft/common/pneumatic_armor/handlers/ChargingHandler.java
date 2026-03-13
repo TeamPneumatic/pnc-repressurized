@@ -22,7 +22,10 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.item.ChargeMode;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
@@ -30,6 +33,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
@@ -68,13 +74,8 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
         int upgrades = commonArmorHandler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.CHARGING.get());
         int airAmount = upgrades * 100 + 100;
 
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot != EquipmentSlot.CHEST) {
-                if (!commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST)) return;
-                tryPressurize(commonArmorHandler, airAmount, player.getItemBySlot(slot));
-            }
-        }
-        for (ItemStack stack : player.getInventory().items) {
+        ChargeMode mode = player.getItemBySlot(EquipmentSlot.CHEST).getOrDefault(ModDataComponents.CHARGING_MODE, ChargeMode.ALL);
+        for (ItemStack stack : mode.getStacksToCharge(player)) {
             if (!commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST)) return;
             tryPressurize(commonArmorHandler, airAmount, stack);
         }
@@ -85,7 +86,7 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
             PNCCapabilities.getAirHandler(destStack).ifPresent(destHandler -> {
                 float pressure = destHandler.getPressure();
                 if (pressure < destHandler.maxPressure() && pressure < commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST)) {
-                    int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
+                    int currentAir = destHandler.getAir();
                     int targetAir = (int) (commonArmorHandler.getArmorPressure(EquipmentSlot.CHEST) * destHandler.getVolume());
                     int amountToMove = Mth.clamp(targetAir - currentAir, -airAmount, airAmount);
                     destHandler.addAir(amountToMove);

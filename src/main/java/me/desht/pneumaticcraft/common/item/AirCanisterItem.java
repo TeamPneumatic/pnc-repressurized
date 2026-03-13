@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -27,7 +26,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
-import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -45,7 +43,7 @@ public class AirCanisterItem extends PressurizableItem {
     private final CanisterType type;
 
     public AirCanisterItem(CanisterType type) {
-        super(ModItems.defaultProps().component(ModDataComponents.AIR_CANISTER_CHARGING, ChargeMode.NONE), type.maxAir, type.volume);
+        super(ModItems.defaultProps().component(ModDataComponents.CHARGING_MODE, ChargeMode.NONE), type.maxAir, type.volume);
         this.type = type;
     }
 
@@ -60,7 +58,7 @@ public class AirCanisterItem extends PressurizableItem {
     public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
         super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
 
-        MutableComponent c = xlate(pStack.getOrDefault(ModDataComponents.AIR_CANISTER_CHARGING, ChargeMode.NONE).getTranslationKey());
+        MutableComponent c = xlate(pStack.getOrDefault(ModDataComponents.CHARGING_MODE, ChargeMode.NONE).getTranslationKey());
         pTooltipComponents.add(c.withStyle(ChatFormatting.AQUA));
         pTooltipComponents.add(xlate("pneumaticcraft.gui.air_canister.charging.sneak_right_click").withStyle(ChatFormatting.GREEN));
     }
@@ -70,7 +68,7 @@ public class AirCanisterItem extends PressurizableItem {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
         if (!pLevel.isClientSide) {
             ChargeMode mode = getChargeMode(stack).nextMode();
-            pPlayer.getItemInHand(pUsedHand).set(ModDataComponents.AIR_CANISTER_CHARGING, mode);
+            pPlayer.getItemInHand(pUsedHand).set(ModDataComponents.CHARGING_MODE, mode);
             pPlayer.displayClientMessage(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA), true);
         }
         return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide);
@@ -83,16 +81,10 @@ public class AirCanisterItem extends PressurizableItem {
         ChargeMode mode = getChargeMode(pStack);
         if (pEntity instanceof Player player && mode != ChargeMode.NONE && pLevel.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL == 15) {
             PNCCapabilities.getAirHandler(pStack).ifPresent(srcHandler -> {
-                if (mode == ChargeMode.HELD) {
-                    tryChargeItem(srcHandler, player.getMainHandItem(), type.maxTransfer);
-                } else {
-                    for (ItemStack stack : player.getInventory().items) {
-                        if (srcHandler.getPressure() < 0.1f) {
-                            break;
-                        }
-                        if (stack.getCount() == 1 && stack != pStack && !isChargingAirCanister(stack)) {
-                            tryChargeItem(srcHandler, stack, type.maxTransfer);
-                        }
+                for (ItemStack stack : mode.getStacksToCharge(player)) {
+                    if (srcHandler.getPressure() < 0.1F) return;
+                    if (stack.getCount() == 1 && stack != pStack && !isChargingAirCanister(stack)) {
+                        tryChargeItem(srcHandler, stack, type.maxTransfer);
                     }
                 }
             });
@@ -123,7 +115,7 @@ public class AirCanisterItem extends PressurizableItem {
     }
 
     public static ChargeMode getChargeMode(ItemStack stack) {
-        return stack.getOrDefault(ModDataComponents.AIR_CANISTER_CHARGING, ChargeMode.NONE);
+        return stack.getOrDefault(ModDataComponents.CHARGING_MODE, ChargeMode.NONE);
     }
 
     public enum CanisterType {
@@ -143,29 +135,4 @@ public class AirCanisterItem extends PressurizableItem {
         }
     }
 
-    public enum ChargeMode implements StringRepresentable, ITranslatableEnum {
-        NONE("none"),
-        HELD("held"),
-        ALL("all");
-
-        private final String name;
-
-        ChargeMode(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String getSerializedName() {
-            return name;
-        }
-
-        @Override
-        public String getTranslationKey() {
-            return "pneumaticcraft.gui.air_canister.charging." + name;
-        }
-
-        public ChargeMode nextMode() {
-            return values()[(ordinal() + 1) % values().length];
-        }
-    }
 }
