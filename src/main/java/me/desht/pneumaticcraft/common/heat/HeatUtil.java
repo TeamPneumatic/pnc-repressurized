@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
@@ -79,21 +79,21 @@ public class HeatUtil {
         return Mth.clamp(((625 - temperature) / 3), 0, 100);
     }
 
-    public static Component formatHeatString(int tempK) {
+    public static MutableComponent formatHeatString(int tempK) {
         return formatHeatString((tempK - 273) + "°C");
     }
 
-    public static Component formatHeatString(Direction face, int tempK) {
+    public static MutableComponent formatHeatString(Direction face, int tempK) {
         return formatHeatString(face, (tempK - 273) + "°C");
     }
 
-    public static Component formatHeatString(String temp) {
+    public static MutableComponent formatHeatString(String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature")
                 .append(ChatFormatting.WHITE + temp)
                 .withStyle(ChatFormatting.GRAY);
     }
 
-    public static Component formatHeatString(Direction face, String temp) {
+    public static MutableComponent formatHeatString(Direction face, String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase(Locale.ROOT))
                 .append(ChatFormatting.WHITE + temp)
                 .withStyle(ChatFormatting.GRAY);

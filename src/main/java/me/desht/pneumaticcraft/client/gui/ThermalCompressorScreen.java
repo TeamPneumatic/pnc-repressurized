@@ -137,8 +137,8 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
     static int getWidgetX(Direction side) {
         return switch (side) {
             case SOUTH -> 56;
-            case NORTH -> 66;
-            case WEST -> 89;
+            case NORTH -> 67;
+            case WEST -> 88;
             case EAST -> 99;
             default -> throw new IllegalArgumentException("invalid side " + side);
         };

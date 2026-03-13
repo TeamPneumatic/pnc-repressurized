@@ -27,11 +27,11 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -57,16 +57,16 @@ public class EtchingTankScreen extends AbstractPneumaticCraftContainerScreen<Etc
     }
 
     @NotNull
-    private List<Component> makeTooltip() {
+    private Component makeTooltip() {
         int interval = te.getTickInterval();
         int processTimeSecs = interval * 5;
-        List<Component> res = new ArrayList<>();
-        res.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(ChatFormatting.GREEN));
+        MutableComponent c = xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).withStyle(ChatFormatting.GREEN);
         if (tempWidget.getTemperature() > 323) {
             float usage = (30 - interval) / (5f * interval);
-            res.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(ChatFormatting.YELLOW));
+            c.append("\n").append(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage",
+                    PneumaticCraftUtils.roundNumberTo(usage, 2)).withStyle(ChatFormatting.YELLOW));
         }
-        return res;
+        return c;
     }
 
     @Override

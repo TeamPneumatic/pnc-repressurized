@@ -26,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -33,8 +34,6 @@ import net.minecraft.util.Mth;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale.CELSIUS;
@@ -43,7 +42,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class WidgetTemperature extends AbstractWidget {
     private int temperature;
     private int tickInterval;
-    private final Supplier<List<Component>> tooltipSupplier;
+    private final Supplier<Component> tooltipSupplier;
     private TemperatureRange totalRange;
     private TemperatureRange operatingRange;
     private boolean drawText = true;
@@ -53,13 +52,30 @@ public class WidgetTemperature extends AbstractWidget {
         this(xIn, yIn, totalRange, initialTemp, tickInterval, null);
     }
 
-    public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval, Supplier<List<Component>> tooltipSupplier) {
+    public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval, Supplier<Component> tooltipSupplier) {
         super(xIn, yIn, 13, 50, Component.empty());
         this.totalRange = totalRange;
         this.temperature = initialTemp;
         this.tickInterval = tickInterval;
         this.tooltipSupplier = tooltipSupplier == null ? this::defaultTooltip : tooltipSupplier;
         this.operatingRange = null;
+    }
+
+    public static WidgetTemperature fromOperatingRange(int x, int y, TemperatureRange range) {
+        int interval = calcInterval(range.getMax() - range.getMin());
+        TemperatureRange totalRange;
+        if (range.hasMin() && range.hasMax()) {
+            totalRange = TemperatureRange.of(roundDownK(range.getMin(), interval), roundUpK(range.getMax(), interval));
+        } else if (range.hasMin()) {
+            int minK = roundDownK(range.getMin(), interval);
+            totalRange = TemperatureRange.of(minK, minK + interval * 2);
+        } else if (range.hasMax()) {
+            totalRange = TemperatureRange.of(0, roundUpK(range.getMax(), interval));
+        } else {
+            totalRange = TemperatureRange.of(0, 2273);
+        }
+        interval = calcInterval(totalRange.getMax() - totalRange.getMin()) * 2;
+        return new WidgetTemperature(x, y, totalRange, range.getMin(), interval).setOperatingRange(range);
     }
 
     public void setTotalRange(@Nonnull TemperatureRange totalRange) {
@@ -119,19 +135,18 @@ public class WidgetTemperature extends AbstractWidget {
             drawOperatingTempMarkers(graphics);
 
             if (isHovered) {
-                graphics.renderTooltip(Minecraft.getInstance().font, tooltipSupplier.get(), Optional.empty(), mouseX, mouseY);
+                setTooltip(Tooltip.create(tooltipSupplier.get()));
             }
         }
     }
 
-    private List<Component> defaultTooltip() {
-        MutableComponent c = HeatUtil.formatHeatString(temperature).copy();
+    private Component defaultTooltip() {
+        MutableComponent c = HeatUtil.formatHeatString(temperature);
         if (operatingRange != null && showOperatingRange) {
             ChatFormatting tf = operatingRange.inRange(temperature) ? ChatFormatting.GREEN : ChatFormatting.GOLD;
-            return List.of(c, xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
-        } else {
-            return List.of(c);
+            c.append("\n").append(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
         }
+        return c;
     }
 
     public void drawTicks(GuiGraphics graphics) {
@@ -220,23 +235,6 @@ public class WidgetTemperature extends AbstractWidget {
 
     public static int roundUpK(int tempK, int interval) {
         return roundDownK(tempK, interval) + interval;
-    }
-
-    public static WidgetTemperature fromOperatingRange(int x, int y, TemperatureRange range) {
-        int interval = calcInterval(range.getMax() - range.getMin());
-        TemperatureRange totalRange;
-        if (range.hasMin() && range.hasMax()) {
-            totalRange = TemperatureRange.of(roundDownK(range.getMin(), interval), roundUpK(range.getMax(), interval));
-        } else if (range.hasMin()) {
-            int minK = roundDownK(range.getMin(), interval);
-            totalRange = TemperatureRange.of(minK, minK + interval * 2);
-        } else if (range.hasMax()) {
-            totalRange = TemperatureRange.of(0, roundUpK(range.getMax(), interval));
-        } else {
-            totalRange = TemperatureRange.of(0, 2273);
-        }
-        interval = calcInterval(totalRange.getMax() - totalRange.getMin()) * 2;
-        return new WidgetTemperature(x, y, totalRange, range.getMin(), interval).setOperatingRange(range);
     }
 
     public static int calcInterval(int r) {
