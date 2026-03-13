@@ -70,6 +70,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -370,7 +371,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         if (this instanceof EntityBlock eb) {
             BlockEntity be = eb.newBlockEntity(BlockPos.ZERO, defaultBlockState());
             if (be instanceof ISerializableTanks st) {
-                list.addAll(st.getSerializableTanks().keySet());
+                // try to keep component order deterministic for datagen purposes
+                list.addAll(st.getSerializableTanks().keySet().stream().sorted(Comparator.comparing(Object::toString)).toList());
             }
             if (be instanceof IRedstoneControl<?>) {
                 list.add(ModDataComponents.SAVED_REDSTONE_CONTROLLER.get());

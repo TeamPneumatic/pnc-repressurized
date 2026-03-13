@@ -1253,6 +1253,15 @@ public class ModRecipeProvider extends RecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_STONE_SLAB.get(), 2)
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_stone_slab_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_SLAB.get(), 2)
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                ).save(consumer, RL("reinforced_brick_slab_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_WALL.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                ).save(consumer, RL("reinforced_brick_wall_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICK_STAIRS.get())
+                .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
+                ).save(consumer, RL("reinforced_brick_stairs_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.REINFORCED_BRICKS.get())
                 .unlockedBy("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
                 ).save(consumer, RL("reinforced_bricks_from_stone_stonecutting"));
@@ -1278,6 +1287,15 @@ public class ModRecipeProvider extends RecipeProvider {
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_STONE_SLAB.get(), 2)
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_stone_slab_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_SLAB.get(), 2)
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                ).save(consumer, RL("compressed_brick_slab_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_WALL.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                ).save(consumer, RL("compressed_brick_wall_from_stone_stonecutting"));
+        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICK_STAIRS.get())
+                .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
+                ).save(consumer, RL("compressed_brick_stairs_from_stone_stonecutting"));
         SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.COMPRESSED_STONE.get()), RecipeCategory.BUILDING_BLOCKS, ModBlocks.COMPRESSED_BRICKS.get())
                 .unlockedBy("has_compressed_stone", has(ModBlocks.COMPRESSED_STONE.get())
                 ).save(consumer, RL("compressed_bricks_from_stone_stonecutting"));
