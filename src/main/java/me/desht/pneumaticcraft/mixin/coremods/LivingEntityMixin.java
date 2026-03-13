@@ -13,13 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
-    @Inject(method = "onEquipItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;level()Lnet/minecraft/world/level/Level;"))
+    @Inject(method = "onEquipItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSilent()Z"))
     public void onOnEquipItem(EquipmentSlot pSlot, ItemStack pOldItem, ItemStack pNewItem, CallbackInfo ci) {
         //noinspection ConstantValue
-        if ((Object) this instanceof Player p && pOldItem.getItem() instanceof PneumaticArmorItem && pNewItem.getItem() instanceof PneumaticArmorItem) {
-            if (!ItemStack.isSameItemSameComponents(pOldItem, pNewItem)) {
-                CommonArmorHandler.getHandlerForPlayer(p).armorSwitched(pSlot);
-            }
+        if ((Object) this instanceof Player p && pNewItem.getItem() instanceof PneumaticArmorItem) {
+            CommonArmorHandler.getHandlerForPlayer(p).pneumaticArmorEquipped(pSlot);
         }
     }
 }

@@ -107,9 +107,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
     }
 
-    public void armorSwitched(EquipmentSlot slot) {
-        // called from LivingEntityMixin when a piece of pneumatic armor is equipped, replacing existing pneumatic armor
-        // need to reset the init counter to force rescan of upgrades etc.
+    public void pneumaticArmorEquipped(EquipmentSlot slot) {
+        // called via LivingEntityMixin when a piece of pneumatic armor is equipped
+        // need to reset the init counter to force rescan of upgrades etc. if previous armor was also pneumatic
         if (ticksSinceEquip[slot.getIndex()] > 0) {
             airHandlers.set(slot.getIndex(), null);
             if (ticksSinceEquip[slot.getIndex()] > 1) {
@@ -142,6 +142,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             if (event.getEntity() instanceof Player player) {
                 CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUUID());
                 if (handler != null) handler.player = player;
+                if (player.level().isClientSide()) {
+                    ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.ENTITY_TRACKER).reset();
+                    ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.BLOCK_TRACKER).reset();
+                }
             }
         }
     }
@@ -160,15 +164,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(IArmorUpgradeClientHandler::reset);
                 }
-            }
-        }
-
-        @SubscribeEvent
-        public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
-            if (ClientUtils.isLocalPlayer(event.getEntity())) {
-                // client player entered new level
-                ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.ENTITY_TRACKER).reset();
-                ClientArmorRegistry.getInstance().getClientHandler(BuiltinArmorUpgrades.BLOCK_TRACKER).reset();
             }
         }
     }
