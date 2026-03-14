@@ -6,6 +6,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.18]
+
+### Added
+* Added more stonecutter recipes for Reinforced and Compressed Stone to match vanilla stone recipes
+  * Reinforced/Compressed Stone -> brick slabs, stairs & walls
+* More charging mode for both Air Canisters and Pneumatic Armor chestplate charging upgrade
+  * Added "Held" and "Held + Armor" modes
+* Ctrl-V now works to paste clipboard text into the Aphorism Tile GUI
+
+### Fixed
+* Fixed Pneumatic Armor entity/block trackers not clearing tracked objects on dimension change
+* Fixed visual mess with Thermal Compressor GUI temperature gauges
+* Fixed equipping a piece of Pneumatic Armor to replace another piece not causing armor re-init
+* Fixed several cases of player crouching being wrongly interpreted as "sneak key held"
+  * e.g. when crouching under a slab without sneak key held, right-clicking minigun opened the gun's GUI
+* Fixed Minigun using up ammo when the ammo had Unbreaking enchant or when gun had Item Life upgrades installed
+* Fixed issue with opening Pneumatic Armor GUI passing the hotkey into e.g. Entity Tracker GUI as a keypress
+* Cleaned up several hardcoded text messages, adding translations for them
+* Fixed right-clicking a Reinforced Pressure Valve not opening the Pressure Chamber GUI
+* Fixed Reinforced Pressure Valve not accepting upgrades
+* Added a mod-present condition to Create: Low Heated Basic Burner heat properties recipe to avoid errors being logged
+* Fixed Aerial Interface experience fluid type selection button (was sometimes de-syncing between server & client)
+
 ## [8.2.17]
 
 ### Added
