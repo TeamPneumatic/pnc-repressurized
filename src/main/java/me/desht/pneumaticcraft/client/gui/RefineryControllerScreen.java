@@ -28,12 +28,12 @@ import me.desht.pneumaticcraft.common.block.entity.RefineryOutputBlockEntity;
 import me.desht.pneumaticcraft.common.core.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import org.lwjgl.opengl.GL11;
 
@@ -43,8 +43,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScreen<RefineryMenu, RefineryControllerBlockEntity> {
-    private List<RefineryOutputBlockEntity> outputs;
     private WidgetTemperature widgetTemperature;
+    private int nOutputs;
     private int nExposedFaces;
 
     public RefineryControllerScreen(RefineryMenu container, Inventory inv, Component displayString) {
@@ -66,24 +66,24 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
         int y = topPos + 29;
 
         // "te" always refers to the master refinery; the bottom block of the stack
-        outputs = new ArrayList<>();
-        BlockEntity te1 = te.findAdjacentOutput();
-        if (te1 != null) {
+        List<RefineryOutputBlockEntity> outputs = new ArrayList<>();
+        RefineryOutputBlockEntity teRO = te.findAdjacentOutput();
+        if (teRO != null) {
             int i = 0;
             do {
-                RefineryOutputBlockEntity teRO = (RefineryOutputBlockEntity) te1;
                 if (outputs.size() < 4) addRenderableWidget(new WidgetTank(x, y, te.outputsSynced[i++]));
                 x += 20;
                 y -= 4;
                 outputs.add(teRO);
-                te1 = te1.getLevel().getBlockEntity(te1.getBlockPos().above());
-            } while (te1 instanceof RefineryOutputBlockEntity);
+                teRO = PneumaticCraftUtils.getTileEntityAt(teRO.getLevel(), teRO.getBlockPos().above(), RefineryOutputBlockEntity.class).orElse(null);
+            } while (teRO instanceof RefineryOutputBlockEntity);
         }
 
         if (outputs.size() < 2 || outputs.size() > 4) {
             problemTab.openStat();
         }
 
+        nOutputs = outputs.size();
         nExposedFaces = HeatUtil.countExposedFaces(outputs);
     }
 
@@ -103,17 +103,18 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
     @Override
     protected void renderBg(GuiGraphics graphics, float f, int x, int y) {
         super.renderBg(graphics, f, x, y);
-        if (outputs.size() < 4) {
+
+        if (nOutputs < 4) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             graphics.fill(leftPos + 155, topPos + 17, leftPos + 171, topPos + 81, 0x40FF0000);
-            if (outputs.size() < 3) {
+            if (nOutputs < 3) {
                 graphics.fill(leftPos + 135, topPos + 21, leftPos + 151, topPos + 85, 0x40FF0000);
             }
-            if (outputs.size() < 2) {
+            if (nOutputs < 2) {
                 graphics.fill(leftPos + 115, topPos + 25, leftPos + 131, topPos + 89, 0x40FF0000);
             }
-            if (outputs.size() < 1) {
+            if (nOutputs < 1) {
                 graphics.fill(leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
             }
             RenderSystem.disableBlend();
@@ -135,9 +136,9 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
         if (te.getInputTank().getFluidAmount() < 10) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.noOil"));
         }
-        if (outputs.size() < 2) {
+        if (nOutputs < 2) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.notEnoughRefineries"));
-        } else if (outputs.size() > 4) {
+        } else if (nOutputs > 4) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.tooManyRefineries"));
         }
     }
@@ -150,7 +151,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.outputBlocked"));
         }
         if (nExposedFaces > 0) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, outputs.size() * 6));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, nOutputs * 6));
         }
     }
 
