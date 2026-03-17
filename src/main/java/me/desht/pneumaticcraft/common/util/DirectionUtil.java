@@ -21,47 +21,11 @@ import net.minecraft.core.Direction;
 
 import static net.minecraft.core.Direction.*;
 
-/**
- * rotateAround() disappeared from Direction in 1.15
- */
 public class DirectionUtil {
     // since this is private in Direction...
     public static final Direction[] VALUES = new Direction[] {
             DOWN, UP, NORTH, SOUTH, WEST, EAST
     };
-
-    // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
-    public static final Direction[] HORIZONTALS = new Direction[] {
-            NORTH, SOUTH, WEST, EAST
-    };
-
-    public static Direction rotateAround(Direction dir, Direction.Axis axis) {
-        return switch (axis) {
-            case X -> dir.getAxis() == Axis.X ? dir : rotateX(dir);
-            case Y -> dir.getAxis() == Axis.Y ? dir : dir.getClockWise();
-            case Z -> dir.getAxis() == Axis.Z ? dir : rotateZ(dir);
-        };
-    }
-
-    private static Direction rotateX(Direction dir) {
-        return switch (dir) {
-            case NORTH -> DOWN;
-            case SOUTH -> UP;
-            case UP -> NORTH;
-            case DOWN -> SOUTH;
-            case EAST, WEST -> throw new IllegalStateException("Unable to get X-rotated facing of " + dir);
-        };
-    }
-
-    private static Direction rotateZ(Direction dir) {
-        return switch (dir) {
-            case EAST -> DOWN;
-            case WEST -> UP;
-            case UP -> EAST;
-            case DOWN -> WEST;
-            case NORTH, SOUTH -> throw new IllegalStateException("Unable to get Z-rotated facing of " + dir);
-        };
-    }
 
     public static boolean getDirectionBit(int val, Direction dir) {
         return (val & (1 << dir.get3DDataValue())) != 0;

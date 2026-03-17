@@ -80,7 +80,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
     }
 
     public static void setSurroundingElevators(Level world, BlockPos pos, int floor) {
-        for (Direction dir : DirectionUtil.HORIZONTALS) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
             getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
         }
     }
@@ -106,7 +106,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
      * @param pos the blockpos where the caller has been placed/removed
      */
     private void updateElevatorButtons(Level world, BlockPos pos) {
-        for (Direction dir : DirectionUtil.HORIZONTALS) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
             boolean ok = getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).map(te -> {
                 te.updateFloors(true);
                 return true;

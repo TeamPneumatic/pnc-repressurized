@@ -50,7 +50,7 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
     public void init() {
         super.init();
 
-        for (Direction d : DirectionUtil.HORIZONTALS) {
+        for (Direction d : Direction.Plane.HORIZONTAL) {
             addRenderableWidget(tempWidgets[d.get2DDataValue()] = new WidgetTemperatureSided(d).setDrawText(false));
         }
     }
@@ -109,7 +109,7 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
         super.containerTick();
 
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-        for (Direction d : DirectionUtil.HORIZONTALS) {
+        for (Direction d : Direction.Plane.HORIZONTAL) {
             int t = Objects.requireNonNull(te.getHeatExchanger(d)).getTemperatureAsInt();
             tempWidgets[d.get2DDataValue()].setTemperature(t);
             min = Math.min(min, t);

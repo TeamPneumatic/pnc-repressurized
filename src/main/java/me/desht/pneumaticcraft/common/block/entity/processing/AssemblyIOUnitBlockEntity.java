@@ -196,7 +196,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     private ItemImportResult findImportInventory() {
-        for (Direction dir : DirectionUtil.HORIZONTALS) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
             BlockEntity te = getCachedNeighbor(dir);
             if (te != null) {
                 ItemStack res = searchImportInventory(te);
@@ -425,7 +425,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
 
     private TargetDirections getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
-            for (Direction dir : DirectionUtil.HORIZONTALS) {
+            for (Direction dir : Direction.Plane.HORIZONTAL) {
                 BlockEntity te = getLevel().getBlockEntity(getBlockPos().relative(dir));
                 int slot = getPlacementSlot(exportedItem, te);
                 if (slot >= 0) return new TargetDirections(dir);

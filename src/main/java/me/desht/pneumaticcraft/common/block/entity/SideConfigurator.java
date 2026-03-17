@@ -169,7 +169,7 @@ public class SideConfigurator<T> {
     }
 
     void setupFacingMatrix() {
-        for (Direction f : DirectionUtil.HORIZONTALS) {
+        for (Direction f : Direction.Plane.HORIZONTAL) {
             facingMatrix[f.get2DDataValue()] = new RelativeFace[4];
             for (RelativeFace rf : RelativeFace.HORIZONTALS) {
                 Direction f2 = rot(f, rf);
@@ -249,18 +249,11 @@ public class SideConfigurator<T> {
         FRONT("front"),
         BACK("back");
 
-        public static final RelativeFace[] HORIZONTALS = new RelativeFace[4];
+        public static final RelativeFace[] HORIZONTALS = new RelativeFace[]{ LEFT, RIGHT, FRONT, BACK };
 
         public static final Codec<RelativeFace> CODEC = StringRepresentable.fromEnum(RelativeFace::values);
 
-        static {
-            HORIZONTALS[0] = LEFT;
-            HORIZONTALS[1] = RIGHT;
-            HORIZONTALS[2] = FRONT;
-            HORIZONTALS[3] = BACK;
-        }
         private final String name;
-
 
         RelativeFace(String name) {
             this.name = name;

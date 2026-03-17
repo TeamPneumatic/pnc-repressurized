@@ -224,7 +224,7 @@ public class FluidUtils {
         boolean removeBlock = true;
         if (fluid == Fluids.WATER && ConfigHelper.common().advanced.dontUpdateInfiniteWaterSources.get()) {
             int n = 0;
-            for (Direction d : DirectionUtil.HORIZONTALS) {
+            for (Direction d : Direction.Plane.HORIZONTAL) {
                 if (world.getFluidState(pos.relative(d)).getType() == Fluids.WATER && ++n >= 2) {
                     removeBlock = false;
                     break;

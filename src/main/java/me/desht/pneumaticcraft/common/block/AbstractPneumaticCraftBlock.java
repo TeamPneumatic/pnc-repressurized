@@ -284,7 +284,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
                     if (rotateForgeWay()) {
                         if (!canRotateToTopOrBottom()) side = Direction.UP;
                         if (getRotation(world, pos).getAxis() != side.getAxis()) {
-                            setRotation(world, pos, DirectionUtil.rotateAround(getRotation(world, pos), side.getAxis()));
+                            setRotation(world, pos, getRotation(world, pos).getClockWise(side.getAxis()));
                         }
                     } else {
                         Direction f = getRotation(world, pos);

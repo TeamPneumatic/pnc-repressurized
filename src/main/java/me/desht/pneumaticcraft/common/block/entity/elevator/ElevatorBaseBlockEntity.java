@@ -396,7 +396,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
                 if (curElevator.isCoreElevator() && !multiElevators.contains(curElevator)) {
                     multiElevators.add(curElevator);
                     curElevator.multiElevators = multiElevators;
-                    for (Direction face : DirectionUtil.HORIZONTALS) {
+                    for (Direction face : Direction.Plane.HORIZONTAL) {
                         BlockEntity te = curElevator.getCachedNeighbor(face);
                         if (te instanceof ElevatorBaseBlockEntity && !te.isRemoved()) {
                             todo.push((ElevatorBaseBlockEntity) te);
@@ -458,7 +458,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
                 scanLoop: while (worldPosition.getY() + yOffset < worldHeight - 2) {
                     boolean registeredThisFloor = false;
                     for (ElevatorBaseBlockEntity base : multiElevators) {
-                        for (Direction dir : DirectionUtil.HORIZONTALS) {
+                        for (Direction dir : Direction.Plane.HORIZONTAL) {
                             mut.set(base.getBlockPos());
                             mut.move(dir.getStepX(), yOffset + 2, dir.getStepZ());
                             if (base.nonNullLevel().getBlockState(mut).getBlock() == ModBlocks.ELEVATOR_CALLER.get()) {

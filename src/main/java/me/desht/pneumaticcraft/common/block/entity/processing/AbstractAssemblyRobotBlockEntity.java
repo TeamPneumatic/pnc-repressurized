@@ -244,7 +244,7 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
 
     TargetDirections getPlatformDirection() {
         Level level = nonNullLevel();
-        for (Direction dir : DirectionUtil.HORIZONTALS) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
             if (level.getBlockEntity(getBlockPos().relative(dir)) instanceof AssemblyPlatformBlockEntity)
                 return new TargetDirections(dir);
         }

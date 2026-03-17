@@ -184,7 +184,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     private void findMachines(List<IAssemblyMachine> machineList, BlockPos pos, int max) {
-        for (Direction dir : DirectionUtil.HORIZONTALS) {
+        for (Direction dir : Direction.Plane.HORIZONTAL) {
             BlockEntity te = nonNullLevel().getBlockEntity(pos.relative(dir));
             if (te instanceof IAssemblyMachine && !machineList.contains(te) && machineList.size() < max) {
                 machineList.add((IAssemblyMachine) te);
