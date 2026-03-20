@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
 
 public class RenderEntityTarget {
@@ -171,7 +172,7 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
-            textList.add(Component.literal(String.format("Dist: %.1fm", distToEntity)));
+            textList.add(xlate("pneumaticcraft.gui.misc.distanceMeters", String.format("%.1fm", distToEntity)));
             stat.setText(textList);
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
