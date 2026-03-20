@@ -45,8 +45,8 @@ body:
         - "1.21"
         - "1.20.4 - critical bugs only"
         - "1.20.1"
-        - "1.19 - critical bugs only"
-        - "1.18 - critical bugs only"
+        - "1.19.2 - critical bugs only"
+        - "1.18 - UNSUPPORTED"
         - "1.16 - UNSUPPORTED"
         - "1.12 - UNSUPPORTED"
     validations:

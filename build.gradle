@@ -12,7 +12,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-	id 'net.neoforged.moddev' version '1.0.11'
+	id 'net.neoforged.moddev' version '2.0.115'
     id "me.modmuss50.mod-publish-plugin" version "0.7.2"
 }
 

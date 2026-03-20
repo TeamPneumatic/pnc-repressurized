@@ -32,10 +32,10 @@ jobs:
         run: ./gradlew runData --no-daemon
       - name: Validate assets
         run: test -d ./src/generated -a -d ./src/generated/resources/.cache
-      - name: Build JAR
-        run: ./gradlew build --no-daemon
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
+#      - name: Build JAR
+#        run: ./gradlew build --no-daemon
+#        env:
+#          BUILD_NUMBER: ${{ github.run_number }}
       - name: Build JAR and Publish to Modmaven
         run: ./gradlew build publishMavenPublicationToModmavenRepository --no-daemon
         env:
