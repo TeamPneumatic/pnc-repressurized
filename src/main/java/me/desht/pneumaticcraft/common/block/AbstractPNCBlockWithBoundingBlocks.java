@@ -229,7 +229,7 @@ public abstract class AbstractPNCBlockWithBoundingBlocks extends AbstractPneumat
 
     @Override
     public @Nullable PushReaction getPistonPushReaction(BlockState state) {
-        return null;
+        return PushReaction.BLOCK;
     }
 
     // Ensures that all blocks are broken when one block breaks
