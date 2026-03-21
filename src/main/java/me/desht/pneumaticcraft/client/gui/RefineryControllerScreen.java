@@ -85,7 +85,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
         }
 
         nOutputs = outputs.size();
-        nExposedFaces = HeatUtil.countExposedFaces(outputs);
+        nExposedFaces = HeatUtil.countExposedFaces(outputs) + HeatUtil.countExposedFaces(List.of(te));
     }
 
     @Override
@@ -152,7 +152,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.outputBlocked"));
         }
         if (nExposedFaces > 0) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, nOutputs * 6));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, nOutputs * 6 + 6));
         }
     }
 
