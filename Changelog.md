@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.20.1
 
+## [6.0.23]
+
+### Fixed
+* Fixed a couple of item dupe issues with the Solar Compressor
+  * Solar Compressors are no longer waterloggable, or movable with pistons (even with Quark installed)
+* Fixed Refinery GUI showing incorrect number of exposed faces (wasn't taking the controller block into account)
+* Fixed Pneumatic Armor entity/block trackers not clearing tracked objects on dimension change
+
 ## [6.0.22]
 
 ### Fixed
