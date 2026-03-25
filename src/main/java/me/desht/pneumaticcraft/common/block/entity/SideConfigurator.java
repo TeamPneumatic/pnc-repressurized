@@ -22,7 +22,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -30,7 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -197,7 +196,7 @@ public class SideConfigurator<T> {
         }
     }
 
-    public Component getFaceLabel(RelativeFace relativeFace) {
+    public MutableComponent getFaceLabel(RelativeFace relativeFace) {
         ConnectionEntry<T> c = entries.get(getFaceIndex(relativeFace));
         return c == null ?
                 xlate("pneumaticcraft.gui.sideConfigurator.unconnected") :

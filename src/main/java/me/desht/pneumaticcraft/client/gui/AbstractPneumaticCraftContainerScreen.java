@@ -276,8 +276,8 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
             button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }
         button.setTooltip(Tooltip.create(
-                Component.literal(relativeFace.toString()).withStyle(ChatFormatting.YELLOW)
-                        .append("\n").append(sc.getFaceLabel(relativeFace))
+                xlate(relativeFace.getTranslationKey()).withStyle(ChatFormatting.YELLOW)
+                        .append("\n").append(sc.getFaceLabel(relativeFace).withStyle(ChatFormatting.WHITE))
         ));
     }
 
