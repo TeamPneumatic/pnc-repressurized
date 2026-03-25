@@ -1347,6 +1347,7 @@
    "pneumaticcraft.gui.progWidget.condition.allBlocks" : "All Blocks",
    "pneumaticcraft.gui.progWidget.condition.evaluatedFalse" : "Condition was evaluated false.",
    "pneumaticcraft.gui.progWidget.condition.evaluatedTrue" : "Condition was evaluated true.",
+   "pneumaticcraft.gui.progWidget.condition.tooltip" : "Condition: \"%s\"",
    "pneumaticcraft.gui.progWidget.conditionItem.error.noCheckingItem" : "No checking item. Add at least one Item Filter to the topmost slot.",
    "pneumaticcraft.gui.progWidget.conditionItem.error.noFilter" : "No item filter. Add at least one Item Filter to the second slot from the top.",
    "pneumaticcraft.gui.progWidget.coordinate.constant" : "Constant",

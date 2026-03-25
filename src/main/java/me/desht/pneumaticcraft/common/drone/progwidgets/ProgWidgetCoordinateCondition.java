@@ -135,7 +135,8 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     @Override
     public void getTooltip(List<Component> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(Component.literal("Condition: \"" + getCondition() + "\""));
+
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.tooltip", getCondition()));
     }
 
     @Override
@@ -148,7 +149,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
         return Arrays.stream(Axis.values())
                 .filter(axisOptions::shouldCheck)
                 .map(axis -> String.format("%1$s1 %2$s %1$s2", axis.getName(), operator.toString()))
-                .collect(Collectors.joining(" and "));
+                .collect(Collectors.joining(" & "));
     }
 
     @Override
