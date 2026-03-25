@@ -1168,7 +1168,7 @@
    "pneumaticcraft.gui.misc.any" : "Any",
    "pneumaticcraft.gui.misc.all" : "All",
    "pneumaticcraft.gui.misc.clipboard" : "Clipboard",
-   "pneumaticcraft.gui.misc.distanceMeters" : "%s M",
+   "pneumaticcraft.gui.misc.distanceMeters" : "Distance: %sM",
    "pneumaticcraft.gui.misc.depthMeters" : "%d M",
    "pneumaticcraft.gui.misc.empty" : "Empty",
    "pneumaticcraft.gui.misc.holdShiftFastAdjust" : "Hold Shift for fast adjust",

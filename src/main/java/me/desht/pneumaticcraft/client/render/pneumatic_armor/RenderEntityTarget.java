@@ -172,7 +172,7 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
-            textList.add(xlate("pneumaticcraft.gui.misc.distanceMeters", String.format("%.1fm", distToEntity)));
+            textList.add(xlate("pneumaticcraft.gui.misc.distanceMeters", String.format("%.1f", distToEntity)));
             stat.setText(textList);
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
