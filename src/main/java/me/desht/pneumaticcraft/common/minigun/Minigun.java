@@ -250,7 +250,7 @@ public abstract class Minigun {
         final MutableInt ammoCost = new MutableInt(0);
         final MutableBoolean lastShotOfAmmo = new MutableBoolean(false);
         if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammoItem
-                && ammoStack.getDamageValue() < ammoStack.getMaxDamage() - 1
+                && (!preventAmmoBreakage || ammoStack.getDamageValue() < ammoStack.getMaxDamage() - 1)
                 && (airCapability == null || airCapability.getPressure() > 0))
         {
             setMinigunTriggerTimeOut(10);
