@@ -11,8 +11,9 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed a couple of item dupe issues with the Solar Compressor
   * Solar Compressors are no longer waterloggable, or movable with pistons (even with Quark installed)
-* Fixed Refinery GUI show incorrect number of exposed faces (wasn't taking the controller block into account)
+* Fixed Refinery GUI showing incorrect number of exposed faces (wasn't taking the controller block into account)
 * Replaced a couple more hardcoded string with translations
+* Fixed Minigun ammo not getting used up when it should be
 
 ## [8.2.18]
 
