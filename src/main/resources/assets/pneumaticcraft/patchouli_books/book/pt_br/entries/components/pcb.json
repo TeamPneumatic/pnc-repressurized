@@ -19,7 +19,7 @@
     },
     {
       "type": "blasting",
-      "title": "Reciclando PCI Falhas",
+      "title": "Reciclando PCI Falha",
       "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb",
       "text": "O processo de corrosão tem uma chance de falha se a $(item)PCI Vazia/$ não foi 100% exposta na $(l:manufacturing/uv_light_box)Caixa de Luz UV/$; você pode reciclar $(item)PCI Falhas/$ em um $(item)Alto-forno/$."
     },
@@ -27,12 +27,12 @@
       "type": "spotlight",
       "title": "Método #2",
       "item": "pneumaticcraft:assembly_controller",
-      "text": "Uma vez que você possa fazer um $(l:manufacturing/assembly_system)Sistema de Montagem/$, você pode usá-lo para transformar $(item)PCI Vazias/$ diretamente em $(item)PCI Desmontadas/$ com um $(item)Programa de Montagem: Laser/$. Não há necessidade de expô-la em uma $(item)Caixa de Luz UV/$ ou usar um $(item)Tanque de Corrosão/$ neste caso."
+      "text": "Uma vez que você possa fazer um $(l:manufacturing/assembly_system)Sistema de Montagem/$, você pode usá-lo para transformar $(item)PCI Vazia/$ diretamente em $(item)PCI Desmontadas/$ com um $(item)Programa de Montagem: Laser/$. Não há necessidade de expô-la em uma $(item)Caixa de Luz UV/$ ou usar um $(item)Tanque de Corrosão/$ neste caso."
     },
     {
       "type": "text",
       "title": "Método #2 (cont)",
-      "text": "$(p)O Sistema de Montagem é uma opção muito conveniente e razoavelmente rápida para produzir $(item)PCI Desmontadas/$; no entanto, com automação e infraestrutura de aquecimento suficientes, o combo $(thing)Caixa de Luz UV/Tanque de Corrosão/$ pode ser muito mais rápido, especialmente se você precisar produzir PCI em massa."
+      "text": "$(p)O Sistema de Montagem é uma opção muito conveniente e razoavelmente rápida para produzir $(item)PCI Desmontada/$; no entanto, com automação e infraestrutura de aquecimento suficientes, o combo $(thing)Caixa de Luz UV/Tanque de Corrosão/$ pode ser muito mais rápido, especialmente se você precisar produzir PCI em massa."
     },
     {
       "type": "pneumaticcraft:assembly_system",

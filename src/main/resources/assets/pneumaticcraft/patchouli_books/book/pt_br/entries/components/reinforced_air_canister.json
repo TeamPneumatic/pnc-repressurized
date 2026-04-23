@@ -1,20 +1,20 @@
 {
-  "name": "Recipiente de Ar Reforçado",
+  "name": "Cilindro de Ar Reforçado",
   "icon": "pneumaticcraft:reinforced_air_canister",
   "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:advanced_pressure_tube",
   "pages": [
     {
       "type": "text",
-      "text": "Como seu irmão menor, o $(l:components/air_canister)Recipiente de Ar/$, o $(thing)Recipiente de Ar Reforçado/$ retém ar e pode ser carregado e descarregado em uma $(l:machines/charging_station)Estação de Carregamento/$. No entanto, ele tem um volume aumentado de 6000mL e pode ser carregado até 20 bar (ele não explodirá)."
+      "text": "Como seu irmão menor, o $(l:components/air_canister)Cilindro de Ar Reforçado/$, o $(thing)Cilindro de Ar Reforçado/$ retém ar e pode ser carregado e descarregado em uma $(l:machines/charging_station)Estação de Carga/$. No entanto, ele tem um volume aumentado de 6000mL e pode ser carregado até 20 bar (ele não explodirá)."
     },
     {
       "type": "text",
-      "text": "Um uso interessante para o $(thing)Recipiente de Ar Reforçado/$ é como um dispositivo de armazenamento de ar em massa, em conjunto com um inventário como um baú e um $(l:tubes/pressure_tubes)Tubo de Pressão/$ com um $(l:tubes/charging_module)Módulo de Carregamento/$. Isso pode ficar ainda mais interessante com uma $(l:machines/aerial_interface)Interface Aérea/$ e um $(thing)Baú do Ender/$ (vanilla)..."
+      "text": "Um uso interessante para o $(thing)Cilindro de Ar Reforçado/$ é como um dispositivo de armazenamento de ar em massa, em conjunto com um inventário como um baú e um $(l:tubes/pressure_tubes)Tubo de Pressão/$ com um $(l:tubes/charging_module)Módulo de Carregamento/$. Isso pode ficar ainda mais interessante com uma $(l:machines/aerial_interface)Interface Aérea/$ e um $(thing)Baú do Ender/$ (vanilla)..."
     },
     {
       "type": "crafting",
-      "text": "Criando um Recipiente de Ar Reforçado",
+      "text": "Criando um Cilindro de Ar Reforçado",
       "recipe": "pneumaticcraft:reinforced_air_canister"
     }
   ]
