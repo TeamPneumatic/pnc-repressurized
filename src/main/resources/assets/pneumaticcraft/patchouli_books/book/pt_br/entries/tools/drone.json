@@ -17,12 +17,12 @@
       "type": "text",
       "anchor": "charging",
       "title": "Carregamento Automático",
-      "text": "Drones são inteligentes: quando estão com pouco ar, eles param seu programa principal e procuram uma $(l:machines/charging_station)Estação de Carregamento/$ que tenha uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$ e pelo menos 1 bar de pressão, a uma distância menor que $(ttcolor)$(t:Veja 'max_drone_charging_station_search_range' na config do mod)80 blocos/$.$(p)Quando encontrada, o $(item)Drone/$ irá para esta $(item)Estação de Carregamento/$ e ficará carregando até que a estação não possa fornecer mais ar. Depois disso, o $(item)Drone/$ retomará seu programa principal."
+      "text": "Drones são inteligentes: quando estão com pouco ar, eles param seu programa principal e procuram uma $(l:machines/charging_station)Estação de Carga/$ que tenha uma $(l:base_concepts/upgrades#dispenser)Melhoria de Ejetor/$ e pelo menos 1 bar de pressão, a uma distância menor que $(ttcolor)$(t:Veja 'max_drone_charging_station_search_range' na config do mod)80 blocos/$.$(p)Quando encontrada, o $(item)Drone/$ irá para esta $(item)Estação de Carga/$ e ficará carregando até que a estação não possa fornecer mais ar. Depois disso, o $(item)Drone/$ retomará seu programa principal."
     },
     {
       "type": "text",
       "title": "Carregamento Automático (cont.)",
-      "text": "Em um servidor multiplayer, você pode querer permitir que apenas seus Drones carreguem em sua(s) Estação(ões) de Carregamento. Você pode tornar sua $(item)Estação de Carregamento/$ privada cobrindo-a com uma $(l:machines/security_station)Estação de Segurança/$.$(p)Agora, apenas os $(item)Drones/$ colocados por jogadores que estão na lista branca em sua $(item)Estação de Segurança/$ terão permissão para carregar."
+      "text": "Em um servidor multiplayer, você pode querer permitir que apenas seus Drones carreguem em sua(s) Estação(ões) de Carregamento. Você pode tornar sua $(item)Estação de Carga/$ privada cobrindo-a com uma $(l:machines/security_station)Estação de Segurança/$.$(p)Agora, apenas os $(item)Drones/$ colocados por jogadores que estão na lista branca em sua $(item)Estação de Segurança/$ terão permissão para carregar."
     },
     {
       "type": "text",

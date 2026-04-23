@@ -7,7 +7,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:jackhammer",
-      "text": "A $(item)Britadeira Pneumática/$ é uma ferramenta de mineração altamente versátil, que pode quebrar todos os tipos de blocos com igual eficácia, usando $(l:base_concepts/pressure)pressão/$ para isso. Sua velocidade de mineração e capacidade de ar podem ser melhoradas em uma $(l:machines/charging_station)Estação de Carregamento/$ com $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$ e $(l:base_concepts/upgrades#volume)Melhorias de Volume/$, respectivamente."
+      "text": "A $(item)Britadeira Pneumática/$ é uma ferramenta de mineração altamente versátil, que pode quebrar todos os tipos de blocos com igual eficácia, usando $(l:base_concepts/pressure)pressão/$ para isso. Sua velocidade de mineração e capacidade de ar podem ser melhoradas em uma $(l:machines/charging_station)Estação de Carga/$ com $(l:base_concepts/upgrades#speed)Melhorias de Velocidade/$ e $(l:base_concepts/upgrades#volume)Melhorias de Volume/$, respectivamente."
     },
     {
       "type": "text",
