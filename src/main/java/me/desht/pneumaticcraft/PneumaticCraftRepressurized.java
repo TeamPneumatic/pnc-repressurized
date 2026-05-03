@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.Reflections;
@@ -190,10 +191,11 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStopping(ServerStoppingEvent event) {
+        ModuleNetworkManager.clear();
+
         AmadronOfferManager.getInstance().saveAll();
 
         // if we're on single-player, reset is needed here to stop world-specific configs crossing worlds
         AuxConfigHandler.clearPerWorldConfigs();
     }
-
 }

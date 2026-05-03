@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.tubemodules.AbstractNetworkedRedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -40,7 +39,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -110,15 +108,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return blockEntityFactory.apply(pPos, pState);
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (worldIn instanceof Level level) {
-            ModuleNetworkManager.getInstance(level).invalidateCache();
-            AbstractNetworkedRedstoneModule.onNetworkReform(level, currentPos);
-        }
-        return stateIn;
     }
 
     @Override

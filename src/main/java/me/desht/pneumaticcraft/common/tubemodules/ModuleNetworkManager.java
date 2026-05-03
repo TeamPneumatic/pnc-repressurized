@@ -33,10 +33,14 @@ public class ModuleNetworkManager {
     private static final Map<ResourceLocation, ModuleNetworkManager> INSTANCES = new HashMap<>();
 
     private final Map<AbstractTubeModule, Set<AbstractTubeModule>> connectionCache = new HashMap<>();
-    private boolean needInvalidate = false;
+    private boolean needInvalidate = true;
 
     public static ModuleNetworkManager getInstance(Level w) {
         return INSTANCES.computeIfAbsent(w.dimension().location(), dimId -> new ModuleNetworkManager());
+    }
+
+    public static void clear() {
+        INSTANCES.clear();
     }
 
     Set<AbstractTubeModule> getConnectedModules(AbstractTubeModule module) {
@@ -70,7 +74,8 @@ public class ModuleNetworkManager {
                     if (state1.getBlock() instanceof ITubeNetworkConnector nc1
                             && nc1.canConnectToNetwork(level, pos1, dir.getOpposite(), state1)
                             && nc.canConnectToNetwork(level, pos, dir, state)
-                            && traversedPositions.add(pos1)){
+                            && traversedPositions.add(pos1))
+                    {
                         pendingPositions.add(pos1);
                     }
                 }
@@ -88,18 +93,6 @@ public class ModuleNetworkManager {
         Set<AbstractTubeModule> modules = new HashSet<>();
         tubes.forEach(tube -> tube.tubeModules()
                 .filter(tm -> tm instanceof INetworkedModule && tm.canConnectTo(module))
-                .forEach(modules::add));
-        return modules;
-    }
-
-    /**
-     * @return all {@link INetworkedModule}s that are connected to {@code pos}
-     */
-    public Set<AbstractTubeModule> computeConnections(Level level, BlockPos pos) {
-        var tubes = computeConnectedTubes(level, pos);
-        Set<AbstractTubeModule> modules = new HashSet<>();
-        tubes.forEach(tube -> tube.tubeModules()
-                .filter(tm -> tm instanceof INetworkedModule)
                 .forEach(modules::add));
         return modules;
     }

@@ -122,7 +122,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
     protected boolean isWatchingChannel(int channel) {
         return redstoneDirection == EnumRedstoneDirection.OUTPUT && (
                 colorChannel == channel || (operation.useOtherColor && otherColor == channel)
-                );
+        );
     }
 
     @Override

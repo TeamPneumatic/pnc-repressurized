@@ -43,7 +43,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -78,7 +77,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -233,13 +231,6 @@ public class MiscEventHandler {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL,
                         (float) player.getX(), (float) player.getY(), (float) player.getZ(), 1, 1, true), player);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level world && !world.isClientSide) {
-            ModuleNetworkManager.getInstance(world).invalidateCache();
         }
     }
 
