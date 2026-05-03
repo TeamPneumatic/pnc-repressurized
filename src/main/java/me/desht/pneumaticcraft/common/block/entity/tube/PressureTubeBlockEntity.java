@@ -314,6 +314,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
             sendDescriptionPacket();
             setChanged();
             purgeShapeCacheKey();
+            ModuleNetworkManager.getInstance(level).invalidateCache();
         }
     }
 
