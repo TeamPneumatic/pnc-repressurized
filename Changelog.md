@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.20]
+
+### Fixes
+* Fixed a drone patfhfinding bug causing drones to get stuck in areas with tricky pathfinding (e.g. dense tree growth)
+* Fixed tube module connection caching bug causing issue with redstone modules in particular not updating after a world reload
+* Fixed bug with tube modules not correctly syncing to client if too far from the client player
+* Hopefully fixed bug causing Pneumatic Armor to sometimes re-init itself on dimension change or when a Curios inventory is open
+
 ## [8.2.19]
 
 ### Fixes
