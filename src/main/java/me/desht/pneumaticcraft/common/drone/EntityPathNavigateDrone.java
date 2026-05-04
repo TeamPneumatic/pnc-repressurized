@@ -31,6 +31,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -178,8 +179,12 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
             }
         } else {
             if (!isDone()) {
-                followThePath();
                 if (path != null && !path.isDone()) {
+                    Vec3 nextPos = path.getNextEntityPos(mob);
+                    if (mob.getBlockX() == Mth.floor(nextPos.x) && mob.getBlockY() == Mth.floor(nextPos.y) && mob.getBlockZ() == Mth.floor(nextPos.z)) {
+                        path.advance();
+                    }
+
                     if (ConfigHelper.common().drones.stuckDroneTeleportTicks.get() > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
                         if (stuckTicks++ > ConfigHelper.common().drones.stuckDroneTeleportTicks.get()) {
                             Vec3 v = droneEntity.getDronePos();
@@ -192,6 +197,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
                     } else {
                         stuckTicks = 0;
                     }
+
                     if (!isDone()) {
                         Vec3 vec32 = path.getNextEntityPos(mob);
                         mob.getMoveControl().setWantedPosition(vec32.x, vec32.y, vec32.z, speedModifier);
