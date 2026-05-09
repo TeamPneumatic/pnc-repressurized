@@ -168,11 +168,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         invHandlers.add(playerOffhandInvHandler);
         invHandlers.add(playerEnderInvHandler);
 
-        // disabled for now:
-        // 1) reports of item duplication (which I can't reproduce)
-        // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
-
-        if (Curios.available) {
+        if (Curios.available && ConfigHelper.common().integration.curiosAerialInterfaceAccess.get()) {
             PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
             itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
                     Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
@@ -574,6 +570,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private class PlayerCuriosHandler extends PlayerInvHandler {
         @Override
         protected IItemHandler getInvWrapper(Player player) {
+            // do not cache curios handlers because they can change size dynamically
             return CuriosUtils.makeCombinedInvWrapper(player);
         }
     }

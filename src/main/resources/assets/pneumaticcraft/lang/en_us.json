@@ -1015,6 +1015,7 @@
    "pneumaticcraft.config.common.integration.cold_sweat_block_cooling" : "Cold Sweat: max block cooling",
    "pneumaticcraft.config.common.integration.cold_sweat_block_heating" : "Cold Sweat: max block heating",
    "pneumaticcraft.config.common.integration.cold_sweat_air_con_efficiency" : "Cold Sweat: Air Conditioning efficiency",
+   "pneumaticcraft.config.common.integration.curios_aerial_interface_access" : "Curios: Aerial Interface slot access",
    "pneumaticcraft.config.common.jackhammer.baseAirUsage" : "Base air usage",
    "pneumaticcraft.config.common.jackhammer.maxVeinMinerRange" : "Max veinminer range",
    "pneumaticcraft.config.common.logistics.fluidTransportCost" : "Fluid transport cost",
