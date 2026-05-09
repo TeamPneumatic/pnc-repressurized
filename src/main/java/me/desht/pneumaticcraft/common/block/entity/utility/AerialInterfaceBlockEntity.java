@@ -107,6 +107,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private static final Lazy<WildcardedRLMatcher> dimensionBlacklist
             = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist);
 
+    private static boolean curiosIntegrationEnabled = false;
+
     @DescSynced
     private String playerName = "";
     private UUID playerUUID = NO_PLAYER;
@@ -168,12 +170,16 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         invHandlers.add(playerOffhandInvHandler);
         invHandlers.add(playerEnderInvHandler);
 
-        if (Curios.available && ConfigHelper.common().integration.curiosAerialInterfaceAccess.get()) {
+        if (Curios.available && curiosIntegrationEnabled) {
             PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
             itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
                     Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
             invHandlers.add(playerCuriosHandler);
         }
+    }
+
+    public static void onConfigRefresh() {
+        curiosIntegrationEnabled = ConfigHelper.common().integration.curiosAerialInterfaceAccess.get();
     }
 
     public String getPlayerName() {
