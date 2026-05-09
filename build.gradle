@@ -164,9 +164,6 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
 
 	localImplementation("mcjty.theoneprobe:theoneprobe:${top_version}")
-//			{
-//		exclude group: "net.minecraftforge", module: "forge"
-//	}
 
 	compileOnly("mezz.jei:jei-1.21.1-common-api:${jei_version}")
 	compileOnly("mezz.jei:jei-1.21.1-neoforge-api:${jei_version}")

@@ -13,6 +13,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed tube module connection caching bug causing issue with redstone modules in particular not updating after a world reload
 * Fixed bug with tube modules not correctly syncing to client if too far from the client player
 * Hopefully fixed bug causing Pneumatic Armor to sometimes re-init itself on dimension change or when a Curios inventory is open
+* Disabled caching of item handler for Aerial Interface curios slots access
+  * Curios inventories can dynamically resize and caching those could lead to crashes
 
 ## [8.2.19]
 
