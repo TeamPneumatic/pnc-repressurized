@@ -41,7 +41,6 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -575,7 +574,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private class PlayerCuriosHandler extends PlayerInvHandler {
         @Override
         protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
+            return CuriosUtils.makeCombinedInvWrapper(player);
         }
     }
 
