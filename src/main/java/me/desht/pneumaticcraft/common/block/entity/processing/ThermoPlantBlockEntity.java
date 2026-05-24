@@ -391,7 +391,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         public boolean isFluidValid(FluidStack fluid) {
             return fluid.isEmpty() || acceptedFluidCache.isAcceptable(fluid.getFluid(), () ->
                     ModRecipeTypes.THERMO_PLANT.get().stream(level)
-                            .anyMatch(r -> r.value().testFluid(fluid))
+                            .anyMatch(r -> r.value().testFluid(fluid.getFluid()))
             );
         }
 

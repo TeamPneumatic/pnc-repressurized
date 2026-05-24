@@ -56,7 +56,6 @@ import java.util.stream.Stream;
  * desired fluid.
  */
 public class FluidIngredient extends Ingredient {
-    private List<FluidEntry> fluids;
     private ItemStack[] cachedStacks;
     private final Value[] fluidValues;
 
@@ -67,7 +66,6 @@ public class FluidIngredient extends Ingredient {
 
     private static FluidIngredient empty() {
         FluidIngredient ingr = new FluidIngredient(new Value[0]);
-        ingr.fluids = List.of();
         ingr.cachedStacks = new ItemStack[0];
         return ingr;
     }
@@ -95,13 +93,10 @@ public class FluidIngredient extends Ingredient {
     }
 
     protected List<FluidEntry> getFluidEntryList() {
-        if (fluids == null) {
-            fluids = Arrays.stream(fluidValues)
-                    .flatMap(val -> val.getFluids().stream())
-                    .distinct()
-                    .toList();
-        }
-        return fluids;
+        return Arrays.stream(fluidValues)
+                .flatMap(val -> val.getFluids().stream())
+                .distinct()
+                .toList();
     }
 
     public void fluidToNetwork(FriendlyByteBuf buf) {
