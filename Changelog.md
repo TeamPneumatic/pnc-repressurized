@@ -12,6 +12,7 @@ This release (and all future releases) is built for [Neoforge](https://neoforged
 
 ### Fixed
 * Fix crash in Refinery fluid redistribution
+* Fix ingredient & recipe bugs with Thermopneumatic Processing Plant (thanks @Saereth)
 
 ## [7.0.4]
 
