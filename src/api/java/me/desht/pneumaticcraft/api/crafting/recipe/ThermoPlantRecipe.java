@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Optional;
@@ -112,6 +113,10 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
     }
 
     public final boolean testFluid(FluidStack fluid) {
+        return getInputFluid().map(i -> i.testFluid(fluid)).orElse(false);
+    }
+
+    public final boolean testFluid(Fluid fluid) {
         return getInputFluid().map(i -> i.testFluid(fluid)).orElse(false);
     }
 
