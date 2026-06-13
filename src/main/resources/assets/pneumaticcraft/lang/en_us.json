@@ -2205,6 +2205,7 @@
    "programmingPuzzle.pneumaticcraft.computer_control.name" : "Computer Control",
    "programmingPuzzle.pneumaticcraft.condition_block.name" : "Condition: Block",
    "programmingPuzzle.pneumaticcraft.condition_coordinate.name" : "Condition: Coordinate",
+   "programmingPuzzle.pneumaticcraft.condition_dimension.name" : "Condition: Dimension",
    "programmingPuzzle.pneumaticcraft.condition_entity.name" : "Condition: Entity",
    "programmingPuzzle.pneumaticcraft.condition_item_inventory.name" : "Condition: Items",
    "programmingPuzzle.pneumaticcraft.condition_item.name" : "Condition: Item Filter",

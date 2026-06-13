@@ -120,6 +120,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_CONDITION_COORDINATE = progWidgetTexture("condition_coordinate_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_ITEM = progWidgetTexture("condition_item.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_LIGHT = progWidgetTexture("condition_light_piece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DIMENSION = progWidgetTexture("condition_dimension_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ENTITY = progWidgetTexture("condition_drone_entity_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_LIQUID_INVENTORY = progWidgetTexture("condition_drone_liquid_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = progWidgetTexture("condition_drone_inventory_piece.png");

@@ -126,6 +126,8 @@ public class ModProgWidgetTypes {
             = register("condition_redstone", ProgWidgetRedstoneCondition::new, ProgWidgetRedstoneCondition.CODEC, ProgWidgetRedstoneCondition.STREAM_CODEC);
     public static final Supplier<ProgWidgetType<ProgWidgetLightCondition>> CONDITION_LIGHT
             = register("condition_light", ProgWidgetLightCondition::new, ProgWidgetLightCondition.CODEC, ProgWidgetLightCondition.STREAM_CODEC);
+    public static final Supplier<ProgWidgetType<ProgWidgetDimensionCondition>> CONDITION_DIMENSION
+            = register("condition_dimension", ProgWidgetDimensionCondition::new, ProgWidgetDimensionCondition.CODEC, ProgWidgetDimensionCondition.STREAM_CODEC);
     public static final Supplier<ProgWidgetType<ProgWidgetItemInventoryCondition>> CONDITION_ITEM_INVENTORY
             = register("condition_item_inventory", ProgWidgetItemInventoryCondition::new, ProgWidgetItemInventoryCondition.CODEC, ProgWidgetItemInventoryCondition.STREAM_CODEC);
     public static final Supplier<ProgWidgetType<ProgWidgetBlockCondition>> CONDITION_BLOCK
