@@ -26,6 +26,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.Fluid;
 
@@ -221,6 +222,18 @@ public class PneumaticCraftTags {
         }
 
         static TagKey<DamageType> modTag(String name) {
+            return tag(Names.MOD_ID, name);
+        }
+    }
+
+    public static class GameEvents extends PneumaticCraftTags {
+        public static final TagKey<GameEvent> JET_BOOTS = modTag("jet_boots");
+
+        static TagKey<GameEvent> tag(String modid, String name) {
+            return TagKey.create(Registries.GAME_EVENT, ResourceLocation.fromNamespaceAndPath(modid, name));
+        }
+
+        static TagKey<GameEvent> modTag(String name) {
             return tag(Names.MOD_ID, name);
         }
     }

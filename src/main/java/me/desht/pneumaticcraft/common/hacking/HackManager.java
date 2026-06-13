@@ -100,6 +100,8 @@ public class HackManager {
         registry.addHackable(Blocks.INFESTED_STONE_BRICKS, HackableSilverfish::new);
         registry.addHackable(Blocks.NOTE_BLOCK, HackableNoteblock::new);
         registry.addHackable(Blocks.JUKEBOX, HackableJukebox::new);
+        registry.addHackable(Blocks.SCULK_SENSOR, HackableSculkSensor::new);
+        registry.addHackable(Blocks.CALIBRATED_SCULK_SENSOR, HackableSculkSensor::new);
         // block tags
         registry.addHackable(BlockTags.BUTTONS, HackableButton::new);
         registry.addHackable(BlockTags.DOORS, HackableDoor::new);
