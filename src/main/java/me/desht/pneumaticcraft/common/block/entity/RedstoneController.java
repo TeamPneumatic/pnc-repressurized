@@ -22,6 +22,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
@@ -55,6 +56,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
 
     private final T te;
     private final List<RedstoneMode<T>> modes;
+    @DescSynced
     @GuiSynced
     private int currentMode;
     @GuiSynced

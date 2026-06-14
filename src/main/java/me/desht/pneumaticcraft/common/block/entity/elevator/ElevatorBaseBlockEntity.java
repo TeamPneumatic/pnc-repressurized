@@ -72,6 +72,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -101,8 +102,10 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     double syncedSpeedMult;  // speed multiplier, calculated on server, sync'd to client
     @DescSynced
     public int multiElevatorCount;  // number of elevator columns in the multiblock
+    @DescSynced
     @GuiSynced
     private final RedstoneController<ElevatorBaseBlockEntity> rsController = new RedstoneController<>(this, REDSTONE_LABELS);
+    @DescSynced
     @GuiSynced
     private int maxFloorHeight;
     @DescSynced
@@ -124,6 +127,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     private final List<BlockPos> callerList = new ArrayList<>();
     private long lastFloorUpdate = 0L;
     private int structureRefreshDelay = -1;
+    private boolean suppressRedstoneModePropagation;
     public float[] fakeFloorTextureUV;
     public int fakeFloorTextureTint;
     public int lightAbove;
@@ -177,7 +181,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         if (extension < targetExtension) {
             if (!nonNullLevel().isClientSide && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
-                targetExtension = extension;
+                setTargetExtensionForConnectedElevators(extension);
+                queueStateSyncForConnectedElevators();
             }
             double moveBy = extension < targetExtension - BlockEntityConstants.ELEVATOR_SLOW_EXTENSION ?
                     BlockEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier :
@@ -249,14 +254,12 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             }
         }
 
-        targetExtension = redstoneInput * maxExtension / 15;
-        if (targetExtension > oldExtension && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
-            // we can descend at any time, but only ascend when there's sufficient pressure
-            targetExtension = oldExtension;
-        }
+        double newTargetExtension = redstoneInput * maxExtension / 15;
+        newTargetExtension = capTargetExtensionForPressure(newTargetExtension);
 
-        if (oldTargetExtension != targetExtension) {
-            sendDescPacketFromAllElevators();
+        if (oldTargetExtension != newTargetExtension) {
+            setTargetExtensionForConnectedElevators(newTargetExtension);
+            queueStateSyncForConnectedElevators();
         }
     }
 
@@ -267,22 +270,25 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     @Override
     public void onRedstoneModeChanged(int newModeIdx) {
-        if (multiElevators != null) {
-            for (ElevatorBaseBlockEntity base : multiElevators) {
-                base.getRedstoneController().setCurrentMode(newModeIdx);
-            }
+        if (level == null || level.isClientSide || suppressRedstoneModePropagation) return;
+
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            core.onRedstoneModeChanged(newModeIdx);
+            return;
         }
 
-        int i = -1;
-        BlockEntity te = nonNullLevel().getBlockEntity(getBlockPos().relative(Direction.DOWN));
-        while (te instanceof ElevatorBaseBlockEntity elevator) {
-            elevator.getRedstoneController().setCurrentMode(newModeIdx);
-            i--;
-            te = nonNullLevel().getBlockEntity(getBlockPos().offset(0, i, 0));
+        if (multiElevators == null) {
+            refreshElevatorStructure();
         }
+
+        forEachConnectedElevatorBase(base -> base.setRedstoneModeFromStructure(newModeIdx));
+        queueStateSyncForConnectedElevators();
     }
 
     private boolean isControlledByRedstone() {
+        ElevatorBaseBlockEntity core = getCoreElevator();
+        if (core != null && core != this) return core.isControlledByRedstone();
         return getRedstoneController().getCurrentMode() == RS_REDSTONE_MODE;
     }
 
@@ -316,6 +322,9 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     public float getMaxElevatorHeight() {
+        ElevatorBaseBlockEntity core = getCoreElevator();
+        if (core != null && core != this) return core.getMaxElevatorHeight();
+
         int max = maxFloorHeight;
         if (multiElevators != null) {
             for (ElevatorBaseBlockEntity base : multiElevators) {
@@ -394,6 +403,21 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         for (ElevatorBaseBlockEntity base : elevators) {
             base.recalculateMaxElevatorHeight();
+        }
+
+        int sharedMaxFloorHeight = elevators.stream()
+                .mapToInt(base -> base.maxFloorHeight)
+                .min()
+                .orElse(0);
+        for (ElevatorBaseBlockEntity base : elevators) {
+            if (base.maxFloorHeight != sharedMaxFloorHeight) {
+                base.maxFloorHeight = sharedMaxFloorHeight;
+                base.setChanged();
+            }
+            if (base.targetExtension > sharedMaxFloorHeight) {
+                base.targetExtension = sharedMaxFloorHeight;
+                base.setChanged();
+            }
         }
 
         forceUpdateFloors(true);
@@ -572,6 +596,12 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     public void updateFloors(boolean notifyClient) {
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            core.updateFloors(notifyClient);
+            return;
+        }
+
         Level level = nonNullLevel();
         if (level.getGameTime() - lastFloorUpdate > 20) {
             callerList.clear();
@@ -614,6 +644,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             for (ElevatorBaseBlockEntity base : multiElevators) {
                 base.floorNames = new Int2ObjectOpenHashMap<>(floorNames);
             }
+            copyClientFacingStateToVerticalStacks(level);
         }
 
         for (BlockPos p : callerList) {
@@ -636,7 +667,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             }
         }
 
-        if (notifyClient && !level.isClientSide) sendDescPacketFromAllElevators();
+        if (notifyClient && !level.isClientSide) queueStateSyncForConnectedElevators();
     }
 
     private ElevatorButton[] layoutElevatorButtons() {
@@ -672,37 +703,47 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     public void goToFloor(int floor) {
-        if (getCoreElevator().isControlledByRedstone()) {
-            getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            core.goToFloor(floor);
+            return;
+        }
+
+        if (isControlledByRedstone()) {
+            getRedstoneController().setCurrentMode(RS_CALLER_MODE);
         }
         if (floor >= 0 && floor < floorHeights.length) {
             setTargetHeight(floorHeights[floor]);
         }
         updateFloors(false);
-        sendDescPacketFromAllElevators();
+        queueStateSyncForConnectedElevators();
     }
 
     private void setTargetHeight(float height) {
-        height = Math.min(height, getMaxElevatorHeight());
-        if (multiElevators != null) {
-            for (ElevatorBaseBlockEntity base : multiElevators) {
-                base.targetExtension = height;
-            }
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            core.setTargetHeight(height);
+            return;
         }
+
+        height = Math.min(height, getMaxElevatorHeight());
+        setTargetExtensionForConnectedElevators(height);
     }
 
     public double getTargetExtension() {
+        ElevatorBaseBlockEntity core = getCoreElevator();
+        if (core != null && core != this) return core.getTargetExtension();
         return targetExtension;
     }
 
-    private void sendDescPacketFromAllElevators() {
-        if (multiElevators != null) {
-            for (ElevatorBaseBlockEntity base : multiElevators) {
-                base.sendDescriptionPacket();
-            }
-        } else {
-            sendDescriptionPacket();
-        }
+    private void queueStateSyncForConnectedElevators() {
+        if (level == null || level.isClientSide) return;
+
+        // Queue a full sync so lazy fields and extra packet data are serialized after all shared state is stable.
+        forEachConnectedElevatorBase(base -> {
+            base.setChanged();
+            base.scheduleDescriptionPacket();
+        });
     }
 
     private ElevatorBaseBlockEntity getCoreElevator() {
@@ -716,6 +757,94 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 
     public boolean isCoreElevator() {
         return getCoreElevator() == this;
+    }
+
+    private ElevatorBaseBlockEntity getCoreElevatorOrSelf() {
+        ElevatorBaseBlockEntity core = getCoreElevator();
+        return core == null || core.isRemoved() ? this : core;
+    }
+
+    private List<ElevatorBaseBlockEntity> getConnectedCoreElevators() {
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            return core.multiElevators != null ? core.multiElevators : List.of(core);
+        }
+        return multiElevators != null ? multiElevators : List.of(this);
+    }
+
+    private void forEachConnectedElevatorBase(Consumer<ElevatorBaseBlockEntity> consumer) {
+        Level level = nonNullLevel();
+        Set<BlockPos> seen = new HashSet<>();
+        for (ElevatorBaseBlockEntity core : getConnectedCoreElevators()) {
+            if (core == null || core.isRemoved()) continue;
+            BlockPos.MutableBlockPos pos = core.getBlockPos().mutable();
+            while (isElevatorBase(level, pos)) {
+                BlockEntity te = level.getBlockEntity(pos);
+                if (te instanceof ElevatorBaseBlockEntity base && seen.add(base.getBlockPos())) {
+                    consumer.accept(base);
+                }
+                pos.move(Direction.DOWN);
+            }
+        }
+    }
+
+    private void setRedstoneModeFromStructure(int newModeIdx) {
+        if (getRedstoneController().getCurrentMode() == newModeIdx) return;
+
+        suppressRedstoneModePropagation = true;
+        try {
+            getRedstoneController().setCurrentMode(newModeIdx);
+        } finally {
+            suppressRedstoneModePropagation = false;
+        }
+    }
+
+    private void setTargetExtensionForConnectedElevators(double height) {
+        for (ElevatorBaseBlockEntity base : getConnectedCoreElevators()) {
+            if (base == null || base.isRemoved()) continue;
+            if (base.targetExtension != height) {
+                base.targetExtension = height;
+                base.setChanged();
+            }
+            copyClientFacingStateToVerticalStack(nonNullLevel(), base);
+        }
+    }
+
+    private double capTargetExtensionForPressure(double height) {
+        double cappedHeight = height;
+        for (ElevatorBaseBlockEntity base : getConnectedCoreElevators()) {
+            if (base != null && height > base.oldExtension && base.getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
+                // The connected structure has one target; any under-pressured column prevents upward movement.
+                cappedHeight = Math.min(cappedHeight, base.oldExtension);
+            }
+        }
+        return cappedHeight;
+    }
+
+    private void copyClientFacingStateToVerticalStacks(Level level) {
+        for (ElevatorBaseBlockEntity core : getConnectedCoreElevators()) {
+            copyClientFacingStateToVerticalStack(level, core);
+        }
+    }
+
+    private static void copyClientFacingStateToVerticalStack(Level level, ElevatorBaseBlockEntity core) {
+        if (core == null || core.isRemoved()) return;
+
+        BlockPos.MutableBlockPos pos = core.getBlockPos().mutable();
+        pos.move(Direction.DOWN);
+        while (isElevatorBase(level, pos)) {
+            BlockEntity te = level.getBlockEntity(pos);
+            if (te instanceof ElevatorBaseBlockEntity base) {
+                // Non-core bases do not move/render, but client probes and tabs should report the core's shared state.
+                base.targetExtension = core.targetExtension;
+                base.maxFloorHeight = core.maxFloorHeight;
+                base.multiElevatorCount = core.multiElevatorCount;
+                base.floorHeights = core.floorHeights.clone();
+                base.floorNames = new Int2ObjectOpenHashMap<>(core.floorNames);
+                base.setChanged();
+            }
+            pos.move(Direction.DOWN);
+        }
     }
 
     @Override
@@ -735,10 +864,18 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     public String getFloorName(int floor) {
+        ElevatorBaseBlockEntity core = getCoreElevator();
+        if (core != null && core != this) return core.getFloorName(floor);
         return floor < floorHeights.length ? floorNames.get(floorHeights[floor]) : "";
     }
 
     public void setFloorName(int floor, String name) {
+        ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+        if (core != this) {
+            core.setFloorName(floor, name);
+            return;
+        }
+
         if (floor < floorHeights.length) {
             floorNames.put(floorHeights[floor], name);
             updateFloors(true);
@@ -758,11 +895,12 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "height (in blocks)");
-                setTargetHeight(((Double) args[0]).floatValue());
-                if (getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
+                ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+                core.setTargetHeight(((Double) args[0]).floatValue());
+                if (core.isControlledByRedstone()) {
+                    core.getRedstoneController().setCurrentMode(RS_CALLER_MODE);
                 }
-                getCoreElevator().sendDescPacketFromAllElevators();
+                core.queueStateSyncForConnectedElevators();
                 return null;
             }
         });
@@ -793,9 +931,11 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "true/false");
-                if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone()
-                        || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
+                ElevatorBaseBlockEntity core = getCoreElevatorOrSelf();
+                if ((Boolean) args[0] && core.isControlledByRedstone()
+                        || !(Boolean) args[0] && !core.isControlledByRedstone()) {
+                    core.getRedstoneController().setCurrentMode(RS_CALLER_MODE);
+                    core.queueStateSyncForConnectedElevators();
                 }
                 return null;
             }
