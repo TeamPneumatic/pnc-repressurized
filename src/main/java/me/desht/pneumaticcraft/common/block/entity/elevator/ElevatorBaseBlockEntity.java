@@ -56,6 +56,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -100,7 +101,6 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     private static final Map<Entity, Long> MOVED_ENTITIES = new WeakHashMap<>();
 
     @DescSynced
-    @LazySynced
     public double extension;
     @DescSynced
     private double targetExtension;
@@ -162,16 +162,14 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             return;
         }
 
-        double speedMultiplier;
         if (!nonNullLevel().isClientSide) {
             if (isControlledByRedstone()) {
                 handleRedstoneControl();
             }
-            speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
+            syncedSpeedMult = getSpeedMultiplierFromUpgrades();
             chargingUpgrades = getUpgrades(ModUpgrades.CHARGING.get());  // sync'd to client to adjust elevator speed as appropriate
             MiscEventHandler.needsTPSSync(getLevel());
         } else {
-            speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.getTickTimeMultiplier());
             if (prevCamoState != camoState) {
                 fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
                 fakeFloorTextureTint = camoState != null && camoState.getBlock() instanceof ColorHandlers.ITintableBlock t ?
@@ -185,25 +183,21 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             }
         }
 
-        if (extension < targetExtension) {
-            if (!nonNullLevel().isClientSide && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
-                setTargetExtensionForConnectedElevators(extension);
-                queueStateSyncForConnectedElevators();
-            }
-            double moveBy = extension < targetExtension - BlockEntityConstants.ELEVATOR_SLOW_EXTENSION ?
-                    BlockEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier :
-                    BlockEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
-            extension = Math.min(targetExtension, extension + moveBy);
-            addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
-        } else if (extension > targetExtension) {
-            double chargingSlowdown = 1.0 - chargingUpgrades * 0.1;
-            double moveBy = extension > targetExtension + BlockEntityConstants.ELEVATOR_SLOW_EXTENSION ?
-                    BlockEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown:
-                    BlockEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
-            extension = Math.max(targetExtension, extension - moveBy);
-            if (!nonNullLevel().isClientSide && chargingUpgrades > 0 && getPressure() < airHandler.getDangerPressure() - 0.1f) {
+        double speedMultiplier = getEffectiveSpeedMultiplier();
+        if (extension < targetExtension && !nonNullLevel().isClientSide && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
+            setTargetExtensionForConnectedElevators(extension);
+            queueStateSyncForConnectedElevators();
+        }
+
+        double elevatorDelta = calculateElevatorDelta(extension, targetExtension, speedMultiplier);
+        if (elevatorDelta != 0) {
+            extension += elevatorDelta;
+
+            if (elevatorDelta > 0) {
+                addAir((int) (-elevatorDelta * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
+            } else if (!nonNullLevel().isClientSide && chargingUpgrades > 0 && getPressure() < airHandler.getDangerPressure() - 0.1f) {
                 float mul = 0.15f * Math.min(4, chargingUpgrades);
-                addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
+                addAir((int) (-elevatorDelta * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
             }
         }
 
@@ -358,6 +352,30 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
         return Math.max(Math.max(extension, oldExtension), Math.max(getTargetExtension(), getMaxElevatorHeight()));
     }
 
+    private double getEffectiveSpeedMultiplier() {
+        return nonNullLevel().isClientSide ?
+                syncedSpeedMult * PacketServerTickTime.getTickTimeMultiplier() :
+                syncedSpeedMult;
+    }
+
+    private double calculateElevatorDelta(double from, double to, double speedMultiplier) {
+        if (speedMultiplier <= 0 || from == to) return 0;
+
+        double distance = Math.abs(to - from);
+        double baseSpeed = distance > BlockEntityConstants.ELEVATOR_SLOW_EXTENSION ?
+                BlockEntityConstants.ELEVATOR_SPEED_FAST :
+                BlockEntityConstants.ELEVATOR_SPEED_SLOW;
+        double movementScale = to > from ? speedMultiplier : speedMultiplier * getDescentSpeedScale();
+        double step = baseSpeed * movementScale;
+        if (step <= 0) return 0;
+
+        return to > from ? Math.min(step, to - from) : -Math.min(step, from - to);
+    }
+
+    private double getDescentSpeedScale() {
+        return 1.0 - chargingUpgrades * 0.1;
+    }
+
     private void moveEntitiesOnPlatform(double elevatorDelta) {
         if (Math.abs(elevatorDelta) < 1.0E-5) return;
 
@@ -376,17 +394,21 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             if (feetY < minPlatformY - 0.5D || feetY > maxPlatformY + 0.6D) continue;
 
             MOVED_ENTITIES.put(entity, gameTime);
-            double carryDelta = elevatorDelta > 0 ? Math.max(elevatorDelta, newPlatformY - feetY) : elevatorDelta;
-            entity.setPos(entity.getX(), entity.getY() + carryDelta, entity.getZ());
+            entity.move(MoverType.SHULKER_BOX, new Vec3(0, elevatorDelta, 0));
+
+            // On ascent, gently recover entities which are just below the server's platform after collision/latency.
+            if (elevatorDelta > 0) {
+                double platformGap = newPlatformY - entity.getBoundingBox().minY;
+                if (platformGap > 0.01D && platformGap < 1.25D) {
+                    entity.move(MoverType.SHULKER_BOX, new Vec3(0, platformGap, 0));
+                }
+            }
+
             Vec3 motion = entity.getDeltaMovement();
             if (motion.y < 0 || elevatorDelta > 0) {
                 entity.setDeltaMovement(motion.x, 0, motion.z);
             }
             entity.setOnGround(true);
-            if (entity instanceof ServerPlayer && getUpgrades(ModUpgrades.SPEED.get()) >= 6) {
-                // prevents "<player> moved too quickly" problems when the elevator is fast
-                ((ServerPlayer) entity).connection.resetPosition();
-            }
             entity.fallDistance = 0;
         }
     }
