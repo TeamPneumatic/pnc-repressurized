@@ -152,6 +152,6 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
 
     @Override
     public AABB getRenderBoundingBox(ElevatorBaseBlockEntity blockEntity) {
-        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.extension);
+        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.getRenderExtension() + 1);
     }
 }
