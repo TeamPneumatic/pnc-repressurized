@@ -36,6 +36,7 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     private int thisFloor;
     private boolean emittingRedstone;
     private boolean shouldUpdateNeighbors;
+    private int elevatorButtonRefreshDelay = -1;
     private BlockState camoState;
     private final RedstoneController<ElevatorCallerBlockEntity> rsController = new RedstoneController<>(this);
 
@@ -59,9 +60,21 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     public void tickCommonPre() {
         super.tickCommonPre();
 
+        if (elevatorButtonRefreshDelay >= 0 && elevatorButtonRefreshDelay-- == 0) {
+            ElevatorCallerBlock.updateElevatorButtons(nonNullLevel(), worldPosition);
+        }
         if (shouldUpdateNeighbors) {
             updateNeighbours();
             shouldUpdateNeighbors = false;
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+
+        if (getLevel() != null && !getLevel().isClientSide) {
+            elevatorButtonRefreshDelay = 4;
         }
     }
 

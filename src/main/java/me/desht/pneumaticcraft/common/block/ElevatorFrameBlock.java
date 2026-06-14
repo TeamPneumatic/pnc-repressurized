@@ -219,9 +219,12 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        getElevatorBase(world, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
+        Optional<ElevatorBaseBlockEntity> base = state.getBlock() != newState.getBlock() ?
+                getElevatorBase(world, pos) : Optional.empty();
 
         super.onRemove(state, world, pos, newState, isMoving);
+
+        base.ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
     }
 
     @Override
