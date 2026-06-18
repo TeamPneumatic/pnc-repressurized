@@ -2010,6 +2010,8 @@
    "pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox" : "Put in a UV Light Box to expose...",
    "pneumaticcraft.gui.tooltip.item.uvLightBox.successChance" : "Etch success chance: %d%%",
    "pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip" : "You can add a Silk Touch or Fortune Enchanted Book here",
+   "pneumaticcraft.gui.tooltip.jackhammer.speedcapped.true": "Prevent insta-breaking: ON",
+   "pneumaticcraft.gui.tooltip.jackhammer.speedcapped.false": "Prevent insta-breaking: OFF",
    "pneumaticcraft.gui.tooltip.maxPressure" : "Max pressure: %s bar",
    "pneumaticcraft.gui.tooltip.maxProduction" : "Max Production: %d mL/t",
    "pneumaticcraft.gui.tooltip.maxUsage" : "Max Usage: %d mL/t",

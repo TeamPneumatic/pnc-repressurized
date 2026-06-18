@@ -110,13 +110,15 @@ public class JackHammerItem extends PressurizableItem
             ItemAbilities.SHOVEL_DIG,
             ItemAbilities.SWORD_DIG
     );
+    private static final float CAPPED_SPEED = 10f;
 
     private static long lastModeSwitchTime; // client-side: when player last scrolled to change mode
 
     public JackHammerItem() {
         super(ModItems.toolProps()
-                .component(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1)
-                .component(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY),
+                        .component(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1)
+                        .component(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY)
+                        .component(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false),
                 PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER
         );
     }
@@ -142,6 +144,10 @@ public class JackHammerItem extends PressurizableItem
     public static DrillBitType getDrillBit(ItemStack stack) {
         DrillBitHandler handler = new DrillBitHandler(stack);
         return handler.getStackInSlot(0).getItem() instanceof DrillBitItem bit ? bit.getType() : DrillBitType.NONE;
+    }
+
+    public static boolean isSpeedCapped(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false);
     }
 
     @Override
@@ -232,7 +238,8 @@ public class JackHammerItem extends PressurizableItem
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         DrillBitType bitType = getDrillBit(stack);
         int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
-        return getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
+        float res = getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
+        return stack.getOrDefault(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false) ? Math.min(res, CAPPED_SPEED) : res;
     }
 
     @Override

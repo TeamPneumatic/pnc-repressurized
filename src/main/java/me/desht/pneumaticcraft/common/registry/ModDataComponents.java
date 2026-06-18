@@ -239,4 +239,7 @@ public class ModDataComponents {
     // JackHammer stored drill bit
     public static final Supplier<DataComponentType<ItemContainerContents>> JACKHAMMER_DRILL_BIT
             = register("jackhammer_drill_bit", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
+    // JackHammer speed cap toggle
+    public static final Supplier<DataComponentType<Boolean>> JACKHAMMER_SPEED_CAPPED
+            = register("jackhammer_speed_capped", Codec.BOOL, ByteBufCodecs.BOOL);
 }

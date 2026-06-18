@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -44,6 +45,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen<JackhammerSetupMenu, AbstractPneumaticCraftBlockEntity> {
     private final EnumMap<DigMode,WidgetButtonExtended> typeButtons = new EnumMap<>(DigMode.class);
     private WidgetButtonExtended selectorButton;
+    private WidgetButtonExtended speedCapButton;
 
     public JackHammerSetupScreen(JackhammerSetupMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString);
@@ -58,16 +60,24 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
         ItemStack hammerStack = ClientUtils.getClientPlayer().getItemInHand(menu.getHand());
 
         DigMode digMode = JackHammerItem.getDigMode(hammerStack);
+        boolean speedCapped = JackHammerItem.isSpeedCapped(hammerStack);
 
         addRenderableWidget(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
                 Component.empty(), b -> toggleShowChoices()))
+                .setTooltipKey(digMode.getTranslationKey())
                 .setRenderedIcon(digMode.getGuiIcon());
+
+        addRenderableWidget(speedCapButton = new WidgetButtonExtended(leftPos + 149, topPos + 67, 20, 20,
+                Component.empty())
+                .setTooltipKey("pneumaticcraft.gui.tooltip.speedcapped." + speedCapped)
+                .withTag("speed_cap"));
 
         int xBase = 147 - 20 * DigMode.values().length;
         for (DigMode dm : DigMode.values()) {
             WidgetButtonExtended button = new WidgetButtonExtended(leftPos + xBase, topPos + 47, 20, 20,
                     Component.empty(), b -> selectDigMode(dm))
                     .setRenderedIcon(dm.getGuiIcon())
+                    .setTooltipKey(dm.getTranslationKey())
                     .withTag("digmode:" + dm);
             xBase += 20;
             button.visible = false;
@@ -83,7 +93,7 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
     private void selectDigMode(DigMode digMode) {
         // communication to server handled via PacketGuiButton
         typeButtons.values().forEach(button -> button.visible = false);
-        selectorButton.setRenderedIcon(digMode.getGuiIcon());
+//        selectorButton.setTooltipKey(digMode.getTranslationKey());
     }
 
     private void toggleShowChoices() {
@@ -94,10 +104,10 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
     public void containerTick() {
         super.containerTick();
 
-        updateDigModeButtons();
+        updateButtons();
     }
 
-    private void updateDigModeButtons() {
+    private void updateButtons() {
         ItemStack drillStack = menu.getSlot(0).getItem();
         DrillBitType bitType = drillStack.getItem() instanceof DrillBitItem ?
                 ((DrillBitItem) drillStack.getItem()).getType() :
@@ -115,6 +125,11 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
         }
 
         selectorButton.setRenderedIcon(digMode.getGuiIcon());
+        selectorButton.setTooltipText(xlate("pneumaticcraft.message.jackhammer.mode").append(xlate(digMode.getTranslationKey()).withStyle(ChatFormatting.GRAY)));
+
+        boolean speedCapped = JackHammerItem.isSpeedCapped(hammerStack);
+        speedCapButton.setTooltipKey("pneumaticcraft.gui.tooltip.jackhammer.speedcapped." + speedCapped);
+        speedCapButton.setMessage(Component.literal("S").withStyle(speedCapped ? ChatFormatting.AQUA : ChatFormatting.GRAY));
     }
 
     @Override
