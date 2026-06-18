@@ -32,9 +32,7 @@ import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.network.DronePacket.DroneTarget;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
 import me.desht.pneumaticcraft.common.registry.ModArmorMaterials;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -359,9 +357,16 @@ public class PneumaticArmorItem extends ArmorItem implements
 
     @Override
     public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-        if (entity instanceof Player player
-                && CommonArmorHandler.getHandlerForPlayer(player).upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
-            return true;
+        if (entity instanceof Player player) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.upgradeUsable(CommonUpgradeHandlers.jetBootsHandler, true)) {
+                if (JetBootsStateTracker.getTracker(player).getJetBootsState(player).isBuilderMode()) {
+                    return false;
+                }
+            }
+            if (handler.upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
+                return true;
+            }
         }
         return super.canElytraFly(stack, entity);
     }
