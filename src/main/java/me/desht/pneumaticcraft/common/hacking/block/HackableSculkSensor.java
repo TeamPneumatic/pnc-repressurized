@@ -21,6 +21,8 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -33,9 +35,12 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+import static net.minecraft.world.level.block.SculkSensorBlock.PHASE;
+import static net.minecraft.world.level.block.state.properties.SculkSensorPhase.COOLDOWN;
 
 public class HackableSculkSensor implements IHackableBlock {
     private static final ResourceLocation ID = RL("sculk_sensor");
+    private static final int SILENCE_TIME = 200;
 
     @Override
     public ResourceLocation getHackableId() {
@@ -44,12 +49,12 @@ public class HackableSculkSensor implements IHackableBlock {
 
     @Override
     public void addInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.neutralize"));
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.silence"));
     }
 
     @Override
     public void addPostHackInfo(BlockGetter world, BlockPos pos, List<Component> curInfo, Player player) {
-        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.neutralized"));
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.silenced"));
     }
 
     @Override
@@ -59,15 +64,26 @@ public class HackableSculkSensor implements IHackableBlock {
 
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
-        BlockState state = world.getBlockState(pos);
-        world.setBlock(pos, state.setValue(SculkSensorBlock.PHASE, SculkSensorPhase.COOLDOWN).setValue(SculkSensorBlock.POWER, 0), Block.UPDATE_ALL);
-        world.scheduleTick(pos, state.getBlock(), 200);
-        world.updateNeighborsAt(pos, state.getBlock());
-        world.updateNeighborsAt(pos.below(), state.getBlock());
+        if (world instanceof ServerLevel serverLevel) {
+            BlockState state = world.getBlockState(pos);
+
+            // set it to inactive initially, so any pending ticks don't just wake it up again
+            world.setBlock(pos, state.setValue(PHASE, SculkSensorPhase.INACTIVE), Block.UPDATE_ALL);
+
+            // and once the cooldown duration is passed, set it into cooldown mode for the silencing duration
+            serverLevel.getServer().tell(new TickTask(serverLevel.getServer().getTickCount() + SculkSensorBlock.COOLDOWN_TICKS + 1, () -> {
+                if (world.getBlockState(pos).getBlock() instanceof SculkSensorBlock) {
+                    world.setBlock(pos, state.setValue(PHASE, COOLDOWN).setValue(SculkSensorBlock.POWER, 0), Block.UPDATE_ALL);
+                    world.scheduleTick(pos, state.getBlock(), SILENCE_TIME);
+                    world.updateNeighborsAt(pos, state.getBlock());
+                    world.updateNeighborsAt(pos.below(), state.getBlock());
+                }
+            }));
+        }
     }
 
     @Override
     public boolean canHack(BlockGetter level, BlockPos pos, BlockState state, Player player) {
-        return state.hasProperty(SculkSensorBlock.PHASE) && state.getValue(SculkSensorBlock.PHASE) != SculkSensorPhase.COOLDOWN;
+        return state.hasProperty(PHASE) && state.getValue(PHASE) != COOLDOWN;
     }
 }
