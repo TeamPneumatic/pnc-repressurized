@@ -6,9 +6,26 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.21]
+
+### Added
+* The Liquid Hopper can now absorb Experience Orbs with a Dispenser Upgrade installed, converting them to Memory Essence fluid
+* The Programmer GUI now highlights connection lines between jump & label widgets when they're hovered
+* Added a toggle button to the Jackhammer GUI to prevent insta-break of blocks
+  * Useful if you have a fast drill bit and many speed upgrades, to prevent acccidents in your base...
+* The Elytra Upgrade in the Pneumatic Chestplate no longer activates when tapping Space if you are currently in Jet Boots builder mode
+* Sculk Sensors now detect player movement when off the ground using Jet Boots
+* Sculk Sensors can now be hacked with the Pneumatic Armor, disabling them for 10 seconds
+* Added a Condition: Dimension programming widget for Drones
+  * Allows Drones to detect what dimension they're in and branch in their program accordingly
+  * Drones which do not have a Condition: Dimension widget in their program may no longer change dimension e.g. via Nether portal
+
+### Fixed
+* Fixed bug causing Thermopneumatic Processing Plant to sometimes not require pressure for recipes that should require it
+
 ## [8.2.20]
 
-### Fixes
+### Fixed
 * Fixed a drone patfhfinding bug causing drones to get stuck in areas with tricky pathfinding (e.g. dense tree growth)
 * Fixed tube module connection caching bug causing issue with redstone modules in particular not updating after a world reload
 * Fixed bug with tube modules not correctly syncing to client if too far from the client player
@@ -18,7 +35,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## [8.2.19]
 
-### Fixes
+### Fixed
 * Fixed a couple of item dupe issues with the Solar Compressor
   * Solar Compressors are no longer waterloggable, or movable with pistons (even with Quark installed)
 * Fixed Refinery GUI showing incorrect number of exposed faces (wasn't taking the controller block into account)
