@@ -17,7 +17,7 @@
       "type": "text",
       "title": "Dispenser Upgrade",
       "flag": "pneumaticcraft:liquidHopperDispenser",
-      "text": "If a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ is inserted into the $(item)Liquid Hopper/$, it will suck any liquid block (1000mB) at the $(9)input/$ side, and it will dispense 1000mB of any stored liquid at the $(6)output/$ side. This can be used for example as a water pump."
+      "text": "If a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ is inserted into the $(item)Liquid Hopper/$, it can absorb any liquid block (1000mB) at the $(9)input/$ side, and dispense 1000mB of any stored liquid at the $(6)output/$ side. This can be used for example as a water pump.$(p)It can also absorb any $(item)Experience Orbs/$ at the input side, converting them to $(l:base_concepts/memory_essence)Memory Essence/$."
     },
     {
       "type": "crafting",

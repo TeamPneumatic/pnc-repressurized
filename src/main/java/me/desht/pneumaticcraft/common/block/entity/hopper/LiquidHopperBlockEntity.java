@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,6 +38,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -195,14 +197,20 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         }
 
         for (Entity e : cachedInputEntities) {
-            if (e.isAlive() && e instanceof ItemEntity entity) {
-                // special case: buckets can only drain 1000 mB at a time
-                int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
-                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
-                if (res.success) {
-                    entity.setItem(res.result);
+            if (e.isAlive()) {
+                if (e instanceof ItemEntity entity) {
+                    // special case: buckets can only drain 1000 mB at a time
+                    int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
+                    FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
+                    if (res.success) {
+                        entity.setItem(res.result);
+                    }
+                    if (tank.getFluidAmount() >= tank.getCapacity()) break;
+                } else if (e instanceof ExperienceOrb orb && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
+                    if (orb.value <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, FluidAction.EXECUTE)) {
+                        orb.discard();
+                    }
                 }
-                if (tank.getFluidAmount() >= tank.getCapacity()) break;
             }
         }
 

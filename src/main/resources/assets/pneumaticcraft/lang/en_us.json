@@ -1904,7 +1904,7 @@
    "pneumaticcraft.gui.tab.upgrades.generic.volume" : "Increases the air capacity of the machine by 2 * √U, where U = the number of Volume Upgrades.\nNote: Adding Volume Upgrades increases the air that can be stored, causing a pressure drop.  Removing upgrades keeps the pressure constant, losing air from the machine.",
    "pneumaticcraft.gui.tab.upgrades.liquid_compressor.speed" : "Increases the compressed air generated per tick, at the expense of fuel efficiency.",
    "pneumaticcraft.gui.tab.upgrades.liquid_hopper.creative" : "Allows the hopper to provide fluids infinitely.",
-   "pneumaticcraft.gui.tab.upgrades.liquid_hopper.dispenser" : "Sucks in any fluid block at the input side of the Hopper, and places down any fluid at the output side. Can be used for example as water pump.",
+   "pneumaticcraft.gui.tab.upgrades.liquid_hopper.dispenser" : "Sucks in any fluid block at the input side of the Hopper, and places down any fluid at the output side. Can be used as a water pump, for example.\ncan also absorb Experience Orbs on the input side, converting them to Memory Essence (if there's space for the fluid).",
    "pneumaticcraft.gui.tab.upgrades.liquid_hopper.entity_tracker" : "The hopper will attempt to interact with any fluid-carrying entities (drones, some modded minecarts...) at its input or output and transfer fluid to or from those entities as appropriate.",
    "pneumaticcraft.gui.tab.upgrades.liquid_hopper.speed" : "Increases the speed at which the Hopper transfers fluid.  With the maximum number of upgrades, the Liquid Hopper can transfer its entire contents in one tick.",
    "pneumaticcraft.gui.tab.upgrades.max" : "Max Upgrades: %d",
