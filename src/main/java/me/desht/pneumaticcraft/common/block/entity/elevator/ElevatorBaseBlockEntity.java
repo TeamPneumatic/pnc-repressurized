@@ -108,7 +108,6 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     double syncedSpeedMult;  // speed multiplier, calculated on server, sync'd to client
     @DescSynced
     public int multiElevatorCount;  // number of elevator columns in the multiblock
-    @DescSynced
     @GuiSynced
     private final RedstoneController<ElevatorBaseBlockEntity> rsController = new RedstoneController<>(this, REDSTONE_LABELS);
     @DescSynced

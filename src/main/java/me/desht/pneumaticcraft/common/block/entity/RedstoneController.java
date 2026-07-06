@@ -22,7 +22,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
@@ -56,7 +55,6 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
 
     private final T te;
     private final List<RedstoneMode<T>> modes;
-    @DescSynced
     @GuiSynced
     private int currentMode;
     @GuiSynced
@@ -149,8 +147,13 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public Component getDescription() {
+        return getDescription(currentMode);
+    }
+
+    public Component getDescription(int mode) {
         if (te != null) {
-            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
+            int idx = mode >= 0 && mode < modes.size() ? mode : 0;
+            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(idx).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
         } else {
             return Component.empty();
         }
