@@ -21,10 +21,8 @@ import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEnt
 import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorFrameBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
-import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -46,7 +44,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -174,32 +171,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         getElevatorBase(world, pos).ifPresent(teBase -> {
             if (!teBase.isStopped()) {
-                int baseY = teBase.getBlockPos().getY();
-                if (entity.getY() >= baseY && entity.getY() < baseY + teBase.extension + 10) {
-                    double eX = entity.getX();
-                    double eZ = entity.getZ();
-                    if (teBase.ticksRunning < 10) {
-                        // when departing, nudge the entity onto the platform if they're hanging over the edge
-                        int x = pos.getX();
-                        int z = pos.getZ();
-                        AABB box = entity.getBoundingBox();
-                        if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof ElevatorBaseBlockEntity)
-                                || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof ElevatorBaseBlockEntity))) {
-                            eX = x + 0.5;
-                        }
-                        if (box.minZ < z && !(teBase.getCachedNeighbor(Direction.NORTH) instanceof ElevatorBaseBlockEntity)
-                                || box.maxZ > z + 1 && !(teBase.getCachedNeighbor(Direction.SOUTH) instanceof ElevatorBaseBlockEntity)) {
-                            eZ = z + 0.5;
-                        }
-                    }
-                    entity.setPos(eX, baseY + teBase.extension + 1.2, eZ);
-                    if (entity instanceof ServerPlayer && teBase.getUpgrades(ModUpgrades.SPEED.get()) >= 6) {
-                        // prevents "<player> moved too quickly" problems when the elevator is fast
-                        // note: using this can lead to jerky upward movement, so only doing for fast elevators
-                        ((ServerPlayer) entity).connection.resetPosition();
-                    }
-                    entity.fallDistance = 0;
-                }
+                entity.fallDistance = 0;
             }
         });
     }
@@ -219,9 +191,12 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        getElevatorBase(world, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
+        Optional<ElevatorBaseBlockEntity> base = state.getBlock() != newState.getBlock() ?
+                getElevatorBase(world, pos) : Optional.empty();
 
         super.onRemove(state, world, pos, newState, isMoving);
+
+        base.ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
     }
 
     @Override

@@ -91,15 +91,15 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
     }
 
     private static BlockPos getCoreElevatorPos(Level world, BlockPos pos) {
-        if (world.getBlockState(pos.relative(Direction.UP)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-            return getCoreElevatorPos(world, pos.relative(Direction.UP));
-        } else {
-            return pos;
+        BlockPos.MutableBlockPos mut = pos.mutable();
+        while (world.getBlockState(mut.relative(Direction.UP)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
+            mut.move(Direction.UP);
         }
+        return mut.immutable();
     }
 
     public static Optional<ElevatorBaseBlockEntity> getCoreBlockEntity(Level level, BlockPos pos) {
-        return PneumaticCraftUtils.getBlockEntityAt(level, pos, ElevatorBaseBlockEntity.class);
+        return PneumaticCraftUtils.getBlockEntityAt(level, getCoreElevatorPos(level, pos), ElevatorBaseBlockEntity.class);
     }
 
     @Override
@@ -109,9 +109,11 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
                 PneumaticCraftUtils.getBlockEntityAt(level, pos.below(), ElevatorBaseBlockEntity.class)
                         .ifPresent(ElevatorBaseBlockEntity::moveUpgradesFromAbove);
             }
-            getCoreBlockEntity(level, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
         }
         super.onRemove(state, level, pos, newState, isMoving);
+        if (state.getBlock() != newState.getBlock()) {
+            ElevatorBaseBlockEntity.updateElevatorsAround(level, pos);
+        }
     }
 
     @Nullable

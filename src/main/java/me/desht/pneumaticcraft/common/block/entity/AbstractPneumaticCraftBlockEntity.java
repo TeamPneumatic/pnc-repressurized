@@ -693,7 +693,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             });
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, rc.getRedstoneController().save());
+            RedstoneController.Saved saved = rc.getRedstoneController().save();
+            if (!saved.equals(RedstoneController.Saved.DEFAULT)) {
+                builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, saved);
+            }
         }
         if (this instanceof ISideConfigurable sc) {
             builder.set(ModDataComponents.SAVED_SIDE_CONFIG, SideConfigurator.buildSavedMap(sc));
