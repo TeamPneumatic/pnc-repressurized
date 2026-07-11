@@ -13,6 +13,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * Solar Compressors are no longer waterloggable, or movable with pistons (even with Quark installed)
 * Fixed Refinery GUI showing incorrect number of exposed faces (wasn't taking the controller block into account)
 * Fixed Pneumatic Armor entity/block trackers not clearing tracked objects on dimension change
+* Fixed pressure gauge rendering when Oculus is installed (thanks @iskandaralex2)
 
 ## [6.0.22]
 
