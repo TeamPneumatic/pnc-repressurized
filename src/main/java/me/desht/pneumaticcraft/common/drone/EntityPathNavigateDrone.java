@@ -198,7 +198,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigation implements IPa
                         stuckTicks = 0;
                     }
 
-                    if (!isDone()) {
+                    if (!path.isDone()) {
                         Vec3 vec32 = path.getNextEntityPos(mob);
                         mob.getMoveControl().setWantedPosition(vec32.x, vec32.y, vec32.z, speedModifier);
                     }
