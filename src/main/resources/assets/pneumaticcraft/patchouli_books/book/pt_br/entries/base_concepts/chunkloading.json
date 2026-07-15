@@ -1,5 +1,5 @@
 {
-  "name": "Carregamento de Chunks",
+  "name": "Carregador de Chunks",
   "icon": "minecraft:ender_eye",
   "category": "pneumaticcraft:base_concepts",
   "pages": [
@@ -14,7 +14,7 @@
     {
       "type": "text",
       "title": "Métodos de Carregamento",
-      "text": "$(li)O Vanilla tem um comando $(thing)/forceload/$ para forçar um ou mais chunks a permanecerem sempre carregados, mas isso requer privilégios de op para usar$(li)Muitos mods oferecem soluções de carregamento de chunk utilizáveis pelo jogador, ex: $(thing)FTB Chunks/$, $(thing)Chicken Chunks/$, $(thing)Weirding Gadgets/$ e mais.$(li)O $(l:programming/programmable_controller)Controlador Programável/$ deste mod oferece alguma funcionalidade limitada de carregamento de chunk também."
+      "text": "$(li)O Vanilla tem um comando $(thing)/forceload/$ para forçar um ou mais chunks a permanecerem sempre carregados, mas isso requer privilégios de op para usar$(li)Muitos mods oferecem soluções de carregamento de chunk utilizáveis pelo jogador, ex: $(thing)FTB Chunks/$, $(thing)Chicken Chunks/$, $(thing)Weirding Gadgets/$ e mais.$(li)O $(l:programming/programmable_controller)Controlador Programável/$ deste mod oferece alguma funcionalidade limitada de Carregador de Chunks também."
     },
     {
       "type": "text",

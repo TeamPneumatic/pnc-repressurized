@@ -12,7 +12,7 @@
     {
       "type": "image",
       "title": "Tubos!",
-      "text": "$(italic)Dois Tubos de Pressão com um $(l:tubes/pressure_gauge_module)Manômetro/$ $(italic)conectando um $(l:compressors/air_compressor)Compressor de Ar/$ $(italic)e um $(l:machines/air_cannon)Canhão de Ar/$",
+      "text": "$(italic)Dois Tubos de Pressão com um $(l:tubes/pressure_gauge_module)Medidor de Pressão/$ $(italic)conectando um $(l:compressors/air_compressor)Compressor de Ar/$ $(italic)e um $(l:machines/air_cannon)Canhão de Ar/$",
       "images": [
         "pneumaticcraft:textures/patchouli/pressure_tubes.png"
       ],

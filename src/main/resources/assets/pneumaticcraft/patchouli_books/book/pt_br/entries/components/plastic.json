@@ -28,18 +28,18 @@
       "title": "Folha de Plástico",
       "item": "pneumaticcraft:plastic",
       "flag": "!pneumaticcraft:inWorldPlasticSolidification",
-      "text": "$(item)Folhas de Plástico/$ são produzidas colocando um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ anexada, e resfriando a Estrutura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
+      "text": "$(item)Folhas de Plástico/$ são produzidas colocando um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Moldura de Calor/$ anexada, e resfriando a Moldura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
     },
     {
       "type": "text",
       "title": "Melhorando Rendimentos",
       "flag": "pneumaticcraft:inWorldPlasticSolidification",
-      "text": "Uma maneira alternativa de solidificar $(item)Folhas de Plástico/$ é colocar um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ anexada, e resfriar a Estrutura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
+      "text": "Uma maneira alternativa de solidificar $(item)Folhas de Plástico/$ é colocar um balde ou $(l:machines/tanks)tanque/$ de $(item)Plástico Derretido/$ em um inventário com uma $(l:semiblocks/heat_frame)Moldura de Calor/$ anexada, e resfriar a Moldura de Calor, idealmente para abaixo de -80C (quanto mais frio melhor). $(item)Plástico Derretido/$ será consumido do balde ou tanque, e você terá uma chance de uma segunda $(item)Folha de Plástico/$ para cada 1000mB de Plástico Derretido consumido."
     },
     {
       "type": "text",
       "title": "Uma Nota sobre Tanques",
-      "text": "Embora os Tanques de Fluido do $(pncr) tenham slots de inventário, e permitam que $(thing)Estruturas de Calor/$ sejam colocadas neles, simplesmente anexar uma Estrutura de Calor a um tanque cheio de Plástico Derretido não funcionará; o tanque de fluido deve estar em forma de item em um inventário (baú, etc.) com uma Estrutura de Calor anexada."
+      "text": "Embora os Tanques de Fluido do $(pncr) tenham slots de inventário, e permitam que $(thing)Estruturas de Calor/$ sejam colocadas neles, simplesmente anexar uma Moldura de Calor a um tanque cheio de Plástico Derretido não funcionará; o tanque de fluido deve estar em forma de item em um inventário (baú, etc.) com uma Moldura de Calor anexada."
     },
     {
       "type": "spotlight",

@@ -1,30 +1,30 @@
 {
-  "name": "Armadilha a Vácuo",
+  "name": "Armadilha de Vácuo",
   "icon": "pneumaticcraft:vacuum_trap",
   "category": "pneumaticcraft:spawning",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",
-      "text": "A $(item)Armadilha a Vácuo/$ é uma máquina usada para prender criaturas e absorver sua essência em um $(l:spawning/spawner_core)Núcleo de Gerador de Criaturas/$, para uso posterior em um $(l:spawning/pressurized_spawner)Gerador de Criaturas Pressurizado/$.$(p)Para usar uma $(thing)Armadilha a Vácuo/$, você precisará seguir os seguintes passos:"
+      "text": "A $(item)Armadilha de Vácuo/$ é uma máquina usada para prender criaturas e absorver sua essência em um $(l:spawning/spawner_core)Núcleo de Gerador de Criaturas/$, para uso posterior em um $(l:spawning/pressurized_spawner)Gerador de Criaturas Pressurizado/$.$(p)Para usar uma $(thing)Armadilha de Vácuo/$, você precisará seguir os seguintes passos:"
     },
     {
       "type": "text",
-      "text": "$(li)1. Garanta que a Armadilha a Vácuo tenha -0.5 bar de pressão, ou menos. $(l:base_concepts/upgrades#volume)Melhorias de Volume/$ são recomendadas aqui. Além disso, se você pretende mover a Armadilha a Vácuo, certifique-se de usar uma chave inglesa nela em vez de quebrá-la com uma picareta, para preservar qualquer vácuo armazenado.$(li)2. Insira um $(l:spawning/spawner_core)Núcleo de Gerador de Criaturas/$ não cheio para receber criaturas capturadas.$(li)3. Abra a porta da Armadilha a Vácuo, seja $(thing)clicando com Shift+Direito nela/$, ou aplicando um sinal de redstone."
+      "text": "$(li)1. Garanta que a Armadilha de Vácuo tenha -0.5 bar de pressão, ou menos. $(l:base_concepts/upgrades#volume)Melhorias de Volume/$ são recomendadas aqui. Além disso, se você pretende mover a Armadilha de Vácuo, certifique-se de usar uma chave inglesa nela em vez de quebrá-la com uma picareta, para preservar qualquer vácuo armazenado.$(li)2. Insira um $(l:spawning/spawner_core)Núcleo de Gerador de Criaturas/$ não cheio para receber criaturas capturadas.$(li)3. Abra a porta da Armadilha de Vácuo, seja $(thing)clicando com Shift+Direito nela/$, ou aplicando um sinal de redstone."
     },
     {
       "type": "text",
       "title": "Restrições",
-      "text": "A Armadilha a Vácuo nunca capturará:$(li)Jogadores$(li)Drones$(li)Criaturas Chefes (Wither, Ender Dragon...)$(li)Animais domesticados$(li)Qualquer criatura gerada por um Gerador de Criaturas Vanilla$(p)Além disso, você pode colocar criaturas na lista negra adicionando seu ID de entidade (ex: $(thing)minecraft:zombie/$) à tag de tipo de entidade $(thing)pneumaticcraft:vacuum_trap_blacklisted/$."
+      "text": "A Armadilha de Vácuo nunca capturará:$(li)Jogadores$(li)Drones$(li)Criaturas Chefes (Wither, Ender Dragon...)$(li)Animais domesticados$(li)Qualquer criatura gerada por um Gerador de Criaturas Vanilla$(p)Além disso, você pode colocar criaturas na lista negra adicionando seu ID de entidade (ex: $(thing)minecraft:zombie/$) à marcação de tipo de entidade $(thing)pneumaticcraft:vacuum_trap_blacklisted/$."
     },
     {
       "type": "text",
       "title": "Essência de Memória",
-      "text": "Se o tanque da Armadilha a Vácuo contiver pelo menos 100mB de $(l:base_concepts/memory_essence)Essência de Memória/$, a eficiência de absorção de criaturas será grandemente aumentada; ao invés de contribuir 1% para a essência do $(thing)Núcleo de Gerador de Criaturas/$ instalado, uma criatura capturado contribuirá 2 - 4%, isto é, ao invés de precisar capturar 100 criaturas para encher um núcleo, você só precisará capturar 25-50 criaturas. 100mB de Essência de Memória serão usados cada vez que uma criatura for capturada."
+      "text": "Se o tanque da Armadilha de Vácuo contiver pelo menos 100mB de $(l:base_concepts/memory_essence)Essência de Memória/$, a eficiência de absorção de criaturas será grandemente aumentada; ao invés de contribuir 1% para a essência do $(thing)Núcleo de Gerador de Criaturas/$ instalado, uma criatura capturado contribuirá 2 - 4%, isto é, ao invés de precisar capturar 100 criaturas para encher um núcleo, você só precisará capturar 25-50 criaturas. 100mB de Essência de Memória serão usados cada vez que uma criatura for capturada."
     },
     {
       "type": "crafting",
-      "text": "Fabricando uma Armadilha a Vácuo",
+      "text": "Fabricando uma Armadilha de Vácuo",
       "recipe": "pneumaticcraft:vacuum_trap"
     }
   ]

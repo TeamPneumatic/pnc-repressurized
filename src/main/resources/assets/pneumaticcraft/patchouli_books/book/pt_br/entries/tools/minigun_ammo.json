@@ -21,12 +21,12 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:gun_ammo_incendiary",
-      "text": "A $(item)Munição Incendiária de Minigun/$ tem um tamanho de cartucho de 1000, e acende fogo nas entidades que atinge.$(p)Ela também tem uma chance de incendiar blocos, então cautela é aconselhada!"
+      "text": "A $(item)Munição de Minigun Incendiária/$ tem um tamanho de cartucho de 1000, e acende fogo nas entidades que atinge.$(p)Ela também tem uma chance de incendiar blocos, então cautela é aconselhada!"
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:gun_ammo_weighted",
-      "text": "A $(item)Munição Pesada de Minigun/$ tem um tamanho de cartucho de 500, e causa um dano muito alto, mas devido ao seu peso, tem apenas 20% do alcance da munição normal."
+      "text": "A $(item)Munição de Minigun Pesada/$ tem um tamanho de cartucho de 500, e causa um dano muito alto, mas devido ao seu peso, tem apenas 20% do alcance da munição normal."
     },
     {
       "type": "spotlight",
@@ -41,7 +41,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:gun_ammo_freezing",
-      "text": "A $(item)Munição Congelante de Minigun/$ tem um tamanho de cartucho de 1000. Ela retarda os alvos que atinge e tem chance de envolvê-los em uma nuvem congelante prejudicial; cuidado, esta nuvem também pode ferir você.$(p)Ela causa dano extra contra alvos resistentes ao fogo, então é uma excelente escolha para lutar no $(#800)Nether/$."
+      "text": "A $(item)Munição de Minigun Congelante/$ tem um tamanho de cartucho de 1000. Ela retarda os alvos que atinge e tem chance de envolvê-los em uma nuvem congelante prejudicial; cuidado, esta nuvem também pode ferir você.$(p)Ela causa dano extra contra alvos resistentes ao fogo, então é uma excelente escolha para lutar no $(#800)Nether/$."
     },
     {
       "type": "text",

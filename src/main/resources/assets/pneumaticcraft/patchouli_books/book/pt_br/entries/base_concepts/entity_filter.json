@@ -28,7 +28,7 @@
     },
     {
       "type": "text",
-      "text": "$(li)$(#800)@player(team=team1)/$ corresponde a jogadores no time do placar vanilla \"team1\"$(li)$(#800)@player(holding=stick)/$ corresponde a jogadores que estão segurando um graveto agora$(li)$(#800)@player(holding=#minecraft:planks)/$ corresponde a jogadores segurando qualquer item na tag de item $(thing)minecraft:planks/$"
+      "text": "$(li)$(#800)@player(team=team1)/$ corresponde a jogadores no time do placar vanilla \"team1\"$(li)$(#800)@player(holding=stick)/$ corresponde a jogadores que estão segurando um graveto agora$(li)$(#800)@player(holding=#minecraft:planks)/$ corresponde a jogadores segurando qualquer item na marcação de item $(thing)minecraft:planks/$"
     },
     {
       "type": "text",

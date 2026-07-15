@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "O $(item)Cilindro de Ar/$ é um componente de fabricação para qualquer item ou ferramenta $(l:base_concepts/pressure)pressurizável/$. Ele também pode ser carregado e descarregado em uma $(l:machines/charging_station)Estação de Carregamento/$. O $(item)Cilindro de Ar/$ tem um volume de 3000mL e pode ser carregado até 10 bar (ele não explodirá).$(p)Quaisquer itens pneumáticos criados com um $(item)Cilindro de Ar/$ reterão o ar do cilindro."
+      "text": "O $(item)Cilindro de Ar/$ é um componente de fabricação para qualquer item ou ferramenta $(l:base_concepts/pressure)pressurizável/$. Ele também pode ser carregado e descarregado em uma $(l:machines/charging_station)Estação de Carga/$. O $(item)Cilindro de Ar/$ tem um volume de 3000mL e pode ser carregado até 10 bar (ele não explodirá).$(p)Quaisquer itens pneumáticos criados com um $(item)Cilindro de Ar/$ reterão o ar do cilindro."
     },
     {
       "type": "crafting",

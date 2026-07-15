@@ -5,7 +5,7 @@
     "pages": [
         {
             "type": "text",
-            "text": "$(thing)Melhorias/$ são itens fabricáveis que podem ser inseridos em máquinas e algumas ferramentas para aprimorar sua funcionalidade de alguma forma. Para adicionar melhorias às ferramentas, você precisará de uma $(l:machines/charging_station)Estação de Carregamento/$.$(p)O efeito preciso de cada melhoria varia por dispositivo; isso está documentado na GUI da máquina ou (para itens) na GUI de melhoria da Estação de Carregamento."
+            "text": "$(thing)Melhorias/$ são itens fabricáveis que podem ser inseridos em máquinas e algumas ferramentas para aprimorar sua funcionalidade de alguma forma. Para adicionar melhorias às ferramentas, você precisará de uma $(l:machines/charging_station)Estação de Carga/$.$(p)O efeito preciso de cada melhoria varia por dispositivo; isso está documentado na GUI da máquina ou (para itens) na GUI de melhoria da Estação de Carga."
         },
         {
             "type": "crafting",
@@ -29,7 +29,7 @@
             "type": "crafting",
             "anchor": "item_life",
             "recipe": "pneumaticcraft:item_life_upgrade",
-            "text": "Criando uma Melhoria de Vida do Item"
+            "text": "Criando uma Melhoria de Vida de Item"
         },
         {
             "type": "crafting",
@@ -65,7 +65,7 @@
             "type": "crafting",
             "anchor": "coordinate_tracker",
             "recipe": "pneumaticcraft:coordinate_tracker_upgrade",
-            "text": "Criando uma Melhoria de Rastreador de Coordenadas"
+            "text": "Criando uma Melhoria de Rastreamento de Coordenadas"
         },
         {
             "type": "crafting",
@@ -90,13 +90,13 @@
             "anchor": "thaumcraft",
             "flag": "mod:thaumcraft",
             "recipe": "pneumaticcraft:thaumcraft_upgrade",
-            "text": "Criando uma Melhoria de Thaumcraft"
+            "text": "Criando uma Melhoria do Thaumcraft"
         },
         {
             "type": "crafting",
             "anchor": "charging",
             "recipe": "pneumaticcraft:charging_upgrade",
-            "text": "Criando uma Melhoria de Carregamento"
+            "text": "Criando uma Melhoria de Carga"
         },
         {
             "type": "crafting",
@@ -200,7 +200,7 @@
             "flag": "mod:mekanism",
             "anchor": "radiation_shielding",
             "recipe": "pneumaticcraft:radiation_shielding_upgrade",
-            "text": "Criando uma Melhoria de Proteção contra Radiação"
+            "text": "Criando uma Melhoria de Escudo de Radiação"
         },
         {
             "type": "crafting",
@@ -212,7 +212,7 @@
             "type": "crafting",
             "anchor": "ender_visor",
             "recipe": "pneumaticcraft:ender_visor_upgrade",
-            "text": "Criando uma Melhoria de Visor do Ender"
+            "text": "Criando uma Melhoria de Visor de Ender"
         },
         {
             "type": "crafting",
@@ -224,7 +224,7 @@
             "type": "crafting",
             "anchor": "chunkloader",
             "recipe": "pneumaticcraft:chunkloader_upgrade",
-            "text": "Criando uma Melhoria de Carregador de Chunk"
+            "text": "Criando uma Melhoria de Carregador de Chunks"
         }
     ]
 }

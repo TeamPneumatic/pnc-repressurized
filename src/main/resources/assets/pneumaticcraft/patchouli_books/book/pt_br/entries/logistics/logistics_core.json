@@ -1,5 +1,5 @@
 {
-  "name": "Núcleo Logístico",
+  "name": "Núcleo de Logística",
   "icon": "pneumaticcraft:logistics_core",
   "category": "pneumaticcraft:logistics",
   "advancement": "pneumaticcraft:pressure_tube",
@@ -18,7 +18,7 @@
     },
     {
       "type": "crafting",
-      "text": "Criando um Núcleo Logístico",
+      "text": "Criando um Núcleo de Logística",
       "recipe": "pneumaticcraft:logistics_core"
     }
   ]
