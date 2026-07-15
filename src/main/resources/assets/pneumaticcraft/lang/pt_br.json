@@ -1184,7 +1184,7 @@
    "pneumaticcraft.gui.misc.searchInventory": "Buscar Inv...",
    "pneumaticcraft.gui.misc.searchItem": "Buscar Item...",
    "pneumaticcraft.gui.misc.snapToGrid": "Ajustar à Grade",
-   "pneumaticcraft.gui.nei.recipe.electrostaticGrid": "Coloque adjacente a um Compressor Eletrostático, ou conectado a ele através de outros blocos de grade\n• Deve estar dentro de 5 blocos horizontalmente (raio circular)\n• Deve estar dentro de 5 blocos verticalmente",
+   "pneumaticcraft.gui.nei.recipe.electrostaticGrid": "Coloque adjacente a um Compressor Eletrostático, ou conectado a ele através de outros blocos de grade\n\u2022 Deve estar dentro de 5 blocos horizontalmente (raio circular)\n\u2022 Deve estar dentro de 5 blocos verticalmente",
    "pneumaticcraft.gui.nei.recipe.explosionCrafting": "Jogue um pouco do material de entrada no chão e cause uma explosão perto dele.\n\n§eTaxa média de perda de material: %d%%",
    "pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus": "\nChance de saída bônus!\n%5.2f%% de chance de um %s extra por grau abaixo de %d°C\n (limite do multiplicador: x%5.2f)",
    "pneumaticcraft.gui.nei.recipe.heatFrameCooling": "Coloque o material de entrada em um inventário com uma Moldura de Calor anexada e resfrie a Moldura de Calor para menos de %d°C.",
