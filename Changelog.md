@@ -19,9 +19,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added a Condition: Dimension programming widget for Drones
   * Allows Drones to detect what dimension they're in and branch in their program accordingly
   * Drones which do not have a Condition: Dimension widget in their program may no longer change dimension e.g. via Nether portal
+* Significant internal Elevator rework which fixes a number of issues - thanks @FireController#1847
 
 ### Fixed
 * Fixed bug causing Thermopneumatic Processing Plant to sometimes not require pressure for recipes that should require it
+* Fixed a Thermopneumatic Processing Plant JEI issue when recipe input/output fluid amounts differ by a factor of >64
+* Hopefully fixed an occasional crash in drone pathfinding
 
 ## [8.2.20]
 
