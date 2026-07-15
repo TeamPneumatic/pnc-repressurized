@@ -21,6 +21,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * Drones which do not have a Condition: Dimension widget in their program may no longer change dimension e.g. via Nether portal
 * Significant internal Elevator rework which fixes a number of issues - thanks @FireController#1847
 
+### Changed
+* Updated `pt_br` translation - thanks @PrincessStellar
+* Added `fr_fr` translation - thanks @programgames
+
 ### Fixed
 * Fixed bug causing Thermopneumatic Processing Plant to sometimes not require pressure for recipes that should require it
 * Fixed a Thermopneumatic Processing Plant JEI issue when recipe input/output fluid amounts differ by a factor of >64
