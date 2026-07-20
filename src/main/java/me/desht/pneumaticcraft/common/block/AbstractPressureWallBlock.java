@@ -88,7 +88,7 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberWallBlockEntity.class)
-                    .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
+                    .ifPresent(be -> be.onBlockBreak(isMoving));
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }

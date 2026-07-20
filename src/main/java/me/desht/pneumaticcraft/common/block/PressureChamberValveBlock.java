@@ -112,21 +112,21 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
-            invalidateMultiBlock(world, pos);
+            invalidateMultiBlock(world, pos, isMoving);
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }
 
-    private void invalidateMultiBlock(Level world, BlockPos pos) {
+    private void invalidateMultiBlock(Level world, BlockPos pos, boolean isMoving) {
         if (!world.isClientSide) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
-                    teValve.onMultiBlockBreak();
+                    teValve.onMultiBlockBreak(isMoving);
                 } else if (!teValve.accessoryValves.isEmpty()) {
                     teValve.accessoryValves.stream()
                             .filter(valve -> valve.multiBlockSize > 0)
                             .findFirst()
-                            .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
+                            .ifPresent(be -> be.onMultiBlockBreak(isMoving));
                 }
             });
         }

@@ -86,10 +86,11 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
             setChanged();
         }
     }
-    public void onBlockBreak() {
+
+    public void onBlockBreak(boolean isMoving) {
         teValve = getPrimaryValve();
         if (teValve != null) {
-            teValve.onMultiBlockBreak();
+            teValve.onMultiBlockBreak(isMoving);
         }
     }
 

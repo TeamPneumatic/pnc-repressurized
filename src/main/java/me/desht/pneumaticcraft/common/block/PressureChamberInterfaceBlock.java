@@ -101,7 +101,7 @@ public class PressureChamberInterfaceBlock extends AbstractPneumaticCraftBlock
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
             world.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_INTERFACE.get())
-                    .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
+                    .ifPresent(be -> be.onBlockBreak(isMoving));
         }
         super.onRemove(state, world, pos, newState, isMoving);
     }

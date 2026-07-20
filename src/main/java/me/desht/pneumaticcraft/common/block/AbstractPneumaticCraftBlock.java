@@ -410,7 +410,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
+        if (state.getBlock() != newState.getBlock() && !isMoving) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(pncBE -> {
                 NonNullList<ItemStack> drops = NonNullList.create();
                 pncBE.getContentsToDrop(drops);

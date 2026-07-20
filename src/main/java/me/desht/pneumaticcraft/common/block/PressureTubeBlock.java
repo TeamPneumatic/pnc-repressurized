@@ -386,7 +386,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.getBlock() != state.getBlock()) {
+        if (newState.getBlock() != state.getBlock() && !isMoving) {
             getModuleDrops(getPressureTube(world, pos))
                     .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
         }

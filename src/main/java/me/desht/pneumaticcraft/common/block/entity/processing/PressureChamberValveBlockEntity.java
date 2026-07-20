@@ -467,7 +467,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         tag.put("Valves", accList);
     }
 
-    public void onMultiBlockBreak() {
+    public void onMultiBlockBreak(boolean isMoving) {
         if (isPrimaryValve()) {
             Iterator<ItemStack> itemsInChamberIterator = new ItemStackHandlerIterable(allItems).iterator();
             while (itemsInChamberIterator.hasNext()) {
