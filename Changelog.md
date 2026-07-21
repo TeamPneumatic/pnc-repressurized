@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.22]
+
+### Fixed
+* Fixed PNC machine blocks dropping contents/upgrades when assembled into a Sable sublevel
+
 ## [8.2.21]
 
 ### Added
