@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.23]
+
+### Fixed
+* Fixed NPE in Security Station
+  * Could not reproduce this, but appears to sometimes occur if GUI is closed while reboot in progress?
+
 ## [8.2.22]
 
 ### Fixed
