@@ -32,6 +32,7 @@ import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +143,7 @@ public class HackSimulation {
         return startPosition < 0;
     }
 
+    @Nullable
     public Node getNodeAt(int pos) {
         return nodes[pos];
     }
@@ -210,8 +212,10 @@ public class HackSimulation {
                 if (conn.getValue() < 1F) {
                     if (stopWormTimer == 0) {
                         Node targetNode = getNodeAt(conn.getKey());
-                        conn.setValue(Math.min(1F, conn.getValue() + targetNode.getProgressPerTick()));
-                        targetNode.setHackProgress(conn.getKey(), conn.getValue(), true);
+                        if (targetNode != null) {
+                            conn.setValue(Math.min(1F, conn.getValue() + targetNode.getProgressPerTick()));
+                            targetNode.setHackProgress(conn.getKey(), conn.getValue(), true);
+                        }
                     }
                 } else {
                     finishedConns++;
@@ -229,16 +233,24 @@ public class HackSimulation {
         int neighbour = getHackedNeighbour(pendingNukePos);
         if (neighbour >= 0) {
             boolean found = false;
-            for (Pair<Integer, Float> conn : getNodeAt(neighbour).outGoingHacks) {
-                if (conn.getLeft() == pendingNukePos) {
-                    conn.setValue(1f);
-                    found = true;
+            Node neighbourNode = getNodeAt(neighbour);
+            if (neighbourNode != null) {
+                for (Pair<Integer, Float> conn : neighbourNode.outGoingHacks) {
+                    if (conn.getLeft() == pendingNukePos) {
+                        conn.setValue(1f);
+                        found = true;
+                    }
                 }
+                if (!found) {
+                    neighbourNode.outGoingHacks.add(Pair.of(pendingNukePos, 1f));
+                }
+                Node node = getNodeAt(pos);
+                if (node != null) {
+                    node.setHackProgress(pos, 1f, false);
+                }
+                if (controller != null) controller.getHacker().playSound(SoundEvents.GENERIC_EXPLODE.value(), 1f, 1f);
+                nukeVirusCooldown = 60;
             }
-            if (!found) getNodeAt(neighbour).outGoingHacks.add(Pair.of(pendingNukePos, 1f));
-            getNodeAt(pos).setHackProgress(pos, 1f, false);
-            if (controller != null) controller.getHacker().playSound(SoundEvents.GENERIC_EXPLODE.value(), 1f, 1f);
-            nukeVirusCooldown = 60;
         }
         pendingNukePos = -1;
     }
@@ -248,7 +260,8 @@ public class HackSimulation {
     }
 
     public void startHack(int targetPos) {
-        if (getNodeAt(targetPos).isHacked()) return;
+        Node node = getNodeAt(targetPos);
+        if (node == null || node.isHacked()) return;
 
         for (int neighbour : getNeighbours(targetPos)) {
             Node attacker = getNodeAt(neighbour);
@@ -261,8 +274,11 @@ public class HackSimulation {
 
     public boolean initiateNukeVirus(int pos) {
         Validate.isTrue(pos >= 0 && pos < GRID_SIZE, "nuke position " + pos + " out of range!");
-        if (pendingNukePos < 0 && isNukeVirusReady()
-                && getNodeAt(pos).type != NetworkComponentType.DIAGNOSTIC_SUBROUTINE && getNodeAt(pos).type != NetworkComponentType.NETWORK_REGISTRY) {
+        Node node = getNodeAt(pos);
+        if (node != null && pendingNukePos < 0 && isNukeVirusReady()
+                && node.type != NetworkComponentType.DIAGNOSTIC_SUBROUTINE
+                && node.type != NetworkComponentType.NETWORK_REGISTRY)
+        {
             pendingNukePos = pos;
             return true;
         } else {

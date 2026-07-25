@@ -267,7 +267,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private void tryFortifySlot(int slotId) {
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
         HackSimulation.Node node = playerSim.getNodeAt(slotId);
-        if (node.isHacked() && !node.isFortified() && node.getFortification() == 0) {
+        if (node != null && node.isHacked() && !node.isFortified() && node.getFortification() == 0) {
             playerSim.fortify(slotId);
             NetworkHandler.sendToServer(new PacketGuiButton("fortify:" + slotId));
         }
@@ -276,7 +276,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private void tryHackSlot(int slotId) {
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
         HackSimulation.Node node = playerSim.getNodeAt(slotId);
-        if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+        if (node != null && !node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
             playerSim.startHack(slotId);
             NetworkHandler.sendToServer(new PacketGuiButton("hack:" + slotId));
         }
@@ -286,7 +286,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
         if (hasNukeViruses() && te.getSimulationController() != null) {
             HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
             HackSimulation.Node node = playerSim.getNodeAt(slotId);
-            if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+            if (node != null && !node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
                 // node must have a hacked neighbour for this to work
                 if (playerSim.initiateNukeVirus(slotId)) {
                     NetworkHandler.sendToServer(new PacketGuiButton("nuke:" + slotId));

@@ -63,8 +63,9 @@ public record PacketSyncHackSimulationUpdate(BlockPos pos,
         var aiConns = aiSim.allConnections;
         List<Pair<Integer,Integer>> fortification = new ArrayList<>();
         for (int i = 0; i < HackSimulation.GRID_SIZE; i++) {
-            if (aiSim.getNodeAt(i) != null && aiSim.getNodeAt(i).getFortification() > 0) {
-                fortification.add(Pair.of(i, aiSim.getNodeAt(i).getFortification()));
+            HackSimulation.Node node = aiSim.getNodeAt(i);
+            if (node != null && node.getFortification() > 0) {
+                fortification.add(Pair.of(i, node.getFortification()));
             }
         }
 
@@ -74,8 +75,8 @@ public record PacketSyncHackSimulationUpdate(BlockPos pos,
 
     public static PacketSyncHackSimulationUpdate fromNetwork(FriendlyByteBuf buffer) {
         BlockPos pos = buffer.readBlockPos();
-        List<ConnectionEntry> playerConns = buffer.readList(buf -> ConnectionEntry.STREAM_CODEC.decode(buf));
-        List<ConnectionEntry> aiConns = buffer.readList(buf -> ConnectionEntry.STREAM_CODEC.decode(buf));
+        List<ConnectionEntry> playerConns = buffer.readList(ConnectionEntry.STREAM_CODEC);
+        List<ConnectionEntry> aiConns = buffer.readList(ConnectionEntry.STREAM_CODEC);
         List<Pair<Integer,Integer>> fortification = buffer.readList(buf -> Pair.of(buf.readVarInt(), buf.readVarInt()));
         boolean aiAwake = buffer.readBoolean();
         boolean aiStopWormed = buffer.readBoolean();
@@ -87,8 +88,8 @@ public record PacketSyncHackSimulationUpdate(BlockPos pos,
 
     public static void toNetwork(FriendlyByteBuf buffer, PacketSyncHackSimulationUpdate message) {
         buffer.writeBlockPos(message.pos);
-        buffer.writeCollection(message.playerConns, (buf, c) -> ConnectionEntry.STREAM_CODEC.encode(buf, c));
-        buffer.writeCollection(message.aiConns, (buf, c) -> ConnectionEntry.STREAM_CODEC.encode(buf, c));
+        buffer.writeCollection(message.playerConns, ConnectionEntry.STREAM_CODEC);
+        buffer.writeCollection(message.aiConns, ConnectionEntry.STREAM_CODEC);
         buffer.writeCollection(message.fortification, (buf, pair) -> {
             buf.writeVarInt(pair.getLeft());
             buf.writeVarInt(pair.getRight());
