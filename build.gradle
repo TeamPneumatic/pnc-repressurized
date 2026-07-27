@@ -63,10 +63,6 @@ repositories {
 		}
 	}
 	maven {
-		name = "OctoStudios"
-		url = uri("https://maven.octo-studios.com/releases")
-	}
-	maven {
 		name "K-4u Mod maven"
 		url "https://modmaven.dev/"
 		content {
