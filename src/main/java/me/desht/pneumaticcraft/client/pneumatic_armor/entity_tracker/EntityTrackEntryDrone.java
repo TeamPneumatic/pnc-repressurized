@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
@@ -51,7 +52,7 @@ public class EntityTrackEntryDrone implements IEntityTrackEntry {
     public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
         AbstractDroneEntity droneBase = (AbstractDroneEntity) entity;
         curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", droneBase.getOwnerName().getString()));
-        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", droneBase.getLabel()));
+        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", IDrone.getLabelAsComponent(droneBase.getLabel())));
         Player player = ClientUtils.getClientPlayer();
         if (DroneDebugClientHandler.enabledForPlayer(player)) {
             Component debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);

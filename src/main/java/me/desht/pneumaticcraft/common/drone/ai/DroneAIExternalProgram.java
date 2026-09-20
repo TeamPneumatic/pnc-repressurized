@@ -111,7 +111,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
                         if (areWidgetsValid) {
                             if (progWidget.shareVariables) mainAI.connectVariables(subAI);
                             IDroneBase droneBase = IDroneBase.asDroneBase(subAI.getDrone());
-                            droneBase.getAIManager().setLabel("Main");
+                            droneBase.getAIManager().setLabel(DroneAIManager.LABEL_MAIN);
                             subAI.setWidgets(widgets);
                             drone.getDebugger().getDebuggingPlayers().forEach(p -> NetworkHandler.sendToPlayer(PacketSyncDroneProgWidgets.create(droneBase), p));
                             curProgramHash = ItemStack.hashItemAndComponents(stack);

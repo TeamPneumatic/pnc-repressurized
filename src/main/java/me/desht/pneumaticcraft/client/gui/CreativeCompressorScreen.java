@@ -23,6 +23,8 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class CreativeCompressorScreen extends AbstractCreativeAdjusterScreen<CreativeCompressorMenu,CreativeCompressorBlockEntity> {
     private static final Adjustments ADJUSTMENTS = new Adjustments(0.1f, 1f);
 
@@ -37,7 +39,9 @@ public class CreativeCompressorScreen extends AbstractCreativeAdjusterScreen<Cre
 
     @Override
     protected Component formatStringDesc() {
-        return Component.literal(PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar");
+        return Component.literal(PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1))
+                .append(" ")
+                .append(xlate("pneumaticcraft.gui.general.bar"));
     }
 
     @Override

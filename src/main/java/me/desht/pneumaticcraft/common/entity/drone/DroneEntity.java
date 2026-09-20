@@ -1613,7 +1613,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void updateLabel() {
-        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
+        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : DroneAIManager.LABEL_MAIN);
     }
 
     @Override

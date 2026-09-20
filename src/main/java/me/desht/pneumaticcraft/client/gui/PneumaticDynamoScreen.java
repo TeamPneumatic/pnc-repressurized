@@ -48,7 +48,7 @@ public class PneumaticDynamoScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     public void init() {
         super.init();
-        inputStat = addAnimatedStat(Component.literal("Output"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        inputStat = addAnimatedStat(xlate("pneumaticcraft.armor.gui.misc.forge_energy"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
 
         IOHelper.getEnergyStorageForBlock(te).ifPresent(storage ->
                 addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));

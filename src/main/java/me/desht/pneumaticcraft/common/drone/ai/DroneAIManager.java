@@ -54,6 +54,8 @@ import java.util.*;
 
 public class DroneAIManager implements IVariableProvider {
     public static final int TICK_RATE = 3;
+    public static final String LABEL_MAIN = "*pneumaticcraft.entityTracker.label.main";
+    public static final String LABEL_STOPPED = "*pneumaticcraft.entityTracker.label.stopped";
 
     private final List<WrappedGoal> goals = new ArrayList<>();
     private final List<WrappedGoal> executingGoals = new ArrayList<>();
@@ -67,7 +69,7 @@ public class DroneAIManager implements IVariableProvider {
     private Goal currentTargetingGoal;
     private boolean stopWhenEndReached;
     private boolean wasAIOveridden;
-    private String currentLabel = "Main"; // Holds the name of the last label that was jumped to.
+    private String currentLabel = LABEL_MAIN; // Holds the name of the last label that was jumped to.
 
     private Map<String, BlockPos> coordinateVariables = new HashMap<>();
     private Map<String, ItemStack> itemVariables = new HashMap<>();
@@ -256,7 +258,7 @@ public class DroneAIManager implements IVariableProvider {
      * Move execution back to the Start widget, or if we're in a Foreach subroutine, back to the Foreach widget
      */
     private void restartProgram() {
-        setLabel("Main");
+        setLabel(LABEL_MAIN);
         setActiveWidget(jumpBackWidgets.isEmpty() ? startWidget : jumpBackWidgets.pop());
     }
 
@@ -293,7 +295,7 @@ public class DroneAIManager implements IVariableProvider {
             }
             drone.setActiveProgram(widget);
         } else {
-            setLabel("Stopped");
+            setLabel(LABEL_STOPPED);
         }
 
         activeWidget = widget;

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -132,7 +133,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.droneName",
                     selectedDrone.getDroneName().getString()).getVisualOrderText(), 20, screenHeight - 15, 0xFFFFFFFF);
             graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.routine",
-                    selectedDrone.getLabel()).getVisualOrderText(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF);
+                    IDrone.getLabelAsComponent(selectedDrone.getLabel())).getVisualOrderText(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF);
         }
 
         graphics.pose().pushPose();

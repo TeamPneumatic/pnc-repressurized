@@ -50,7 +50,7 @@ public class FluxCompressorScreen extends AbstractPneumaticCraftContainerScreen<
     public void init() {
         super.init();
 
-        inputStat = addAnimatedStat(Component.literal("Input"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
+        inputStat = addAnimatedStat(xlate("pneumaticcraft.armor.gui.misc.forge_energy"), Textures.GUI_BUILDCRAFT_ENERGY, 0xFF555555, false);
         IOHelper.getEnergyStorageForBlock(te).ifPresent(storage ->
                 addRenderableWidget(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
         addRenderableWidget(tempWidget = new WidgetTemperature(leftPos + 97, topPos + 20, TemperatureRange.of(223, 673), 273, 50)
