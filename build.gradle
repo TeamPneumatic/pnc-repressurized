@@ -55,6 +55,7 @@ repositories {
 			includeGroup "vazkii.patchouli"
 			includeGroup "vazkii.botania"
 			includeGroup "mezz.jei"
+			includeGroup "net.mezzdev.config"
 			includeGroup "blusunrize.immersiveengineering"
 			includeGroup "com.blamejared.crafttweaker"
 			includeGroup "net.darkhax.gamestages"
