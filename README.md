@@ -1,5 +1,11 @@
 # PneumaticCraft: Repressurized
 
+## 26.1.2 porting in progress
+
+**The 26.1.2 branch does not do anything useful yet!**
+
+---
+
 * 1.20.1 ![1.20.1 build status](https://github.com/TeamPneumatic/pnc-repressurized/actions/workflows/main.yml/badge.svg?branch=1.20.1)
 * 1.19.2 ![1.19.2 build status](https://github.com/TeamPneumatic/pnc-repressurized/actions/workflows/main.yml/badge.svg?branch=1.19.2)
 
