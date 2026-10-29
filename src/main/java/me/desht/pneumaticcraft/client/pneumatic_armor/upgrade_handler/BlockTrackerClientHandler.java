@@ -37,7 +37,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -45,7 +44,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -65,7 +63,6 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<BlockTrackerHandler> {
-    static final int BLOCK_TRACKING_RANGE = 30;
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsLeft(0.995f, 0.1f);
 
@@ -85,7 +82,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         if (!isEnabled) return;
 
-        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
+        int blockTrackRange = BlockTrackerHandler.getBlockTrackRange(armorHandler);
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();

@@ -30,6 +30,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final int BLOCK_TRACKING_RANGE = 30;
 
+    public static int getBlockTrackRange(ICommonArmorHandler armorHandler) {
+        return BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
+    }
+
     @Override
     public ResourceLocation getID() {
         return BuiltinArmorUpgrades.BLOCK_TRACKER;
