@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.24]
+
+### Changed
+* Updated to latest Cold Sweat block heat API
+  * This will work on Cold Sweat 2.4.3 and later
+
+### Fixed
+* More secure server-side handling for block data requests from the Pneumatic Helmet block tracker module
+* Added a defensive null-check in DroneFakePlayer (drone should never normally be null, but mixins in other mods can cause issues...)
+* Fixed a few more hardcoded translations
+* Fixed crash if using Pneumatic Helmet to hack a block which gets broken mid-hack
+
 ## [8.2.23]
 
 ### Fixed
