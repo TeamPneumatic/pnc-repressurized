@@ -132,7 +132,7 @@ public enum HUDHandler implements IKeyListener {
     public void playerTick(PlayerTickEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = event.getEntity();
-        if (player == mc.player && player.level().isClientSide) {
+        if (player == mc.player && player.level().isClientSide()) {
             boolean anyArmorEquipped = false;
             CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {

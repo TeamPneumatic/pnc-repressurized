@@ -56,7 +56,7 @@ public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionD
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
         boolean hasPressure = commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD);
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             MobEffectInstance nvInstance = player.getEffect(MobEffects.NIGHT_VISION);
             if (enabled && hasPressure && (nvInstance == null || nvInstance.getDuration() <= 220)) {
                 player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 500, 0, false, false));

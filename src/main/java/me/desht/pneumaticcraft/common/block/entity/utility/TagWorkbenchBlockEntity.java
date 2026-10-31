@@ -105,8 +105,8 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
 
-        paperItemId = tag.getInt("PaperItemId");
-        outputItemId = tag.getInt("OutputItemId");
+        paperItemId = tag.getIntOr("PaperItemId", 0);
+        outputItemId = tag.getIntOr("OutputItemId", 0);
     }
 
     @Override

@@ -97,7 +97,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
             curProgram = newProgram;
         } else if (curProgram != null && newProgram == null) {
             curProgram = null;
-            if (!nonNullLevel().isClientSide) goingToHomePosition = true;
+            if (!nonNullLevel().isClientSide()) goingToHomePosition = true;
         }
     }
 
@@ -209,8 +209,8 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        goingToHomePosition = tag.getBoolean("goingToHomePosition");
-        displayedText = tag.getString("displayedText");
+        goingToHomePosition = tag.getBooleanOr("goingToHomePosition", false);
+        displayedText = tag.getStringOr("displayedText", "");
         itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
             curProgram = AssemblyProgramItem.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));

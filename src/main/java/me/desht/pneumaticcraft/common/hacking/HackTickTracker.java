@@ -46,13 +46,13 @@ public class HackTickTracker extends SavedData {
     }
 
     private HackTickTracker readNBT(CompoundTag tag, HolderLookup.Provider ignored) {
-        ListTag list = tag.getList("block_hacks", Tag.TAG_COMPOUND);
+        ListTag list = tag.getListOrEmpty("block_hacks");
 
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag sub = list.getCompound(i);
+            CompoundTag sub = list.getCompoundOrEmpty(i);
             NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
                 try {
-                    Identifier id = Identifier.parse(sub.getString("id"));
+                    Identifier id = Identifier.parse(sub.getStringOr("id", ""));
                     CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
                             hackable -> hackedBlocks.put(pos, hackable),
                             () -> Log.error("unknown hackable block ID '{}'", id)

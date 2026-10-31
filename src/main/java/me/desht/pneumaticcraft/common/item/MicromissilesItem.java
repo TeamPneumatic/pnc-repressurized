@@ -86,7 +86,7 @@ public class MicromissilesItem extends Item {
         }
 
         if (playerIn.isShiftKeyDown()) {
-            if (worldIn.isClientSide) {
+            if (worldIn.isClientSide()) {
                 MicromissileScreen.openGui(stack.getHoverName(), handIn);
             }
             return InteractionResultHolder.success(stack);

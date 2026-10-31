@@ -127,7 +127,7 @@ public abstract class AbstractGunAmmoItem extends Item {
         int times = 1;
         int nSpeed = minigun.getUpgrades(ModUpgrades.SPEED.get());
         for (int i = 0; i < nSpeed; i++) {
-            if (minigun.getWorld().random.nextInt(100) < 20) times++;
+            if (minigun.getWorld().getRandom().nextInt(100) < 20) times++;
         }
 
         double dmgMult = getDamageMultiplier(target, ammo);

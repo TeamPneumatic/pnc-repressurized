@@ -52,8 +52,8 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
             matrixStackIn.pushPose();
             matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1, 0);
-            BlockState state = entityIn.getCommandSenderWorld().getBlockState(diggingPos);
-            VoxelShape shape = state.getShape(entityIn.getCommandSenderWorld(), diggingPos);
+            BlockState state = entityIn.level().getBlockState(diggingPos);
+            VoxelShape shape = state.getShape(entityIn.level(), diggingPos);
             if (shape.isEmpty()) {
                 renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
                         0, -entityIn.getLaserOffsetY(), 0,

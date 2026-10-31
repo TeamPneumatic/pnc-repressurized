@@ -74,7 +74,7 @@ public class NetworkComponentItem extends Item implements IProgrammable {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (entity.getCommandSenderWorld().isClientSide && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
+        if (entity.level().isClientSide() && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
             entity.setExtendedLifetime();
         }
         return false;

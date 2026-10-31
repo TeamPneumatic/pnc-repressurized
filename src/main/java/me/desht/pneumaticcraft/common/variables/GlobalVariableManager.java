@@ -168,18 +168,18 @@ public class GlobalVariableManager extends SavedData {
         playerVars.clear();
         playerItemVars.clear();
 
-        globalVars.putAll(readPosList(tag.getList("globalVars", Tag.TAG_COMPOUND)));
+        globalVars.putAll(readPosList(tag.getListOrEmpty("globalVars")));
 
-        globalItemVars.putAll(readItemList(provider, tag.getList("globalItemVars", Tag.TAG_COMPOUND)));
+        globalItemVars.putAll(readItemList(provider, tag.getListOrEmpty("globalItemVars")));
 
-        CompoundTag playerPos = tag.getCompound("playerVars");
+        CompoundTag playerPos = tag.getCompoundOrEmpty("playerVars");
         for (String id : playerPos.getAllKeys()) {
-            readPosList(playerPos.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerVars.put(UUID.fromString(id), k, v));
+            readPosList(playerPos.getListOrEmpty(id)).forEach((k, v) -> playerVars.put(UUID.fromString(id), k, v));
         }
 
-        CompoundTag playerItems = tag.getCompound("playerItemVars");
+        CompoundTag playerItems = tag.getCompoundOrEmpty("playerItemVars");
         for (String id : playerItems.getAllKeys()) {
-            readItemList(provider, playerItems.getList(id, Tag.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
+            readItemList(provider, playerItems.getListOrEmpty(id)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
     }
 
@@ -207,7 +207,7 @@ public class GlobalVariableManager extends SavedData {
     private Map<String,BlockPos> readPosList(ListTag list) {
         Map<String,BlockPos> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag t = list.getCompound(i);
+            CompoundTag t = list.getCompoundOrEmpty(i);
             NbtUtils.readBlockPos(t, "pos").ifPresent(pos -> map.put(t.getString("varName"), pos));
         }
         return map;
@@ -227,7 +227,7 @@ public class GlobalVariableManager extends SavedData {
     private Map<String,ItemStack> readItemList(HolderLookup.Provider provider, ListTag list) {
         Map<String,ItemStack> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag t = list.getCompound(i);
+            CompoundTag t = list.getCompoundOrEmpty(i);
             map.put(t.getString("varName"), ItemStack.parseOptional(provider, t.getCompound("item")));
         }
         return map;

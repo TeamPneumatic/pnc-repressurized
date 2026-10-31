@@ -73,7 +73,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     public void tick() {
         super.tick();
 
-        if (!level().isClientSide && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
+        if (!level().isClientSide() && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
             counter = 0;
             doTransfer();
         }
@@ -148,9 +148,9 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     protected void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
-        counter = compound.getInt("counter");
-        setSide(Direction.from3DDataValue(compound.getByte("facing")));
-        setIOMode(compound.getBoolean("input") ? IOMode.INPUT : IOMode.OUTPUT);
+        counter = compound.getIntOr("counter", 0);
+        setSide(Direction.from3DDataValue(compound.getByteOr("facing", (byte) 0)));
+        setIOMode(compound.getBooleanOr("input", false) ? IOMode.INPUT : IOMode.OUTPUT);
     }
 
     @Override

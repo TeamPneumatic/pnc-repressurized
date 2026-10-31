@@ -118,7 +118,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     }
 
     private void invalidateMultiBlock(Level world, BlockPos pos) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
                 if (teValve.multiBlockSize > 0) {
                     teValve.onMultiBlockBreak();

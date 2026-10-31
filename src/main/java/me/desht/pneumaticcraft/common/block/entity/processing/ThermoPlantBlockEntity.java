@@ -144,7 +144,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void tickClient() {
         super.tickClient();
 
-        if (didWork && nonNullLevel().random.nextBoolean()) {
+        if (didWork && nonNullLevel().getRandom().nextBoolean()) {
             ClientUtils.emitParticles(nonNullLevel(), getBlockPos(), ParticleTypes.SMOKE, 0.9);
         }
     }
@@ -289,7 +289,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
         inputItemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         outputItemHandler.deserializeNBT(provider, tag.getCompound("Output"));
-        craftingProgress = tag.getFloat("craftingProgress");
+        craftingProgress = tag.getFloatOr("craftingProgress", 0f);
     }
 
     @Override

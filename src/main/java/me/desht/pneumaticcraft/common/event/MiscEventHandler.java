@@ -99,7 +99,7 @@ public class MiscEventHandler {
      */
     public static void needsTPSSync(Level level) {
         if (level != null && (level.getGameTime() & 0x3f) == 0) {
-            needsTPSSync.add(level.dimension().location());
+            needsTPSSync.add(level.dimension().identifier());
         }
     }
 
@@ -108,10 +108,10 @@ public class MiscEventHandler {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             DroneClaimManager.getInstance(serverLevel).tick();
 
-            if ((serverLevel.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(serverLevel.dimension().location())) {
+            if ((serverLevel.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(serverLevel.dimension().identifier())) {
                 double tickTime = event.getLevel().getServer().getAverageTickTimeNanos() / 1_000_000D;
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), serverLevel);
-                needsTPSSync.remove(serverLevel.dimension().location());
+                needsTPSSync.remove(serverLevel.dimension().identifier());
             }
         }
     }
@@ -149,7 +149,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (event.getLevel().isClientSide) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
 
@@ -202,7 +202,7 @@ public class MiscEventHandler {
             if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     NetworkHandler.sendToServer(PacketModWrenchBlock.forSide(event.getPos(), event.getHand(), event.getFace()));
                 }
                 event.setCanceled(true);
@@ -216,7 +216,7 @@ public class MiscEventHandler {
             if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     NetworkHandler.sendToServer(PacketModWrenchBlock.forEntity(event.getPos(), event.getHand(), event.getTarget().getId()));
                 }
                 event.setCanceled(true);
@@ -238,7 +238,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level world && !world.isClientSide) {
+        if (event.getLevel() instanceof Level world && !world.isClientSide()) {
             ModuleNetworkManager.getInstance(world).invalidateCache();
         }
     }

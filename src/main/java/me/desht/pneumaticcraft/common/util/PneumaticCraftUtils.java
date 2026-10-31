@@ -369,14 +369,14 @@ public class PneumaticCraftUtils {
     }
 
     public static void dropItemOnGround(ItemStack stack, Level world, double x, double y, double z) {
-        float dX = world.random.nextFloat() * 0.8F + 0.1F;
-        float dY = world.random.nextFloat() * 0.8F + 0.1F;
-        float dZ = world.random.nextFloat() * 0.8F + 0.1F;
+        float dX = world.getRandom().nextFloat() * 0.8F + 0.1F;
+        float dY = world.getRandom().nextFloat() * 0.8F + 0.1F;
+        float dZ = world.getRandom().nextFloat() * 0.8F + 0.1F;
 
         ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
         float factor = 0.05F;
-        entityItem.setDeltaMovement(world.random.nextGaussian() * factor, world.random.nextGaussian() * factor + 0.2, world.random.nextGaussian() * factor);
+        entityItem.setDeltaMovement(world.getRandom().nextGaussian() * factor, world.getRandom().nextGaussian() * factor + 0.2, world.getRandom().nextGaussian() * factor);
         world.addFreshEntity(entityItem);
     }
 

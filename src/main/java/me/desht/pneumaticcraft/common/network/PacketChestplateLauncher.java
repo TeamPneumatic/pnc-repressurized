@@ -73,7 +73,7 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
                 toFire = sp.isCreative() ? stack.copyWithCount(1) : stack.split(1);
             }
 
-            Entity launchedEntity = ItemLaunching.getEntityToLaunch(sp.getCommandSenderWorld(), toFire, sp,true, true);
+            Entity launchedEntity = ItemLaunching.getEntityToLaunch(sp.level(), toFire, sp,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
             Vec3 velocity = sp.getLookAngle().normalize().scale(message.amount() * upgrades * SCALE_FACTOR);
 

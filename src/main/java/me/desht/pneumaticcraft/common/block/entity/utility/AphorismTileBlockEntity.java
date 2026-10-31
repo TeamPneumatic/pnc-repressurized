@@ -151,7 +151,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         this.maxLineWidth = -1; // force recalc
         icons = new ItemStack[textLines.length];
         if (level != null) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 updateLineMetadata();
             } else {
                 // server
@@ -187,7 +187,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
 
     public void setBorderColor(int color) {
         this.borderColor = color;
-        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
     }
 
     public int getBorderColor() {
@@ -200,7 +200,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
-        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
         setChanged();
     }
 

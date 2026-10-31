@@ -185,7 +185,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        threshold = tag.getInt("threshold");
+        threshold = tag.getIntOr("threshold", 0);
         inputHandler.deserializeNBT(provider, tag.getCompound("Items"));
         outputHandler.deserializeNBT(provider, tag.getCompound("Output"));
     }

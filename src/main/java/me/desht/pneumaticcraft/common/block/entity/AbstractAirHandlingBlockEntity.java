@@ -111,7 +111,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     private void handleSecurityUpgrade(IAirHandlerMachine handler) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (getUpgrades(ModUpgrades.SECURITY.get()) > 0) {
                 handler.enableSafetyVenting(p -> p > getDangerPressure(), Direction.UP);
             } else {
@@ -141,7 +141,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
+        airHandler.deserializeNBT(tag.getCompoundOrEmpty(NBTKeys.NBT_AIR_HANDLER));
     }
 
     public void initializeHullAirHandlers() {
@@ -183,7 +183,7 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
-        airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
+        airHandler.deserializeNBT(tag.getCompoundOrEmpty(NBTKeys.NBT_AIR_HANDLER));
     }
 
     @Override

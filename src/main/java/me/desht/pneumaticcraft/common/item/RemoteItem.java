@@ -161,7 +161,7 @@ public class RemoteItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack remote, Level world, Entity entity, int slot, boolean holdingItem) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null && !(GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity)) {
                 setSecurityStationPos(remote, null);

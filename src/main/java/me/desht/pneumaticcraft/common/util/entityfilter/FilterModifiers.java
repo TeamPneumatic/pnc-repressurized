@@ -91,7 +91,7 @@ public enum FilterModifiers {
 
     private static boolean testShearable(Entity entity, String val) {
         return entity instanceof IShearable s
-                && s.isShearable(null, new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
+                && s.isShearable(null, new ItemStack(Items.SHEARS), entity.level(), entity.blockPosition()) ?
                 val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
     }
 

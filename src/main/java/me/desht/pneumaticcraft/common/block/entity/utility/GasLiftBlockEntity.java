@@ -319,7 +319,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
 
         inventory.deserializeNBT(provider, tag.getCompound("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
-        currentDepth = tag.getInt("currentDepth");
+        currentDepth = tag.getIntOr("currentDepth", 0);
     }
 
     public IFluidTank getTank() {

@@ -87,7 +87,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        sidesClosed = tag.getInt("sidesClosed");
+        sidesClosed = tag.getIntOr("sidesClosed", 0);
     }
 
     @Override
@@ -128,11 +128,11 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         super.readFromPacket(tag, provider);
 
         EnumSet<Direction> dirs = EnumSet.allOf(Direction.class);
-        ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
+        ListTag moduleList = tag.getListOrEmpty("modules");
         for (int i = 0; i < moduleList.size(); i++) {
-            CompoundTag moduleTag = moduleList.getCompound(i);
-            Item item = BuiltInRegistries.ITEM.get(Identifier.parse(moduleTag.getString("type")));
-            Direction dir = Direction.from3DDataValue(moduleTag.getInt("dir"));
+            CompoundTag moduleTag = moduleList.getCompoundOrEmpty(i);
+            Item item = BuiltInRegistries.ITEM.get(Identifier.parse(moduleTag.getStringOr("type", "")));
+            Direction dir = Direction.from3DDataValue(moduleTag.getIntOr("dir", 0));
             if (item instanceof TubeModuleItem) {
                 AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);
                 module.readFromNBT(moduleTag);
@@ -156,7 +156,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
 
         updateRenderBoundingBox();
-        if (hasLevel() && nonNullLevel().isClientSide) {
+        if (hasLevel() && nonNullLevel().isClientSide()) {
             forceBlockEntityRerender();
         }
         camoState = CamouflageableBlockEntity.readCamo(tag);
@@ -227,7 +227,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void onLoad() {
         super.onLoad();
 
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             discoverConnectedNeighbors();
         }
 
@@ -308,7 +308,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         } else {
             modules.remove(side);
         }
-        if (getLevel() != null && !getLevel().isClientSide) {
+        if (getLevel() != null && !getLevel().isClientSide()) {
             discoverConnectedNeighbors();
             sendDescriptionPacket();
             setChanged();

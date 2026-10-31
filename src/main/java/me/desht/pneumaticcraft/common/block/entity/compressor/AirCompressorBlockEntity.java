@@ -147,12 +147,12 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
     private void spawnBurningParticle() {
         Level level = nonNullLevel();
-        if (level.random.nextInt(3) != 0) return;
+        if (level.getRandom().nextInt(3) != 0) return;
         float px = getBlockPos().getX() + 0.5F;
-        float py = getBlockPos().getY() + level.random.nextFloat() * 6.0F / 16.0F;
+        float py = getBlockPos().getY() + level.getRandom().nextFloat() * 6.0F / 16.0F;
         float pz = getBlockPos().getZ() + 0.5F;
         float f3 = 0.5F;
-        float f4 = level.random.nextFloat() * 0.4F - 0.2F;
+        float f4 = level.getRandom().nextFloat() * 0.4F - 0.2F;
         switch (getRotation()) {
             case EAST -> {
                 level.addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
@@ -197,8 +197,8 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        burnTime = tag.getInt("burnTime");
-        maxBurnTime = tag.getInt("maxBurn");
+        burnTime = tag.getIntOr("burnTime", 0);
+        maxBurnTime = tag.getIntOr("maxBurn", 0);
         itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
     }
 

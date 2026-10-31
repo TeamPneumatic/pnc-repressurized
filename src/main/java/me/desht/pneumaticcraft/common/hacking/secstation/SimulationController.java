@@ -138,7 +138,7 @@ public class SimulationController implements ISimulationController {
     }
 
     private void maybeWakeAI() {
-        if (!te.nonNullLevel().isClientSide && aiSimulation.isStarted() && te.nonNullLevel().random.nextInt(100) < te.getDetectionChance()) {
+        if (!te.nonNullLevel().isClientSide() && aiSimulation.isStarted() && te.nonNullLevel().getRandom().nextInt(100) < te.getDetectionChance()) {
             aiSimulation.wakeUp();
         }
     }
@@ -171,7 +171,7 @@ public class SimulationController implements ISimulationController {
             syncToClient = true;
             if (aiSimulation.isAwake()) {
                 // if hack window is closed before AI detects intrustion, hacker gets away with it
-                if (te.nonNullLevel().isClientSide) {
+                if (te.nonNullLevel().isClientSide()) {
                     hacker.playSound(SoundEvents.ENDERMAN_DEATH, 1f, 1f);
                 } else {
                     hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.1").withStyle(ChatFormatting.RED), false);
@@ -184,7 +184,7 @@ public class SimulationController implements ISimulationController {
         } else if (!wasDone && playerSimulation.isHackComplete()) {
             // hacker wins
             syncToClient = true;
-            if (te.nonNullLevel().isClientSide) {
+            if (te.nonNullLevel().isClientSide()) {
                 hacker.playSound(SoundEvents.PLAYER_LEVELUP, 1f, 1f);
             } else {
                 hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN), false);

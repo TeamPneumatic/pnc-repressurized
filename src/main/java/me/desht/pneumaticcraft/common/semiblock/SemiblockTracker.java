@@ -136,7 +136,7 @@ public enum SemiblockTracker implements SemiblockAccess {
     }
 
     private Identifier getKey(Level world) {
-        return world.dimension().location();
+        return world.dimension().identifier();
     }
 
     private static class SemiblockCollection {

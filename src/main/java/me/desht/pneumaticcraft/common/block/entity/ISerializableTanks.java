@@ -44,7 +44,7 @@ public interface ISerializableTanks {
 
     default void deserializeTanks(HolderLookup.Provider provider, CompoundTag tag) {
         getSerializableTanks().forEach((comp, tank) ->
-                tank.readFromNBT(provider, tag.getCompound(comp.toString()))
+                tank.readFromNBT(provider, tag.getCompoundOrEmpty(comp.toString()))
         );
     }
 

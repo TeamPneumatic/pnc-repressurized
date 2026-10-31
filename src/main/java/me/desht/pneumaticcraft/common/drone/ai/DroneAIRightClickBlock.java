@@ -122,7 +122,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         }
 
         ItemStack stack = fakePlayer.getMainHandItem();
-        Level world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.level();
 
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
@@ -169,7 +169,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
-        Level world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.level();
         BlockState state = world.getBlockState(pos);
         BlockHitResult brtr = doTrace(world, pos, fakePlayer);
         if (brtr != null) {

@@ -140,7 +140,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
         if (rebootTimer > 0) {
             rebootTimer--;
-            if (!nonNullLevel().isClientSide) {
+            if (!nonNullLevel().isClientSide()) {
                 if (rebootTimer == 0) {
                     hackedUsers.clear();
                     NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.HUD_ENTITY_LOCK.get(), SoundSource.BLOCKS, getBlockPos(), 1f, 1f, false), getLevel(), getBlockPos());
@@ -255,7 +255,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private void tryStopWorm(Player player) {
         if (!simulationController.getSimulation(HackingSide.AI).isStopWormed()) {
             if (PneumaticCraftUtils.consumeInventoryItem(player.getInventory(), ModItems.STOP_WORM.get())) {
-                int r = 80 + nonNullLevel().random.nextInt(40);
+                int r = 80 + nonNullLevel().getRandom().nextInt(40);
                 simulationController.getSimulation(HackingSide.AI).applyStopWorm(r);
             } else {
                 // client is lying about how many stop worms they have!
@@ -325,7 +325,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        rebootTimer = tag.getInt("startupTimer");
+        rebootTimer = tag.getIntOr("startupTimer", 0);
         inventory.deserializeNBT(provider, tag.getCompound("Items"));
         checkForNetworkValidity();
     }
@@ -351,9 +351,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         super.readFromPacket(tag, provider);
 
         sharedUsers.clear();
-        sharedUsers.addAll(fromNBTList(tag.getList("SharedUsers", Tag.TAG_COMPOUND)));
+        sharedUsers.addAll(fromNBTList(tag.getListOrEmpty("SharedUsers")));
         hackedUsers.clear();
-        hackedUsers.addAll(fromNBTList(tag.getList("HackedUsers", Tag.TAG_COMPOUND)));
+        hackedUsers.addAll(fromNBTList(tag.getListOrEmpty("HackedUsers")));
     }
 
     private ListTag toNBTList(Collection<GameProfile> profiles) {
@@ -370,8 +370,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private Collection<GameProfile> fromNBTList(ListTag list) {
         ImmutableList.Builder<GameProfile> builder = ImmutableList.builder();
         for (int i = 0; i < list.size(); ++i) {
-            CompoundTag tagCompound = list.getCompound(i);
-            builder.add(new GameProfile(UUID.fromString(tagCompound.getString("uuid")), tagCompound.getString("name")));
+            CompoundTag tagCompound = list.getCompoundOrEmpty(i);
+            builder.add(new GameProfile(UUID.fromString(tagCompound.getStringOr("uuid", "")), tagCompound.getStringOr("name", "")));
         }
         return builder.build();
     }
@@ -579,7 +579,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
      * @return the number of security stations which currently prevent access by the player
      */
     public static int getProtectingSecurityStations(Player player, BlockPos pos, boolean isPlacingSecurityStation) {
-        return (int) getSecurityStations(player.getCommandSenderWorld(), pos, isPlacingSecurityStation)
+        return (int) getSecurityStations(player.level(), pos, isPlacingSecurityStation)
                 .filter(teSS -> !teSS.doesAllowPlayer(player))
                 .count();
     }
@@ -593,7 +593,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
      * @return  true if a security station would prevent access to the area
      */
     public static boolean isProtectedFromPlayer(Player player, BlockPos pos, final boolean isPlacingSecurityStation) {
-        return getSecurityStations(player.getCommandSenderWorld(), pos, isPlacingSecurityStation)
+        return getSecurityStations(player.level(), pos, isPlacingSecurityStation)
                 .anyMatch(teSS -> !teSS.doesAllowPlayer(player));
     }
 
@@ -737,7 +737,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onBlockExplode(ExplosionEvent.Start event) {
             final Player player = getPlayerForExplosion(event);
-            if (player != null && !isPlayerExempt(player) && !event.getLevel().isClientSide) {
+            if (player != null && !isPlayerExempt(player) && !event.getLevel().isClientSide()) {
                 event.getExplosion().getToBlow().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
             }
         }

@@ -465,27 +465,27 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        targetRotationAngle = tag.getFloat("targetRotationAngle");
-        targetHeightAngle = tag.getFloat("targetHeightAngle");
-        rotationAngle = tag.getFloat("rotationAngle");
-        heightAngle = tag.getFloat("heightAngle");
-        gpsX = tag.getInt("gpsX");
-        gpsY = tag.getInt("gpsY");
-        gpsZ = tag.getInt("gpsZ");
-        coordWithinReach = tag.getBoolean("targetWithinReach");
+        targetRotationAngle = tag.getFloatOr("targetRotationAngle", 0f);
+        targetHeightAngle = tag.getFloatOr("targetHeightAngle", 0f);
+        rotationAngle = tag.getFloatOr("rotationAngle", 0f);
+        heightAngle = tag.getFloatOr("heightAngle", 0f);
+        gpsX = tag.getIntOr("gpsX", 0);
+        gpsY = tag.getIntOr("gpsY", 0);
+        gpsZ = tag.getIntOr("gpsZ", 0);
+        coordWithinReach = tag.getBooleanOr("targetWithinReach", false);
         itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        forceMult = tag.getInt("forceMult");
+        forceMult = tag.getIntOr("forceMult", 0);
 
         trackedItemIds = new HashSet<>();
-        ListTag tagList = tag.getList("trackedItems", Tag.TAG_COMPOUND);
+        ListTag tagList = tag.getListOrEmpty("trackedItems");
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundTag t = tagList.getCompound(i);
-            trackedItemIds.add(new UUID(t.getLong("UUIDMost"), t.getLong("UUIDLeast")));
+            CompoundTag t = tagList.getCompoundOrEmpty(i);
+            trackedItemIds.add(new UUID(t.getLongOr("UUIDMost", 0L), t.getLongOr("UUIDLeast", 0L)));
         }
 
         if (tag.contains("inventoryX")) {
-            lastInsertingInventory = new BlockPos(tag.getInt("inventoryX"), tag.getInt("inventoryY"), tag.getInt("inventoryZ"));
-            lastInsertingInventorySide = Direction.from3DDataValue(tag.getByte("inventorySide"));
+            lastInsertingInventory = new BlockPos(tag.getIntOr("inventoryX", 0), tag.getIntOr("inventoryY", 0), tag.getInt("inventoryZ"));
+            lastInsertingInventorySide = Direction.from3DDataValue(tag.getByteOr("inventorySide", (byte) 0));
         } else {
             lastInsertingInventory = null;
             lastInsertingInventorySide = null;

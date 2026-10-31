@@ -419,7 +419,7 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             DigMode newMode = cycleDigMode(player.getItemInHand(hand), forward);
             if (newMode != null) {
                 player.displayClientMessage(xlate("pneumaticcraft.message.jackhammer.mode")
@@ -571,7 +571,7 @@ public class JackHammerItem extends PressurizableItem
             Player player = event.getEntity();
             ItemStack stack = player.getItemInHand(event.getHand());
             if (stack.getItem() instanceof JackHammerItem jackHammer && jackHammer.getAir(stack) > 0f) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     // play the sound to this player
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getEntity());
                 } else {

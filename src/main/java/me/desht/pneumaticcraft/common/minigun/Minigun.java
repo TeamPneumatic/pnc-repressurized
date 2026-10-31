@@ -254,7 +254,7 @@ public abstract class Minigun {
                 && (airCapability == null || airCapability.getPressure() > 0))
         {
             setMinigunTriggerTimeOut(10);
-            if (!world.isClientSide && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
+            if (!world.isClientSide() && getMinigunSpeed() == MAX_GUN_SPEED && (!requiresTarget || gunAimedAtTarget)) {
                 HitResult rtr = null;
                 if (!requiresTarget) {
                     rtr = RayTraceUtils.getMouseOverServer(player, getRange());
@@ -324,7 +324,7 @@ public abstract class Minigun {
             float speedBonus = getUpgrades(ModUpgrades.SPEED.get()) * 0.0033F;
             float lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
-            if (!world.isClientSide && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
+            if (!world.isClientSide() && getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED) {
                 // reached max speed: start playing the looping sound
                 NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.level(), BlockPos.containing(posX, posY, posZ));
             }
@@ -387,7 +387,7 @@ public abstract class Minigun {
     }
 
     public boolean dispenserWeightedPercentage(int basePct, float dispenserWeight) {
-        return getWorld().random.nextInt(100) < basePct * (1 + getUpgrades(ModUpgrades.DISPENSER.get()) * dispenserWeight);
+        return getWorld().getRandom().nextInt(100) < basePct * (1 + getUpgrades(ModUpgrades.DISPENSER.get()) * dispenserWeight);
     }
 
     public static float clampYaw(float yaw) {

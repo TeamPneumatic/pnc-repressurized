@@ -84,7 +84,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     return;
                 }
 
-                if (!player.level().isClientSide) {
+                if (!player.level().isClientSide()) {
                     float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
                     float extraAirNeeded = 0f;
 

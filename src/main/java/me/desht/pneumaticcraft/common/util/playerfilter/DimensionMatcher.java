@@ -59,6 +59,6 @@ public record DimensionMatcher(List<Identifier> dimensionIds) implements IPlayer
 
     @Override
     public boolean test(Player playerEntity) {
-        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().location());
+        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().identifier());
     }
 }

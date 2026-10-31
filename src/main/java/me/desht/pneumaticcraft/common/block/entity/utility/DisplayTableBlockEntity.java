@@ -79,7 +79,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
 
             if (slot == 0) {
                 displayedStack = getStackInSlot(0);
-                if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+                if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
             }
         }
 

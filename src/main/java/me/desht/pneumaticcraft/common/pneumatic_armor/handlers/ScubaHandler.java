@@ -68,7 +68,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        if (!player.level().isClientSide && enabled
+        if (!player.level().isClientSide() && enabled
                 && commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD)
                 && player.getAirSupply() < player.getMaxAirSupply() / 2) {
 

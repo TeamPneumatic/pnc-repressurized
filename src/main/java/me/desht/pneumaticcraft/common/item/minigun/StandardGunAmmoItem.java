@@ -134,7 +134,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;
-            if (shooter.level().random.nextInt(100) < chance) {
+            if (shooter.level().getRandom().nextInt(100) < chance) {
                 ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
                 entityPotion.setItem(potion);
                 BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());

@@ -298,8 +298,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private static boolean isDimensionBlacklisted(ServerLevel beLevel, ServerPlayer player) {
-        return dimensionBlacklist.get().test(beLevel.dimension().location())
-                || player != null && dimensionBlacklist.get().test(player.level().dimension().location());
+        return dimensionBlacklist.get().test(beLevel.dimension().identifier())
+                || player != null && dimensionBlacklist.get().test(player.level().dimension().identifier());
     }
 
     public static void clearDimensionBlacklist() {
@@ -365,9 +365,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        playerUUID = UUID.fromString(tag.getString("playerUUID"));
+        playerUUID = UUID.fromString(tag.getStringOr("playerUUID", ""));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
-        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(Identifier.parse(tag.getString("curXpFluid"))) : Fluids.EMPTY;
+        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(Identifier.parse(tag.getStringOr("curXpFluid", ""))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 

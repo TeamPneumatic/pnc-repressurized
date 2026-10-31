@@ -78,6 +78,6 @@ public class BasicAirHandler implements IAirHandler {
     }
 
     public void deserializeNBT(CompoundTag nbt) {
-        airAmount = nbt.getInt("Air");
+        airAmount = nbt.getIntOr("Air", 0);
     }
 }

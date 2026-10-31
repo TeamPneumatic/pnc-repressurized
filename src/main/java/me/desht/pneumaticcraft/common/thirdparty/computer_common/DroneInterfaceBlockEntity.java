@@ -134,12 +134,12 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
         super.handleUpdateTag(tag, provider);
-        droneId = tag.getInt("drone");
+        droneId = tag.getIntOr("drone", 0);
     }
 
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        droneId = pkt.getTag().getInt("drone");
+        droneId = pkt.getTag().getIntOr("drone", 0);
     }
 
     private DroneEntity validateAndGetDrone() {
@@ -187,7 +187,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 PNCRegistries.PROG_WIDGETS_REGISTRY.entrySet().forEach(entry -> {
                     IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {
-                        actions.add(entry.getKey().location().toString());
+                        actions.add(entry.getKey().identifier().toString());
                     }
                 });
                 return new Object[]{getStringTable(actions)};

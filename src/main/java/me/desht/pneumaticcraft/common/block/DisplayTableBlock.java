@@ -159,7 +159,7 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
         if (player.isShiftKeyDown() || te instanceof MenuProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
             return super.useItemOn(heldStack, state, world, pos, player, hand, brtr);
         } else if (te instanceof DisplayTableBlockEntity teDT) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 if (teDT.getItemHandler().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
                     ItemStack excess = teDT.getItemHandler().insertItem(0, player.getItemInHand(hand), false);

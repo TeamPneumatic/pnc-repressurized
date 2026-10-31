@@ -57,7 +57,7 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
         clear();
-        ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
+        ListTag tagList = nbt.getListOrEmpty("hackables");
         for (int i = 0; i < tagList.size(); i++) {
             String id = tagList.getCompound(i).getString("id");
             Identifier.read(id).result().ifPresentOrElse(hackableId -> {

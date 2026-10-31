@@ -56,7 +56,7 @@ public class HackableTNT implements IHackableBlock {
 
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             world.removeBlock(pos, false);
             PrimedTnt tnt = new PrimedTnt(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, player);
             tnt.setFuse(1);

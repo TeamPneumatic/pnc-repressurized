@@ -1262,7 +1262,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;
-        final double velX = (ClientUtils.getClientLevel().random.nextDouble() - 0.5) * 3;
+        final double velX = (ClientUtils.getClientLevel().getRandom().nextDouble() - 0.5) * 3;
         double velY = -4;
 
         private RemovingWidget(IProgWidget widget) {

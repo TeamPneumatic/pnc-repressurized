@@ -77,7 +77,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
                 || newValve != null && valvePos == null;
 
         valvePos = newValve == null ? null : newValve.getBlockPos();
-        if (valveChanging && !nonNullLevel().isClientSide) {
+        if (valveChanging && !nonNullLevel().isClientSide()) {
             teValve = newValve;
             // defer updating the blockstate since this can get called during placement, and updating the blockstate
             // then can cause the TE to change, losing the reference to the valve TE

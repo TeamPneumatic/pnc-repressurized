@@ -96,7 +96,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private static CommonArmorHandler getManagerInstance(Player player) {
-        return player.level().isClientSide ? clientHandler : serverHandler;
+        return player.level().isClientSide() ? clientHandler : serverHandler;
     }
 
     public static CommonArmorHandler getHandlerForPlayer(Player player) {
@@ -190,7 +190,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             ticksSinceEquip[slot.getIndex()]++;
             if (isArmorEnabled() && getArmorPressure(slot) > 0F) {
                 armorActive = true;
-                if (!player.level().isClientSide && isArmorReady(slot) && !player.isCreative()) {
+                if (!player.level().isClientSide() && isArmorReady(slot) && !player.isCreative()) {
                     // use up air in the armor piece
                     float airUsage = getIdleAirUsage(slot, false);
                     if (airUsage != 0) {
@@ -254,14 +254,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         // flippers & repairing are special cases; they don't have upgrade handlers
 
-        if (slot == EquipmentSlot.FEET && player.level().isClientSide && player.isInWater() && player.zza > 0) {
+        if (slot == EquipmentSlot.FEET && player.level().isClientSide() && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlot.FEET) && getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.FLIPPERS.get()) > 0) {
                 player.moveRelative(player.onGround() ? ConfigHelper.common().armor.flippersSpeedBoostGround.get().floatValue() : ConfigHelper.common().armor.flippersSpeedBoostFloating.get().floatValue(), FORWARD);
             }
         }
 
-        if (!player.level().isClientSide && getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get()) > 0) {
+        if (!player.level().isClientSide() && getUpgradeCount(slot, ModUpgrades.ITEM_LIFE.get()) > 0) {
             tryRepairArmor(slot);
         }
     }
@@ -387,7 +387,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     @Override
     public void addArmorMessage(Component message, int duration, int bgColor) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             HUDHandler.getInstance().addMessage(message, List.of(), duration, bgColor);
         } else if (player instanceof ServerPlayer sp) {
             PacketDistributor.sendToPlayer(sp, new PacketSendArmorHUDMessage(message, duration, bgColor));
@@ -419,7 +419,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     @Override
     public void setUpgradeEnabled(IArmorUpgradeHandler<?> upgrade, boolean enabled) {
         if (isUpgradeEnabled(upgrade) != enabled && upgradeUsable(upgrade, false)) {
-            if (player.level().isClientSide) {
+            if (player.level().isClientSide()) {
                 ClientUtils.setArmorUpgradeEnabled(upgrade.getEquipmentSlot(), (byte) upgrade.getIndex(), enabled);
             } else if (player instanceof ServerPlayer sp) {
                 NetworkHandler.sendToPlayer(new PacketToggleArmorFeature(

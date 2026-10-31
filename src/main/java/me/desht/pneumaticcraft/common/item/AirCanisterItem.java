@@ -66,17 +66,17 @@ public class AirCanisterItem extends PressurizableItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             ChargeMode mode = getChargeMode(stack).nextMode();
             pPlayer.getItemInHand(pUsedHand).set(ModDataComponents.CHARGING_MODE, mode);
             pPlayer.displayClientMessage(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA), true);
         }
-        return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide);
+        return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide());
     }
 
     @Override
     public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        if (pEntity.level().isClientSide) return;
+        if (pEntity.level().isClientSide()) return;
 
         ChargeMode mode = getChargeMode(pStack);
         if (pEntity instanceof Player player && mode != ChargeMode.NONE && pLevel.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL == 15) {

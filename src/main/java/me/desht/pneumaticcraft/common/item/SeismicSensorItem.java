@@ -45,7 +45,7 @@ public class SeismicSensorItem extends Item {
     public InteractionResult useOn(UseOnContext ctx) {
         Level level = ctx.getLevel();
         Player player = ctx.getPlayer();
-        if (level.isClientSide && player != null) {
+        if (level.isClientSide() && player != null) {
             BlockPos.MutableBlockPos searchPos = ctx.getClickedPos().mutable();
             findFluid(level, searchPos).ifPresentOrElse(result -> {
                 int topOff = ctx.getClickedPos().getY() - result.top().getY();

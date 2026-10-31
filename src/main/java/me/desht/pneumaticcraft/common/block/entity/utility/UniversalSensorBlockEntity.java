@@ -241,7 +241,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
 
     private void setSensorSetting(String sensorPath) {
         sensorSetting = sensorPath;
-        if (getLevel() != null && getLevel().isClientSide) {
+        if (getLevel() != null && getLevel().isClientSide()) {
             UniversalSensorScreen.refreshIfOpen();
         }
     }
@@ -281,10 +281,10 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
 
         itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
-        dishSpeed = tag.getFloat("dishSpeed");
-        sensorGuiText = tag.getString("sensorText");
-        if (tag.contains("playerId", Tag.TAG_STRING)) {
-            playerId = UUID.fromString(tag.getString("playerId"));
+        dishSpeed = tag.getFloatOr("dishSpeed", 0f);
+        sensorGuiText = tag.getStringOr("sensorText", "");
+        if (tag.contains("playerId")) {
+            playerId = UUID.fromString(tag.getStringOr("playerId", ""));
         }
         setupGPSPositions();
     }
@@ -361,7 +361,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
         }
-        if (getLevel() != null && getLevel().isClientSide) UniversalSensorScreen.refreshIfOpen();
+        if (getLevel() != null && getLevel().isClientSide()) UniversalSensorScreen.refreshIfOpen();
     }
 
     @Override
@@ -376,7 +376,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
                 lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
             }
         }
-        if (!nonNullLevel().isClientSide) scheduleDescriptionPacket();
+        if (!nonNullLevel().isClientSide()) scheduleDescriptionPacket();
     }
 
     @Override

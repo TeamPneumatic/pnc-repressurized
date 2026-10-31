@@ -67,7 +67,7 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        if (player.level().isClientSide || !enabled
+        if (player.level().isClientSide() || !enabled
                 || player.level().getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
             return;
 

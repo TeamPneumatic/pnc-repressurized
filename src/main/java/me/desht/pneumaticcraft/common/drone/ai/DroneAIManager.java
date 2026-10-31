@@ -78,7 +78,7 @@ public class DroneAIManager implements IVariableProvider {
     public DroneAIManager(IDroneBase drone) {
         theProfiler = drone.getDroneLevel().getProfiler();
         this.drone = drone;
-        if (!drone.getDroneLevel().isClientSide) {
+        if (!drone.getDroneLevel().isClientSide()) {
             // we don't do much clientside, but instances can be created (programmable controller, The One Probe...)
             // don't try to set the widgets clientside because there aren't any and that messes up entity tracker info
             setWidgets(drone.getProgWidgets());
@@ -163,16 +163,16 @@ public class DroneAIManager implements IVariableProvider {
 
     public void readFromNBT(CompoundTag tag) {
         coordinateVariables.clear();
-        ListTag tagList = tag.getList("coords", Tag.TAG_COMPOUND);
+        ListTag tagList = tag.getListOrEmpty("coords");
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundTag t = tagList.getCompound(i);
+            CompoundTag t = tagList.getCompoundOrEmpty(i);
             BlockPos.CODEC.parse(NbtOps.INSTANCE, t.get("pos"))
-                    .ifSuccess(pos -> coordinateVariables.put(t.getString("key"), pos));
+                    .ifSuccess(pos -> coordinateVariables.put(t.getStringOr("key", ""), pos));
         }
 
-        ListTag tagList2 = tag.getList("items", Tag.TAG_COMPOUND);
+        ListTag tagList2 = tag.getListOrEmpty("items");
         for (int i = 0; i < tagList2.size(); i++) {
-            CompoundTag t = tagList2.getCompound(i);
+            CompoundTag t = tagList2.getCompoundOrEmpty(i);
             ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompound("item"))
                     .ifSuccess(stack -> itemVariables.put(t.getString("key"), stack));
         }

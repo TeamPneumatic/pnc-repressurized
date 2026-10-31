@@ -132,7 +132,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (!level().isClientSide && isAlive() && !canStay()) {
+        if (!level().isClientSide() && isAlive() && !canStay()) {
             beingRemoved = true;
             kill();
         }
@@ -156,7 +156,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             return InteractionResult.PASS;
         }
 
-        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level().isClientSide) {
+        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level().isClientSide()) {
             if (player.isShiftKeyDown()) {
                 killedByEntity(player);
                 return InteractionResult.SUCCESS;
@@ -321,7 +321,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         super.onAddedToLevel();
 
         Level level = level();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             SemiblockTracker tracker = SemiblockTracker.getInstance();
             tracker.putSemiblock(level, blockPos, this);
             NeoForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
@@ -332,7 +332,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     @Override
     public void onRemovedFromLevel() {
         Level level = level();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Direction dir = IDirectionalSemiblock.getDirection(this);
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
 
@@ -392,7 +392,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     public boolean hurt(DamageSource source, float amount) {
         if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof Player)) {
             return false;
-        } else if (!this.level().isClientSide && this.isAlive()) {
+        } else if (!this.level().isClientSide() && this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
             if (this.getDamageTaken() > MAX_HEALTH) {

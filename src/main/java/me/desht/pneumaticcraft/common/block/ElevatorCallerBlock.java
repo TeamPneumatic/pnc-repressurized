@@ -47,7 +47,7 @@ public class ElevatorCallerBlock extends AbstractCamouflageBlock implements Pneu
     @Override
     public InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult brtr) {
         BlockEntity te = level.getBlockEntity(pos);
-        if (te instanceof ElevatorCallerBlockEntity teEC && !level.isClientSide) {
+        if (te instanceof ElevatorCallerBlockEntity teEC && !level.isClientSide()) {
             int floor = getFloorForHit(teEC, brtr.getDirection(), brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z);
             if (floor >= 0) setSurroundingElevators(level, pos, floor);
         }

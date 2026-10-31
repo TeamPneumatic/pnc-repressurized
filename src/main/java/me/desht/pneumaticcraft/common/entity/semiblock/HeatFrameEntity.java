@@ -120,7 +120,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             logic.initializeAmbientTemperature(level(), getBlockPos());
         }
 
-        if (!getWorld().isClientSide) {
+        if (!getWorld().isClientSide()) {
             byte newStatus = IDLE;
             if (logic.getTemperature() > MIN_COOKING_TEMP) {
                 newStatus = doCooking();
@@ -143,7 +143,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
             if ((tickCount & 0x3) == 0) {
                 byte status = getStatus();
                 switch (status) {
-                    case COOKING -> ClientUtils.emitParticles(level(), getBlockPos(), level().random.nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
+                    case COOKING -> ClientUtils.emitParticles(level(), getBlockPos(), level().getRandom().nextInt(4) == 0 ? ParticleTypes.FLAME : ParticleTypes.SMOKE);
                     case COOLING -> ClientUtils.emitParticles(level(), getBlockPos(), ParticleTypes.SPIT);
                 }
             }
@@ -275,9 +275,9 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        logic.deserializeNBT(tag.getCompound("heatExchanger"));
-        cookingProgress = tag.getInt("cookingProgress");
-        coolingProgress = tag.getInt("coolingProgress");
+        logic.deserializeNBT(tag.getCompoundOrEmpty("heatExchanger"));
+        cookingProgress = tag.getIntOr("cookingProgress", 0);
+        coolingProgress = tag.getIntOr("coolingProgress", 0);
     }
 
     @Override
@@ -292,15 +292,15 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
     @Override
     public void addTooltip(Consumer<Component> curInfo, Player player, CompoundTag tag, boolean extended) {
         int cook, cool;
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             // TOP
             cook = cookingProgress;
             cool = coolingProgress;
         } else {
             // Waila
-            logic.deserializeNBT(tag.getCompound("heatExchanger"));
-            cook = tag.getInt("cookingProgress");
-            cool = tag.getInt("coolingProgress");
+            logic.deserializeNBT(tag.getCompoundOrEmpty("heatExchanger"));
+            cook = tag.getIntOr("cookingProgress", 0);
+            cool = tag.getIntOr("coolingProgress", 0);
         }
 
         if (getStatus() != COOKING && cook >= 100) cook = 0;

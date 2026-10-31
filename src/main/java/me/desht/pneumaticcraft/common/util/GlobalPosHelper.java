@@ -55,7 +55,7 @@ public class GlobalPosHelper {
 
     public static String prettyPrint(GlobalPos pos) {
         BlockPos p = pos.pos();
-        String dim = pos.dimension().location().toString();
+        String dim = pos.dimension().identifier().toString();
         return String.format("%s [%d,%d,%d]", dim, p.getX(), p.getY(), p.getZ());
     }
 

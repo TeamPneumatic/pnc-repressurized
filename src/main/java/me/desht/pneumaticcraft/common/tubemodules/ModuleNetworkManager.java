@@ -36,7 +36,7 @@ public class ModuleNetworkManager {
     private boolean needInvalidate = false;
 
     public static ModuleNetworkManager getInstance(Level w) {
-        return INSTANCES.computeIfAbsent(w.dimension().location(), dimId -> new ModuleNetworkManager());
+        return INSTANCES.computeIfAbsent(w.dimension().identifier(), dimId -> new ModuleNetworkManager());
     }
 
     Set<AbstractTubeModule> getConnectedModules(AbstractTubeModule module) {

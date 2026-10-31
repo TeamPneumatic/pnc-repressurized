@@ -76,7 +76,7 @@ public class ProgrammerBlock extends AbstractPneumaticCraftBlock implements Pneu
 
     @Override
     public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
-        if (!level.isClientSide && !player.isShiftKeyDown()) {
+        if (!level.isClientSide() && !player.isShiftKeyDown()) {
             // FIXME this should be sync'd via the container as part of the openGui() call
             PneumaticCraftUtils.getBlockEntityAt(level, pos, ProgrammerBlockEntity.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(PacketProgrammerSync.forBlockEntity(te), (ServerPlayer) player));

@@ -103,7 +103,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
                 && solarCompressor.isBroken()
                 && stack.getItem() == ModItems.SOLAR_CELL.get()) {
 
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 // Only consumes solar cell when player is not in creative
                 if (!player.isCreative()) {
                     player.getMainHandItem().shrink(1);
@@ -113,7 +113,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
                 level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1 ,1.5f);
             }
 
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return ItemInteractionResult.sidedSuccess(level.isClientSide());
         }
 
         // Allows other interactions if we cannot do repair interaction

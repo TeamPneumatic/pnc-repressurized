@@ -220,9 +220,9 @@ public class MinigunItem extends PressurizableItem implements
             ItemStack ammo = magazineHandler.getAmmo();
             if (!ammo.isEmpty()) {
                 player.startUsingItem(handIn);
-                return InteractionResultHolder.sidedSuccess(stack, world.isClientSide);
+                return InteractionResultHolder.sidedSuccess(stack, world.isClientSide());
             }
-            if (player.level().isClientSide) {
+            if (player.level().isClientSide()) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
@@ -248,7 +248,7 @@ public class MinigunItem extends PressurizableItem implements
                 magazineHandler.save();
             }
         } else {
-            if (player.level().isClientSide) {
+            if (player.level().isClientSide()) {
                 player.playSound(SoundEvents.COMPARATOR_CLICK, 1f, 1f);
                 player.displayClientMessage(Component.translatable("pneumaticcraft.message.minigun.outOfAmmo"), true);
             }
@@ -303,7 +303,7 @@ public class MinigunItem extends PressurizableItem implements
                 ItemStack ammoStack = handler.getStackInSlot(newSlot);
                 if (ammoStack.getItem() instanceof AbstractGunAmmoItem ammo) {
                     stack.set(ModDataComponents.MINIGUN_LOCKED_SLOT, newSlot);
-                    if (!player.level().isClientSide) {
+                    if (!player.level().isClientSide()) {
                         // possible message for potion-tipped ammo
                         if (ammo instanceof StandardGunAmmoItem) {
                             ItemStack potion = StandardGunAmmoItem.getPotionStack(ammoStack);
@@ -418,7 +418,7 @@ public class MinigunItem extends PressurizableItem implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            if (!player.level().isClientSide) {
+            if (!player.level().isClientSide()) {
                 NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundSource.PLAYERS, player.blockPosition(), volume, pitch, false), player.level(), player.blockPosition());
             }
         }

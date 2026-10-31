@@ -64,7 +64,7 @@ public class CamoApplicatorItem extends PressurizableItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (playerIn.isShiftKeyDown()) {
-            if (!worldIn.isClientSide) {
+            if (!worldIn.isClientSide()) {
                 setCamoState(playerIn.getItemInHand(handIn), null);
             } else {
                 if (getCamoState(playerIn.getItemInHand(handIn)) != null) {
@@ -82,7 +82,7 @@ public class CamoApplicatorItem extends PressurizableItem {
         BlockPos pos = ctx.getClickedPos();
         Player player = ctx.getPlayer();
 
-        if (player != null && !level.isClientSide) {
+        if (player != null && !level.isClientSide()) {
             if (player.isShiftKeyDown()) {
                 // sneak-right-click: clear camo
                 setCamoState(stack, null);
@@ -138,14 +138,14 @@ public class CamoApplicatorItem extends PressurizableItem {
                     camoTE.setCamouflage(newCamo);
                     BlockState particleState = newCamo == null ? existingCamo : newCamo;
                     if (particleState != null) {
-                        player.getCommandSenderWorld().levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(particleState));
+                        player.level().levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(particleState));
                     }
                     NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundSource.PLAYERS, pos, 1.0F, 1.0F, true), level, pos);
                 }
             }
         }
 
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        return InteractionResult.sidedSuccess(level.isClientSide());
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {

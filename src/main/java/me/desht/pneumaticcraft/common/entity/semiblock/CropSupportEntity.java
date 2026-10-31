@@ -53,9 +53,9 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
         super.tick();
 
         Level level = level();
-        if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
-            if (!level.isClientSide) {
-                getBlockState().randomTick((ServerLevel) level, getBlockPos(), level.random);
+        if (level.getRandom().nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
+            if (!level.isClientSide()) {
+                getBlockState().randomTick((ServerLevel) level, getBlockPos(), level.getRandom());
             } else {
                 level.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
             }

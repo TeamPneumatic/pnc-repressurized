@@ -69,7 +69,7 @@ public class HackableMobSpawner implements IHackableBlock {
 
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (world.getBlockEntity(pos) instanceof SpawnerBlockEntity sbe) {
                 ((BaseSpawnerAccess) sbe.getSpawner()).setRequiredPlayerRange(0);
                 BlockState state = world.getBlockState(pos);

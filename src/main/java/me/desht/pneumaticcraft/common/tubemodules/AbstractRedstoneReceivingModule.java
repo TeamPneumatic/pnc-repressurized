@@ -35,7 +35,7 @@ public abstract class AbstractRedstoneReceivingModule extends AbstractTubeModule
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        redstoneLevel = tag.getInt("redstone");
+        redstoneLevel = tag.getIntOr("redstone", 0);
     }
 
     @Override

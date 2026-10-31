@@ -94,7 +94,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (!context.getLevel().isClientSide) {
+        if (!context.getLevel().isClientSide()) {
             return trySpawnEntity(context) ? InteractionResult.CONSUME : InteractionResult.PASS;
         } else {
             return InteractionResult.SUCCESS;
@@ -120,7 +120,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                         return e1;
                     });
                     if (entity != null) {
-                        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
+                        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), world.getRandom().nextFloat() * 360.0F, 0.0F);
                         if (serverworld.tryAddFreshEntityWithPassengers(entity)) {
                             stats.addAmount(type, -1).save(stack);
                             return true;

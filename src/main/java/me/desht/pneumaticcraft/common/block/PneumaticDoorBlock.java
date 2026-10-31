@@ -228,7 +228,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         DyeColor dyeColor =  DyeColor.getColor(player.getItemInHand(hand));
         if (dyeColor != null) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 BlockEntity te = world.getBlockEntity(isTopDoor(state) ? pos.below() : pos);
                 if (te instanceof PneumaticDoorBlockEntity teDoor) {
                     if (teDoor.setColor(dyeColor) && ConfigHelper.common().general.useUpDyesWhenColoring.get()) {
@@ -236,7 +236,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
                     }
                 }
             }
-            return ItemInteractionResult.sidedSuccess(world.isClientSide);
+            return ItemInteractionResult.sidedSuccess(world.isClientSide());
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
@@ -244,7 +244,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult brtr) {
         PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (doorBase != null
                     && doorBase.getRedstoneController().getCurrentMode() == PneumaticDoorBaseBlockEntity.RS_MODE_WOODEN_DOOR
                     && doorBase.getPressure() >= doorBase.getMinWorkingPressure()) {
@@ -262,7 +262,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
             powered = world.getBestNeighborSignal(pos.relative(isTopDoor(state) ? Direction.DOWN : Direction.UP)) > 0;
         }
         PneumaticDoorBaseBlockEntity doorBase = getDoorBase(world, pos);
-        if (!world.isClientSide && doorBase != null && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
+        if (!world.isClientSide() && doorBase != null && doorBase.getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
             if (powered != doorBase.wasPowered) {
                 doorBase.wasPowered = powered;
                 doorBase.setOpening(powered);

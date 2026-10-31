@@ -58,7 +58,7 @@ public class RingEntity extends Entity {
         yRotO = getYRot();
         xRotO = getXRot();
         noCulling = true;
-        if (par1World.isClientSide) {
+        if (par1World.isClientSide()) {
             setViewScale(10.0D);
         }
     }

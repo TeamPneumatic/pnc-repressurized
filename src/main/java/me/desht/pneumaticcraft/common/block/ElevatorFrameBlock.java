@@ -239,7 +239,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (!player.isShiftKeyDown() && heldItem.getItem() == this.asItem()) {
             // build it scaffolding-style
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
                 int worldHeight = world.dimensionType().logicalHeight();
                 while (mPos.getY() < worldHeight && world.getBlockState(mPos).getBlock() == this) {

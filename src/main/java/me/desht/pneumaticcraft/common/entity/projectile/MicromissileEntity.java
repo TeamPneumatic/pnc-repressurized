@@ -279,10 +279,10 @@ public class MicromissileEntity extends ThrowableProjectile {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        turnSpeed = compound.getFloat("turnSpeed");
-        explosionPower = compound.getFloat("explosionScaling");
-        maxVelocitySq = compound.getFloat("topSpeedSq");
-        entityFilter = EntityFilter.fromString(compound.getString("filter"));
+        turnSpeed = compound.getFloatOr("turnSpeed", 0f);
+        explosionPower = compound.getFloatOr("explosionScaling", 0f);
+        maxVelocitySq = compound.getFloatOr("topSpeedSq", 0f);
+        entityFilter = EntityFilter.fromString(compound.getStringOr("filter", ""));
     }
 
     public void setTarget(Entity target) {

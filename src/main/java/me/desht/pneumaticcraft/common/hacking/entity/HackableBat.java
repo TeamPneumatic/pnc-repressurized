@@ -59,7 +59,7 @@ public class HackableBat implements IHackableEntity<Bat> {
 
     @Override
     public void onHackFinished(Bat entity, Player player) {
-        if (!entity.level().isClientSide) {
+        if (!entity.level().isClientSide()) {
             entity.discard();
             entity.level().explode(null, entity.getX(), entity.getY(), entity.getZ(), 0, Level.ExplosionInteraction.NONE);
         }

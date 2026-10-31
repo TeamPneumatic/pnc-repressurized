@@ -124,7 +124,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void tickClient() {
         super.tickClient();
 
-        if (didWork && nonNullLevel().random.nextFloat() < 0.1f) {
+        if (didWork && nonNullLevel().getRandom().nextFloat() < 0.1f) {
             ClientUtils.emitParticles(level, worldPosition, ParticleTypes.RAIN);
         }
     }
@@ -424,7 +424,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         @Override
         protected void onContentsChanged(FluidStack prevStack) {
             super.onContentsChanged(prevStack);
-            if (getLevel() != null && !getLevel().isClientSide && !FluidStack.isSameFluidSameComponents(prevStack, getFluid())) {
+            if (getLevel() != null && !getLevel().isClientSide() && !FluidStack.isSameFluidSameComponents(prevStack, getFluid())) {
                 searchRecipes = true;
             }
         }

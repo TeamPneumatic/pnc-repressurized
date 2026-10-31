@@ -274,9 +274,9 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        roundRobin = tag.getBoolean("RoundRobin");
-        rrSlot = tag.getInt("RRSlot");
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        roundRobin = tag.getBooleanOr("RoundRobin", false);
+        rrSlot = tag.getIntOr("RRSlot", 0);
     }
 
     @Override

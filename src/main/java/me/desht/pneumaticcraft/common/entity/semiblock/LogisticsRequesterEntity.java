@@ -105,7 +105,7 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
         super.readAdditionalSaveData(tag);
 
         if (AE2Integration.isAvailable()) {
-            setAE2enabled(tag.getBoolean(NBT_AE2_INTEGRATION));
+            setAE2enabled(tag.getBooleanOr(NBT_AE2_INTEGRATION, false));
         }
     }
 

@@ -52,7 +52,7 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
         Block block = ((BlockItem) stack.getItem()).getBlock();
         BlockState state = block.defaultBlockState();
         if (state.getRenderShape() == RenderShape.MODEL) {
-            Level world = entity.getCommandSenderWorld();
+            Level world = entity.level();
             if (state != world.getBlockState(entity.blockPosition()) && state.getRenderShape() != RenderShape.INVISIBLE) {
                 matrixStackIn.pushPose();
                 if (entity.tumbleVec != null) {

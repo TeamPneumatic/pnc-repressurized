@@ -72,7 +72,7 @@ public class HackManager {
     private long lastBlockPrune = 0L;
 
     private static HackManager getInstance(Level world) {
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             if (clientInstance == null) clientInstance = new HackManager();
             return clientInstance;
         } else {
@@ -195,7 +195,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             RenderBlockTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
@@ -207,7 +207,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableEntity<?> hackableEntity, Entity entity) {
-        if (entity.level().isClientSide) {
+        if (entity.level().isClientSide()) {
             RenderEntityTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);

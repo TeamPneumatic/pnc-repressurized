@@ -52,10 +52,10 @@ public class BandageItem extends Item {
             if (cooldown > 0) {
                 player.getCooldowns().addCooldown(stack.getItem(), cooldown);
             }
-            if (worldIn.isClientSide) {
+            if (worldIn.isClientSide()) {
                 Vec3 pos = player.getEyePosition(1f).add(player.getLookAngle().scale(0.5));
                 for (int i = 0; i < 5; i++) {
-                    worldIn.addParticle(ParticleTypes.HEART, pos.x + worldIn.random.nextFloat() - 0.5, pos.y + worldIn.random.nextFloat() - 0.5, pos.z + worldIn.random.nextFloat() - 0.5, 0, 0.05, 0);
+                    worldIn.addParticle(ParticleTypes.HEART, pos.x + worldIn.getRandom().nextFloat() - 0.5, pos.y + worldIn.getRandom().nextFloat() - 0.5, pos.z + worldIn.getRandom().nextFloat() - 0.5, 0, 0.05, 0);
                 }
             }
         }

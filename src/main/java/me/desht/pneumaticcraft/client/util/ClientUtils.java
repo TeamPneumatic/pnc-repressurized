@@ -89,8 +89,8 @@ public class ClientUtils {
      * @param particle the particle type
      */
     public static void emitParticles(Level world, BlockPos pos, ParticleOptions particle, double yOffset) {
-        float xOff = world.random.nextFloat() * 0.6F + 0.2F;
-        float zOff = world.random.nextFloat() * 0.6F + 0.2F;
+        float xOff = world.getRandom().nextFloat() * 0.6F + 0.2F;
+        float zOff = world.getRandom().nextFloat() * 0.6F + 0.2F;
         getClientLevel().addParticle(particle,
                 pos.getX() + xOff, pos.getY() + yOffset, pos.getZ() + zOff,
                 0, 0, 0);
@@ -225,7 +225,7 @@ public class ClientUtils {
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
         BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, ModelData.EMPTY, null);
+        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().getRandom(), ModelData.EMPTY, null);
         if (!quads.isEmpty()) {
             TextureAtlasSprite sprite = quads.getFirst().getSprite();
             return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };

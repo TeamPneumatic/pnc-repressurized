@@ -156,22 +156,22 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
     }
 
     public static PacketDescription fromNBT(CompoundTag compound, RegistryAccess registryAccess) {
-        BlockPos pos = new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z"));
+        BlockPos pos = new BlockPos(compound.getIntOr("x", 0), compound.getIntOr("y", 0), compound.getInt("z"));
         boolean fullSync = true;
-        CompoundTag subTag = compound.getCompound(Names.MOD_ID);
-        int fieldCount = subTag.getInt("Length");
+        CompoundTag subTag = compound.getCompoundOrEmpty(Names.MOD_ID);
+        int fieldCount = subTag.getIntOr("Length", 0);
         List<IndexedField> fields = new ArrayList<>();
         if (fieldCount > 0) {
-            ListTag list = subTag.getList("Data", Tag.TAG_COMPOUND);
+            ListTag list = subTag.getListOrEmpty("Data");
             for (int i = 0; i < fieldCount; i++) {
-                CompoundTag element = list.getCompound(i);
-                SyncedField.FieldType type = SyncedField.FieldType.values()[element.getByte("Type")];
-                byte[] b = element.getByteArray("Value");
+                CompoundTag element = list.getCompoundOrEmpty(i);
+                SyncedField.FieldType type = SyncedField.FieldType.values()[element.getByteOr("Type", (byte) 0)];
+                byte[] b = element.getByteArray("Value").orElse(new byte[0]);
                 RegistryFriendlyByteBuf buf = new RegistryFriendlyByteBuf(Unpooled.wrappedBuffer(b), registryAccess, ConnectionType.NEOFORGE);
                 fields.add(new IndexedField(i, type, SyncedField.fromBytes(buf, type)));
             }
         }
-        CompoundTag extraData = subTag.getCompound(NBT_EXTRA);
+        CompoundTag extraData = subTag.getCompoundOrEmpty(NBT_EXTRA);
         return new PacketDescription(pos, fullSync, fields, extraData);
     }
 

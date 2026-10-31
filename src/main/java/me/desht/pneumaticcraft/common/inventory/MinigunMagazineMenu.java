@@ -74,7 +74,7 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
             if (gunStack.getItem() instanceof MinigunItem) {
                 int slot = MinigunItem.getLockedSlot(gunStack);
                 gunStack.set(ModDataComponents.MINIGUN_LOCKED_SLOT, slot == slotId ? NOT_LOCKED : slotId);
-                if (player.level().isClientSide) {
+                if (player.level().isClientSide()) {
                     player.playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.5f, 1.0f);
                 }
             }

@@ -137,7 +137,7 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
         if (muzzlePos == null) return;
 
         Vec3 lookVec = minigun.getLookAngle();
-        RandomSource r = ClientUtils.getClientLevel().random;
+        RandomSource r = ClientUtils.getClientLevel().getRandom();
         for (int i = 0; i < 10; i ++) {
             Vec3 velVec = lookVec.scale(3f + i * 0.2f);
             Particle bullet = Minecraft.getInstance().particleEngine.createParticle(ModParticleTypes.BULLET_PARTICLE.get(),

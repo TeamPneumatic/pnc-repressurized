@@ -187,7 +187,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             if (tube.mayPlaceModule(module)) {
                 if (simulate) module.markFake();
                 tube.setModule(side, module);
-                if (!simulate && !world.isClientSide) {
+                if (!simulate && !world.isClientSide()) {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
                     world.updateNeighborsAt(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
@@ -202,7 +202,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         } else if (heldStack.getItem() == ModItems.MODULE_EXPANSION_CARD.get() && !simulate) {
             AbstractTubeModule module = PressureTubeBlock.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
-                if (!world.isClientSide) {
+                if (!world.isClientSide()) {
                     module.upgrade();
                     tube.setChanged();
                     tube.sendDescriptionPacket();

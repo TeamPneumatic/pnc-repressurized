@@ -85,20 +85,20 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
         if (stack.has(ModDataComponents.SEMIBLOCK_DATA) && stack.getItem() instanceof SemiblockItem && provider != null) {
             if (sneaking) {
                 CompoundTag tag = stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY).copyTag();
-                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_INVISIBLE)) {
+                if (tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_INVISIBLE, false)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.invisible")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_DURABILITY)) {
+                if (tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_MATCH_DURABILITY, false)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_COMPONENTS)) {
+                if (tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_MATCH_COMPONENTS, false)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).withStyle(ChatFormatting.YELLOW));
                 }
-                if (tag.getBoolean(AbstractLogisticsFrameEntity.NBT_MATCH_MODID)) {
+                if (tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_MATCH_MODID, false)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).withStyle(ChatFormatting.YELLOW));
                 }
 
-                boolean whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_ITEM_WHITELIST);
+                boolean whitelist = tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_ITEM_WHITELIST, false);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "itemWhitelist" : "itemBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
@@ -116,7 +116,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 }
                 tooltipSize = curInfo.size();
 
-                whitelist = tag.getBoolean(AbstractLogisticsFrameEntity.NBT_FLUID_WHITELIST);
+                whitelist = tag.getBooleanOr(AbstractLogisticsFrameEntity.NBT_FLUID_WHITELIST, false);
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 

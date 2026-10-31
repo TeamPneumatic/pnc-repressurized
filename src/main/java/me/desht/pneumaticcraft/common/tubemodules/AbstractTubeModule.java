@@ -104,7 +104,7 @@ public abstract class AbstractTubeModule {
     }
 
     protected final void setChanged() {
-        if (pressureTube != null && pressureTube.getLevel() != null && !pressureTube.getLevel().isClientSide) {
+        if (pressureTube != null && pressureTube.getLevel() != null && !pressureTube.getLevel().isClientSide()) {
             pressureTube.setChanged();
         }
     }
@@ -154,10 +154,10 @@ public abstract class AbstractTubeModule {
     }
 
     public void readFromNBT(CompoundTag nbt) {
-        lowerBound = nbt.getFloat("lowerBound");
-        higherBound = nbt.getFloat("higherBound");
-        upgraded = nbt.getBoolean("upgraded");
-        advancedConfig = nbt.getBoolean("advancedConfig");
+        lowerBound = nbt.getFloatOr("lowerBound", 0f);
+        higherBound = nbt.getFloatOr("higherBound", 0f);
+        upgraded = nbt.getBooleanOr("upgraded", false);
+        advancedConfig = nbt.getBooleanOr("advancedConfig", false);
     }
 
     public CompoundTag writeToNBT(CompoundTag nbt) {
@@ -243,7 +243,7 @@ public abstract class AbstractTubeModule {
     }
 
     public boolean onActivated(Player player, InteractionHand hand) {
-        if (player.level().isClientSide && hasGui()) {
+        if (player.level().isClientSide() && hasGui()) {
             AbstractTubeModuleScreen.openGuiForModule(this);
         }
         return true;

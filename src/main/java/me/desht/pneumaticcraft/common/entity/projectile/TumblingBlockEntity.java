@@ -90,7 +90,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     private Vector3f makeTumbleVec(Level world, LivingEntity thrower) {
         if (thrower != null) {
             return thrower.getLookAngle().cross(Y_POS).toVector3f();
-        } else if (world != null && world.isClientSide) {
+        } else if (world != null && world.isClientSide()) {
             return ClientUtils.getOptionalClientPlayer()
                     .map(p -> p.getLookAngle().cross(Y_POS).toVector3f())
                     .orElse(null);
@@ -135,7 +135,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
         super.tick();  // handles nearly all the in-flight logic
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
             if (!onGround() && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
                 dropAsItem();
@@ -146,7 +146,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
     @Override
     protected void onHit(HitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             discard();
             if (result.getType() == HitResult.Type.BLOCK) {
                 if (!tryPlaceAsBlock((BlockHitResult) result)) {

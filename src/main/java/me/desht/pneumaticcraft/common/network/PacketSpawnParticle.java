@@ -62,9 +62,9 @@ public record PacketSpawnParticle(ParticleOptions particle, Vector3f pos, Vector
         int numParticles = message.numParticles();
         Vector3f r = message.randomOffset.orElse(new Vector3f(0f, 0f, 0f));
         for (int i = 0; i < numParticles; i++) {
-            double x1 = message.pos.x + (numParticles == 1 ? 0 : world.random.nextDouble() * r.x);
-            double y1 = message.pos.y + (numParticles == 1 ? 0 : world.random.nextDouble() * r.y);
-            double z1 = message.pos.z + (numParticles == 1 ? 0 : world.random.nextDouble() * r.z);
+            double x1 = message.pos.x + (numParticles == 1 ? 0 : world.getRandom().nextDouble() * r.x);
+            double y1 = message.pos.y + (numParticles == 1 ? 0 : world.getRandom().nextDouble() * r.y);
+            double z1 = message.pos.z + (numParticles == 1 ? 0 : world.getRandom().nextDouble() * r.z);
             world.addParticle(message.particle(), x1, y1, z1, message.speed.x, message.speed.y, message.speed.z);
         }
     }

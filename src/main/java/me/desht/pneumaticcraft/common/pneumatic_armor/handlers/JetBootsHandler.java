@@ -145,7 +145,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             setJetBootsActive(commonArmorHandler,false);
         }
 
-        if (jetbootsAirUsage != 0 && !player.level().isClientSide) {
+        if (jetbootsAirUsage != 0 && !player.level().isClientSide()) {
             if (jbLocal.getPrevJetBootsAirUsage() == 0) {
                 // jet boots starting up
                 NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, MovingSoundFocus.of(player)), player.level(), player.blockPosition());
@@ -176,7 +176,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     private boolean isOnGround(Player player) {
         if (player.onGround()) return true;
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             // isOnGround() on server can be unreliable, especially if player flew into the ground
             // this little kludge makes sure jetboots properly switch off on both client and server
             BlockPos pos = player.getOnPos();
@@ -241,7 +241,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         if (!newActive) {
             jbLocal.resetActive();
             if (jbLocal.isFlightStabilizers() && jbs.isActive() && !jbs.isBuilderMode()) {
-                if (!player.level().isClientSide) {
+                if (!player.level().isClientSide()) {
                     double l = Math.pow(player.getDeltaMovement().length(), 1.65);
                     commonArmorHandler.addAir(EquipmentSlot.FEET, (int) (l * -50));
                     NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE,

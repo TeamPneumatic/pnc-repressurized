@@ -114,7 +114,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
             boolean open = state.getValue(OPEN);
             world.setBlockAndUpdate(pos, state.setValue(OPEN, !open));
             world.playSound(player, pos, open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.5f);
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            return InteractionResult.sidedSuccess(world.isClientSide());
         }
         return InteractionResult.PASS;
     }

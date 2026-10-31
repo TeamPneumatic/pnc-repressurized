@@ -64,7 +64,7 @@ public class ManometerItem extends PressurizableItem {
         if (player == null) return InteractionResult.PASS;
         Level world = context.getLevel();
 
-        if (world.isClientSide) return InteractionResult.SUCCESS;
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
 
         return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
@@ -159,7 +159,7 @@ public class ManometerItem extends PressurizableItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) return InteractionResultHolder.success(stack);
+        if (worldIn.isClientSide()) return InteractionResultHolder.success(stack);
         return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getPressure() >= 0.1f) {
                 double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
@@ -173,7 +173,7 @@ public class ManometerItem extends PressurizableItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity entity, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             return PNCCapabilities.getAirHandler(iStack).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
                     player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED), true);

@@ -48,7 +48,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-        if (pLevel.isClientSide) {
+        if (pLevel.isClientSide()) {
             ClassifyFilterScreen.openGui(stack.getHoverName(), pUsedHand);
         }
         return InteractionResultHolder.success(stack);

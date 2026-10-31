@@ -116,7 +116,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (stack.getItem() instanceof SemiblockItem semiblockItem) {
             AbstractSemiblockEntity semiblock = semiblockItem.createEntity(world, stack, player, BlockPos.ZERO);
             if (semiblock instanceof AbstractLogisticsFrameEntity logisticsFrame) {
-                if (world.isClientSide && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
+                if (world.isClientSide() && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
                     // client-side entity creation doesn't load in custom data from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
                     CompoundTag tag = logisticsFrame.saveWithoutId(new CompoundTag());
@@ -251,7 +251,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public void tick() {
         super.tick();
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<ItemStack, Integer> entry = iterator.next();
@@ -333,24 +333,24 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompound(NBT_ITEM_FILTERS));
+        itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty(NBT_ITEM_FILTERS));
         fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompound(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
-        setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
-        setMatchComponents(tag.getBoolean(NBT_MATCH_COMPONENTS));
-        setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
-        setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
-        setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
-        setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
-        setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getInt(NBT_SIDE)) : Direction.UP);
+        setSemiblockInvisible(tag.getBooleanOr(NBT_INVISIBLE, false));
+        setMatchComponents(tag.getBooleanOr(NBT_MATCH_COMPONENTS, false));
+        setMatchDurability(tag.getBooleanOr(NBT_MATCH_DURABILITY, false));
+        setMatchModId(tag.getBooleanOr(NBT_MATCH_MODID, false));
+        setItemWhiteList(tag.getBooleanOr(NBT_ITEM_WHITELIST, false));
+        setFluidWhiteList(tag.getBooleanOr(NBT_FLUID_WHITELIST, false));
+        setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getIntOr(NBT_SIDE, 0)) : Direction.UP);
 
         if (this instanceof ISpecificRequester spr) {
             spr.setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
             spr.setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
         }
         if (this instanceof ISpecificProvider spp) {
-            spp.setKeepItemsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_ITEMS));
-            spp.setKeepFluidsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_FLUID));
+            spp.setKeepItemsStocked(tag.getIntOr(ISpecificProvider.NBT_STOCK_ITEMS, 0));
+            spp.setKeepFluidsStocked(tag.getIntOr(ISpecificProvider.NBT_STOCK_FLUID, 0));
         }
     }
 

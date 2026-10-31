@@ -75,7 +75,7 @@ public class OilLakeFilter extends PlacementFilter {
 
         private static boolean isDimensionOK(WorldGenLevel level) {
             // non-empty whitelist match OR no blacklist match
-            Identifier name = level.getLevel().dimension().location();
+            Identifier name = level.getLevel().dimension().identifier();
             return dimensionMatcherW.get().isEmpty() ? !dimensionMatcherB.get().test(name) : dimensionMatcherW.get().test(name);
         }
 

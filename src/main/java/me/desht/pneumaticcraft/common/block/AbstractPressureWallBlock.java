@@ -52,7 +52,7 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
     @Override
     public void setPlacedBy(Level par1World, BlockPos pos, BlockState state, LivingEntity par5EntityLiving, ItemStack iStack) {
         super.setPlacedBy(par1World, pos, state, par5EntityLiving, iStack);
-        if (!par1World.isClientSide && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
+        if (!par1World.isClientSide() && PressureChamberValveBlockEntity.checkIfProperlyFormed(par1World, pos)) {
             ModCriterionTriggers.PRESSURE_CHAMBER.get().trigger((ServerPlayer) par5EntityLiving);
         }
     }
@@ -86,7 +86,7 @@ public abstract class AbstractPressureWallBlock extends AbstractPneumaticCraftBl
 
     @Override
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock() && !world.isClientSide) {
+        if (state.getBlock() != newState.getBlock() && !world.isClientSide()) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberWallBlockEntity.class)
                     .ifPresent(PressureChamberWallBlockEntity::onBlockBreak);
         }

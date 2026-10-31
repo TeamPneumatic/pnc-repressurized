@@ -127,7 +127,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         Level world = Objects.requireNonNull(ownerTE.getLevel());
         Direction actualLeakDir = leakDir;
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (pendingAir != 0) {
                 // add any saved air if this is being restored from item stack component data
                 // need to wait till now to ensure saved volume upgrades are also accounted for
@@ -190,12 +190,12 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         if (getAir() > prevAir && p > getDangerPressure()) {
             float range = getCriticalPressure() - getDangerPressure();
             float delta = p - getDangerPressure();
-            float rnd = world.random.nextFloat() * range;
+            float rnd = world.getRandom().nextFloat() * range;
             if (rnd < delta / 125f || p > getCriticalPressure()) {
                 world.explode(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Level.ExplosionInteraction.BLOCK);
                 world.destroyBlock(pos, false);
             } else if (rnd < delta / 25f) {
-                world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundSource.BLOCKS, 0.7f, 0.6f + world.random.nextFloat() * 0.8f);
+                world.playSound(null, ownerTE.getBlockPos(), ModSounds.CREAK.get(), SoundSource.BLOCKS, 0.7f, 0.6f + world.getRandom().nextFloat() * 0.8f);
             }
         }
     }
@@ -206,7 +206,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
         float pressure = getPressure();
 
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if ((world.getGameTime() & 0xf) == 0 && checkForCrossChunkLeak(ownerTE, pos, actualLeakDir)) {
                 setSideLeaking(null);
                 return;
@@ -229,11 +229,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             double mz = actualLeakDir.getStepZ();
             double speed = getPressure() * 0.1F;
             if (getAir() > 0) {
-                if (pressure > 1f || pressure > 0.5f && world.random.nextBoolean() || world.random.nextInt(3) == 0) {
+                if (pressure > 1f || pressure > 0.5f && world.getRandom().nextBoolean() || world.getRandom().nextInt(3) == 0) {
                     world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx * 0.6, pos.getY() + 0.5D + my * 0.6, pos.getZ() + 0.5D + mz * 0.6,
                             mx * speed, my * speed, mz * speed);
                 }
-            } else if (getAir() < 0 && world.random.nextBoolean()) {
+            } else if (getAir() < 0 && world.getRandom().nextBoolean()) {
                 world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
             }
             MovingSounds.playMovingSound(MovingSounds.Sound.AIR_LEAK, ownerTE.getBlockPos(), anyConnectableFace());
@@ -352,7 +352,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         super.deserializeNBT(nbt);
-        leakDir = nbt.contains("Leaking") ? Direction.from3DDataValue(nbt.getByte("Leaking")) : null;
+        leakDir = nbt.contains("Leaking") ? Direction.from3DDataValue(nbt.getByteOr("Leaking", (byte) 0)) : null;
     }
 
     @Override

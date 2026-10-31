@@ -318,7 +318,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        isBroken = tag.getBoolean(NBTKeys.NBT_BROKEN);
+        isBroken = tag.getBooleanOr(NBTKeys.NBT_BROKEN, false);
     }
 
     @Override

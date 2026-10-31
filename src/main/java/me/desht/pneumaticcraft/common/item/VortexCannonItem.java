@@ -46,7 +46,7 @@ public class VortexCannonItem extends PressurizableItem {
         IAirHandlerItem airHandler = PNCCapabilities.getAirHandler(iStack).orElseThrow(RuntimeException::new);
         float factor = 0.2F * airHandler.getPressure();
 
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             if (airHandler.getPressure() > 0.1f) {
                 world.playLocalSound(playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.AIR_CANNON.get(), SoundSource.PLAYERS, 1.0F, 0.7F + factor * 0.2F, false);
             } else {
@@ -69,6 +69,6 @@ public class VortexCannonItem extends PressurizableItem {
                 }
             }
         }
-        return InteractionResultHolder.sidedSuccess(iStack, world.isClientSide);
+        return InteractionResultHolder.sidedSuccess(iStack, world.isClientSide());
     }
 }

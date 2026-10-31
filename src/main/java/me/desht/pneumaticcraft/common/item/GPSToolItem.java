@@ -60,7 +60,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         BlockPos pos = ctx.getClickedPos();
         if (ctx.getPlayer() == null) return InteractionResult.PASS;
         setGPSLocation(ctx.getPlayer().getUUID(), ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
-        if (!ctx.getLevel().isClientSide) {
+        if (!ctx.getLevel().isClientSide()) {
             displayPosition(ctx.getPlayer(), ctx.getItemInHand(), pos, false);
         }
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
@@ -77,7 +77,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) {
+        if (worldIn.isClientSide()) {
             GPSToolScreen.showGUI(stack, handIn, getGPSLocation(playerIn.getUUID(), stack).orElse(playerIn.blockPosition()));
         }
         return InteractionResultHolder.success(stack);
@@ -110,7 +110,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
         String var = getVariable(stack);
-        if (!var.isEmpty() && !world.isClientSide && entity instanceof Player) {
+        if (!var.isEmpty() && !world.isClientSide() && entity instanceof Player) {
             getGPSLocation(entity.getUUID(), stack).ifPresent(curPos -> {
                 BlockPos varPos = GlobalVariableHelper.getInstance().getPos(entity.getUUID(), var, PneumaticCraftUtils.invalidPos());
                 if (!varPos.equals(curPos)) {
@@ -196,7 +196,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
 
     @Override
     public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             ItemStack stack = player.getItemInHand(hand);
             getGPSLocation(stack).ifPresent(loc -> {
                 Direction facing = Direction.orderedByNearest(player)[0];

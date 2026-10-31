@@ -52,7 +52,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
         InteractionHand hand = ctx.getHand();
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             BlockState state = world.getBlockState(pos);
             InteractionResult res = ModdedWrenchUtils.getInstance().onWrenchedPre(ctx, state);
             if (res != InteractionResult.PASS) {
@@ -97,7 +97,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity target, InteractionHand hand) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return PNCCapabilities.getAirHandler(iStack).map(h -> {

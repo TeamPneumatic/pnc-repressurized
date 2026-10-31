@@ -84,7 +84,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     @Override
     public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide && !playerIn.isShiftKeyDown()) {
+        if (worldIn.isClientSide() && !playerIn.isShiftKeyDown()) {
             GPSAreaToolScreen.showGUI(stack, handIn, 0);
         } else if (playerIn.isShiftKeyDown()) {
             setActiveIndex(playerIn, stack, 0);
@@ -154,7 +154,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
 
     @Override
     public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
-        if (!world.isClientSide && entity instanceof Player p) {
+        if (!world.isClientSide() && entity instanceof Player p) {
             ProgWidgetArea area = getArea(p, stack);
             for (int index = 0; index < 2; index++) {
                 String varName = area.getVarName(index);
@@ -192,7 +192,7 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
 
         // if there's a variable set for this index, use its value instead (and update the stored position)
         String var = area.getVarName(index);
-        if (!var.isEmpty() && !player.level().isClientSide) {
+        if (!var.isEmpty() && !player.level().isClientSide()) {
             BlockPos newPos = GlobalVariableHelper.getInstance().getPos(player.getUUID(), var);
             if (pos.isEmpty() || !pos.get().equals(newPos)) {
                 area.setPos(index, newPos);

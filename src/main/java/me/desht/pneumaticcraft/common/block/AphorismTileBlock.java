@@ -132,7 +132,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack stack) {
         super.setPlacedBy(world, pos, state, entityLiving, stack);
 
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, AphorismTileBlockEntity.class).ifPresent(teAT -> {
                 SavedData savedData = stack.get(ModDataComponents.APHORISM_TILE_DATA);
                 if (savedData != null) {
@@ -153,16 +153,16 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
             return ItemInteractionResult.FAIL;
         }
 
-        if (!level.isClientSide && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
+        if (!level.isClientSide() && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
             return tryDyeTile(state, player, hand, brtr, teAT);
         }
 
-        return stack.isEmpty() ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.sidedSuccess(level.isClientSide);
+        return stack.isEmpty() ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.sidedSuccess(level.isClientSide());
     }
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        if (level.isClientSide) {
+        if (level.isClientSide()) {
             return level.getBlockEntity(pos) instanceof AphorismTileBlockEntity teAT ?
                     openEditorGui(player, teAT) :
                     InteractionResult.FAIL;

@@ -124,7 +124,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void tickClient() {
         super.tickClient();
 
-        if (isActive() && nonNullLevel().random.nextInt(5) == 0) {
+        if (isActive() && nonNullLevel().getRandom().nextInt(5) == 0) {
             ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
         }
     }
@@ -204,8 +204,8 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
         super.loadAdditional(tag, provider);
 
         itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        internalFuelBuffer = tag.getDouble("internalFuelBuffer");
-        burnMultiplier = tag.getFloat("burnMultiplier");
+        internalFuelBuffer = tag.getDoubleOr("internalFuelBuffer", 0.0);
+        burnMultiplier = tag.getFloatOr("burnMultiplier", 0f);
     }
 
     @Override

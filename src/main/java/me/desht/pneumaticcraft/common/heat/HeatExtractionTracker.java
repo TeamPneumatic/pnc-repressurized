@@ -67,9 +67,9 @@ public class HeatExtractionTracker extends SavedData {
     private HeatExtractionTracker readNBT(CompoundTag nbt) {
         extracted.clear();
 
-        ListTag list = nbt.getList("extracted", Tag.TAG_COMPOUND);
+        ListTag list = nbt.getListOrEmpty("extracted");
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag sub = list.getCompound(i);
+            CompoundTag sub = list.getCompoundOrEmpty(i);
             NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> extracted.put(pos, sub.getDouble("heat")));
         }
 

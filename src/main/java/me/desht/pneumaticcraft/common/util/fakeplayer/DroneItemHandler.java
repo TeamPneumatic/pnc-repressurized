@@ -91,7 +91,7 @@ public class DroneItemHandler extends ItemStackHandler {
      * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/block entity creation!)
      */
     public void setFakePlayerReady() {
-        if (!fakePlayerReady && !holder.getDroneLevel().isClientSide) {
+        if (!fakePlayerReady && !holder.getDroneLevel().isClientSide()) {
             fakePlayerReady = true;
             for (int slot = 0; slot < getSlots(); slot++) {
                 copyItemToFakePlayer(slot);

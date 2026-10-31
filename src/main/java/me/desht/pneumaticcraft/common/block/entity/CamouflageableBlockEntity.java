@@ -63,14 +63,14 @@ public interface CamouflageableBlockEntity {
      * @param te the block entity
      */
     static void onCamouflageChanged(AbstractPneumaticCraftBlockEntity te) {
-        if (te.getLevel() != null && !te.getLevel().isClientSide) {
+        if (te.getLevel() != null && !te.getLevel().isClientSide()) {
             te.scheduleDescriptionPacket();
             te.setChanged();
         }
     }
 
     static BlockState readCamo(CompoundTag tag) {
-        BlockState state = tag.contains("camoState", Tag.TAG_COMPOUND) ?
+        BlockState state = tag.contains("camoState") ?
                 NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("camoState")) :
                 null;
         return state != null && state.getBlock() == Blocks.AIR ? null : state;

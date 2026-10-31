@@ -113,7 +113,7 @@ public class PneumaticArmorHandler {
                 if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlot.CHEST) && handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.SECURITY.get()) > 0) {
                     event.setCanceled(true);
                     player.clearFire();
-                    if (!player.level().isClientSide) {
+                    if (!player.level().isClientSide()) {
                         handler.addAir(EquipmentSlot.CHEST, -PneumaticValues.PNEUMATIC_ARMOR_FIRE_USAGE);
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRandom().nextFloat() * 1.5F - 0.75F;
@@ -223,7 +223,7 @@ public class PneumaticArmorHandler {
      */
     @SubscribeEvent
     public void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity().level().isClientSide) {
+        if (event.getEntity().level().isClientSide()) {
             handleJetbootsPose(event.getEntity());
         } else if (event.getEntity() instanceof ServerPlayer serverPlayer
                 && event.getEntity().level().getGameTime() % 20 == 0

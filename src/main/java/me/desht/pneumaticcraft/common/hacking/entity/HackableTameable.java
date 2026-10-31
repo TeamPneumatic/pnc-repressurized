@@ -44,7 +44,7 @@ public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
 
     @Override
     public void onHackFinished(TamableAnimal entity, Player player) {
-        if (entity.level().isClientSide) {
+        if (entity.level().isClientSide()) {
             entity.handleEntityEvent((byte) 7);
         } else {
             entity.getNavigation().stop();

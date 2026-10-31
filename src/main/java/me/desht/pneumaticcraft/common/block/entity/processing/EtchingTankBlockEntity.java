@@ -119,7 +119,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                             didWork = true;
                         } else if (!isOutputFull() && !isFailedOutputFull()) {
                             int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
-                            boolean success = level.random.nextInt(100) <= uvProgress;
+                            boolean success = level.getRandom().nextInt(100) <= uvProgress;
                             tryMoveFinishedItem(i, success);
                         }
                     }
@@ -127,7 +127,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
 
                 if (didWork && tickInterval < 30) {
                     // heated - chance to use up some acid
-                    if (level.random.nextInt(100) < 30 - tickInterval) {
+                    if (level.getRandom().nextInt(100) < 30 - tickInterval) {
                         acidTank.drain(1, IFluidHandler.FluidAction.EXECUTE);
                     }
                     heatExchanger.addHeat(-(30 - tickInterval));

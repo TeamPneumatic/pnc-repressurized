@@ -75,7 +75,7 @@ public class AmadronTabletItem extends PressurizableItem
         if (playerIn instanceof ServerPlayer sp) {
             openGui(sp, handIn);
         }
-        return InteractionResultHolder.sidedSuccess(playerIn.getItemInHand(handIn), playerIn.level().isClientSide);
+        return InteractionResultHolder.sidedSuccess(playerIn.getItemInHand(handIn), playerIn.level().isClientSide());
     }
 
     @Override
@@ -94,24 +94,24 @@ public class AmadronTabletItem extends PressurizableItem
         if (IOHelper.getFluidHandlerForBlock(te, facing).isPresent()) {
             GlobalPos current = getFluidProvidingLocation(tabletStack);
             if (current == null || !current.equals(globalPos)) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     setFluidProvidingLocation(tabletStack, globalPos);
                 } else {
                     player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
                 }
                 // By checking if fluid pos was actually changed, we can fall through to checking for
                 //   an item pos, allowing blocks which offer both item and fluid caps to be used
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return InteractionResult.sidedSuccess(level.isClientSide());
             }
         }
 
         if (IOHelper.getInventoryForBlock(te, facing).isPresent()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 setItemProvidingLocation(tabletStack, globalPos);
             } else {
                 player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide());
         }
 
         return InteractionResult.PASS;

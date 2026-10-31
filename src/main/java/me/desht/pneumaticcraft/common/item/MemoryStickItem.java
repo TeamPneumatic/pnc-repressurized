@@ -78,7 +78,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
 
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
@@ -116,7 +116,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
                         || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
                     playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
-                            (worldIn.random.nextFloat() - worldIn.random.nextFloat()) * 0.35F + 0.9F);
+                            (worldIn.getRandom().nextFloat() - worldIn.getRandom().nextFloat()) * 0.35F + 0.9F);
                 }
             });
         }
@@ -202,7 +202,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
             player.displayClientMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
-            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
+            player.level().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }
 
@@ -223,7 +223,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() instanceof MemoryStickItem) {
-                if (!event.getLevel().isClientSide) {
+                if (!event.getLevel().isClientSide()) {
                     long now = event.getLevel().getGameTime();
                     long last = lastEvent.getOrDefault(event.getEntity().getUUID(), 0L);
                     if (now - last > 5) {
@@ -238,7 +238,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
             // client only event, but let's be paranoid...
-            if (event.getLevel().isClientSide && event.getItemStack().getItem() instanceof MemoryStickItem) {
+            if (event.getLevel().isClientSide() && event.getItemStack().getItem() instanceof MemoryStickItem) {
                 NetworkHandler.sendToServer(PacketLeftClickEmpty.INSTANCE);
             }
         }

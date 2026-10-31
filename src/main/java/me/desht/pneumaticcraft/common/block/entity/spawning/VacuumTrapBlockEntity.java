@@ -114,7 +114,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void tickClient() {
         super.tickClient();
 
-        if (isOpen() && isCoreLoaded && nonNullLevel().random.nextBoolean()) {
+        if (isOpen() && isCoreLoaded && nonNullLevel().getRandom().nextBoolean()) {
             ClientUtils.emitParticles(level, worldPosition, ParticleTypes.PORTAL);
         }
     }
@@ -155,7 +155,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     private void absorbEntity(Mob e) {
         int toAdd = 1;
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
-            toAdd += e.level().random.nextInt(3) + 1;
+            toAdd += e.level().getRandom().nextInt(3) + 1;
         }
         ISpawnerCoreStats newStats = inv.getStats().addAmount(e.getType(), toAdd);
         if (newStats != inv.getStats()) {
@@ -227,7 +227,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inv.deserializeNBT(provider, tag.getCompound("Items"));
+        inv.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
