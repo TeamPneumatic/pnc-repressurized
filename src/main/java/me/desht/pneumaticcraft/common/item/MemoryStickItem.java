@@ -26,8 +26,6 @@ import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
-import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -286,9 +284,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         public ItemStack getMemoryStick(Player player) {
             if (invName.isEmpty()) {
                 return player.getInventory().getItem(slot);
-            } else if (Curios.available) {
-                return CuriosUtils.getStack(player, invName, slot);
             }
+            // TODO 26.1 integration: Curios
+//            } else if (Curios.available) {
+//                return CuriosUtils.getStack(player, invName, slot);
+//            }
             return ItemStack.EMPTY;
         }
     }

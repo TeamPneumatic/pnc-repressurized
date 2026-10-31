@@ -37,8 +37,6 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
-import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
-import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.lib.Log;
@@ -173,12 +171,13 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         // 1) reports of item duplication (which I can't reproduce)
         // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
 
-        if (Curios.available) {
-            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
-            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-                    Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
-            invHandlers.add(playerCuriosHandler);
-        }
+        // TODO 26.1 integration: Curios
+//        if (Curios.available) {
+//            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
+//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
+//                    Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
+//            invHandlers.add(playerCuriosHandler);
+//        }
     }
 
     public String getPlayerName() {
@@ -421,9 +420,10 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                 if (energyLeft == 0) break;
             }
 
-            if (Curios.available && energyStorage.getEnergyStored() > 0) {
-                CuriosUtils.chargeItems(player, energyStorage, RF_PER_TICK);
-            }
+            // TODO 26.1 integration: Curios
+//            if (Curios.available && energyStorage.getEnergyStored() > 0) {
+//                CuriosUtils.chargeItems(player, energyStorage, RF_PER_TICK);
+//            }
         }
     }
 
@@ -572,12 +572,13 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
     }
 
-    private class PlayerCuriosHandler extends PlayerInvHandler {
-        @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
-        }
-    }
+    // TODO 26.1 integration: Curios
+//    private class PlayerCuriosHandler extends PlayerInvHandler {
+//        @Override
+//        protected IItemHandler getInvWrapper(Player player) {
+//            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
+//        }
+//    }
 
     private class PlayerFoodHandler implements IItemHandler {
         @Override
