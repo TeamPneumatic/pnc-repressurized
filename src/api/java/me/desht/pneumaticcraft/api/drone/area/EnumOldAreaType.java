@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.api.drone.area;
 
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 
 import java.util.HashMap;
 import java.util.Locale;

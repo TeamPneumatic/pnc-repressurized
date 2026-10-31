@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.Pufferfish;
+import net.minecraft.world.entity.animal.fish.Pufferfish;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 

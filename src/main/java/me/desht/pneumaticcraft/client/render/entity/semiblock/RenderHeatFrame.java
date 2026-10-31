@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelHeatFrame;
 import me.desht.pneumaticcraft.common.entity.semiblock.HeatFrameEntity;
 import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;

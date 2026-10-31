@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypePyramid.Pyr
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeSphere.SphereType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeTorus.TorusType;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.mutable.MutableByte;
 

@@ -22,7 +22,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.CatVariantTags;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.animal.Cat;
+import net.minecraft.world.entity.animal.feline.Cat;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 

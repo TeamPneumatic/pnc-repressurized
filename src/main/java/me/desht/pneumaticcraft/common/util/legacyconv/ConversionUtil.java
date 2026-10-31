@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.util.legacyconv;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.nbt.Tag;
 
 import java.util.Arrays;

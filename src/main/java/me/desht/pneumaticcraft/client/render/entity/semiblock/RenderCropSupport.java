@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
 import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;

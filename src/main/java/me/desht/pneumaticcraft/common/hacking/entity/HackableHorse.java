@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 

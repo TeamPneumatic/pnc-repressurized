@@ -5,8 +5,8 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.GlowSquid;
-import net.minecraft.world.entity.animal.Squid;
+import net.minecraft.world.entity.animal.squid.GlowSquid;
+import net.minecraft.world.entity.animal.squid.Squid;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
