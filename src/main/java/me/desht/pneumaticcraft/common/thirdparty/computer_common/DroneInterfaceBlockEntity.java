@@ -45,7 +45,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -603,7 +603,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireArgs(args, 1, "<string> action_name");
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
-                ResourceLocation id = widgetName.contains(":") ? ResourceLocation.parse(widgetName) : RL(widgetName);
+                Identifier id = widgetName.contains(":") ? Identifier.parse(widgetName) : RL(widgetName);
                 ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(id);
 
                 Validate.notNull(type,
@@ -631,7 +631,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 if (curAction != null) {
                     return new Object[] {
                             PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, curAction.getType())
-                                    .map(ResourceLocation::toString)
+                                    .map(Identifier::toString)
                                     .orElse("?")
                     };
                 }

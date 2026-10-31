@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.GlowSquid;
 import net.minecraft.world.entity.animal.Squid;
@@ -16,10 +16,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSquid implements IHackableEntity<Squid> {
-    private static final ResourceLocation ID = RL("squid");
+    private static final Identifier ID = RL("squid");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

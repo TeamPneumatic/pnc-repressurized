@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -62,7 +62,7 @@ public class SemiblockItem extends Item {
      * @return the semiblock entity, not added to the world
      */
     public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
+        Identifier regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
         return BuiltInRegistries.ENTITY_TYPE.getOptional(regName).map(type -> {
             Entity e = type.create(world);
             if (e instanceof AbstractSemiblockEntity semi) {

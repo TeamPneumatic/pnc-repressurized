@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -83,8 +83,8 @@ public enum XPFluidManager {
             builder.addAll(liquidXPs.keySet().stream().sorted((f1, f2) -> {
                 // little kludge: ensure our own Memory Essence is always first in the list
                 if (f1 == ModFluids.MEMORY_ESSENCE.get()) return -1;
-                ResourceLocation r1 = PneumaticCraftUtils.getRegistryName(f1).orElseThrow();
-                ResourceLocation r2 = PneumaticCraftUtils.getRegistryName(f2).orElseThrow();
+                Identifier r1 = PneumaticCraftUtils.getRegistryName(f1).orElseThrow();
+                Identifier r2 = PneumaticCraftUtils.getRegistryName(f2).orElseThrow();
                 return r1.toString().compareTo(r2.toString());
             }).toList());
             availableLiquidXPs = builder.build();

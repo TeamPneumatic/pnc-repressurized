@@ -5,13 +5,13 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Map;
 
 public class ThermalFoundationExplosiveLaunching {
-    private static final Map<ResourceLocation, EntityType<?>> launchMap = Maps.newHashMap();
+    private static final Map<Identifier, EntityType<?>> launchMap = Maps.newHashMap();
 
     public static void registerExplosiveLaunchBehaviour() {
         // Adds thermal TNT to launch map
@@ -58,8 +58,8 @@ public class ThermalFoundationExplosiveLaunching {
      * @param itemIDString item ID of item/entity to add to launch map
      */
     private static void register(String itemIDString) {
-        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
-        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        Identifier itemId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        Identifier entityId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 
@@ -69,8 +69,8 @@ public class ThermalFoundationExplosiveLaunching {
      * @param entityIDString entity ID of the entity to add to launch map
      */
     private static void register(String itemIDString, String entityIDString) {
-        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
-        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, entityIDString);
+        Identifier itemId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        Identifier entityId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, entityIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

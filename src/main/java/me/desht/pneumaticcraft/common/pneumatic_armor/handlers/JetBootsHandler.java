@@ -38,7 +38,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -59,7 +59,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     public static final int STABILIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.JET_BOOTS;
     }
 

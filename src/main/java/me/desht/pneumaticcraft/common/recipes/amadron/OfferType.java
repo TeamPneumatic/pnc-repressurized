@@ -14,8 +14,8 @@ public enum OfferType {
             // client recipe manager via normal vanilla recipe sync
             // Update, nope: this doesn't work reliably for custom trades (datapack/KJS) for some reason
             // Will come back to this later!
-//            (buf, offer) -> buf.writeResourceLocation(offer.getOfferId()),
-//            buf -> fromHolder(ModRecipeTypes.AMADRON.get().getRecipe(ClientUtils.getClientLevel(), buf.readResourceLocation()))
+//            (buf, offer) -> buf.writeIdentifier(offer.getOfferId()),
+//            buf -> fromHolder(ModRecipeTypes.AMADRON.get().getRecipe(ClientUtils.getClientLevel(), buf.readIdentifier()))
             (buf, offer) -> offer.write(buf),
             buf -> Optional.of(AmadronOffer.offerFromBuf(buf))
     ),

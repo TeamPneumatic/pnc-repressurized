@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -46,7 +46,7 @@ public class PressureChamber implements IRecipeManager<PressureChamberRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount[] inputs, IItemStack[] outputs, float pressure) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(Identifier.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                 new PressureChamberRecipeImpl(
                         CTUtils.toSizedIngredientList(inputs),
                         pressure,

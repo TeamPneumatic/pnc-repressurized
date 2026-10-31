@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.mixin.accessors.MobAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -37,10 +37,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobDisarm implements IHackableEntity<Mob> {
-    private static final ResourceLocation ID = RL("mob_disarm");
+    private static final Identifier ID = RL("mob_disarm");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

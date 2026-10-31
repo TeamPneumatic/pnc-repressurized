@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -55,7 +55,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static CacheReloadListener cacheReloadListener;
 
-    private final Map<ResourceLocation, RecipeHolder<T>> cachedRecipes = new HashMap<>();
+    private final Map<Identifier, RecipeHolder<T>> cachedRecipes = new HashMap<>();
     private final String typeName;
 
     public PneumaticCraftRecipeType(String name) {
@@ -67,7 +67,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         return typeName;
     }
 
-    public Map<ResourceLocation, RecipeHolder<T>> getRecipeMap(Level level) {
+    public Map<Identifier, RecipeHolder<T>> getRecipeMap(Level level) {
         if (level == null) {
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -123,7 +123,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 .findFirst();
     }
 
-    public Optional<RecipeHolder<T>> getRecipe(Level level, ResourceLocation recipeId) {
+    public Optional<RecipeHolder<T>> getRecipe(Level level, Identifier recipeId) {
         return Optional.ofNullable(getRecipeMap(level).get(recipeId));
     }
 

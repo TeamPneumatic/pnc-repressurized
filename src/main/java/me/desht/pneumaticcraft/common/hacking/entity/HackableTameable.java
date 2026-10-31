@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.CatVariantTags;
 import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.TamableAnimal;
@@ -29,10 +29,10 @@ import org.jetbrains.annotations.NotNull;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableTameable extends AbstractTameableHack<TamableAnimal> {
-    private static final ResourceLocation ID = RL("tameable");
+    private static final Identifier ID = RL("tameable");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

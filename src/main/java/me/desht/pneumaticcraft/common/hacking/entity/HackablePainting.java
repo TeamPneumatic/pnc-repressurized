@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.decoration.Painting;
 import net.minecraft.world.entity.decoration.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
@@ -33,10 +33,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackablePainting implements IHackableEntity<Painting> {
 
-    private static final ResourceLocation ID = RL("painting");
+    private static final Identifier ID = RL("painting");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

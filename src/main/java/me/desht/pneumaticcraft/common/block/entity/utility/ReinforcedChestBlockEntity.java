@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandl
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.ContainerWrappedItemHandler;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -35,7 +35,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -99,10 +99,10 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
 
         if (tag.contains(NBT_LOOT_TABLE, Tag.TAG_STRING)) {
             try {
-                lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(tag.getString(NBT_LOOT_TABLE)));
+                lootTable = ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(tag.getString(NBT_LOOT_TABLE)));
                 lootTableSeed = tag.getLong(NBT_LOOT_TABLE_SEED);
                 setChanged();
-            } catch (ResourceLocationException e) {
+            } catch (IdentifierException e) {
                 lootTable = null;
                 lootTableSeed = 0L;
             }

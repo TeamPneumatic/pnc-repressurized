@@ -27,7 +27,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
@@ -60,7 +60,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      *
      * @return the handler ID
      */
-    default ResourceLocation getID() {
+    default Identifier getID() {
         return getCommonHandler().getID();
     }
 
@@ -191,11 +191,11 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      * key binding can be registered for them.
      * <p>
      * The ID's returned here are the same as those passed to
-     * {@link IClientArmorRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}.
+     * {@link IClientArmorRegistry#makeKeybindingCheckBox(Identifier, int, int, int, Consumer)}.
      *
      * @return a collection of ID's
      */
-    default Collection<ResourceLocation> getSubKeybinds() {
+    default Collection<Identifier> getSubKeybinds() {
         return Collections.emptyList();
     }
 

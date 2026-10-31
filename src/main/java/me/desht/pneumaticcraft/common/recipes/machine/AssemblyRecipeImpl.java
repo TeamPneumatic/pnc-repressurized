@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -99,11 +99,11 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
      * @param laserRecipes all known laser recipes
      * @return a map (recipeId -> recipe) of all synthetic laser/drill recipes
      */
-    public static Map<ResourceLocation, RecipeHolder<AssemblyRecipe>> calculateAssemblyChain(
+    public static Map<Identifier, RecipeHolder<AssemblyRecipe>> calculateAssemblyChain(
             List<RecipeHolder<AssemblyRecipe>> drillRecipes,
             List<RecipeHolder<AssemblyRecipe>> laserRecipes
     ) {
-        Map<ResourceLocation, RecipeHolder<AssemblyRecipe>> drillLaser = new HashMap<>();
+        Map<Identifier, RecipeHolder<AssemblyRecipe>> drillLaser = new HashMap<>();
         for (RecipeHolder<AssemblyRecipe> h1 : drillRecipes) {
             for (RecipeHolder<AssemblyRecipe> h2 : laserRecipes) {
                 AssemblyRecipe r1 = h1.value();
@@ -113,7 +113,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
                         && r2.getOutput().getMaxStackSize() >= r2.getOutput().getCount() * (r1.getOutput().getCount() / r2.getInputAmount())) {
                     ItemStack output = r2.getOutput().copy();
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
-                    ResourceLocation id = RL(h1.id().getPath() + "_" + h2.id().getPath());
+                    Identifier id = RL(h1.id().getPath() + "_" + h2.id().getPath());
                     drillLaser.put(id, new RecipeHolder<>(id, new AssemblyRecipeImpl(r1.getInput(), output, AssemblyProgramType.DRILL_LASER)));
                 }
             }

@@ -17,14 +17,14 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
-    private final ResourceLocation still;
-    private final ResourceLocation flowing;
+    private final Identifier still;
+    private final Identifier flowing;
     private final int colorTint;
 
     public PNCFluidRenderProps(String still, String flowing) {
@@ -32,8 +32,8 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     public PNCFluidRenderProps(String still, String flowing, int colorTint) {
-        this.still = still.indexOf(':') > 0 ? ResourceLocation.parse(still) : RL("block/fluid/" + still);
-        this.flowing = flowing.indexOf(':') > 0 ? ResourceLocation.parse(flowing) : RL("block/fluid/" + flowing);
+        this.still = still.indexOf(':') > 0 ? Identifier.parse(still) : RL("block/fluid/" + still);
+        this.flowing = flowing.indexOf(':') > 0 ? Identifier.parse(flowing) : RL("block/fluid/" + flowing);
         this.colorTint = colorTint;
     }
 
@@ -54,12 +54,12 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     @Override
-    public ResourceLocation getStillTexture() {
+    public Identifier getStillTexture() {
         return still;
     }
 
     @Override
-    public ResourceLocation getFlowingTexture() {
+    public Identifier getFlowingTexture() {
         return flowing;
     }
 

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
@@ -38,7 +38,7 @@ public class RefineryRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, Identifier id) {
         output.accept(id, new RefineryRecipeImpl(input, operatingTemp, List.of(outputs)), null);
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.Tags;
@@ -35,7 +35,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
         tag(PneumaticCraftTags.EntityTypes.DRONES).add(ModEntityTypes.DRONE.get());
         tag(PneumaticCraftTags.EntityTypes.DRONES).addTag(PneumaticCraftTags.EntityTypes.BASIC_DRONES);
 
-        var radImmune = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", "radiation_immune"));
+        var radImmune = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", "radiation_immune"));
         tag(radImmune).addTag(PneumaticCraftTags.EntityTypes.DRONES);
 
         // no PNC entities are suitable for picking up with Carry On

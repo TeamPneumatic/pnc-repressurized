@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -31,10 +31,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSheep implements IHackableEntity<Sheep> {
-    private static final ResourceLocation ID = RL("sheep");
+    private static final Identifier ID = RL("sheep");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

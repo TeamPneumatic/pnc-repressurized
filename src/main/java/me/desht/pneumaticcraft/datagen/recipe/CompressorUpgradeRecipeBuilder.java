@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import me.desht.pneumaticcraft.common.recipes.special.CompressorUpgradeCrafting;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
@@ -39,12 +39,12 @@ public class CompressorUpgradeRecipeBuilder extends PNCShapedRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, Identifier id) {
         super.save(output, id);
     }
 
     @Override
-    protected @NotNull ShapedRecipe makeRecipe(ResourceLocation id) {
+    protected @NotNull ShapedRecipe makeRecipe(Identifier id) {
         return new CompressorUpgradeCrafting(super.makeRecipe(id));
     }
 }

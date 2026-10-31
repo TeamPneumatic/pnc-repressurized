@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
 
@@ -111,7 +111,7 @@ public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModul
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return Textures.MODEL_LOGISTICS_MODULE;
     }
 }

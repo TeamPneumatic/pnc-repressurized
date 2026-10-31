@@ -43,7 +43,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -71,8 +71,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     private final Map<BlockPos, RenderBlockTarget> blockTargets = new Object2ObjectOpenHashMap<>();
     private IGuiAnimatedStat blockTrackInfo;
-    private final Object2IntMap<ResourceLocation> blockTypeCount = new Object2IntOpenHashMap<>();
-    private final Object2IntMap<ResourceLocation> blockTypeCountPartial = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<Identifier> blockTypeCount = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<Identifier> blockTypeCountPartial = new Object2IntOpenHashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
     private RenderBlockTarget focusedTarget = null;
     private Direction focusedFace = null;
@@ -367,8 +367,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public Collection<ResourceLocation> getSubKeybinds() {
-        ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+    public Collection<Identifier> getSubKeybinds() {
+        ImmutableList.Builder<Identifier> builder = ImmutableList.builder();
         builder.addAll(BlockTrackHandler.getInstance().getIDs());
         return builder.build();
     }

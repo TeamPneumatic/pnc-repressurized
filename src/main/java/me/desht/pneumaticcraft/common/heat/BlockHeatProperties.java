@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -77,7 +77,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
 
     private void registerDefaultFluidValues() {
         // add defaulted values for all fluids which don't already have a custom entry
-        for (ResourceLocation fluidId : BuiltInRegistries.FLUID.keySet()) {
+        for (Identifier fluidId : BuiltInRegistries.FLUID.keySet()) {
             Fluid fluid = BuiltInRegistries.FLUID.get(fluidId);
             if (fluid == Fluids.EMPTY) {
                 continue;

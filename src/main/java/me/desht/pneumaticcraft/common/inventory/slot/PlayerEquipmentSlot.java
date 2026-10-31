@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory.slot;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,7 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class PlayerEquipmentSlot extends Slot {
-    private static final ResourceLocation[] ARMOR_SLOT_TEXTURES = new ResourceLocation[]{
+    private static final Identifier[] ARMOR_SLOT_TEXTURES = new Identifier[]{
             InventoryMenu.EMPTY_ARMOR_SLOT_BOOTS,
             InventoryMenu.EMPTY_ARMOR_SLOT_LEGGINGS,
             InventoryMenu.EMPTY_ARMOR_SLOT_CHESTPLATE,
@@ -61,7 +61,7 @@ public class PlayerEquipmentSlot extends Slot {
     }
 
     @Override
-    public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+    public Pair<Identifier, Identifier> getNoItemIcon() {
         return slotType.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ?
                 Pair.of(InventoryMenu.BLOCK_ATLAS, ARMOR_SLOT_TEXTURES[slotType.getIndex()]) :
                 Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);

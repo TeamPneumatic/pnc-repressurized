@@ -21,23 +21,23 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.AbstractTubeModuleScreen;
 import me.desht.pneumaticcraft.client.render.tube_module.AbstractTubeModuleRenderer;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public class TubeModuleClientRegistry {
-    private static final Map<ResourceLocation, ModuleRendererFactory<?>> MODEL_FACTORY
+    private static final Map<Identifier, ModuleRendererFactory<?>> MODEL_FACTORY
             = new ConcurrentHashMap<>();
-    private static final Map<ResourceLocation, Function<? extends AbstractTubeModule, ? extends AbstractTubeModuleScreen<?>>> GUI_FACTORY
+    private static final Map<Identifier, Function<? extends AbstractTubeModule, ? extends AbstractTubeModuleScreen<?>>> GUI_FACTORY
             = new ConcurrentHashMap<>();
 
-    static void registerTubeModuleRenderer(ResourceLocation moduleType, ModuleRendererFactory<?> factory) {
+    static void registerTubeModuleRenderer(Identifier moduleType, ModuleRendererFactory<?> factory) {
         MODEL_FACTORY.put(moduleType, factory);
     }
 
-    static <T extends AbstractTubeModule> void registerTubeModuleGUI(ResourceLocation moduleType, Function<T, ? extends AbstractTubeModuleScreen<T>> factory) {
+    static <T extends AbstractTubeModule> void registerTubeModuleGUI(Identifier moduleType, Function<T, ? extends AbstractTubeModuleScreen<T>> factory) {
         GUI_FACTORY.put(moduleType, factory);
     }
 

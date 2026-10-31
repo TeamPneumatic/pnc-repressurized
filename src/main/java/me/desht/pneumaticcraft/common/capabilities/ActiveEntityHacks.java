@@ -9,7 +9,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<CompoundTag> {
-    private final Map<ResourceLocation, IHackableEntity<? extends Entity>> hacks = new HashMap<>();
+    private final Map<Identifier, IHackableEntity<? extends Entity>> hacks = new HashMap<>();
 
     @Override
     public void tick(Entity entity) {
@@ -60,7 +60,7 @@ public class ActiveEntityHacks implements IActiveEntityHacks, INBTSerializable<C
         ListTag tagList = nbt.getList("hackables", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             String id = tagList.getCompound(i).getString("id");
-            ResourceLocation.read(id).result().ifPresentOrElse(hackableId -> {
+            Identifier.read(id).result().ifPresentOrElse(hackableId -> {
                 CommonArmorRegistry.getInstance().getHackableEntityForId(hackableId).ifPresentOrElse(
                         this::addHackable,
                         () -> Log.error("entity-hackable '{}' not found when deserializing IHacking capability?", hackableId)

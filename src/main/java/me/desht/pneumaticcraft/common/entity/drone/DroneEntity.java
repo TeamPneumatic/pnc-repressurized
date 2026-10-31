@@ -91,7 +91,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -766,8 +766,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         return aiManager.getCoordinate(ownerUUID, varName);
     }
 
-    private ResourceLocation getActiveProgramKey() {
-        return ResourceLocation.parse(entityData.get(PROGRAM_KEY));
+    private Identifier getActiveProgramKey() {
+        return Identifier.parse(entityData.get(PROGRAM_KEY));
     }
 
     @Override
@@ -1347,7 +1347,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return RL("drone");
     }
 

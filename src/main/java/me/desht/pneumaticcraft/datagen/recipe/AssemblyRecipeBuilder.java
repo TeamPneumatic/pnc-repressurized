@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
@@ -39,7 +39,7 @@ public class AssemblyRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, Identifier id) {
         recipeOutput.accept(id, new AssemblyRecipeImpl(input, output, program), null);
     }
 }

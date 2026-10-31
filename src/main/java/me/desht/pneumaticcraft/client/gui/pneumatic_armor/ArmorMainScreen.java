@@ -43,7 +43,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -171,7 +171,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 
@@ -279,7 +279,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     public record UpgradeOption(IOptionPage page,
-                                 ResourceLocation upgradeID,
+                                 Identifier upgradeID,
                                  ItemStack... icons) {
     }
 }

@@ -30,7 +30,7 @@ import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
@@ -48,7 +48,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.advancements.AdvancementRewards.Builder.experience;
 
 public class ModAdvancementProvider extends AdvancementProvider {
-    private static final ResourceLocation BACKGROUND_TEXTURE = RL("textures/gui/advancement_bg.png");
+    private static final Identifier BACKGROUND_TEXTURE = RL("textures/gui/advancement_bg.png");
 
     public ModAdvancementProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(generatorIn.getPackOutput(), lookupProvider, existingFileHelper, List.of(new PNCAdvancements()));

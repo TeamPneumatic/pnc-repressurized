@@ -29,7 +29,7 @@ import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -46,13 +46,13 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: SERVER
  * General packet for updating various pneumatic armor settings from client GUI
  */
-public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation upgradeID,
+public record PacketUpdateArmorExtraData(EquipmentSlot slot, Identifier upgradeID,
                                          DataComponentPatch patch) implements CustomPacketPayload {
     public static final Type<PacketUpdateArmorExtraData> TYPE = new Type<>(RL("update_armor_extradata"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketUpdateArmorExtraData> STREAM_CODEC = StreamCodec.composite(
             NeoForgeStreamCodecs.enumCodec(EquipmentSlot.class), PacketUpdateArmorExtraData::slot,
-            ResourceLocation.STREAM_CODEC, PacketUpdateArmorExtraData::upgradeID,
+            Identifier.STREAM_CODEC, PacketUpdateArmorExtraData::upgradeID,
             DataComponentPatch.STREAM_CODEC, PacketUpdateArmorExtraData::patch,
             PacketUpdateArmorExtraData::new
     );

@@ -34,7 +34,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -60,7 +60,7 @@ import java.util.stream.Stream;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu> {
-    private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
+    private static final Identifier GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
     private static final int SEARCH_SLOT = 48;
 
     private static List<SearchEntry> cachedSearchEntries;
@@ -302,10 +302,10 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
         @Override
         public boolean test(String searchString) {
             if (searchString.startsWith("@")) {
-                ResourceLocation id = PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(ResourceLocation.withDefaultNamespace("none"));
+                Identifier id = PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(Identifier.withDefaultNamespace("none"));
                 return id.getNamespace().startsWith(searchString.substring(1));
             } else if (searchString.startsWith("#")) {
-                ResourceLocation id = ResourceLocation.tryParse(searchString.substring(1));
+                Identifier id = Identifier.tryParse(searchString.substring(1));
                 return id != null && stack.is(TagKey.create(Registries.ITEM, id));
             } else {
                 return tooltip.contains(searchString);

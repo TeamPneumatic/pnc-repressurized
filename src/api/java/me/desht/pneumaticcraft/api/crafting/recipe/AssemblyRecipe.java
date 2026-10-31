@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -79,7 +79,7 @@ public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
             return "assembly_program_" + this.toString().toLowerCase(Locale.ROOT);
         }
 
-        public ResourceLocation getRecipeType() {
+        public Identifier getRecipeType() {
             return switch (this) {
                 case DRILL -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL);
                 case LASER -> RL(PneumaticCraftRecipeTypes.ASSEMBLY_LASER);

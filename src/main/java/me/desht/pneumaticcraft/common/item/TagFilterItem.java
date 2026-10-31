@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -57,7 +57,7 @@ public class TagFilterItem extends Item implements IFilteringItem {
     }
 
     public static Set<TagKey<Item>> getConfiguredTagList(ItemStack stack) {
-        List<ResourceLocation> tagIds = stack.get(ModDataComponents.TAG_FILTER_KEYS);
+        List<Identifier> tagIds = stack.get(ModDataComponents.TAG_FILTER_KEYS);
         return tagIds != null && !tagIds.isEmpty() ?
                 tagIds.stream().map(r -> TagKey.create(Registries.ITEM, r)).collect(Collectors.toSet()) :
                 Set.of();

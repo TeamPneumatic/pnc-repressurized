@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.mixin.accessors.BlockEntityTypeAccess;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -53,7 +53,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     private final Table<EntityType<?>, PNCUpgrade, Integer> ENTITIES = Tables.synchronizedTable(HashBasedTable.create());
     private final Table<Item, PNCUpgrade, Integer> ITEMS = Tables.synchronizedTable(HashBasedTable.create());
 
-    private final Map<ResourceLocation, PNCUpgrade> knownUpgrades = new ConcurrentHashMap<>();
+    private final Map<Identifier, PNCUpgrade> knownUpgrades = new ConcurrentHashMap<>();
     private final Map<PNCUpgrade,Set<Item>> acceptedUpgrades = new ConcurrentHashMap<>();
 
     public static ApplicableUpgradesDB getInstance() {
@@ -124,7 +124,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
-    public PNCUpgrade registerUpgrade(ResourceLocation id, int maxTier, String... depModIds) {
+    public PNCUpgrade registerUpgrade(Identifier id, int maxTier, String... depModIds) {
         PNCUpgrade upgrade = new PNCUpgradeImpl(id, maxTier, depModIds);
         if (knownUpgrades.put(upgrade.getId(), upgrade) != null) {
             throw new IllegalStateException("duplicate upgrade ID: " + id);
@@ -133,7 +133,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
     }
 
     @Override
-    public PNCUpgrade getUpgradeById(ResourceLocation upgradeId) {
+    public PNCUpgrade getUpgradeById(Identifier upgradeId) {
         return knownUpgrades.get(upgradeId);
     }
 

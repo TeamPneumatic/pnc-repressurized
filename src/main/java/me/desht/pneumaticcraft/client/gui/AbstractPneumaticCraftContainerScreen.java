@@ -61,7 +61,7 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -156,7 +156,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         return addAnimatedStat(title, StatIcon.of(icon), backgroundColor, leftSided);
     }
 
-    protected WidgetAnimatedStat addAnimatedStat(Component title, ResourceLocation icon, int backgroundColor, boolean leftSided) {
+    protected WidgetAnimatedStat addAnimatedStat(Component title, Identifier icon, int backgroundColor, boolean leftSided) {
         return addAnimatedStat(title, StatIcon.of(icon), backgroundColor, leftSided);
     }
 
@@ -212,7 +212,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected String upgradeCategory() {
-        ResourceLocation regName = PneumaticCraftUtils.getRegistryName(BuiltInRegistries.BLOCK_ENTITY_TYPE, te.getType()).orElseThrow();
+        Identifier regName = PneumaticCraftUtils.getRegistryName(BuiltInRegistries.BLOCK_ENTITY_TYPE, te.getType()).orElseThrow();
         return PneumaticCraftUtils.modDefaultedString(regName);
     }
 
@@ -351,7 +351,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     @Nullable
-    protected abstract ResourceLocation getGuiTexture();
+    protected abstract Identifier getGuiTexture();
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
@@ -576,7 +576,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     <R extends PneumaticCraftRecipe> Optional<RecipeHolder<R>> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
         String id = te.getCurrentRecipeIdSynced();
         return id.isEmpty() ? Optional.empty() :
-                type.getRecipe(ClientUtils.getClientLevel(), ResourceLocation.parse(id));
+                type.getRecipe(ClientUtils.getClientLevel(), Identifier.parse(id));
     }
 
     protected RegistryAccess registryAccess() {

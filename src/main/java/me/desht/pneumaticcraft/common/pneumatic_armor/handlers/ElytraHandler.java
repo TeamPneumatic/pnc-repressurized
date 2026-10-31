@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +34,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 public class ElytraHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.ELYTRA;
     }
 

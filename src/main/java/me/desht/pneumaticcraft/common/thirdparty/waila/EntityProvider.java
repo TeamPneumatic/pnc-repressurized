@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import snownee.jade.api.EntityAccessor;
 import snownee.jade.api.IEntityComponentProvider;
@@ -37,11 +37,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityProvider {
-    private static final ResourceLocation ID = RL("entity");
+    private static final Identifier ID = RL("entity");
 
     public static class DataProvider implements IServerDataProvider<EntityAccessor> {
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
 
@@ -76,7 +76,7 @@ public class EntityProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

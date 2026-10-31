@@ -33,7 +33,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -338,8 +338,8 @@ public class PneumaticCraftUtils {
         if (filterStack.isEmpty() || stack.isEmpty()) return false;
 
         if (checkModSimilarity) {
-            String mod1 = getRegistryName(filterStack.getItem()).map(ResourceLocation::getNamespace).orElse("");
-            String mod2 = getRegistryName(stack.getItem()).map(ResourceLocation::getNamespace).orElse("");
+            String mod1 = getRegistryName(filterStack.getItem()).map(Identifier::getNamespace).orElse("");
+            String mod2 = getRegistryName(stack.getItem()).map(Identifier::getNamespace).orElse("");
             return mod1.equals(mod2);
         }
 
@@ -650,8 +650,8 @@ public class PneumaticCraftUtils {
      * @param str a string
      * @return a resource location
      */
-    public static ResourceLocation modDefaultedRL(String str) {
-        return str.indexOf(':') > 0 ? ResourceLocation.parse(str) : RL(str);
+    public static Identifier modDefaultedRL(String str) {
+        return str.indexOf(':') > 0 ? Identifier.parse(str) : RL(str);
     }
 
     /**
@@ -660,7 +660,7 @@ public class PneumaticCraftUtils {
      * @param rl a resource location
      * @return stringified resource location
      */
-    public static String modDefaultedString(ResourceLocation rl) {
+    public static String modDefaultedString(Identifier rl) {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
@@ -678,23 +678,23 @@ public class PneumaticCraftUtils {
         return item.builtInRegistryHolder().tags().collect(Collectors.toSet());
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Item item) {
+    public static Optional<Identifier> getRegistryName(Item item) {
         return getRegistryName(BuiltInRegistries.ITEM, item);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Block block) {
+    public static Optional<Identifier> getRegistryName(Block block) {
         return getRegistryName(BuiltInRegistries.BLOCK, block);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Fluid fluid) {
+    public static Optional<Identifier> getRegistryName(Fluid fluid) {
         return getRegistryName(BuiltInRegistries.FLUID, fluid);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Entity entity) {
+    public static Optional<Identifier> getRegistryName(Entity entity) {
         return getRegistryName(BuiltInRegistries.ENTITY_TYPE, entity.getType());
     }
 
-    public static <T> Optional<ResourceLocation> getRegistryName(Registry<T> registry, T object) {
+    public static <T> Optional<Identifier> getRegistryName(Registry<T> registry, T object) {
         return Optional.ofNullable(registry.getKey(object));
     }
 

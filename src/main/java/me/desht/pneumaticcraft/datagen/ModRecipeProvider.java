@@ -31,7 +31,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -316,7 +316,7 @@ public class ModRecipeProvider extends RecipeProvider {
         ).save(consumer);
 
         if (ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
-            Item ccModem = BuiltInRegistries.ITEM.get(ResourceLocation.parse("computercraft:wireless_modem_normal"));
+            Item ccModem = BuiltInRegistries.ITEM.get(Identifier.parse("computercraft:wireless_modem_normal"));
             shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                     " U /MP /III",
                     'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1146,7 +1146,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
 
-        Item mekRadShield = BuiltInRegistries.ITEM.get(ResourceLocation.parse("mekanism:module_radiation_shielding_unit"));
+        Item mekRadShield = BuiltInRegistries.ITEM.get(Identifier.parse("mekanism:module_radiation_shielding_unit"));
         shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "LIL/IRI/LIL",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1679,13 +1679,13 @@ public class ModRecipeProvider extends RecipeProvider {
 
 //        ModLoadedCondition thermalLoaded = new ModLoadedCondition("thermal");
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
-//                FluidIngredient.tag(new ResourceLocation("thermal:refined_biofuel")), 1_000_000, 0.8f);
+//                FluidIngredient.tag(new Identifier("thermal:refined_biofuel")), 1_000_000, 0.8f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_creosote"), thermalLoaded,
-//                FluidIngredient.tag(new ResourceLocation("thermal:creosote")), 50_000, 0.25f);
+//                FluidIngredient.tag(new Identifier("thermal:creosote")), 50_000, 0.25f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_refined_fuel"), thermalLoaded,
-//                FluidIngredient.tag(new ResourceLocation("thermal:refined_fuel")), 1_500_000, 1.5f);
+//                FluidIngredient.tag(new Identifier("thermal:refined_fuel")), 1_500_000, 1.5f);
 //        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_tree_oil"), thermalLoaded,
-//                FluidIngredient.tag(new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
+//                FluidIngredient.tag(new Identifier("thermal:tree_oil")), 400_000, 1.0f);
     }
 
     private <T extends ItemLike> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -1916,7 +1916,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private <T extends ItemLike> String safeName(T required) {
-        ResourceLocation key = BuiltInRegistries.ITEM.getKey(required.asItem());
+        Identifier key = BuiltInRegistries.ITEM.getKey(required.asItem());
         return key.getPath().replace('/', '_');
     }
 

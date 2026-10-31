@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class AbstractTubeModuleScreen<M extends AbstractTubeModule> extends AbstractPneumaticCraftScreen {
@@ -53,7 +53,7 @@ public abstract class AbstractTubeModuleScreen<M extends AbstractTubeModule> ext
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 

@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class MutableBasket extends ShoppingBasket {
-    MutableBasket(Map<ResourceLocation, Integer> basket) {
+    MutableBasket(Map<Identifier, Integer> basket) {
         super(new HashMap<>(basket));
     }
 
@@ -25,25 +25,25 @@ public class MutableBasket extends ShoppingBasket {
         super(new HashMap<>());
     }
 
-    public void setUnits(ResourceLocation offerId, int units) {
+    public void setUnits(Identifier offerId, int units) {
         basket.put(offerId, units);
     }
 
-    public void addUnitsToOffer(ResourceLocation offerId, int toAdd) {
+    public void addUnitsToOffer(Identifier offerId, int toAdd) {
         basket.put(offerId, Math.max(0, getUnits(offerId) + toAdd));
         removeIfEmpty(offerId);
     }
 
-    public void remove(ResourceLocation offerId) {
+    public void remove(Identifier offerId) {
         basket.remove(offerId);
     }
 
-    public void halve(ResourceLocation offerId) {
+    public void halve(Identifier offerId) {
         basket.put(offerId, getUnits(offerId) / 2);
         removeIfEmpty(offerId);
     }
 
-    private void removeIfEmpty(ResourceLocation offerId) {
+    private void removeIfEmpty(Identifier offerId) {
         if (getUnits(offerId) == 0) basket.remove(offerId);
     }
 
@@ -90,7 +90,7 @@ public class MutableBasket extends ShoppingBasket {
         Map<Fluid, Integer> fluidAmounts = fluidCap.map(MutableBasket::countFluids).orElse(Map.of());
 
         AmadronMenu.EnumProblemState problem = AmadronMenu.EnumProblemState.NO_PROBLEMS;
-        for (ResourceLocation offerId : basket.keySet()) {
+        for (Identifier offerId : basket.keySet()) {
             AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(offerId);
 
             // check there's enough in stock, if the order has limited stock
@@ -171,7 +171,7 @@ public class MutableBasket extends ShoppingBasket {
         return result;
     }
 
-    private AmadronMenu.EnumProblemState verifyDroneSpace(AmadronMenu.EnumProblemState curProb, ResourceLocation offerId, AmadronTradeResource resource) {
+    private AmadronMenu.EnumProblemState verifyDroneSpace(AmadronMenu.EnumProblemState curProb, Identifier offerId, AmadronTradeResource resource) {
         return curProb.addProblem(resource.apply(
                 itemStack -> {
                     int stacks = resource.totalSpaceRequired(getUnits(offerId));

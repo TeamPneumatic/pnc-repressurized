@@ -32,7 +32,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
@@ -88,7 +88,7 @@ public class SideConfigurator<T> {
         return setDefaultSides(defaultRelativeFaces);
     }
 
-    public int registerHandler(String id, ResourceLocation texture, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
+    public int registerHandler(String id, Identifier texture, BaseCapability<T,?> cap, Supplier<T> handler, RelativeFace... defaultRelativeFaces) {
         entries.add(new ConnectionEntry<>(id, Either.right(texture), cap, handler));
         idxMap.put(id, entries.size() - 1);
         return setDefaultSides(defaultRelativeFaces);
@@ -268,7 +268,7 @@ public class SideConfigurator<T> {
         }
     }
 
-    public record ConnectionEntry<T>(String id, Either<ItemStack,ResourceLocation> texture, BaseCapability<T, ?> cap, Supplier<T> handler) {
+    public record ConnectionEntry<T>(String id, Either<ItemStack,Identifier> texture, BaseCapability<T, ?> cap, Supplier<T> handler) {
     }
 
     public record Saved(Map<RelativeFace,Integer> faces) {

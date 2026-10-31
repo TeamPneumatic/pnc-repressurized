@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPneumaticCraftScreen extends Screen {
@@ -40,7 +40,7 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
     }
 
     @Nullable
-    protected abstract ResourceLocation getGuiTexture();
+    protected abstract Identifier getGuiTexture();
 
     protected WidgetLabel addLabel(Component text, int x, int y) {
         return addLabel(text, x, y, WidgetLabel.Alignment.LEFT);

@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -40,7 +40,7 @@ public class AssemblyDrill implements IRecipeManager<AssemblyRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack output) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(Identifier.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new AssemblyRecipeImpl(
                                 CTUtils.toSizedIngredient(input),
                                 output.getImmutableInternal(),

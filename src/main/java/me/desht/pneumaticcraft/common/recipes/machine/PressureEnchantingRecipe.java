@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -46,7 +46,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
-    public static final ResourceLocation ID = RL("pressure_chamber_enchanting");
+    public static final Identifier ID = RL("pressure_chamber_enchanting");
 
     public PressureEnchantingRecipe(CraftingBookCategory ignoredCategory) {
         super(Collections.emptyList(), 2F, List.of());

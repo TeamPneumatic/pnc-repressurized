@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public class FlowDetectorRenderer extends AbstractTubeModuleRenderer<FlowDetectorModule> {
@@ -48,7 +48,7 @@ public class FlowDetectorRenderer extends AbstractTubeModuleRenderer<FlowDetecto
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return Textures.MODEL_FLOW_DETECTOR;
     }
 }

@@ -44,7 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
@@ -265,7 +265,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_AREA;
     }
 

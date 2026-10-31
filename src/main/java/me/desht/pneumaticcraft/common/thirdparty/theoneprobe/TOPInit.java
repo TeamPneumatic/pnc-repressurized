@@ -33,7 +33,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +47,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TOPInit implements Function<ITheOneProbe, Void> {
-    static final ResourceLocation ELEMENT_PRESSURE = RL("pressure");
+    static final Identifier ELEMENT_PRESSURE = RL("pressure");
     private static final ChatFormatting COLOR = ChatFormatting.GRAY;
 
 
@@ -59,7 +59,7 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
 
         theOneProbe.registerProvider(new IProbeInfoProvider() {
             @Override
-            public ResourceLocation getID() {
+            public Identifier getID() {
                 return RL("default");
             }
 

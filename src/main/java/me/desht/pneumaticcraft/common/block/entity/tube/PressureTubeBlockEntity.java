@@ -42,7 +42,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -131,7 +131,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundTag moduleTag = moduleList.getCompound(i);
-            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(moduleTag.getString("type")));
+            Item item = BuiltInRegistries.ITEM.get(Identifier.parse(moduleTag.getString("type")));
             Direction dir = Direction.from3DDataValue(moduleTag.getInt("dir"));
             if (item instanceof TubeModuleItem) {
                 AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);

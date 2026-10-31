@@ -38,7 +38,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 
 import javax.annotation.Nonnull;
@@ -54,7 +54,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<Component> helpText = new ArrayList<>();
-    private final ResourceLocation statID;  // for saving to file
+    private final Identifier statID;  // for saving to file
 
     private WidgetCheckBox snapToGrid;
     private PNCForgeSlider gridSlider;
@@ -67,7 +67,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
         this(renderHandler, renderHandler.getID(), renderHandler.getAnimatedStat());
     }
 
-    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, ResourceLocation statID, @Nonnull IGuiAnimatedStat movedStat) {
+    public ArmorStatMoveScreen(IArmorUpgradeClientHandler<?> renderHandler, Identifier statID, @Nonnull IGuiAnimatedStat movedStat) {
         super(Component.literal("Move Gui"));
 
         this.movedStat = movedStat;
@@ -130,7 +130,7 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 

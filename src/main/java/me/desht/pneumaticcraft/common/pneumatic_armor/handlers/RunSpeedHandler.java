@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +45,7 @@ public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     private static final Map<UUID,Vec3> MOVE_MAP = new HashMap<>();
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.RUN_SPEED;
     }
 

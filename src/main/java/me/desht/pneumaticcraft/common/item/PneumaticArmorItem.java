@@ -53,7 +53,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
@@ -85,7 +85,7 @@ public class PneumaticArmorItem extends ArmorItem implements
         ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
-    private static final Map<EquipmentSlotGroup,ResourceLocation> MODIFIER_IDS = Util.make(
+    private static final Map<EquipmentSlotGroup,Identifier> MODIFIER_IDS = Util.make(
             new EnumMap<>(EquipmentSlotGroup.class), map -> {
                 map.put(EquipmentSlotGroup.HEAD, RL("armor_mod_head"));
                 map.put(EquipmentSlotGroup.CHEST, RL("armor_mod_chest"));

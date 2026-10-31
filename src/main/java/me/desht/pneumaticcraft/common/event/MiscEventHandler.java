@@ -45,7 +45,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -90,7 +90,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MiscEventHandler {
-    private static final Set<ResourceLocation> needsTPSSync = new HashSet<>();
+    private static final Set<Identifier> needsTPSSync = new HashSet<>();
 
     /**
      * Call this from the tick method of block entities which require server TPS to be synced to client.

@@ -50,7 +50,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
@@ -466,7 +466,7 @@ public class JackHammerItem extends PressurizableItem
             return blocksDug;
         }
 
-        public ResourceLocation getGuiIcon() {
+        public Identifier getGuiIcon() {
             return Textures.guiIconTexture("gui_" + name + ".png");
         }
 

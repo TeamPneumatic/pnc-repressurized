@@ -22,7 +22,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -31,11 +31,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Received on: CLIENT
  * Sent by server when an order is purchased by someone, to update remaining stock levels as seen on clients.
  */
-public record PacketAmadronStockUpdate(ResourceLocation id, int stock) implements CustomPacketPayload {
+public record PacketAmadronStockUpdate(Identifier id, int stock) implements CustomPacketPayload {
     public static final Type<PacketAmadronStockUpdate> TYPE = new Type<>(RL("amadron_stock_update"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketAmadronStockUpdate> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, PacketAmadronStockUpdate::id,
+            Identifier.STREAM_CODEC, PacketAmadronStockUpdate::id,
             ByteBufCodecs.VAR_INT, PacketAmadronStockUpdate::stock,
             PacketAmadronStockUpdate::new
     );

@@ -13,7 +13,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
@@ -125,7 +125,7 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
         ).apply(builder, TagWithAmount::new));
 
         public static final StreamCodec<RegistryFriendlyByteBuf, TagWithAmount> STREAM_CODEC = StreamCodec.composite(
-                ResourceLocation.STREAM_CODEC.map(rl -> TagKey.create(Registries.FLUID, rl), TagKey::location), TagWithAmount::tag,
+                Identifier.STREAM_CODEC.map(rl -> TagKey.create(Registries.FLUID, rl), TagKey::location), TagWithAmount::tag,
                 ByteBufCodecs.INT, TagWithAmount::amount,
                 TagWithAmount::new
         );

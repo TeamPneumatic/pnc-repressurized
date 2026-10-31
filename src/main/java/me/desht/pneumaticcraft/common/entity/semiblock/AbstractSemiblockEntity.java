@@ -39,7 +39,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -293,7 +293,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public ResourceLocation getSemiblockId() {
+    public Identifier getSemiblockId() {
         return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType()).orElseThrow();
     }
 

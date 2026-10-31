@@ -27,7 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -220,13 +220,13 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
         INPUT(Textures.MODEL_TRANSFER_GADGET_IN),
         OUTPUT(Textures.MODEL_TRANSFER_GADGET_OUT);
 
-        private final ResourceLocation texture;
+        private final Identifier texture;
 
-        IOMode(ResourceLocation texture) {
+        IOMode(Identifier texture) {
             this.texture = texture;
         }
 
-        public ResourceLocation getTexture() {
+        public Identifier getTexture() {
             return texture;
         }
 

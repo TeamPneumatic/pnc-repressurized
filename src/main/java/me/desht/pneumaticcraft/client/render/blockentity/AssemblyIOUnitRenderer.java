@@ -34,7 +34,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -220,7 +220,7 @@ public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOU
         return Pair.of(renderOverride, clawTrans);
     }
 
-    private ResourceLocation getTexture(AssemblyIOUnitBlockEntity te) {
+    private Identifier getTexture(AssemblyIOUnitBlockEntity te) {
         return te != null && te.isImportUnit() ? Textures.MODEL_ASSEMBLY_IO_IMPORT : Textures.MODEL_ASSEMBLY_IO_EXPORT;
     }
 }

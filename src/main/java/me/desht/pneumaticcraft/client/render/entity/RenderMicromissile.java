@@ -27,7 +27,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
@@ -79,7 +79,7 @@ public class RenderMicromissile extends EntityRenderer<MicromissileEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(MicromissileEntity entity) {
+    public Identifier getTextureLocation(MicromissileEntity entity) {
         return Textures.MICROMISSILE_ENTITY;
     }
 }

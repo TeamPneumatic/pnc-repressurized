@@ -33,7 +33,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -51,7 +51,7 @@ public class AmadroneEntity extends DroneEntity {
 
     public enum AmadronAction { TAKING_PAYMENT, RESTOCKING }
 
-    private ResourceLocation handlingOffer; // ID of an Amadron offer
+    private Identifier handlingOffer; // ID of an Amadron offer
     private int offerTimes;
     private ItemStack usedTablet = ItemStack.EMPTY;  // Tablet used to place the order.
     private String buyingPlayer;
@@ -98,7 +98,7 @@ public class AmadroneEntity extends DroneEntity {
         return amadroneStack;
     }
 
-    public void setHandlingOffer(ResourceLocation offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {
+    public void setHandlingOffer(Identifier offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {
         this.handlingOffer = offerId;
         this.offerTimes = times;
         this.usedTablet = usedTablet.copy();
@@ -106,7 +106,7 @@ public class AmadroneEntity extends DroneEntity {
         this.amadronAction = amadronAction;
     }
 
-    public ResourceLocation getHandlingOffer() {
+    public Identifier getHandlingOffer() {
         return handlingOffer;
     }
 
@@ -178,7 +178,7 @@ public class AmadroneEntity extends DroneEntity {
 
         if (tag.contains("amadron")) {
             CompoundTag subTag = tag.getCompound("amadron");
-            handlingOffer = ResourceLocation.parse(subTag.getString("offerId"));
+            handlingOffer = Identifier.parse(subTag.getString("offerId"));
             usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompound("usedTablet"));
             offerTimes = subTag.getInt("offerTimes");
             buyingPlayer = subTag.getString("buyingPlayer");

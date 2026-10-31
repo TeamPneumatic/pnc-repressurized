@@ -19,17 +19,17 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.mixin.accessors.AbstractFurnaceBlockEntityAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatBehaviourFurnace extends HeatBehaviour {
-    static final ResourceLocation ID = RL("furnace");
+    static final Identifier ID = RL("furnace");
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

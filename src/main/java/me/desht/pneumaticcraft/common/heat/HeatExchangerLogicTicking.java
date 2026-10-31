@@ -27,7 +27,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -163,7 +163,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         ListTag tagList = nbt.getList("behaviours", Tag.TAG_COMPOUND);
         for (int i = 0; i < tagList.size(); i++) {
             CompoundTag t = tagList.getCompound(i);
-            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(ResourceLocation.parse(t.getString("id")));
+            HeatBehaviour behaviour = HeatBehaviourManager.getInstance().createBehaviour(Identifier.parse(t.getString("id")));
             if (behaviour != null) {
                 behaviour.deserializeNBT(t);
                 behaviours.add(behaviour);

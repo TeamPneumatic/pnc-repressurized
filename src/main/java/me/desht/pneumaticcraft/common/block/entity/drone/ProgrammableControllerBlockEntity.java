@@ -62,7 +62,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -109,7 +109,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
     private static final int MAX_ENERGY = 100000;
 
-    public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
+    public static final Set<Identifier> BLACKLISTED_WIDGETS = ImmutableSet.of(
             RL("computer_control"),
             RL("entity_attack"),
             RL("drone_condition_entity"),

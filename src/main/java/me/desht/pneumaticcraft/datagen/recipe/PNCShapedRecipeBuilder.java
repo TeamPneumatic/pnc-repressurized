@@ -11,7 +11,7 @@ import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -122,7 +122,7 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, Identifier id) {
         Advancement.Builder builder = output.advancement()
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
                 .rewards(AdvancementRewards.Builder.recipe(id))
@@ -133,7 +133,7 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
     }
 
     @NotNull
-    protected ShapedRecipe makeRecipe(ResourceLocation id) {
+    protected ShapedRecipe makeRecipe(Identifier id) {
         ShapedRecipePattern shapedrecipepattern = this.ensureValid(id);
         return new ShapedRecipe(
                 Objects.requireNonNullElse(this.group, ""),
@@ -144,7 +144,7 @@ public class PNCShapedRecipeBuilder extends ShapedRecipeBuilder {
         );
     }
 
-    protected ShapedRecipePattern ensureValid(ResourceLocation id) {
+    protected ShapedRecipePattern ensureValid(Identifier id) {
         if (this.criteria.isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + id);
         } else {

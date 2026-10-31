@@ -33,7 +33,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -99,7 +99,7 @@ public abstract class ProgWidget implements IProgWidget {
     public abstract ProgWidgetType<?> getType();
 
     @Override
-    final public ResourceLocation getTypeID() {
+    final public Identifier getTypeID() {
         return PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(getType());
     }
 

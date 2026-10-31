@@ -31,7 +31,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
@@ -156,7 +156,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
 
     public static abstract class RedstoneMode<T extends BlockEntity & IRedstoneControl<T>> {
         private final String id;
-        private final Either<ItemStack,ResourceLocation> texture;
+        private final Either<ItemStack,Identifier> texture;
         private final Predicate<T> runPredicate;
         private final Predicate<T> emissionPredicate;
 
@@ -164,11 +164,11 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
             this(id, Either.left(stackIcon), runPredicate, emissionPredicate);
         }
 
-        public RedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+        public RedstoneMode(String id, Identifier texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
             this(id, Either.right(texture), runPredicate, emissionPredicate);
         }
 
-        private RedstoneMode(String id, Either<ItemStack,ResourceLocation> texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+        private RedstoneMode(String id, Either<ItemStack,Identifier> texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
             this.id = id;
             this.runPredicate = runPredicate;
             this.emissionPredicate = emissionPredicate;
@@ -179,7 +179,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
             return id;
         }
 
-        public Either<ItemStack,ResourceLocation> getTexture() {
+        public Either<ItemStack,Identifier> getTexture() {
             return texture;
         }
 
@@ -189,7 +189,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public static class EmittingRedstoneMode<T extends BlockEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
-        public EmittingRedstoneMode(String id, ResourceLocation texture, Predicate<T> emissionPredicate) {
+        public EmittingRedstoneMode(String id, Identifier texture, Predicate<T> emissionPredicate) {
             super(id, texture, te -> false, emissionPredicate);
         }
 
@@ -199,7 +199,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public static class ReceivingRedstoneMode<T extends BlockEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
-        public ReceivingRedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate) {
+        public ReceivingRedstoneMode(String id, Identifier texture, Predicate<T> runPredicate) {
             super(id, texture, runPredicate, t -> false);
         }
 

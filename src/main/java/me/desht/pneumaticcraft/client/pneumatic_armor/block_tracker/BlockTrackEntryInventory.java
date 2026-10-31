@@ -28,7 +28,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -50,7 +50,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
-    public static final ResourceLocation ID = RL("block_tracker.module.inventories");
+    public static final Identifier ID = RL("block_tracker.module.inventories");
 
     @Override
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
@@ -117,7 +117,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public ResourceLocation getEntryID() {
+    public Identifier getEntryID() {
         return ID;
     }
 

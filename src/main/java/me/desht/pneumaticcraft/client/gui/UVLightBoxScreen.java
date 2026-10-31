@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -68,7 +68,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         BlockState state = te.getBlockState();
         return state.getBlock() == ModBlocks.UV_LIGHT_BOX.get() && state.getValue(UVLightBoxBlock.LIT) ?
                 Textures.GUI_UV_LIGHT_BOX_ON : Textures.GUI_UV_LIGHT_BOX;

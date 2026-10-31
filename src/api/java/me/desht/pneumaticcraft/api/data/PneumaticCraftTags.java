@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.data;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
@@ -54,7 +54,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Block> STORAGE_BLOCKS_COMPRESSED_IRON = commonTag("storage_blocks/compressed_iron");
 
         static TagKey<Block> tag(String modid, String name) {
-            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Block> modTag(String name) {
@@ -118,7 +118,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Item> AMADRON_TABLET_UPGRADE_BLACKLIST = modTag("amadron_tablet_upgrade_blacklist");
 
         static TagKey<Item> tag(String modid, String name) {
-            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Item> modTag(String name) {
@@ -154,7 +154,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Fluid> SEISMIC = modTag("seismic_sensor_interesting");
 
         static TagKey<Fluid> tag(String modid, String name) {
-            return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Fluid> modTag(String name) {
@@ -176,7 +176,7 @@ public class PneumaticCraftTags {
         public static final TagKey<EntityType<?>> CARRYON_BLACKLISTED = tag("carryon", "entity_blacklist");
 
         static TagKey<EntityType<?>> tag(String modid, String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<EntityType<?>> modTag(String name) {
@@ -189,7 +189,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Biome> OIL_LAKES_UNDERGROUND = modTag("has_underground_oil_lakes");
 
         static TagKey<Biome> tag(String modid, String name) {
-            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Biome> modTag(String name) {
@@ -201,7 +201,7 @@ public class PneumaticCraftTags {
         public static final TagKey<Structure> NO_OIL_LAKES = modTag("no_oil_lakes");
 
         static TagKey<Structure> tag(String modid, String name) {
-            return TagKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<Structure> modTag(String name) {
@@ -217,7 +217,7 @@ public class PneumaticCraftTags {
         public static final TagKey<DamageType> MINIGUN = modTag("minigun");
 
         static TagKey<DamageType> tag(String modid, String name) {
-            return TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<DamageType> modTag(String name) {

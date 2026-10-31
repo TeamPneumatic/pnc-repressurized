@@ -65,7 +65,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -296,7 +296,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 
@@ -467,7 +467,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (Minecraft.getInstance().options.advancedItemTooltips) {
-                    ResourceLocation id = PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
+                    Identifier id = PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {

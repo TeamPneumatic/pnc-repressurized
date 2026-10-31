@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
@@ -51,7 +51,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
-    public static final ResourceLocation ID = RL("pressure_chamber_disenchanting");
+    public static final Identifier ID = RL("pressure_chamber_disenchanting");
 
     private static final Lazy<WildcardedRLMatcher> BLACKLIST
             = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.disenchantingBlacklist);

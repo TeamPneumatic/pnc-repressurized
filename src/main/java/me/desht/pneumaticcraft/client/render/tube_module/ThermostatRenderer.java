@@ -9,7 +9,7 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
 
@@ -65,7 +65,7 @@ public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatMod
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_THERMOSTAT_MODULE_UPGRADED : Textures.MODEL_THERMOSTAT_MODULE;
     }
 }

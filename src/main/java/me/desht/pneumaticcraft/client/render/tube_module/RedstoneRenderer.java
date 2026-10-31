@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
@@ -136,7 +136,7 @@ public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule>
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_REDSTONE_MODULE_UPGRADED : Textures.MODEL_REDSTONE_MODULE;
     }
 }

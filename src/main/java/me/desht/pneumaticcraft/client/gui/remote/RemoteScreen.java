@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class RemoteScreen extends AbstractRemoteScreen {
@@ -55,7 +55,7 @@ public class RemoteScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 

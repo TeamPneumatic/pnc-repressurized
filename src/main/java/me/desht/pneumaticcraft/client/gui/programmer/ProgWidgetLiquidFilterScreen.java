@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.Util;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -56,7 +56,7 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_ITEM_SEARCHER;
     }
 
@@ -128,10 +128,10 @@ public class ProgWidgetLiquidFilterScreen extends AbstractProgWidgetScreen<ProgW
         }
         String srchL = srch.toLowerCase();
         if (srchL.startsWith("@")) {
-            ResourceLocation id = PneumaticCraftUtils.getRegistryName(fluid).orElse(ResourceLocation.withDefaultNamespace("none"));
+            Identifier id = PneumaticCraftUtils.getRegistryName(fluid).orElse(Identifier.withDefaultNamespace("none"));
             return id.getNamespace().startsWith(srchL.substring(1));
         } else if (srchL.startsWith("#")) {
-            ResourceLocation id = ResourceLocation.tryParse(srchL.substring(1));
+            Identifier id = Identifier.tryParse(srchL.substring(1));
             return id != null && fluid.builtInRegistryHolder().is(TagKey.create(Registries.FLUID, id));
         } else {
             return new FluidStack(fluid, 1).getHoverName().getString().toLowerCase().contains(srchL);

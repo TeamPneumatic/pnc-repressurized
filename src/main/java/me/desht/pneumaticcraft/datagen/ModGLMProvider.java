@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.loot.PNCDungeonLootModifier;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -33,7 +33,7 @@ public class ModGLMProvider extends GlobalLootModifierProvider {
         Validate.isTrue(chests.length > 0);
         LootItemCondition.Builder condition = null;
         for (String s : chests) {
-            LootTableIdCondition.Builder b = LootTableIdCondition.builder(ResourceLocation.parse("chests/" + s));
+            LootTableIdCondition.Builder b = LootTableIdCondition.builder(Identifier.parse("chests/" + s));
             condition = condition == null ? b : condition.or(b);
         }
         return condition.build();

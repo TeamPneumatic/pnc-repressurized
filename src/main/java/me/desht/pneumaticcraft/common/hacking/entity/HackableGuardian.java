@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.Guardian;
@@ -28,14 +28,14 @@ import org.jetbrains.annotations.NotNull;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableGuardian extends AbstractPersistentEntityHack<Guardian> {
-    private static final ResourceLocation ID = RL("guardian");
+    private static final Identifier ID = RL("guardian");
 
     public HackableGuardian() {
         super(StockHackTypes.DISARM);
     }
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

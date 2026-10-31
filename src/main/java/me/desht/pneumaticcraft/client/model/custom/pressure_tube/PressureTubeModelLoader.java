@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 
@@ -30,9 +30,9 @@ public enum PressureTubeModelLoader implements IGeometryLoader<PressureTubeGeome
         return new PressureTubeGeometry(pfx, core, connected, closed);
     }
 
-    private static BlockModel loadModel(ResourceLocation location) {
+    private static BlockModel loadModel(Identifier location) {
         ResourceManager manager = Minecraft.getInstance().getResourceManager();
-        ResourceLocation file = ModelBakery.MODEL_LISTER.idToFile(location);
+        Identifier file = ModelBakery.MODEL_LISTER.idToFile(location);
         try (InputStream stream = manager.getResourceOrThrow(file).open()) {
             return BlockModel.fromStream(new InputStreamReader(stream));
         } catch (IOException e) {

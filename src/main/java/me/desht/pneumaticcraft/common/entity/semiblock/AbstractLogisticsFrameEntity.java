@@ -45,7 +45,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntityType;
@@ -169,7 +169,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     @Override
     public abstract int getColor();
 
-    public abstract ResourceLocation getTexture();
+    public abstract Identifier getTexture();
 
     public abstract int getPriority();
 

@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -48,7 +48,7 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager<ThermoPlan
                           @ZenCodeType.OptionalFloat(1f) float recipeSpeed, @ZenCodeType.OptionalFloat(1f) float airUseMultiplier,
                           @ZenCodeType.OptionalBoolean() boolean exothermic) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(Identifier.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new ThermoPlantRecipeImpl(
                                 new ThermoPlantRecipe.Inputs(
                                         Optional.ofNullable(CTUtils.toSizedFluidIngredient(inputFluid)),

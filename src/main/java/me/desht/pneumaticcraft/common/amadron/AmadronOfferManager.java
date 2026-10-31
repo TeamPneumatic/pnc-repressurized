@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -70,9 +70,9 @@ public enum AmadronOfferManager {
     // villager professions which actually have some trades
     private final List<VillagerProfession> validProfessions = new ArrayList<>();
     // A complete collection of all known offers
-    private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
+    private final Map<Identifier, AmadronOffer> allOffers = new HashMap<>();
     // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time
-    private final Map<ResourceLocation, AmadronOffer> activeOffers = new LinkedHashMap<>();
+    private final Map<Identifier, AmadronOffer> activeOffers = new LinkedHashMap<>();
     // rebuild offers?  true initially and after a /reload
     private boolean rebuildRequired = true;
 
@@ -80,7 +80,7 @@ public enum AmadronOfferManager {
         return INSTANCE;
     }
 
-    public AmadronOffer getOffer(ResourceLocation offerId) {
+    public AmadronOffer getOffer(Identifier offerId) {
         return allOffers.get(offerId);
     }
 
@@ -124,7 +124,7 @@ public enum AmadronOfferManager {
         return getPlayerOffers().values().stream().anyMatch(existing -> existing.equivalentTo(offer));
     }
 
-    private Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {
+    private Map<Identifier, AmadronPlayerOffer> getPlayerOffers() {
         return AmadronPlayerOffers.INSTANCE.getPlayerOffers();
     }
 
@@ -170,7 +170,7 @@ public enum AmadronOfferManager {
      * @param id offer ID, must be in the active offers list
      * @param stock new stock level
      */
-    public void updateStock(ResourceLocation id, int stock) {
+    public void updateStock(Identifier id, int stock) {
         AmadronRecipe offer = activeOffers.get(id);
         if (offer != null) {
             offer.setStock(stock);
@@ -218,7 +218,7 @@ public enum AmadronOfferManager {
         AmadronPlayerOffers.save();
     }
 
-    private <T extends AmadronOffer> void addOffer(Map<ResourceLocation, T> map, T offer) {
+    private <T extends AmadronOffer> void addOffer(Map<Identifier, T> map, T offer) {
         map.put(offer.getOfferId(), offer);
     }
 
@@ -334,7 +334,7 @@ public enum AmadronOfferManager {
                 IntStream.range(0, trades.length).forEach(i -> {
                     MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
                     if (offer != null && !offer.getBaseCostA().isEmpty() && !offer.getResult().isEmpty()) {
-                        ResourceLocation offerId = ResourceLocation.parse(profession + "_" + level + "_" + i);
+                        Identifier offerId = Identifier.parse(profession + "_" + level + "_" + i);
                         String key = profession.toString() + "_" + level;
                         villagerTrades.computeIfAbsent(key, k ->
                                 new ArrayList<>()).add(AmadronOffer.villagerTrade(offerId, offer, level));
@@ -385,7 +385,7 @@ public enum AmadronOfferManager {
         }
     }
 
-    public boolean isActive(ResourceLocation offerId) {
+    public boolean isActive(Identifier offerId) {
         return activeOffers.containsKey(offerId);
     }
 

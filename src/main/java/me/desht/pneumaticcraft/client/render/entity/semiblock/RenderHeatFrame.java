@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 
 public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
@@ -41,7 +41,7 @@ public class RenderHeatFrame extends RenderSemiblockBase<HeatFrameEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(HeatFrameEntity heatFrameEntity) {
+    public Identifier getTextureLocation(HeatFrameEntity heatFrameEntity) {
         return TemperatureCategory.forTemperature(heatFrameEntity.getSyncedTemperature()).getTextureLocation();
     }
 }

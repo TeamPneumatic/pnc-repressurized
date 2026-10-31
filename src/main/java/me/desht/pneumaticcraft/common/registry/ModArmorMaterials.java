@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.registry;
 import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.Util;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -20,8 +20,8 @@ public class ModArmorMaterials {
     public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS
             = DeferredRegister.create(Registries.ARMOR_MATERIAL, Names.MOD_ID);
 
-    public static final ResourceLocation COMPRESSED_IRON_ARMOR = RL("compressed_iron");
-    public static final ResourceLocation PNEUMATIC_ARMOR = RL("pneumatic");
+    public static final Identifier COMPRESSED_IRON_ARMOR = RL("compressed_iron");
+    public static final Identifier PNEUMATIC_ARMOR = RL("pneumatic");
 
     public static final DeferredHolder<ArmorMaterial,ArmorMaterial> COMPRESSED_IRON
         = ARMOR_MATERIALS.register(COMPRESSED_IRON_ARMOR.getPath(), () -> new ArmorMaterial(

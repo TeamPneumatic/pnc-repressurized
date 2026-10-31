@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule> {
     public final void renderModule(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
@@ -31,7 +31,7 @@ public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule> {
 
     protected abstract void render(T module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha);
 
-    protected abstract ResourceLocation getTexture(boolean isUpgraded);
+    protected abstract Identifier getTexture(boolean isUpgraded);
 
     public void renderExtras(T module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         // nothing; override in subclasses

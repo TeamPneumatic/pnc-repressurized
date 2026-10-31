@@ -30,7 +30,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -45,7 +45,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer extends AmadronRecipe {
     @Nonnull
-    private final ResourceLocation offerId;
+    private final Identifier offerId;
     @Nonnull
     protected final AmadronTradeResource input;
     @Nonnull
@@ -59,7 +59,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     protected int inStock; // current number of trades available; gets reset to max when offer is shuffled in (except for player trades)
 
-    public AmadronOffer(@Nonnull ResourceLocation offerId, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output,
+    public AmadronOffer(@Nonnull Identifier offerId, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output,
                         boolean staticOffer, boolean villagerTrade,
                         int tradeLevel, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist) {
         this.offerId = offerId;
@@ -74,7 +74,7 @@ public class AmadronOffer extends AmadronRecipe {
         this.blacklist = blacklist;
     }
 
-    public static AmadronOffer villagerTrade(ResourceLocation offerId, MerchantOffer merchantOffer, int level) {
+    public static AmadronOffer villagerTrade(Identifier offerId, MerchantOffer merchantOffer, int level) {
         return new AmadronOffer(offerId,
                 AmadronTradeResource.of(merchantOffer.getBaseCostA()),
                 AmadronTradeResource.of(merchantOffer.getResult()),
@@ -88,7 +88,7 @@ public class AmadronOffer extends AmadronRecipe {
         );
     }
 
-    public ResourceLocation getOfferId() {
+    public Identifier getOfferId() {
         return offerId;
     }
 
@@ -232,7 +232,7 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public interface IFactory<T extends AmadronRecipe> {
-        T create(ResourceLocation offerId, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer,
+        T create(Identifier offerId, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer,
                  boolean villagerTrade, int level, int maxStock, int inStock, PlayerFilter whitelist, PlayerFilter blacklist);
     }
 
@@ -242,7 +242,7 @@ public class AmadronOffer extends AmadronRecipe {
 
         public Serializer(IFactory<T> factory) {
             codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                    ResourceLocation.CODEC.fieldOf("offer_id").forGetter(AmadronOffer::getOfferId),
+                    Identifier.CODEC.fieldOf("offer_id").forGetter(AmadronOffer::getOfferId),
                     AmadronTradeResource.CODEC.fieldOf("input").forGetter(AmadronOffer::getInput),
                     AmadronTradeResource.CODEC.fieldOf("output").forGetter(AmadronOffer::getOutput),
                     Codec.BOOL.optionalFieldOf("static", true).forGetter(AmadronOffer::isStaticOffer),
@@ -257,7 +257,7 @@ public class AmadronOffer extends AmadronRecipe {
             // too many fields for StreamCodec.composite!
             streamCodec = StreamCodec.of(
                     (buf, recipe) -> {
-                        buf.writeResourceLocation(recipe.getOfferId());
+                        buf.writeIdentifier(recipe.getOfferId());
                         AmadronTradeResource.STREAM_CODEC.encode(buf, recipe.getInput());
                         AmadronTradeResource.STREAM_CODEC.encode(buf, recipe.getOutput());
                         buf.writeBoolean(recipe.isStaticOffer());
@@ -269,7 +269,7 @@ public class AmadronOffer extends AmadronRecipe {
                         recipe.getBlacklist().toNetwork(buf);
                     },
                     buf -> factory.create(
-                            buf.readResourceLocation(),
+                            buf.readIdentifier(),
                             AmadronTradeResource.STREAM_CODEC.decode(buf),
                             AmadronTradeResource.STREAM_CODEC.decode(buf),
                             buf.readBoolean(),

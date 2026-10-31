@@ -4,14 +4,14 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -52,12 +52,12 @@ public class HackTickTracker extends SavedData {
             CompoundTag sub = list.getCompound(i);
             NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
                 try {
-                    ResourceLocation id = ResourceLocation.parse(sub.getString("id"));
+                    Identifier id = Identifier.parse(sub.getString("id"));
                     CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
                             hackable -> hackedBlocks.put(pos, hackable),
                             () -> Log.error("unknown hackable block ID '{}'", id)
                     );
-                } catch (ResourceLocationException e) {
+                } catch (IdentifierException e) {
                     Log.error("invalid hackable block ID '{}'", sub.getString("id"));
                 }
             });

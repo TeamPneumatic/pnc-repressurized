@@ -51,7 +51,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -270,7 +270,7 @@ public class ClientUtils {
             String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             Item item = stack.getItem();
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
-            ResourceLocation regName = PneumaticCraftUtils.getRegistryName(item).orElseThrow();
+            Identifier regName = PneumaticCraftUtils.getRegistryName(item).orElseThrow();
             String k = String.join(".", base, regName.getNamespace(), regName.getPath(), subKey);
             if (I18n.exists(k)) {
                 tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(ChatFormatting.GRAY)).toList());

@@ -30,7 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -109,7 +109,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_ENTITY_RIGHT_CLICK;
     }
 

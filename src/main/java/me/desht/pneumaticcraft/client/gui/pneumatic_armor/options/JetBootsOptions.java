@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 
 import java.util.Optional;
@@ -53,7 +53,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         super.populateGui(gui);
 
         IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
-        ResourceLocation ownerID = getClientUpgradeHandler().getID();
+        Identifier ownerID = getClientUpgradeHandler().getID();
         checkBoxBuilderMode = registry.makeKeybindingCheckBox(JetBootsClientHandler.MODULE_BUILDER_MODE, 5, 60, 0xFFFFFFFF,
                 b -> setFlag(ModDataComponents.JET_BOOTS_BUILDER_MODE.get(), JetBootsHandler.BUILDER_MODE_LEVEL, b))
                 .withOwnerUpgradeID(ownerID);
@@ -94,7 +94,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
             PacketUpdateArmorExtraData.sendToServer(upgradeHandler, componentType, cb.isChecked());
             upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), componentType, cb.isChecked());
 
-            ResourceLocation ownerId = upgradeHandler.getID();
+            Identifier ownerId = upgradeHandler.getID();
             HUDHandler.getInstance().addFeatureToggleMessage(
                     IArmorUpgradeHandler.getStringKey(ownerId), IArmorUpgradeHandler.getStringKey(cb.getUpgradeId()), cb.isChecked()
             );

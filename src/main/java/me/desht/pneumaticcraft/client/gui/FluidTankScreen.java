@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class FluidTankScreen extends AbstractPneumaticCraftContainerScreen<FluidTankMenu, AbstractFluidTankBlockEntity> {
@@ -43,7 +43,7 @@ public class FluidTankScreen extends AbstractPneumaticCraftContainerScreen<Fluid
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_FLUID_TANK;
     }
 

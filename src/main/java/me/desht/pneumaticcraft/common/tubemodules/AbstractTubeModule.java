@@ -29,7 +29,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -58,7 +58,7 @@ public abstract class AbstractTubeModule {
     protected boolean upgraded;
     public float lowerBound = 4.9F, higherBound = 0;
     public boolean advancedConfig;
-    private ResourceLocation regName;
+    private Identifier regName;
 
     public AbstractTubeModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         this.dir = dir;
@@ -188,7 +188,7 @@ public abstract class AbstractTubeModule {
     public void onNeighborBlockUpdate() {
     }
 
-    public final ResourceLocation getType() {
+    public final Identifier getType() {
         if (regName == null) {
             regName = PneumaticCraftUtils.getRegistryName(getItem()).orElseThrow();
         }

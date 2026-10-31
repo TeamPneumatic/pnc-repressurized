@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 import me.desht.pneumaticcraft.common.block.entity.IRedstoneControl;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -34,7 +34,7 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class RedstoneControlProvider {
-    public static final ResourceLocation ID = RL("redstone");
+    public static final Identifier ID = RL("redstone");
 
     public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
@@ -45,7 +45,7 @@ public class RedstoneControlProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }
@@ -67,7 +67,7 @@ public class RedstoneControlProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

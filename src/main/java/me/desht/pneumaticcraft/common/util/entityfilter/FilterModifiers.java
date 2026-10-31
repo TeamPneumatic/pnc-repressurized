@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.util.entityfilter;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.AgeableMob;
@@ -67,11 +67,11 @@ public enum FilterModifiers {
         registerModifier("shearable", Set.of("yes", "no"), FilterModifiers::testShearable);
         registerModifier("color", EntityFilter.DYE_COLORS, FilterModifiers::hasColor);
 
-        registerModifier("holding", (item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
+        registerModifier("holding", (item) -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, true)
         );
-        registerModifier("holding_offhand", (item) -> BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(item)),
+        registerModifier("holding_offhand", (item) -> BuiltInRegistries.ITEM.containsKey(Identifier.parse(item)),
                 "any valid item ID, e.g. 'minecraft:cobblestone'",
                 (entity, val) -> isHeldItem(entity, val, false)
         );
@@ -81,7 +81,7 @@ public enum FilterModifiers {
         registerModifier("entity_tag", (str) -> true,
                 "any string tag (added to entities with the /tag command)",
                 FilterModifiers::testEntityTag);
-        registerModifier("type_tag", rl -> ResourceLocation.tryParse(rl) != null,
+        registerModifier("type_tag", rl -> Identifier.tryParse(rl) != null,
                 "any known entity type tag, e.g 'minecraft:skeletons'",
                 FilterModifiers::testTypeTag);
         registerModifier("team", (str) -> true,
@@ -108,7 +108,7 @@ public enum FilterModifiers {
     }
 
     private static boolean testMod(Entity entity, String modName) {
-        ResourceLocation rl = PneumaticCraftUtils.getRegistryName(entity).orElseThrow();
+        Identifier rl = PneumaticCraftUtils.getRegistryName(entity).orElseThrow();
         return rl.getNamespace().toLowerCase(Locale.ROOT).equals(modName.toLowerCase(Locale.ROOT));
     }
 
@@ -117,7 +117,7 @@ public enum FilterModifiers {
     }
 
     private static boolean testTypeTag(Entity entity, String val) {
-        return ResourceLocation.read(val).result()
+        return Identifier.read(val).result()
                 .map(rl -> entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, rl)))
                 .orElse(false);
     }
@@ -142,9 +142,9 @@ public enum FilterModifiers {
         if (entity instanceof LivingEntity l) {
             if (name.startsWith("#")) {
                 try {
-                    TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(name.substring(1)));
+                    TagKey<Item> tag = TagKey.create(Registries.ITEM, Identifier.parse(name.substring(1)));
                     return mainHand ? l.getMainHandItem().is(tag) : l.getOffhandItem().is(tag);
-                } catch (ResourceLocationException ignored) {
+                } catch (IdentifierException ignored) {
                     return false;
                 }
             } else {

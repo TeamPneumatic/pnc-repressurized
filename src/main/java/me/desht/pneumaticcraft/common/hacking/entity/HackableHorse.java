@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.common.hacking.entity;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,10 +28,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * Horses, although tameable animals, don't extend TamableAnimal, or even OwnableEntity.  Yay.
  */
 public class HackableHorse extends AbstractTameableHack<Horse> {
-    private static final ResourceLocation ID = RL("horse");
+    private static final Identifier ID = RL("horse");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -86,7 +86,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsF
     }
 
     @Override
-    public ResourceLocation getTextureLocation(AbstractLogisticsFrameEntity entityLogisticsFrame) {
+    public Identifier getTextureLocation(AbstractLogisticsFrameEntity entityLogisticsFrame) {
         return entityLogisticsFrame.getTexture();
     }
 }
