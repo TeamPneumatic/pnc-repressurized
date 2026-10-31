@@ -156,7 +156,7 @@ public record PacketDescription(BlockPos pos, boolean fullSync, List<IndexedFiel
     }
 
     public static PacketDescription fromNBT(CompoundTag compound, RegistryAccess registryAccess) {
-        BlockPos pos = new BlockPos(compound.getIntOr("x", 0), compound.getIntOr("y", 0), compound.getInt("z"));
+        BlockPos pos = new BlockPos(compound.getIntOr("x", 0), compound.getIntOr("y", 0), compound.getIntOr("z", 0));
         boolean fullSync = true;
         CompoundTag subTag = compound.getCompoundOrEmpty(Names.MOD_ID);
         int fieldCount = subTag.getIntOr("Length", 0);

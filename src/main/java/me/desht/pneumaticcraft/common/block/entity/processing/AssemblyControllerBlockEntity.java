@@ -211,7 +211,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
 
         goingToHomePosition = tag.getBooleanOr("goingToHomePosition", false);
         displayedText = tag.getStringOr("displayedText", "");
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
             curProgram = AssemblyProgramItem.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
             if (curProgram != null) curProgram.readFromNBT(tag);

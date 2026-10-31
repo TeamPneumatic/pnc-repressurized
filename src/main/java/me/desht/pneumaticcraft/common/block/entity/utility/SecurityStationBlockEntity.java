@@ -234,7 +234,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             Log.warning("security station @ {}: ignoring bad message {} from {}",
-                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
+                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().name());
         }
     }
 
@@ -248,7 +248,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             Log.warning("security station @ {}: ignoring bad message {} from {}",
-                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
+                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().name());
         }
     }
 
@@ -275,7 +275,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             Log.warning("security station @ {}: ignoring bad message {}} from {}}",
-                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().getName());
+                    PneumaticCraftUtils.posToString(worldPosition), tag, player.getGameProfile().name());
         }
     }
 
@@ -292,7 +292,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     private void removeTrustedUser(String name) {
-        sharedUsers.removeIf(prof -> name.equals(prof.getName()));
+        sharedUsers.removeIf(prof -> name.equals(prof.name()));
         sendDescriptionPacket();
     }
 
@@ -308,9 +308,9 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     private boolean gameProfileEquals(GameProfile profile1, GameProfile profile2) {
-        return profile1.getId() != null && profile2.getId() != null ?
-                profile1.getId().equals(profile2.getId()) :
-                profile1.getName().equals(profile2.getName());
+        return profile1.id() != null && profile2.id() != null ?
+                profile1.id().equals(profile2.id()) :
+                profile1.name().equals(profile2.name());
     }
 
     public boolean isHacked() {
@@ -326,7 +326,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         super.loadAdditional(tag, provider);
 
         rebootTimer = tag.getIntOr("startupTimer", 0);
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         checkForNetworkValidity();
     }
 
@@ -360,8 +360,8 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         ListTag res = new ListTag();
         for (GameProfile profile : profiles) {
             res.add(Util.make(new CompoundTag(), t -> {
-                t.putString("name", profile.getName());
-                t.putString("uuid", profile.getId().toString());
+                t.putString("name", profile.name());
+                t.putString("uuid", profile.id().toString());
             }));
         }
         return res;
@@ -391,11 +391,11 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     }
 
     private boolean isPlayerOnWhiteList(UUID playerID) {
-        return sharedUsers.stream().anyMatch(p -> p.getId().equals(playerID));
+        return sharedUsers.stream().anyMatch(p -> p.id().equals(playerID));
     }
 
     private boolean hasPlayerHacked(UUID playerID) {
-        return hackedUsers.stream().anyMatch(p -> p.getId().equals(playerID));
+        return hackedUsers.stream().anyMatch(p -> p.id().equals(playerID));
     }
 
     public boolean isPlayerOnWhiteList(Player player) {
@@ -471,7 +471,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         hacker.hurt(PNCDamageSource.securityStation(getLevel()), hacker.getMaxHealth() - 0.5f);
         hacker.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100));
         hacker.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
-        hacker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 300, 3));
+        hacker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 300, 3));
     }
 
     @Override

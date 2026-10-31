@@ -143,6 +143,6 @@ public class ChunkCache implements CollisionGetter {
 
     @Override
     public int getMinBuildHeight() {
-        return world.getMinBuildHeight();
+        return world.getMinY();
     }
 }

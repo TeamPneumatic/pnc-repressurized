@@ -244,7 +244,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         idleYaw = tag.getFloatOr("idleYaw", 0f);
         setText(0, tag.getStringOr(NBT_ENTITY_FILTER, ""));
         if (tag.contains("ownerId")) {

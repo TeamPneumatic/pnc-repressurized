@@ -180,7 +180,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
             outputLevel = tag.getByteOr("outputLevel", (byte) 0); // for sync'ing to clients on login
         }
         try {
-            operation = tag.contains("op") ? Operation.valueOf(tag.getString("op")) : Operation.PASSTHROUGH;
+            operation = tag.contains("op") ? Operation.valueOf(tag.getStringOr("op", "")) : Operation.PASSTHROUGH;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             operation = Operation.PASSTHROUGH;

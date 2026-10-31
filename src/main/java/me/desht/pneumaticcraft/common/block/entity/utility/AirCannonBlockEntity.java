@@ -473,7 +473,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         gpsY = tag.getIntOr("gpsY", 0);
         gpsZ = tag.getIntOr("gpsZ", 0);
         coordWithinReach = tag.getBooleanOr("targetWithinReach", false);
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         forceMult = tag.getIntOr("forceMult", 0);
 
         trackedItemIds = new HashSet<>();
@@ -484,7 +484,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         if (tag.contains("inventoryX")) {
-            lastInsertingInventory = new BlockPos(tag.getIntOr("inventoryX", 0), tag.getIntOr("inventoryY", 0), tag.getInt("inventoryZ"));
+            lastInsertingInventory = new BlockPos(tag.getIntOr("inventoryX", 0), tag.getIntOr("inventoryY", 0), tag.getIntOr("inventoryZ", 0));
             lastInsertingInventorySide = Direction.from3DDataValue(tag.getByteOr("inventorySide", (byte) 0));
         } else {
             lastInsertingInventory = null;

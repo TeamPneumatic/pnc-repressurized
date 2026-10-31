@@ -287,8 +287,8 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inputItemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        outputItemHandler.deserializeNBT(provider, tag.getCompound("Output"));
+        inputItemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        outputItemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Output"));
         craftingProgress = tag.getFloatOr("craftingProgress", 0f);
     }
 

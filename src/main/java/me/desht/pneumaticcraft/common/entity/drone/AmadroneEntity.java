@@ -179,10 +179,10 @@ public class AmadroneEntity extends DroneEntity {
         if (tag.contains("amadron")) {
             CompoundTag subTag = tag.getCompoundOrEmpty("amadron");
             handlingOffer = Identifier.parse(subTag.getStringOr("offerId", ""));
-            usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompound("usedTablet"));
+            usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompoundOrEmpty("usedTablet"));
             offerTimes = subTag.getIntOr("offerTimes", 0);
             buyingPlayer = subTag.getStringOr("buyingPlayer", "");
-            amadronAction = AmadronAction.valueOf(subTag.getString("amadronAction"));
+            amadronAction = AmadronAction.valueOf(subTag.getStringOr("amadronAction", ""));
         }
     }
 

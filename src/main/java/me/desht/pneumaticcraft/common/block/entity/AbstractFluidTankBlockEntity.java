@@ -147,7 +147,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     public SmartSyncTank getTank() {

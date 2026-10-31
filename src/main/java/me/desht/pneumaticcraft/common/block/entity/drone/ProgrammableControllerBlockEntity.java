@@ -325,9 +325,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         int cx = (int)curX >> 4;
         int cz = (int)curZ >> 4;
-        return chunkloadSelf && cp.x == worldPosition.getX() >> 4 && cp.z == worldPosition.getZ() >> 4
-                || chunkloadWorkingChunk && !isIdle && cp.x == cx && cp.z == cz
-                || chunkloadWorkingChunk3x3 && !isIdle && cp.x >= cx - 1 && cp.x <= cx + 1 && cp.z >= cz - 1 && cp.z <= cz + 1;
+        return chunkloadSelf && cp.x() == worldPosition.getX() >> 4 && cp.z() == worldPosition.getZ() >> 4
+                || chunkloadWorkingChunk && !isIdle && cp.x() == cx && cp.z() == cz
+                || chunkloadWorkingChunk3x3 && !isIdle && cp.x() >= cx - 1 && cp.x() <= cx + 1 && cp.z() >= cz - 1 && cp.z() <= cz + 1;
     }
 
     private void maybeChargeHeldItem() {
@@ -471,15 +471,15 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        tank.readFromNBT(provider, tag.getCompound("tank"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        tank.readFromNBT(provider, tag.getCompoundOrEmpty("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getStringOr("ownerID", "")) : FALLBACK_UUID;
         ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
         ownerNameClient = ownerName.getString();
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(provider, tag.getCompound("droneItems"));
+        tmpInv.deserializeNBT(provider, tag.getCompoundOrEmpty("droneItems"));
         droneItemHandler.setUseableSlots(tmpInv.getSlots());
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
@@ -665,7 +665,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     public BlockPos getDugPosition() {
-        return level != null && diggingY >= level.getMinBuildHeight() ? new BlockPos(diggingX, diggingY, diggingZ) : null;
+        return level != null && diggingY >= level.getMinY() ? new BlockPos(diggingX, diggingY, diggingZ) : null;
     }
 
     @Override

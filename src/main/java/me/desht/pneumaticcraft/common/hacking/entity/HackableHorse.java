@@ -43,7 +43,7 @@ public class HackableHorse extends AbstractTameableHack<Horse> {
 
     @Override
     public void onHackFinished(Horse entity, Player player) {
-        if (entity.level().isClientSide) {
+        if (entity.level().isClientSide()) {
             entity.handleEntityEvent((byte) 7);
         } else {
             entity.getNavigation().stop();

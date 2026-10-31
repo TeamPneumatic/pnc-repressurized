@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item.minigun;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -41,6 +40,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;

@@ -60,7 +60,7 @@ public enum ChargeMode implements StringRepresentable, ITranslatableEnum {
             toCharge.add(player.getItemBySlot(EquipmentSlot.OFFHAND));
         }
         if (this == ChargeMode.ALL) {
-            toCharge.addAll(player.getInventory().items);
+            toCharge.addAll(player.getInventory().getNonEquipmentItems());
         }
         return toCharge;
     }

@@ -17,16 +17,17 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
-import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.world.item.component.TooltipDisplay;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

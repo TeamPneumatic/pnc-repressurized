@@ -203,7 +203,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         internalFuelBuffer = tag.getDoubleOr("internalFuelBuffer", 0.0);
         burnMultiplier = tag.getFloatOr("burnMultiplier", 0f);
     }

@@ -135,7 +135,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 }
             }
             basketEmpty = shoppingBasket.isEmpty();
-            currentPlayerOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().getId());
+            currentPlayerOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().id());
             maxPlayerOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : ConfigHelper.common().amadron.maxTradesPerPlayer.get();
             problemState = EnumProblemState.NO_PROBLEMS;
         }

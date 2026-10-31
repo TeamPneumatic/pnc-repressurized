@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.ProgramDrill;
@@ -35,6 +34,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

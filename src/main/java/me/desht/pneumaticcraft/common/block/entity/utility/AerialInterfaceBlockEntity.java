@@ -223,7 +223,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             playerName = "";
         } else {
             isConnectedToPlayer = true;
-            playerName = player.getGameProfile().getName();
+            playerName = player.getGameProfile().name();
             scanForChargeableItems(player);
         }
         if (wasConnected != isConnectedToPlayer) {
@@ -366,7 +366,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         super.loadAdditional(tag, provider);
 
         playerUUID = UUID.fromString(tag.getStringOr("playerUUID", ""));
-        feedMode = FeedMode.valueOf(tag.getString("feedMode"));
+        feedMode = FeedMode.valueOf(tag.getStringOr("feedMode", ""));
         curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(Identifier.parse(tag.getStringOr("curXpFluid", ""))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);

@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.ChatFormatting;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.fml.ModList;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

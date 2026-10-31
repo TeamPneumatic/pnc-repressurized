@@ -102,7 +102,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         displayedStack = inventory.getStackInSlot(0);
         programOnInsert = tag.getBooleanOr("ProgramOnInsert", false);
         history.addAll(tag.getListOrEmpty("history"));

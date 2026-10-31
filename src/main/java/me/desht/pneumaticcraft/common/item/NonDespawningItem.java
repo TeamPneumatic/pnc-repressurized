@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.mixin.accessors.ItemEntityAccess;
 import net.minecraft.network.chat.Component;
@@ -26,8 +25,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.List;
 import net.minecraft.world.item.component.TooltipDisplay;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

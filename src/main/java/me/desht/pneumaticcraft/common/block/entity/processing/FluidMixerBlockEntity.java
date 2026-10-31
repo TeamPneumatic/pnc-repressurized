@@ -185,7 +185,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        outputInv.deserializeNBT(provider, tag.getCompound("Items"));
+        outputInv.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

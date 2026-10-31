@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -56,6 +55,7 @@ import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class DroneItem extends PressurizableItem
         implements IChargeableContainerProvider, IProgrammable, ColorHandlers.ITintableItem {

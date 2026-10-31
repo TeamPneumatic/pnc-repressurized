@@ -25,7 +25,7 @@ public class EntityTrackEntryPlayer implements IEntityTrackEntry {
         Player player = (Player) entity;
 
         addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.getInventory().armor);
-        addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.getInventory().items);
+        addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.getInventory().getNonEquipmentItems());
     }
 
     private static void addInventory(String key, List<Component> curInfo, NonNullList<ItemStack> stacks) {

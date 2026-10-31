@@ -182,7 +182,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     private boolean tryDigDown() {
         if (isUnbreakable(getBlockPos().relative(Direction.DOWN, currentDepth + 1))) {
             status = Status.STUCK;
-        } else if (getBlockPos().getY() - currentDepth >= nonNullLevel().getMinBuildHeight()) {
+        } else if (getBlockPos().getY() - currentDepth >= nonNullLevel().getMinY()) {
             status = Status.DIGGING;
             currentDepth++;
             BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
@@ -317,8 +317,8 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getStringOr("mode", ""));
         currentDepth = tag.getIntOr("currentDepth", 0);
     }
 

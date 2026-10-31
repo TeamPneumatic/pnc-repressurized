@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item.minigun;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -38,6 +37,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 

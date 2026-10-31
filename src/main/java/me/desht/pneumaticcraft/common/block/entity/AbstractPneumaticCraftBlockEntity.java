@@ -377,7 +377,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
-            getUpgradeHandler().deserializeNBT(provider, tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
+            getUpgradeHandler().deserializeNBT(provider, tag.getCompoundOrEmpty(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
         if (this instanceof IHeatExchangingTE he) {
             IHeatExchangerLogic logic = he.getHeatExchanger();

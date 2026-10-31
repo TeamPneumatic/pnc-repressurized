@@ -829,7 +829,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     private int countPlayerPuzzlePieces() {
         int count = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().items) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().getNonEquipmentItems()) {
             if (stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
                 count += stack.getCount();
             }

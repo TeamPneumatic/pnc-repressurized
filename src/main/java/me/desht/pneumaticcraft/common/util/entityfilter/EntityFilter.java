@@ -243,7 +243,7 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean matchByName(Entity entity, Pattern regex) {
             return entity instanceof Player player ?
-                    player.getGameProfile().getName() != null && regex.matcher(player.getGameProfile().getName()).matches() :
+                    player.getGameProfile().name() != null && regex.matcher(player.getGameProfile().name()).matches() :
                     entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches();
         }
     }

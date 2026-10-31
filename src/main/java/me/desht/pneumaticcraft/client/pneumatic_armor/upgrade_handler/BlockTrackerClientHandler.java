@@ -252,8 +252,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        int minY = player.level().getMinBuildHeight();
-        int maxY = player.level().getMaxBuildHeight();
+        int minY = player.level().getMinY();
+        int maxY = player.level().getMaxY() + 1;
         pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, minY, maxY), player.getZ() + zOff);
     }
 

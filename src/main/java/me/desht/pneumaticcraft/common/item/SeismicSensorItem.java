@@ -66,14 +66,14 @@ public class SeismicSensorItem extends Item {
 
     private Optional<FluidSearchResult> findFluid(Level level, BlockPos origin) {
         BlockPos.MutableBlockPos searchPos = origin.mutable();
-        while (searchPos.getY() > level.getMinBuildHeight()) {
+        while (searchPos.getY() > level.getMinY()) {
             searchPos.move(Direction.DOWN);
             Fluid fluid = getFluidOfInterest(level, searchPos);
             if (fluid != null) {
                 BlockPos top = searchPos.immutable();
                 do {
                     searchPos.move(Direction.DOWN);
-                } while (searchPos.getY() > level.getMinBuildHeight() && getFluidOfInterest(level, searchPos) == fluid);
+                } while (searchPos.getY() > level.getMinY() && getFluidOfInterest(level, searchPos) == fluid);
                 BlockPos bottom = searchPos.above().immutable();
                 Set<BlockPos> fluidPositions = findLake(level, top, fluid);
                 int lakeSize = Math.max(1, fluidPositions.size() / 10 * 10);

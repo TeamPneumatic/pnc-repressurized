@@ -364,7 +364,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
         ListTag floorNameList = tag.getListOrEmpty("floorNames");
         for (int i = 0; i < floorNameList.size(); i++) {
             CompoundTag floorName = floorNameList.getCompoundOrEmpty(i);
-            floorNames.put(floorName.getInt("floorHeight"), floorName.getString("floorName"));
+            floorNames.put(floorName.getIntOr("floorHeight", 0), floorName.getStringOr("floorName", ""));
         }
     }
 

@@ -68,6 +68,6 @@ public class HackablePainting implements IHackableEntity<Painting> {
         var candidates = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).holders()
                 .filter(h -> h.value().height() == art.height() && h.value().width() == art.width())
                 .toList();
-        entity.setVariant(candidates.get(entity.level().random.nextInt(candidates.size())));
+        entity.setVariant(candidates.get(entity.level().getRandom().nextInt(candidates.size())));
     }
 }

@@ -334,7 +334,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         super.readAdditionalSaveData(tag);
 
         itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty(NBT_ITEM_FILTERS));
-        fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompound(NBT_FLUID_FILTERS)).result()
+        fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompoundOrEmpty(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
         setSemiblockInvisible(tag.getBooleanOr(NBT_INVISIBLE, false));
         setMatchComponents(tag.getBooleanOr(NBT_MATCH_COMPONENTS, false));
@@ -345,8 +345,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getIntOr(NBT_SIDE, 0)) : Direction.UP);
 
         if (this instanceof ISpecificRequester spr) {
-            spr.setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
-            spr.setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
+            spr.setMinItemOrderSize(Math.max(1, tag.getIntOr(ISpecificRequester.NBT_MIN_ITEMS, 0)));
+            spr.setMinFluidOrderSize(Math.max(1, tag.getIntOr(ISpecificRequester.NBT_MIN_FLUID, 0)));
         }
         if (this instanceof ISpecificProvider spp) {
             spp.setKeepItemsStocked(tag.getIntOr(ISpecificProvider.NBT_STOCK_ITEMS, 0));

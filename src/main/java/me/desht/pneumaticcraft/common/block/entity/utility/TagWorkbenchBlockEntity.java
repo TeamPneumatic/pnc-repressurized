@@ -95,7 +95,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         displayedStack = inventory.getStackInSlot(0);
         paperItemId = Item.getId(inventory.getStackInSlot(1).getItem());
         outputItemId = Item.getId(inventory.getStackInSlot(2).getItem());

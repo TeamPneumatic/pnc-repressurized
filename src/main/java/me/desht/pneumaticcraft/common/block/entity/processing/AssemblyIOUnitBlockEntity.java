@@ -472,7 +472,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
         clawProgress = tag.getFloatOr("clawProgress", 0f);
         shouldClawClose = tag.getBooleanOr("clawClosing", false);
         state = tag.getByteOr("state", (byte) 0);
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

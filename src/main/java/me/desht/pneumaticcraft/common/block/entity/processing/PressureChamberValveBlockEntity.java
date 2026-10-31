@@ -426,14 +426,14 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        setupMultiBlock(tag.getIntOr("multiBlockSize", 0), tag.getIntOr("multiBlockX", 0), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
+        setupMultiBlock(tag.getIntOr("multiBlockSize", 0), tag.getIntOr("multiBlockX", 0), tag.getIntOr("multiBlockY", 0), tag.getIntOr("multiBlockZ", 0));
         ItemStackHandler handler = new ItemStackHandler();
-        handler.deserializeNBT(provider, tag.getCompound("itemsInChamber"));
+        handler.deserializeNBT(provider, tag.getCompoundOrEmpty("itemsInChamber"));
         for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
             itemsInChamber.setStackInSlot(i, handler.getStackInSlot(i));
         }
         ItemStackHandler outHandler = new ItemStackHandler();
-        outHandler.deserializeNBT(provider, tag.getCompound("craftedItems"));
+        outHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("craftedItems"));
         for (int i = 0; i < outHandler.getSlots() && i < OUTPUT_INV_SIZE; i++) {
             craftedItems.setStackInSlot(i, outHandler.getStackInSlot(i));
         }

@@ -199,7 +199,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
         burnTime = tag.getIntOr("burnTime", 0);
         maxBurnTime = tag.getIntOr("maxBurn", 0);
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

@@ -441,11 +441,11 @@ public class PneumaticCraftUtils {
      * @return true if an item was consumed
      */
     public static boolean consumeInventoryItem(Inventory inv, Item item) {
-        for (int i = 0; i < inv.items.size(); ++i) {
-            if (inv.items.get(i).getItem() == item) {
-                inv.items.get(i).shrink(1);
-                if (inv.items.get(i).getCount() <= 0) {
-                    inv.items.set(i, ItemStack.EMPTY);
+        for (int i = 0; i < inv.getNonEquipmentItems().size(); ++i) {
+            if (inv.getNonEquipmentItems().get(i).getItem() == item) {
+                inv.getNonEquipmentItems().get(i).shrink(1);
+                if (inv.getNonEquipmentItems().get(i).getCount() <= 0) {
+                    inv.getNonEquipmentItems().set(i, ItemStack.EMPTY);
                 }
                 return true;
             }
@@ -464,8 +464,8 @@ public class PneumaticCraftUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean consumeInventoryItem(Inventory inv, ItemStack stack) {
         int toConsume = stack.getCount();
-        for (int i = 0; i < inv.items.size(); ++i) {
-            ItemStack invStack = inv.items.get(i);
+        for (int i = 0; i < inv.getNonEquipmentItems().size(); ++i) {
+            ItemStack invStack = inv.getNonEquipmentItems().get(i);
             int consumed = 0;
             if (ItemStack.isSameItem(invStack, stack)) {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
@@ -594,7 +594,7 @@ public class PneumaticCraftUtils {
         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
         int filled = handler.fill(toFill, action);
         if (filled > 0 && filled < fluidAmount && action.execute()) {
-            orb.value = orb.value - Math.max(1, filled / ratio);  // partial fill, adjust the orb
+            orb.value = orb.getValue() - Math.max(1, filled / ratio);  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
     }

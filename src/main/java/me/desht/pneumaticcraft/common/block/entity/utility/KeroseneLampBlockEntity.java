@@ -337,7 +337,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         targetRange = tag.getByteOr("targetRange", (byte) 0);
         range = tag.getByteOr("range", (byte) 0);
         rangeSq = range * range;
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.Sets;
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -37,6 +36,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;

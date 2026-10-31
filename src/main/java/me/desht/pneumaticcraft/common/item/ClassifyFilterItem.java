@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -17,15 +16,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -36,6 +38,7 @@ import org.apache.commons.lang3.Validate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.getOptionalComponent;
@@ -123,9 +126,9 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
         FLUID_CONTAINER(Items.BUCKET, s -> IOHelper.getFluidHandlerForItem(s).isPresent()),
         UNSTACKABLE(Items.WRITABLE_BOOK, s -> s.getMaxStackSize() == 1),
-        WEARABLE(Items.LEATHER_HELMET, s -> s.getItem() instanceof ArmorItem),
-        TOOL(Items.IRON_PICKAXE, s -> s.getItem() instanceof TieredItem),
-        WEAPON(Items.IRON_SWORD, s -> s.getItem() instanceof SwordItem || s.getItem() instanceof AxeItem || s.getItem() instanceof ProjectileWeaponItem),
+        WEARABLE(Items.LEATHER_HELMET, ClassifyFilterItem::isHumanoidArmor),
+        TOOL(Items.IRON_PICKAXE, s -> s.has(DataComponents.TOOL)),
+        WEAPON(Items.IRON_SWORD, s -> s.is(ItemTags.SWORDS) || s.is(ItemTags.AXES) || s.getItem() instanceof ProjectileWeaponItem),
         ENCHANTABLE(Items.BOOK, s -> s.isEnchantable() && !s.isEnchanted()),
         ENCHANTED(Items.ENCHANTED_BOOK, ItemStack::isEnchanted),
         SMELTABLE(Blocks.FURNACE, s -> isCookable(RecipeType.SMELTING, s)),
@@ -159,5 +162,10 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         public String getSerializedName() {
             return name().toLowerCase(Locale.ROOT);
         }
+    }
+
+    private static boolean isHumanoidArmor(ItemStack stack) {
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        return equippable != null && equippable.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
     }
 }

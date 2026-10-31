@@ -120,7 +120,7 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
         shouldClawClose = tag.getBooleanOr("clawClosing", false);
         clawProgress = tag.getFloatOr("clawProgress", 0f);
         speed = tag.getFloatOr("speed", 0f);
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item.logistics;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
@@ -49,6 +48,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -105,7 +105,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(provider, tag.getCompound(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
+                handler.deserializeNBT(provider, tag.getCompoundOrEmpty(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
                 List<ItemStack> stacks = new ArrayList<>();
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (!handler.getStackInSlot(i).isEmpty()) stacks.add(handler.getStackInSlot(i));
@@ -122,7 +122,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
-                FluidFilter.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getCompound(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS))
+                FluidFilter.CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.getCompoundOrEmpty(AbstractLogisticsFrameEntity.NBT_FLUID_FILTERS))
                         .ifSuccess(fluidFilter -> {
                             for (int i = 0; i < fluidFilter.size(); i++) {
                                 FluidStack fluid = fluidFilter.getFluid(i);

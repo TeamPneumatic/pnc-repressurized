@@ -156,7 +156,7 @@ public class CamoModel implements IDynamicBakedModel {
 
             @Override
             public int getMinBuildHeight() {
-                return getter.getMinBuildHeight();
+                return getter.getMinY();
             }
         }
 }

@@ -34,7 +34,7 @@ public class ModBlocks {
 
     private static <T extends Block> DeferredBlock<T> register(String name, Function<BlockBehaviour.Properties, ? extends T> sup, BlockBehaviour.Properties props, Function<DeferredBlock<T>, Supplier<? extends Item>> itemCreator) {
         DeferredBlock<T> ret = registerNoItem(name, sup, props);
-        ITEMS.register(name, itemCreator.apply(ret));
+        ModItems.registerBlockItem(name, itemCreator.apply(ret));
         return ret;
     }
 

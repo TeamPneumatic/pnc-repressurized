@@ -249,7 +249,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
         super.loadAdditional(tag, provider);
 
         itemHandler = new ChargingStationHandler();
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
 
         ItemStack chargeSlot = getChargingStack();
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {

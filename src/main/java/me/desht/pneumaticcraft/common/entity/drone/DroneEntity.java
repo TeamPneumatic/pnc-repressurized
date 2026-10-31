@@ -252,7 +252,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     protected DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         this(type, world);
         if (player != null) {
-            ownerUUID = player.getGameProfile().getId();
+            ownerUUID = player.getGameProfile().id();
             ownerName = player.getName();
         } else {
             ownerUUID = getUUID(); // Anonymous drone used for Amadron or spawned with a Dispenser
@@ -283,7 +283,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isClientSide() && event.getWorld() == getCommandSenderWorld()
+        if (!event.getWorld().isClientSide() && event.getWorld() == level()
                 && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             // semiblock has been added or removed; clear the cached logistics manager
             // next DroneAILogistics operation will search the area again
@@ -693,7 +693,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     public boolean shouldLoadChunk(ChunkPos cp) {
-        return Math.abs(cp.x - chunkPosition().x) + Math.abs(cp.z - chunkPosition().z) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
+        return Math.abs(cp.x() - chunkPosition().x()) + Math.abs(cp.z() - chunkPosition().z()) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
     }
 
     @Override
@@ -1062,7 +1062,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             if (TARGET_ID.equals(key)) {
                 int id = entityData.get(TARGET_ID);
                 if (id > 0) {
-                    Entity e = getCommandSenderWorld().getEntity(id);
+                    Entity e = level().getEntity(id);
                     if (e instanceof LivingEntity) {
                         setTarget((LivingEntity) e);
                     }
@@ -1172,14 +1172,14 @@ public class DroneEntity extends AbstractDroneEntity implements
         aiManager.readFromNBT(tag.getCompoundOrEmpty("variables"));
         standby = tag.getBooleanOr("standby", false);
         allowStandbyPickup = tag.getBooleanOr("allowStandbyPickup", false);
-        upgradeInventory.deserializeNBT(registryAccess(), tag.getCompound("upgrades"));
+        upgradeInventory.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty("upgrades"));
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompoundOrEmpty("airHandler"));
         carriedEntityAIdisabled = tag.getBooleanOr("carriedEntityAIdisabled", false);
         deployPos = NbtUtils.readBlockPos(tag, "deployPos").orElse(null);
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(registryAccess(), tag.getCompound("Inventory"));
+        tmpInv.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty("Inventory"));
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
@@ -1191,11 +1191,11 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (tag.contains("owner")) ownerName = Component.literal(tag.getStringOr("owner", ""));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLongOr("ownerUUID_M", 0L), tag.getLongOr("ownerUUID_L", 0L));
 
-        stackEnchants = ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("stackEnchants"))
+        stackEnchants = ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompoundOrEmpty("stackEnchants"))
                 .result().orElse(ItemEnchantments.EMPTY);
 
         displacedLiquids.clear();
-        DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompound("displacedLiquids"))
+        DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompoundOrEmpty("displacedLiquids"))
                 .ifSuccess(displacedLiquids::putAll);
     }
 

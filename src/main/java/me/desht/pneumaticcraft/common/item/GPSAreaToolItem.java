@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.ImmutableList;
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
@@ -53,6 +52,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.commons.lang3.Validate;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.List;

@@ -136,12 +136,12 @@ public class DroneItemHandler extends ItemStackHandler {
 
         // As it stands, drone inv can't go above 36 items (max 35 inv upgrades),
         // but let's be paranoid here
-        if (slot >= fakePlayer.getInventory().items.size()) return;
+        if (slot >= fakePlayer.getInventory().getNonEquipmentItems().size()) return;
 
         // not a copy: any changes to items in the fake player should also be reflected in the drone's item handler
         ItemStack newStack = getStackInSlot(slot);
 
-        fakePlayer.getInventory().items.set(slot, newStack);
+        fakePlayer.getInventory().getNonEquipmentItems().set(slot, newStack);
         if (slot == fakePlayer.getInventory().selected) {
             // currentItem is always 0 but we'll use that rather than a literal 0
             // maybe one day drones will be able to change their current held-item slot

@@ -105,12 +105,12 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (getCommandSenderWorld().isClientSide) {
+        if (level().isClientSide()) {
             if (key.equals(MAX_VEL_SQ)) {
                 maxVelocitySq = entityData.get(MAX_VEL_SQ);
             } else if (key.equals(TARGET_ID)) {
                 int id = entityData.get(TARGET_ID);
-                targetEntity = id > 0 ? getCommandSenderWorld().getEntity(entityData.get(TARGET_ID)) : null;
+                targetEntity = id > 0 ? level().getEntity(entityData.get(TARGET_ID)) : null;
             } else if (key.equals(ACCEL)) {
                 accel = entityData.get(ACCEL);
             } else if (key.equals(TURN_SPEED)) {
@@ -124,8 +124,8 @@ public class MicromissileEntity extends ThrowableProjectile {
         super.tick();
 
         if (tickCount == 1) {
-            if (getCommandSenderWorld().isClientSide) {
-                getCommandSenderWorld().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0f, 0.8f, true);
+            if (level().isClientSide()) {
+                level().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0f, 0.8f, true);
             } else {
                 entityData.set(MAX_VEL_SQ, maxVelocitySq);
                 entityData.set(ACCEL, accel);
@@ -146,7 +146,7 @@ public class MicromissileEntity extends ThrowableProjectile {
                 setDeltaMovement(getDeltaMovement().scale(1 / 0.99));
             }
 
-            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !getCommandSenderWorld().isClientSide && (tickCount & 0x3) == 0) {
+            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !level().isClientSide() && (tickCount & 0x3) == 0) {
                 targetEntity = tryFindNewTarget();
             }
 
@@ -161,7 +161,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             double mul = velSq > maxVelocitySq ? maxVelocitySq / velSq : accel;
             setDeltaMovement(getDeltaMovement().scale(mul));
 
-            if (getCommandSenderWorld().isClientSide && getCommandSenderWorld().random.nextBoolean()) {
+            if (level().isClientSide() && level().getRandom().nextBoolean()) {
                 Vec3 m = getDeltaMovement();
                 level().addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
             }
@@ -170,14 +170,14 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     private Entity tryFindNewTarget() {
         AABB aabb = new AABB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(SEEK_RANGE);
-        List<LivingEntity> l = getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
+        List<LivingEntity> l = level().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
         l.sort(new TargetSorter());
         Entity tgt = null;
         // find the closest entity which matches this missile's entity filter
         for (Entity e : l) {
             if (isValidTarget(e) && e.distanceToSqr(this) < SEEK_RANGE * SEEK_RANGE) {
                 ClipContext ctx = new ClipContext(position(), e.position().add(0, e.getEyeHeight(), 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e);
-                HitResult res = getCommandSenderWorld().clip(ctx);
+                HitResult res = level().clip(ctx);
                 if (res.getType() == HitResult.Type.MISS || res.getType() == HitResult.Type.ENTITY) {
                     tgt = e;
                     break;
@@ -210,7 +210,7 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     @Override
     protected void onHit(HitResult result) {
-        if (tickCount > 5 && !getCommandSenderWorld().isClientSide && isAlive()) {
+        if (tickCount > 5 && !level().isClientSide() && isAlive()) {
             explode(result instanceof EntityHitResult ? ((EntityHitResult) result).getEntity() : null);
         }
     }
@@ -235,7 +235,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             y = Mth.lerp(0.25f, e.getY(), getY());
             z = Mth.lerp(0.25f, e.getZ(), getZ());
         }
-        getCommandSenderWorld().explode(this, x, y, z, radius, fire, mode);
+        level().explode(this, x, y, z, radius, fire, mode);
     }
 
     @Override

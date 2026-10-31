@@ -228,7 +228,7 @@ public class GlobalVariableManager extends SavedData {
         Map<String,ItemStack> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompoundOrEmpty(i);
-            map.put(t.getString("varName"), ItemStack.parseOptional(provider, t.getCompound("item")));
+            map.put(t.getString("varName"), ItemStack.parseOptional(provider, t.getCompoundOrEmpty("item")));
         }
         return map;
     }

@@ -204,7 +204,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
 
         stopWorms = 0;
         nukeViruses = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().items) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().getNonEquipmentItems()) {
             if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
             if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
         }

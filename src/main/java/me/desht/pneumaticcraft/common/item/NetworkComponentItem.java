@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.item;
 
-import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.SecurityStationHackingScreen;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -28,9 +27,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
+import net.minecraft.world.item.component.TooltipDisplay;
+
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class NetworkComponentItem extends Item implements IProgrammable {
     private final NetworkComponentType type;

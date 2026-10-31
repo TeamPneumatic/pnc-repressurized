@@ -279,8 +279,8 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        setSensorSetting(tag.getString("sensorSetting"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        setSensorSetting(tag.getStringOr("sensorSetting", ""));
         dishSpeed = tag.getFloatOr("dishSpeed", 0f);
         sensorGuiText = tag.getStringOr("sensorText", "");
         if (tag.contains("playerId")) {

@@ -72,7 +72,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public AmadronPlayerOffer(Identifier id, AmadronTradeResource input, AmadronTradeResource output, Player offeringPlayer, PlayerFilter whitelist, PlayerFilter blacklist) {
-        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId(), whitelist, blacklist);
+        this(id, input, output, offeringPlayer.getGameProfile().name(), offeringPlayer.getGameProfile().id(), whitelist, blacklist);
     }
 
     public AmadronPlayerOffer(Identifier id, AmadronTradeResource input, AmadronTradeResource output, Player player) {
@@ -116,7 +116,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     public void updatePlayerId() {
         ServerPlayer player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
-        if (player != null) offeringPlayerId = player.getGameProfile().getId();
+        if (player != null) offeringPlayerId = player.getGameProfile().id();
     }
 
     public void addPayment(int payment) {
