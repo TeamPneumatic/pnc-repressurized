@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -40,7 +40,7 @@ public class VortexCannonItem extends PressurizableItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level world, Player playerIn, InteractionHand handIn) {
         ItemStack iStack = playerIn.getItemInHand(handIn);
 
         IAirHandlerItem airHandler = PNCCapabilities.getAirHandler(iStack).orElseThrow(RuntimeException::new);
@@ -51,7 +51,7 @@ public class VortexCannonItem extends PressurizableItem {
                 world.playLocalSound(playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.AIR_CANNON.get(), SoundSource.PLAYERS, 1.0F, 0.7F + factor * 0.2F, false);
             } else {
                 playerIn.playSound(SoundEvents.COMPARATOR_CLICK, 1.0f, 2f);
-                return InteractionResultHolder.fail(iStack);
+                return InteractionResult.FAIL;
             }
         } else {
             if (airHandler.getPressure() > 0.1f) {
@@ -69,6 +69,6 @@ public class VortexCannonItem extends PressurizableItem {
                 }
             }
         }
-        return InteractionResultHolder.sidedSuccess(iStack, world.isClientSide());
+        return InteractionResult.SUCCESS;
     }
 }

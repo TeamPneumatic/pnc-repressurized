@@ -1042,9 +1042,9 @@ public class DroneEntity extends AbstractDroneEntity implements
             MutableComponent msg = hasCustomName() ?
                     Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), dim, x, y, z) :
                     Component.translatable("pneumaticcraft.death.drone", dim, x, y, z);
-            owner.displayClientMessage(msg.withStyle(ChatFormatting.GOLD), false);
+            owner.sendSystemMessage(msg.withStyle(ChatFormatting.GOLD));
             if (!damageSource.is(DamageTypes.GENERIC_KILL)) {
-                owner.displayClientMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY), false);
+                owner.sendSystemMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY));
             }
         }
     }
@@ -1572,9 +1572,9 @@ public class DroneEntity extends AbstractDroneEntity implements
         kill();
         Player owner = getOwner();
         if (owner != null) {
-            owner.displayClientMessage(Component.literal(" - ")
+            owner.sendSystemMessage(Component.literal(" - ")
                     .append(Component.translatable("pneumaticcraft.death.drone.overload." + msgKey, params))
-                    .withStyle(ChatFormatting.GRAY), false);
+                    .withStyle(ChatFormatting.GRAY));
         }
     }
 

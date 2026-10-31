@@ -51,15 +51,14 @@ public class SeismicSensorItem extends Item {
                 int topOff = ctx.getClickedPos().getY() - result.top().getY();
                 int bottomOff = ctx.getClickedPos().getY() - result.bottom().getY();
                 String depthStr = topOff == bottomOff ? Integer.toString(topOff) : topOff + "-" + bottomOff;
-                player.displayClientMessage(Component.translatable(
+                player.sendSystemMessage(Component.translatable(
                                 "pneumaticcraft.message.seismicSensor.foundOilDetails",
                                 Component.translatable(result.fluid().getFluidType().getDescriptionId()),
                                 ChatFormatting.GREEN + depthStr,
-                                ChatFormatting.GREEN.toString() + result.lakeSize()),
-                        false);
+                                ChatFormatting.GREEN.toString() + result.lakeSize()));
                 player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1f, 1f);
             }, () -> {
-                player.displayClientMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+                player.sendSystemMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"));
             });
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.

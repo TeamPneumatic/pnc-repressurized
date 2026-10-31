@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -43,6 +44,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -97,14 +99,14 @@ public class DroneItem extends PressurizableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         SimpleFluidContent storedFluid = stack.get(ModDataComponents.STORED_FLUID);
         if (storedFluid != null && !storedFluid.isEmpty()) {
             FluidStack fluidStack = storedFluid.copy();
             if (!fluidStack.isEmpty()) {
-                tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
+                tooltip.accept(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
                         .append(fluidStack.getAmount() + "mB ")
                         .append(fluidStack.getHoverName()).withStyle(ChatFormatting.GRAY)
                 );

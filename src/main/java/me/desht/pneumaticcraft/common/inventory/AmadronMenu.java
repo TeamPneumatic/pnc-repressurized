@@ -167,7 +167,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 if (h.getPressure() > 0) {
                     return true;
                 } else {
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.tab.problems.notEnoughPressure"), false);
+                    player.sendSystemMessage(Component.translatable("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
                     return false;
                 }
             }).orElse(false);

@@ -28,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -152,7 +151,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 ItemStack copyBeforeUse = stack.copy();
                 InteractionResult result = stack.useOn(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
                 if (result == InteractionResult.PASS) {
-                    InteractionResultHolder<ItemStack> rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
+                    InteractionResult rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
                     fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, rightClickResult.getObject());
                 }
                 if (fakePlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {

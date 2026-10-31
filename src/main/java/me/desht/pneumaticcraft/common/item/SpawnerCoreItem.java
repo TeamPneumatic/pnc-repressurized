@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.ColorHandlers;
@@ -53,6 +54,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -71,24 +73,24 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         ISpawnerCoreStats stats = stack.getOrDefault(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreStats.EMPTY);
         if (stats.getUnusedPercentage() < 100) {
             stats.getEntities().keySet().stream()
                     .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
-                    .forEach(type -> tooltip.add(Symbols.bullet()
+                    .forEach(type -> tooltip.accept(Symbols.bullet()
                             .append(xlate(type.getDescriptionId()).withStyle(ChatFormatting.YELLOW))
                             .append(": " + stats.getPercentage(type) + "%").withStyle(ChatFormatting.WHITE))
                     );
             if (stats.getUnusedPercentage() > 0) {
-                tooltip.add(Symbols.bullet()
+                tooltip.accept(Symbols.bullet()
                         .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC))
                         .append(": " + stats.getUnusedPercentage() + "%").withStyle(ChatFormatting.WHITE));
             }
         } else {
-            tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
         }
     }
 

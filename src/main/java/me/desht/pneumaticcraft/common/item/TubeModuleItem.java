@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.block.PressureTubeBlock;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -28,6 +29,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -54,12 +56,12 @@ public class TubeModuleItem extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        super.appendHoverText(stack, context, tooltip, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flag);
 
         AbstractTubeModule module = createModule(Direction.UP,null);
         Component yesNo = Component.translatable(module.isInline() ? "gui.yes" : "gui.no");
-        tooltip.add(Component.translatable("pneumaticcraft.gui.tubeModule.inline", yesNo).withStyle(ChatFormatting.DARK_AQUA));
+        tooltip.accept(Component.translatable("pneumaticcraft.gui.tubeModule.inline", yesNo).withStyle(ChatFormatting.DARK_AQUA));
     }
 
     @Override

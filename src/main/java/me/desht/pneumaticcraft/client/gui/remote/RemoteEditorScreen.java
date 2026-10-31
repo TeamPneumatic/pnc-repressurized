@@ -91,7 +91,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
             if (RemoteItem.hasSameSecuritySettings(remoteItem, invSearchGui.getSearchStack())) {
                 addWidgetsFromLayout(SavedRemoteLayout.fromItem(invSearchGui.getSearchStack()));
             } else {
-                ClientUtils.getClientPlayer().displayClientMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
+                ClientUtils.getClientPlayer().sendSystemMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"));
             }
         } else if (widgetMap.isEmpty()) {
             // initial opening of the editor screen; load saved widgets from the remote item data component

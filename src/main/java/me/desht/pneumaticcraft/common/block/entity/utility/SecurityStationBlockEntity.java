@@ -193,7 +193,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 if (hasValidNetwork()) {
                     initiateHacking(player);
                 } else {
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.message.securityStation.outOfOrder"), false);
+                    player.sendSystemMessage(Component.translatable("pneumaticcraft.message.securityStation.outOfOrder"));
                 }
             } else if (tag.startsWith("remove:") && isOwner(player)) {
                 String name = tag.split(":", 2)[1];
@@ -442,7 +442,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     public void initiateHacking(ServerPlayer hacker) {
         // will only get here if the BE has a valid node network
         if (simulationController != null) {
-            hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").withStyle(ChatFormatting.GOLD), false);
+            hacker.sendSystemMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").withStyle(ChatFormatting.GOLD));
         } else {
             simulationController = new SimulationController(this, hacker, isPlayerOnWhiteList(hacker));
             hacker.openMenu(getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
@@ -695,10 +695,10 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
                 boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem bi && bi.getBlock() == ModBlocks.SECURITY_STATION.get();
                 if (SecurityStationBlockEntity.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
-                    player.displayClientMessage(xlate(tryingToPlaceSecurityStation ?
+                    player.sendOverlayMessage(xlate(tryingToPlaceSecurityStation ?
                             "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
                             "pneumaticcraft.message.securityStation.accessPrevented"
-                    ).withStyle(ChatFormatting.RED), true);
+                    ).withStyle(ChatFormatting.RED));
                     if (heldItem.getItem() instanceof BlockItem) {
                         player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, heldItem));
                     }
@@ -730,7 +730,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             Player player = event.getPlayer();
             if (!isPlayerExempt(player) && isProtectedFromPlayer(player, event.getPos(), false)) {
                 event.setCanceled(true);
-                player.displayClientMessage(xlate("pneumaticcraft.message.securityStation.accessPrevented").withStyle(ChatFormatting.RED), true);
+                player.sendOverlayMessage(xlate("pneumaticcraft.message.securityStation.accessPrevented").withStyle(ChatFormatting.RED));
             }
         }
 
@@ -746,10 +746,10 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             boolean tryingToPlaceSecurityStation = event.getPlacedBlock().getBlock() == ModBlocks.SECURITY_STATION.get();
             if (isProtectedFromPlayer(player, pos, tryingToPlaceSecurityStation)) {
                 event.setCanceled(true);
-                player.displayClientMessage(xlate(tryingToPlaceSecurityStation ?
+                player.sendOverlayMessage(xlate(tryingToPlaceSecurityStation ?
                         "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
                         "pneumaticcraft.message.securityStation.accessPrevented"
-                ).withStyle(ChatFormatting.RED), true);
+                ).withStyle(ChatFormatting.RED));
                 return true;
             }
             return false;

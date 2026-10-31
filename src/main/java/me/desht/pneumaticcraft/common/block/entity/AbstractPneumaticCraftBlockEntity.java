@@ -37,11 +37,13 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.upgrades.*;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -61,6 +63,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -146,20 +150,23 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        PacketDescription.fromNBT(tag, getLevel().registryAccess())
+    public void handleUpdateTag(ValueInput input) {
+        // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+        PacketDescription.fromNBT(ValueIOBridge.readAll(input), getLevel().registryAccess())
                 .processPacket(this, getLevel().registryAccess());
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        super.onDataPacket(net, pkt, lookupProvider);
+    public void onDataPacket(Connection net, ValueInput input) {
+        super.onDataPacket(net, input);
 
         // handle any extra data serialized by PacketDescription
-        if (pkt.getTag().contains(Names.MOD_ID)) {
-            CompoundTag tag = pkt.getTag().getCompound(Names.MOD_ID).getCompound(PacketDescription.NBT_EXTRA);
+        // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+        CompoundTag pktTag = ValueIOBridge.readAll(input);
+        if (pktTag.contains(Names.MOD_ID)) {
+            CompoundTag tag = pktTag.getCompoundOrEmpty(Names.MOD_ID).getCompoundOrEmpty(PacketDescription.NBT_EXTRA);
             if (!tag.isEmpty()) {
-                readFromPacket(tag, lookupProvider);
+                readFromPacket(tag, input.lookup());
             }
         }
     }
@@ -322,9 +329,28 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         }
     }
 
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based saveAdditional() below,
+    //  see ValueIOBridge. The saved data format is unchanged.
     @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, level != null ? level.registryAccess() : RegistryAccess.EMPTY);
+        output.store(tag);
+    }
+
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based loadAdditional() below,
+    //  see ValueIOBridge
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+
+        loadAdditional(ValueIOBridge.readAll(input), input.lookup());
+    }
+
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
 
         if (customName != null) {
             tag.putString("CustomName", Component.Serializer.toJson(customName, provider));
@@ -345,9 +371,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         writeToPacket(tag, provider);
     }
 
-    @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
 
         if (tag.contains("CustomName")) {
             customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);

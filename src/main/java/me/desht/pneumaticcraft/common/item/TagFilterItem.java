@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.Sets;
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IFilteringItem;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -31,6 +32,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -45,13 +47,13 @@ public class TagFilterItem extends Item implements IFilteringItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         if (context.registries() != null) {
-            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
             for (TagKey<Item> key : getConfiguredTagList(stack)) {
-                tooltip.add(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
+                tooltip.accept(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
             }
         }
     }

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
@@ -31,6 +32,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -50,21 +52,21 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
-        super.appendHoverText(stack, context, infoList, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, flag);
 
         int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
         if (etchProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
         }
-        infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
+        infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(ChatFormatting.GRAY));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(ChatFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(ChatFormatting.GRAY));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(ChatFormatting.GRAY));
         }
     }
 

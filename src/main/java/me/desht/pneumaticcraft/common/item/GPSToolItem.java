@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GPSToolScreen;
@@ -34,12 +35,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -68,24 +69,29 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     private static void displayPosition(Player player, ItemStack itemInHand, BlockPos pos, boolean actionBar) {
-        player.displayClientMessage(itemInHand.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+        Component msg = itemInHand.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
                         .append(" ")
                         .append(Component.translatable("pneumaticcraft.message.gps_tool.targetSet",
-                                pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN)), actionBar);
+                                pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN));
+        if (actionBar) {
+            player.sendOverlayMessage(msg);
+        } else {
+            player.sendSystemMessage(msg);
+        }
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide()) {
             GPSToolScreen.showGUI(stack, handIn, getGPSLocation(playerIn.getUUID(), stack).orElse(playerIn.blockPosition()));
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, context, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
 
         ClientUtils.getOptionalClientLevel().ifPresent(level -> {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
@@ -98,11 +104,11 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
                     blockName = Component.empty().plainCopy();
                 }
                 String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-                infoList.add(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
+                infoList.accept(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
             });
             String varName = getVariable(stack);
             if (!varName.isEmpty()) {
-                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+                infoList.accept(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
             }
         });
     }

@@ -56,7 +56,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -236,9 +236,9 @@ public class JackHammerItem extends PressurizableItem
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (!playerIn.isShiftKeyDown() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
+        if (!playerIn.isShiftKeyDown() || stack.getCount() != 1) return InteractionResult.PASS;
         if (playerIn instanceof ServerPlayer sp) {
             sp.openMenu(new MenuProvider() {
                 @Override
@@ -252,7 +252,7 @@ public class JackHammerItem extends PressurizableItem
                 }
             }, buf -> AbstractPneumaticCraftMenu.putHand(buf, handIn));
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -422,8 +422,8 @@ public class JackHammerItem extends PressurizableItem
         if (!player.level().isClientSide()) {
             DigMode newMode = cycleDigMode(player.getItemInHand(hand), forward);
             if (newMode != null) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.jackhammer.mode")
-                        .append(xlate(newMode.getTranslationKey()).withStyle(ChatFormatting.YELLOW)), true);
+                player.sendOverlayMessage(xlate("pneumaticcraft.message.jackhammer.mode")
+                        .append(xlate(newMode.getTranslationKey()).withStyle(ChatFormatting.YELLOW)));
             }
         } else {
             lastModeSwitchTime = player.level().getGameTime();

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.XPFluidManager;
@@ -37,12 +38,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -74,9 +76,9 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
+        if (stack.getCount() != 1) return InteractionResult.PASS;
 
         if (!worldIn.isClientSide()) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
@@ -120,12 +122,12 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 }
             });
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         if (context.registries() != null) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
@@ -134,11 +136,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                     FluidStack fluidStack = handler.getFluidInTank(0);
                     int amount = fluidStack.getAmount();
                     int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
-                    tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
+                    tooltip.accept(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
                 }
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -201,7 +203,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getItem() instanceof MemoryStickItem) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
-            player.displayClientMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
+            player.sendOverlayMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW));
             player.level().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }

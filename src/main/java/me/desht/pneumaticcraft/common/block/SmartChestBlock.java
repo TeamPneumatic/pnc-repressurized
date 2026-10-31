@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -108,18 +110,18 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-            super.appendHoverText(stack, context, tooltip, flagIn);
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+            super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
             SmartChestBlockEntity.SavedData savedData = stack.get(ModDataComponents.SMART_CHEST_SAVED);
             if (savedData != null) {
                 int filterSize = savedData.filter().getSlots();
                 if (filterSize > 0) {
-                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", filterSize));
+                    tooltip.accept(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", filterSize));
                 }
                 int lastSlot = savedData.lastSlot();
                 if (lastSlot < SmartChestBlockEntity.CHEST_SIZE) {
-                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
+                    tooltip.accept(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
                 }
             }
         }

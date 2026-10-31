@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.ImmutableList;
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
@@ -40,12 +41,12 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -82,24 +83,23 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
         if (worldIn.isClientSide() && !playerIn.isShiftKeyDown()) {
             GPSAreaToolScreen.showGUI(stack, handIn, 0);
         } else if (playerIn.isShiftKeyDown()) {
             setActiveIndex(playerIn, stack, 0);
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     public static void setActiveIndex(Player player, ItemStack stack, int index) {
         Validate.isTrue(index == 0 || index == 1);
         stack.set(ModDataComponents.GPS_AREA_TOOL_INDEX, index);
         String str = index == 0 ? ChatFormatting.RED + "P1" : ChatFormatting.GREEN + "P2";
-        player.displayClientMessage(stack.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+        player.sendOverlayMessage(stack.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
                         .append(" ")
-                        .append(Component.translatable("pneumaticcraft.message.gps_tool.activeIndex", str).withStyle(ChatFormatting.YELLOW)),
-                true);
+                        .append(Component.translatable("pneumaticcraft.message.gps_tool.activeIndex", str).withStyle(ChatFormatting.YELLOW)));
     }
 
     public static int getActiveIndex(ItemStack stack) {
@@ -118,8 +118,13 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     }
 
     private static void notifyPlayer(Player player, ItemStack stack, BlockPos pos, int index, boolean actionBar) {
-        player.displayClientMessage(Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
-                .append(getMessageText(player.level(), pos, index)), actionBar);
+        Component msg = Component.literal(ChatFormatting.AQUA + String.format("[%s] ", stack.getHoverName().getString()))
+                .append(getMessageText(player.level(), pos, index));
+        if (actionBar) {
+            player.sendOverlayMessage(msg);
+        } else {
+            player.sendSystemMessage(msg);
+        }
     }
 
     private static Component getMessageText(Level worldIn, BlockPos pos, int index) {
@@ -132,8 +137,8 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, context, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
 
         ClientUtils.getOptionalClientLevel().ifPresent(level ->  {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
@@ -142,10 +147,10 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
             for (int index = 0; index < 2; index++) {
                 final int i = index;
                 getGPSLocation(ClientUtils.getClientPlayer(), stack, index)
-                        .ifPresent(pos -> infoList.add(getMessageText(level, pos, i)));
+                        .ifPresent(pos -> infoList.accept(getMessageText(level, pos, i)));
                 String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
-                    infoList.add(Component.literal(" ").append(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName)));
+                    infoList.accept(Component.literal(" ").append(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName)));
                 }
             }
             if (infoList.size() - n >= 2) area.addAreaTypeTooltip(infoList);

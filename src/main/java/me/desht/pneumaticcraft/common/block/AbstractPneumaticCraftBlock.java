@@ -43,7 +43,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -121,29 +121,29 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         BlockEntity te = level.getBlockEntity(pos);
         if (player.isShiftKeyDown()
                 || !(te instanceof MenuProvider)
                 || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
                 || hand == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getMainHandItem())) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         } else {
             if (player instanceof ServerPlayer serverPlayer) {
                 if (te instanceof AbstractPneumaticCraftBlockEntity) {
                     if (FluidUtils.tryFluidInsertion(te, null, player, hand)) {
                         level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return ItemInteractionResult.sidedSuccess(false);
+                        return InteractionResult.CONSUME;
                     } else if (FluidUtils.tryFluidExtraction(te, null, player, hand)) {
                         level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        return ItemInteractionResult.sidedSuccess(false);
+                        return InteractionResult.CONSUME;
                     }
                     // te must be a MenuProvider at this point: see instanceof check above
                     doOpenGui(serverPlayer, te);
                 }
             }
 
-            return ItemInteractionResult.sidedSuccess(true);
+            return InteractionResult.SUCCESS;
         }
     }
 
@@ -336,7 +336,6 @@ public abstract class AbstractPneumaticCraftBlock extends Block
         }
     }
 
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
         int savedAir = stack.getOrDefault(ModDataComponents.AIR, 0);
         if (savedAir != 0) {

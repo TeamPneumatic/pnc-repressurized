@@ -198,7 +198,7 @@ public enum AreaRenderManager {
                     posList = posList.stream()
                             .sorted(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())))
                             .toList();
-                    player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD), false);
+                    player.sendSystemMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD));
                 }
                 Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
                 int n = Math.min(posList.size(), MAX_DISPLAYED_POS);

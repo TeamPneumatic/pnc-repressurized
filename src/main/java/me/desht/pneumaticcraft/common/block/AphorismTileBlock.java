@@ -33,7 +33,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -111,7 +110,6 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
                 RenderShape.INVISIBLE : RenderShape.MODEL;
     }
 
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
         super.appendHoverText(stack, context, curInfo, flag);
 
@@ -147,17 +145,17 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         BlockEntity te = level.getBlockEntity(pos);
         if (!(te instanceof AphorismTileBlockEntity teAT)) {
-            return ItemInteractionResult.FAIL;
+            return InteractionResult.FAIL;
         }
 
         if (!level.isClientSide() && player.getItemInHand(hand).is(Tags.Items.DYES) && !teAT.isInvisible()) {
             return tryDyeTile(state, player, hand, brtr, teAT);
         }
 
-        return stack.isEmpty() ? ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.sidedSuccess(level.isClientSide());
+        return stack.isEmpty() ? InteractionResult.TRY_WITH_EMPTY_HAND : InteractionResult.SUCCESS;
     }
 
     @Override
@@ -170,7 +168,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         return InteractionResult.CONSUME;
     }
 
-    private ItemInteractionResult tryDyeTile(BlockState state, Player player, InteractionHand hand, BlockHitResult brtr, AphorismTileBlockEntity teAT) {
+    private InteractionResult tryDyeTile(BlockState state, Player player, InteractionHand hand, BlockHitResult brtr, AphorismTileBlockEntity teAT) {
         DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
             if (clickedBorder(state, brtr.getLocation())) {
@@ -184,9 +182,9 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
                     if (ConfigHelper.common().general.useUpDyesWhenColoring.get()) player.getItemInHand(hand).shrink(1);
                 }
             }
-            return ItemInteractionResult.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ItemInteractionResult.FAIL;
+        return InteractionResult.FAIL;
     }
 
     private InteractionResult openEditorGui(Player player, AphorismTileBlockEntity teAT) {
@@ -211,7 +209,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
                 .append(Component.translatable("pneumaticcraft.gui.aphorismTileEditor"))
                 .append(Component.literal(": "))
                 .append(Component.translatable("pneumaticcraft.gui.holdF1forHelp"));
-        player.displayClientMessage(msg, true);
+        player.sendOverlayMessage(msg);
     }
 
     @Override

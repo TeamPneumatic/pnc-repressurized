@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.mixin.accessors.ItemEntityAccess;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -53,8 +55,8 @@ public class NonDespawningItem extends Item {
      * allows items to add custom lines of information to the mouseover description
      */
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag moreInfo) {
-        super.appendHoverText(stack, context, curInfo, moreInfo);
-        curInfo.add(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag moreInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, curInfo, moreInfo);
+        curInfo.accept(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
     }
 }

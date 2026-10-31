@@ -105,17 +105,17 @@ public class SecurityStationBlock extends AbstractPneumaticCraftBlock implements
             if (secStation.isPlayerOnWhiteList(player)) {
                 return super.useWithoutItem(state, world, pos, player, brtr);
             } else if (!secStation.hasValidNetwork()) {
-                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED), false);
+                player.sendSystemMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(ChatFormatting.RED));
             } else if (secStation.hasPlayerHacked(player)) {
-                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD), false);
+                player.sendSystemMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(ChatFormatting.GOLD));
             } else if (getPlayerHackLevel(player) < secStation.getSecurityLevel()) {
-                player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD), false);
+                player.sendSystemMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(ChatFormatting.GOLD));
                 player.hurt(player.damageSources().fellOutOfWorld(), 1f);
             } else {
                 if (ConfigHelper.common().machines.securityStationAllowHacking.get()) {
                     secStation.initiateHacking(sp);
                 } else {
-                    player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.hackDisabled").withStyle(ChatFormatting.GOLD), false);
+                    player.sendSystemMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.hackDisabled").withStyle(ChatFormatting.GOLD));
                 }
             }
         }

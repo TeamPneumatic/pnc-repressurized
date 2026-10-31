@@ -70,7 +70,6 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
         return true;
     }
 
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
         super.appendHoverText(stack, context, curInfo, flag);
 

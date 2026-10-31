@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.SecurityStationHackingScreen;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.world.item.component.TooltipDisplay;
 
 public class NetworkComponentItem extends Item implements IProgrammable {
     private final NetworkComponentType type;
@@ -64,8 +66,8 @@ public class NetworkComponentItem extends Item implements IProgrammable {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, context, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, curInfo, extraInfo);
 
         if (context.registries() != null) {
             SecurityStationHackingScreen.addExtraHackInfoStatic(curInfo);

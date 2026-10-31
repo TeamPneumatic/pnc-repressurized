@@ -11,7 +11,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -89,7 +89,7 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldStack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         return world.getBlockEntity(pos, ModBlockEntityTypes.REFINERY_OUTPUT.get()).map(te -> {
             // normally, activating any refinery output block would open the controller BE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
@@ -104,8 +104,8 @@ public class RefineryOutputBlock extends AbstractPneumaticCraftBlock
             } else if (player instanceof ServerPlayer sp) {
                 te.getRefineryController().ifPresent(controller -> sp.openMenu(controller, controller.getBlockPos()));
             }
-            return ItemInteractionResult.SUCCESS;
-        }).orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+            return InteractionResult.SUCCESS;
+        }).orElse(InteractionResult.TRY_WITH_EMPTY_HAND);
     }
 
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {

@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -78,9 +78,9 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (player instanceof ServerPlayer sp) {
             if (level.getBlockEntity(pos) instanceof PressureChamberValveBlockEntity te) {
@@ -95,17 +95,17 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
                         }
                     }
                 } else {
-                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    return InteractionResult.TRY_WITH_EMPTY_HAND;
                 }
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             } else {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         } else {
             return level.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get())
                     .filter(te -> te.multiBlockSize > 0)
-                    .map(te -> ItemInteractionResult.SUCCESS)
-                    .orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+                    .map(te -> InteractionResult.SUCCESS)
+                    .orElse(InteractionResult.TRY_WITH_EMPTY_HAND);
         }
     }
 

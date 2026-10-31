@@ -614,7 +614,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                             player.drop(remainingItem, false);
                         }
                     }
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
+                    player.sendOverlayMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()));
                     if (stack.getCount() == startValue) break;
                 }
                 return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;

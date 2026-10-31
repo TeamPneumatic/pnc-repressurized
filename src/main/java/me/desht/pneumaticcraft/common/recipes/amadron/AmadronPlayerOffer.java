@@ -148,7 +148,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public void notifyRestock() {
         ServerPlayer player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
         if (player != null) {
-            player.displayClientMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
+            player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()));
         }
     }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import java.util.function.Consumer;
 import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -33,7 +34,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
@@ -43,6 +43,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -59,12 +60,12 @@ public class RemoteItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
+    public InteractionResult use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         if (player instanceof ServerPlayer sp) {
             openGui(sp, stack, handIn);
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -79,10 +80,10 @@ public class RemoteItem extends Item {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                 setSecurityStationPos(remote, gPos);
                 Component posComp = Component.literal(GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW);
-                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", posComp), false);
+                player.sendSystemMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", posComp));
                 return InteractionResult.CONSUME;
             } else {
-                player.displayClientMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
+                player.sendOverlayMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"));
                 return InteractionResult.FAIL;
             }
         } else if (player instanceof ServerPlayer sp) {
@@ -94,15 +95,15 @@ public class RemoteItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack remote, TooltipContext context, List<Component> curInfo, TooltipFlag moreInfo) {
-        super.appendHoverText(remote, context, curInfo, moreInfo);
+    public void appendHoverText(ItemStack remote, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag moreInfo) {
+        super.appendHoverText(remote, context, tooltipDisplay, curInfo, moreInfo);
 
-        curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
+        curInfo.accept(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.boundToSecurityStation", GlobalPosHelper.prettyPrint(gPos)));
+            curInfo.accept(xlate("pneumaticcraft.gui.remote.tooltip.boundToSecurityStation", GlobalPosHelper.prettyPrint(gPos)));
         } else {
-            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.rightClickToBind"));
+            curInfo.accept(xlate("pneumaticcraft.gui.remote.tooltip.rightClickToBind"));
         }
     }
 
@@ -138,7 +139,7 @@ public class RemoteItem extends Item {
             if (GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity teSS) {
                 boolean canAccess = teSS.doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED), false);
+                    player.sendSystemMessage(Component.translatable("pneumaticcraft.gui.remote.noEditRights", gPos).withStyle(ChatFormatting.RED));
                 }
                 return canAccess;
             }

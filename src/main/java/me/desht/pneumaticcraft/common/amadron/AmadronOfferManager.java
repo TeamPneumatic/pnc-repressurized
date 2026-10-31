@@ -147,7 +147,7 @@ public enum AmadronOfferManager {
         CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.getInventory()), new PlayerOffhandInvWrapper(player.getInventory()));
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).getItem() instanceof AmadronTabletItem) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
+                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"));
                 break;
             }
         }

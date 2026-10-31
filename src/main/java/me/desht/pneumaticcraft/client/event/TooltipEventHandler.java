@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
@@ -37,6 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -61,6 +63,14 @@ public class TooltipEventHandler {
         if (event.getEntity() == null) return;
 
         ItemStack stack = event.getItemStack();
+
+        // Block#appendHoverText() is gone in 26.1; PNC blocks keep their own appendHoverText() method,
+        // and their lines are added here, straight after the item name
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof AbstractPneumaticCraftBlock pncBlock) {
+            List<Component> blockInfo = new ArrayList<>();
+            pncBlock.appendHoverText(stack, event.getContext(), blockInfo, event.getFlags());
+            event.getToolTip().addAll(Math.min(1, event.getToolTip().size()), blockInfo);
+        }
 
         if (stack.getItem() instanceof BucketItem) {
             handleFluidContainerTooltip(event);
