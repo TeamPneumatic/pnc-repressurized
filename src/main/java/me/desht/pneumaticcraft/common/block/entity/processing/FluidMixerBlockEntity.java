@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -179,14 +180,14 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", outputInv.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(outputInv, provider));
     }
 
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        outputInv.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(outputInv, provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

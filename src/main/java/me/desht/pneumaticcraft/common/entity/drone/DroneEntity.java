@@ -62,6 +62,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
 import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -1138,8 +1139,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (deployPos != null) tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
 
         ItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new ItemStackHandler(droneItemHandler.getSlots()));
-        tag.put("Inventory", tmpHandler.serializeNBT(registryAccess()));
-        tag.put("upgrades", upgradeInventory.serializeNBT(registryAccess()));
+        tag.put("Inventory", ValueIOBridge.serialize(tmpHandler, registryAccess()));
+        tag.put("upgrades", ValueIOBridge.serialize(upgradeInventory, registryAccess()));
 
         fluidTank.writeToNBT(registryAccess(), tag);
 
@@ -1172,14 +1173,14 @@ public class DroneEntity extends AbstractDroneEntity implements
         aiManager.readFromNBT(tag.getCompoundOrEmpty("variables"));
         standby = tag.getBooleanOr("standby", false);
         allowStandbyPickup = tag.getBooleanOr("allowStandbyPickup", false);
-        upgradeInventory.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty("upgrades"));
+        ValueIOBridge.deserialize(upgradeInventory, registryAccess(), tag.getCompoundOrEmpty("upgrades"));
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompoundOrEmpty("airHandler"));
         carriedEntityAIdisabled = tag.getBooleanOr("carriedEntityAIdisabled", false);
         deployPos = NbtUtils.readBlockPos(tag, "deployPos").orElse(null);
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty("Inventory"));
+        ValueIOBridge.deserialize(tmpInv, registryAccess(), tag.getCompoundOrEmpty("Inventory"));
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 

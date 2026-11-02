@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -308,7 +309,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
     }
@@ -317,7 +318,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getStringOr("mode", ""));
         currentDepth = tag.getIntOr("currentDepth", 0);
     }

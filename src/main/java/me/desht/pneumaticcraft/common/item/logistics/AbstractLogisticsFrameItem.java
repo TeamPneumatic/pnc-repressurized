@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -105,7 +106,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
-                handler.deserializeNBT(provider, tag.getCompoundOrEmpty(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
+                ValueIOBridge.deserialize(handler, provider, tag.getCompoundOrEmpty(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
                 List<ItemStack> stacks = new ArrayList<>();
                 for (int i = 0; i < handler.getSlots(); i++) {
                     if (!handler.getStackInSlot(i).isEmpty()) stacks.add(handler.getStackInSlot(i));

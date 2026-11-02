@@ -42,6 +42,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -268,7 +269,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", itemHandler.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(itemHandler, provider));
         tag.putString("sensorSetting", sensorSetting);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
@@ -279,7 +280,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(itemHandler, provider, tag.getCompoundOrEmpty("Items"));
         setSensorSetting(tag.getStringOr("sensorSetting", ""));
         dishSpeed = tag.getFloatOr("dishSpeed", 0f);
         sensorGuiText = tag.getStringOr("sensorText", "");

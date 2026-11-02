@@ -44,7 +44,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isFluidBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.FluidHandler.BLOCK)
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.Fluid.BLOCK)
                 && !NeoForge.EVENT_BUS.post(new FluidTrackEvent(te)).isCanceled();
     }
 

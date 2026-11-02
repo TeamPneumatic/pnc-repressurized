@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -323,7 +324,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
                 .ifPresent(t -> tag.put("lights", t));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
     }
 
     @Override
@@ -337,7 +338,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         targetRange = tag.getByteOr("targetRange", (byte) 0);
         range = tag.getByteOr("range", (byte) 0);
         rangeSq = range * range;
-        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

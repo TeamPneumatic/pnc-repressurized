@@ -61,7 +61,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
         return te != null
                 && !TrackerBlacklistManager.isInventoryBlacklisted(te)
-                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.ItemHandler.BLOCK))
+                && (te instanceof RandomizableContainerBlockEntity || IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.Item.BLOCK))
                 && postTrackEvent(te);
     }
 
@@ -72,7 +72,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(BlockEntity te) {
-        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.ItemHandler.BLOCK)) {
+        if (te instanceof RandomizableContainerBlockEntity && !IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.Item.BLOCK)) {
             // lootr chests can be like this
             return Collections.emptyList();
         }

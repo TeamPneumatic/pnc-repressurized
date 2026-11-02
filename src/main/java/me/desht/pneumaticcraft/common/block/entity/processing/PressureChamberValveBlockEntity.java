@@ -47,6 +47,7 @@ import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.SizeLimitedItemHandlerWrapper;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -428,12 +429,12 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
 
         setupMultiBlock(tag.getIntOr("multiBlockSize", 0), tag.getIntOr("multiBlockX", 0), tag.getIntOr("multiBlockY", 0), tag.getIntOr("multiBlockZ", 0));
         ItemStackHandler handler = new ItemStackHandler();
-        handler.deserializeNBT(provider, tag.getCompoundOrEmpty("itemsInChamber"));
+        ValueIOBridge.deserialize(handler, provider, tag.getCompoundOrEmpty("itemsInChamber"));
         for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
             itemsInChamber.setStackInSlot(i, handler.getStackInSlot(i));
         }
         ItemStackHandler outHandler = new ItemStackHandler();
-        outHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("craftedItems"));
+        ValueIOBridge.deserialize(outHandler, provider, tag.getCompoundOrEmpty("craftedItems"));
         for (int i = 0; i < outHandler.getSlots() && i < OUTPUT_INV_SIZE; i++) {
             craftedItems.setStackInSlot(i, outHandler.getStackInSlot(i));
         }
@@ -457,8 +458,8 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         tag.putInt("multiBlockY", multiBlockY);
         tag.putInt("multiBlockZ", multiBlockZ);
         tag.putInt("multiBlockSize", multiBlockSize);
-        tag.put("itemsInChamber", itemsInChamber.serializeNBT(provider));
-        tag.put("craftedItems", craftedItems.serializeNBT(provider));
+        tag.put("itemsInChamber", ValueIOBridge.serialize(itemsInChamber, provider));
+        tag.put("craftedItems", ValueIOBridge.serialize(craftedItems, provider));
 
         // Write the accessory valve list to NBT
         ListTag accList = accessoryValves.stream()

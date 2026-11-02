@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -232,7 +233,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
         if (ownerId != null) {
@@ -244,7 +245,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
         idleYaw = tag.getFloatOr("idleYaw", 0f);
         setText(0, tag.getStringOr(NBT_ENTITY_FILTER, ""));
         if (tag.contains("ownerId")) {

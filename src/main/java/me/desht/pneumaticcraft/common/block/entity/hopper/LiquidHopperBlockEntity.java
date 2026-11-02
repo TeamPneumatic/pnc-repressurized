@@ -51,6 +51,8 @@ import net.neoforged.neoforge.fluids.*;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,18 +69,18 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @GuiSynced
     private final RedstoneController<LiquidHopperBlockEntity> rsController = new RedstoneController<>(this);
 
-    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> inputCache = Lazy.of(() -> createFluidHandlerCache(inputDir));
-    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> outputCache = Lazy.of(() -> createFluidHandlerCache(getRotation()));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> inputCache = Lazy.of(() -> createFluidHandlerCache(inputDir));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> outputCache = Lazy.of(() -> createFluidHandlerCache(getRotation()));
 
     public LiquidHopperBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.LIQUID_HOPPER.get(), pos, state);
     }
 
-    private BlockCapabilityCache<IFluidHandler,Direction> getInputCache() {
+    private BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> getInputCache() {
         return inputCache.get();
     }
 
-    private BlockCapabilityCache<IFluidHandler,Direction> getOutputCache() {
+    private BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> getOutputCache() {
         return outputCache.get();
     }
 
@@ -134,7 +136,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         Direction dir = getRotation();
 
         // try to fill any neighbouring fluid-accepting block entity
-        IFluidHandler dstHandler = getOutputCache().getCapability();
+        IFluidHandler dstHandler = IOHelper.legacyFluid(getOutputCache());
         if (dstHandler != null) {
             int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
             FluidStack transferred = FluidUtil.tryFluidTransfer(dstHandler, tank, amount, true);
@@ -173,7 +175,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
     @Override
     protected boolean doImport(int maxItems) {
-        IFluidHandler srcHandler = getInputCache().getCapability();
+        IFluidHandler srcHandler = IOHelper.legacyFluid(getInputCache());
         if (srcHandler != null) {
             FluidStack fluid = srcHandler.drain(maxItems * 100, FluidAction.SIMULATE);
             if (!fluid.isEmpty()) {

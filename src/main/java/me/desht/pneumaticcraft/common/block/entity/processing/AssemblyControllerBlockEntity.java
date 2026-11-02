@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -211,7 +212,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
 
         goingToHomePosition = tag.getBooleanOr("goingToHomePosition", false);
         displayedText = tag.getStringOr("displayedText", "");
-        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(itemHandler, provider, tag.getCompoundOrEmpty("Items"));
         if (!itemHandler.getStackInSlot(PROGRAM_SLOT).isEmpty()) {
             curProgram = AssemblyProgramItem.getProgram(itemHandler.getStackInSlot(PROGRAM_SLOT));
             if (curProgram != null) curProgram.readFromNBT(tag);
@@ -224,7 +225,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
         tag.putBoolean("goingToHomePosition", goingToHomePosition);
         tag.putString("displayedText", displayedText);
         if (curProgram != null) curProgram.writeToNBT(tag);
-        tag.put("Items", itemHandler.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(itemHandler, provider));
     }
 
     @Override

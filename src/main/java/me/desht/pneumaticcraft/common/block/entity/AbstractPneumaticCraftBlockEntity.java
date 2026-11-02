@@ -75,6 +75,9 @@ import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -605,15 +608,15 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return upgradeHandler;
     }
 
-    protected BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> createItemHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                BlockCapabilityCache.create(Capabilities.Item.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
     }
 
-    protected BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> createFluidHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                BlockCapabilityCache.create(Capabilities.Fluid.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
     }
 

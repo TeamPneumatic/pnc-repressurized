@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -276,8 +277,8 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", inputItemHandler.serializeNBT(provider));
-        tag.put("Output", outputItemHandler.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inputItemHandler, provider));
+        tag.put("Output", ValueIOBridge.serialize(outputItemHandler, provider));
         tag.putFloat("craftingProgress", craftingProgress);
     }
 
@@ -285,8 +286,8 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inputItemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
-        outputItemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Output"));
+        ValueIOBridge.deserialize(inputItemHandler, provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(outputItemHandler, provider, tag.getCompoundOrEmpty("Output"));
         craftingProgress = tag.getFloatOr("craftingProgress", 0f);
     }
 

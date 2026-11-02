@@ -41,7 +41,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
         return te != null
                 && !TrackerBlacklistManager.isEnergyBlacklisted(te)
-                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.EnergyStorage.BLOCK);
+                && IBlockTrackEntry.hasCapabilityOnAnyFace(te, Capabilities.Energy.BLOCK);
     }
 
     @Override

@@ -40,7 +40,6 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -330,7 +329,7 @@ public class FluidUtils {
 
     public static ItemStack createFluidContainingItem(ItemLike item, FluidStack fluid) {
         ItemStack tank = new ItemStack(item);
-        IFluidHandlerItem handler = tank.getCapability(Capabilities.FluidHandler.ITEM, null);
+        IFluidHandlerItem handler = LegacyFluidHandlerItem.of(tank);
         if (handler == null) {
             return ItemStack.EMPTY;
         } else {

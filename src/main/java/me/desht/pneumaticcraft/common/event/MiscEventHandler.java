@@ -44,6 +44,7 @@ import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
+import me.desht.pneumaticcraft.common.util.LegacyFluidHandlerItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -60,6 +61,7 @@ import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -67,7 +69,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -140,7 +141,8 @@ public class MiscEventHandler {
     }
 
     private int amountTaken(int origAmount, ItemStack stack) {
-        IFluidHandlerItem handler = stack.getCraftingRemainingItem().getCapability(Capabilities.FluidHandler.ITEM);
+        ItemStackTemplate remainder = stack.getCraftingRemainder();
+        IFluidHandlerItem handler = remainder == null ? null : LegacyFluidHandlerItem.of(remainder.create());
         if (handler != null) {
             int newAmount = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount();
             return origAmount - newAmount;

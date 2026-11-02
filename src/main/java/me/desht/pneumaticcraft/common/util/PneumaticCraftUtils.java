@@ -66,6 +66,9 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joml.Vector3f;
 
@@ -471,7 +474,8 @@ public class PneumaticCraftUtils {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
-                IItemHandler handler = invStack.getCapability(Capabilities.ItemHandler.ITEM);
+                ResourceHandler<ItemResource> itemHandler = ItemAccess.forStack(invStack).getCapability(Capabilities.Item.ITEM);
+                IItemHandler handler = itemHandler == null ? null : IItemHandler.of(itemHandler);
                 if (handler != null) {
                     for (int j = 0; j < handler.getSlots(); j++) {
                         ItemStack invStack2 = handler.getStackInSlot(j);

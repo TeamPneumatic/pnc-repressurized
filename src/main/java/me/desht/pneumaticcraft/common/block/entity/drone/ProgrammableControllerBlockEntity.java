@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
 import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -186,10 +187,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
-                Capabilities.ItemHandler.BLOCK, () -> droneItemHandler,
+                Capabilities.Item.BLOCK, () -> droneItemHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
-                Capabilities.ItemHandler.BLOCK, () -> inventory,
+                Capabilities.Item.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");
     }
@@ -479,7 +480,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         ownerNameClient = ownerName.getString();
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(provider, tag.getCompoundOrEmpty("droneItems"));
+        ValueIOBridge.deserialize(tmpInv, provider, tag.getCompoundOrEmpty("droneItems"));
         droneItemHandler.setUseableSlots(tmpInv.getSlots());
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
@@ -510,7 +511,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             handler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
         }
-        tag.put("droneItems", handler.serializeNBT(provider));
+        tag.put("droneItems", ValueIOBridge.serialize(handler, provider));
 
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
         if (ownerName != null) tag.putString("ownerName", ownerName.getString());

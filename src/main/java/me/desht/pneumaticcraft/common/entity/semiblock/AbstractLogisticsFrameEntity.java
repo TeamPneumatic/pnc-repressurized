@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -59,6 +60,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -333,7 +335,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompoundOrEmpty(NBT_ITEM_FILTERS));
+        ValueIOBridge.deserialize(itemFilterHandler, registryAccess(), tag.getCompoundOrEmpty(NBT_ITEM_FILTERS));
         fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompoundOrEmpty(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
         setSemiblockInvisible(tag.getBooleanOr(NBT_INVISIBLE, false));
@@ -358,7 +360,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
         CompoundTag tag1 = super.serializeNBT(tag, provider);
 
-        tag1.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT(provider));
+        tag1.put(NBT_ITEM_FILTERS, ValueIOBridge.serialize(itemFilterHandler, provider));
         FluidFilter.CODEC.encodeStart(registryAccess().createSerializationContext(NbtOps.INSTANCE), fluidFilter)
                 .ifSuccess(t -> tag1.put(NBT_FLUID_FILTERS, t));
         tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), fluidFilter).result().orElse(new CompoundTag()));
@@ -565,8 +567,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         }
 
         @Override
-        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-            super.deserializeNBT(provider, nbt);
+        public void deserialize(ValueInput input) {
+            super.deserialize(input);
 
             buildFilterList();
         }

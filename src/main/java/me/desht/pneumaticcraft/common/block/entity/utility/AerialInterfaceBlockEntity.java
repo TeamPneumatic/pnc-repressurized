@@ -152,15 +152,15 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
-                Capabilities.ItemHandler.BLOCK, () -> playerMainInvHandler,
+                Capabilities.Item.BLOCK, () -> playerMainInvHandler,
                 SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
         itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
-                Capabilities.ItemHandler.BLOCK, () -> playerArmorInvHandler,
+                Capabilities.Item.BLOCK, () -> playerArmorInvHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
-                Capabilities.ItemHandler.BLOCK, () -> playerOffhandInvHandler);
+                Capabilities.Item.BLOCK, () -> playerOffhandInvHandler);
         itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
-                Capabilities.ItemHandler.BLOCK, () -> playerEnderInvHandler);
+                Capabilities.Item.BLOCK, () -> playerEnderInvHandler);
 
         invHandlers.add(playerMainInvHandler);
         invHandlers.add(playerArmorInvHandler);
@@ -175,7 +175,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 //        if (Curios.available) {
 //            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
 //            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-//                    Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
+//                    Capabilities.Item.BLOCK, () -> playerCuriosHandler);
 //            invHandlers.add(playerCuriosHandler);
 //        }
     }
