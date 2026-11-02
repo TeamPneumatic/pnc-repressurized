@@ -120,6 +120,9 @@ def disabledIntegrations = [
 ]
 sourceSets.main.java {
 	disabledIntegrations.each { exclude "me/desht/pneumaticcraft/common/thirdparty/${it}/**" }
+	// TODO 26.1 datagen: data providers are ported in a later PR; until then the generated resources
+	//  from 1.21.1 stay in src/generated (and need regenerating once datagen works again)
+	exclude "me/desht/pneumaticcraft/datagen/**"
 }
 
 neoForge {
