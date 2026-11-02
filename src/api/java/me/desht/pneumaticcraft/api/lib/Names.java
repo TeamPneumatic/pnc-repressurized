@@ -36,10 +36,6 @@ public class Names {
     public static final Identifier MODULE_VACUUM = RL("vacuum_module");
     public static final Identifier MODULE_THERMOSTAT = RL("thermostat_module");
 
-    public static final String PNEUMATIC_KEYBINDING_CATEGORY_MAIN = "key.pneumaticcraft.category.main";
-    public static final String PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES = "key.pneumaticcraft.category.upgrade_toggles";
-    public static final String PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER = "key.pneumaticcraft.category.block_tracker";
-
     // Agreed by convention among several mods to denote item entities which should not be magnet'ed
     public static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
 }

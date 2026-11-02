@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.api.heat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -117,12 +116,12 @@ public abstract class HeatBehaviour {
 
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.put("BlockPos", NbtUtils.writeBlockPos(pos));
+        tag.store("BlockPos", BlockPos.CODEC, pos);
         return tag;
     }
 
     public void deserializeNBT(CompoundTag nbt) {
-        pos = NbtUtils.readBlockPos(nbt, "BlockPos").orElse(BlockPos.ZERO);
+        pos = nbt.read("BlockPos", BlockPos.CODEC).orElse(BlockPos.ZERO);
     }
 
     @Override

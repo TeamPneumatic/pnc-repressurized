@@ -23,8 +23,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.PNCKeyCategories;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.BlockTrackOptions;
@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandl
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
@@ -374,8 +375,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public String getSubKeybindCategory() {
-        return Names.PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER;
+    public KeyMapping.Category getSubKeybindCategory() {
+        return PNCKeyCategories.BLOCK_TRACKER;
     }
 
     @Override

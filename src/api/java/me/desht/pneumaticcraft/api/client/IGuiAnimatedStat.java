@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -215,7 +215,7 @@ public interface IGuiAnimatedStat extends ITickableWidget, GuiEventListener {
      * @param mouseY       the mouse Y position
      * @param partialTicks partial ticks since last client tick
      */
-    void renderStat(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks);
+    void renderStat(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Render the stat in 3D (in-world) context.
