@@ -59,11 +59,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -87,6 +90,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.addListener(this::serverStarted);
         forgeBus.addListener(this::serverStopping);
         forgeBus.addListener(this::addReloadListeners);
+        forgeBus.addListener(OnDatapackSyncEvent.class, PneumaticCraftRecipeType::onDatapackSync);
         forgeBus.addListener(this::registerCommands);
         forgeBus.register(new MiscEventHandler());
         forgeBus.register(new AmadronEventListener());
@@ -177,8 +181,8 @@ public class PneumaticCraftRepressurized {
         });
     }
 
-    private void addReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
+    private void addReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(RL("recipe_caches"), PneumaticCraftRecipeType.getCacheReloadListener());
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

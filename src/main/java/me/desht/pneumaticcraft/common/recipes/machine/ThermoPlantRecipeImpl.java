@@ -22,6 +22,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
@@ -130,76 +131,59 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.THERMO_PLANT.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.THERMO_PLANT.get();
     }
 
     @Override
-    public String getGroup() {
+    public String group() {
         return Names.MOD_ID + ":thermo_plant";
     }
 
-    @Override
-    public ItemStack getToastSymbol() {
-        return new ItemStack(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get());
-    }
 
     public interface IFactory <T extends ThermoPlantRecipe> {
         T create(Inputs inputs, Outputs outputs, TemperatureRange operatingTemperature,
                  float requiredPressure, float recipeSpeed, float airUseMultiplier, boolean exothermic);
     }
 
-    public static class Serializer<T extends ThermoPlantRecipe> implements RecipeSerializer<T> {
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
+    public static <T extends ThermoPlantRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.<T>mapCodec(inst -> inst.group(
+                        Inputs.CODEC.fieldOf("inputs")
+                                .forGetter(ThermoPlantRecipe::inputs),
+                        Outputs.CODEC.fieldOf("outputs")
+                                .forGetter(ThermoPlantRecipe::outputs),
+                        TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
+                                .forGetter(ThermoPlantRecipe::getOperatingTemperature),
+                        Codec.FLOAT.optionalFieldOf("pressure", 0f)
+                                .forGetter(ThermoPlantRecipe::getRequiredPressure),
+                        Codec.FLOAT.optionalFieldOf("speed", 1f)
+                                .forGetter(ThermoPlantRecipe::getRecipeSpeed),
+                        Codec.FLOAT.optionalFieldOf("air_use_multiplier", 1f)
+                                .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
+                        Codec.BOOL.optionalFieldOf("exothermic", false)
+                                .forGetter(ThermoPlantRecipe::isExothermic)
+                ).apply(inst, factory::create))
+                .validate(recipe -> recipe.getInputItem().isPresent() || recipe.getInputFluid().isPresent() ?
+                        DataResult.success(recipe) :
+                        DataResult.error(() -> "at least one of item_input or fluid_input must be present!", recipe)
+                );
 
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.<T>mapCodec(inst -> inst.group(
-                            Inputs.CODEC.fieldOf("inputs")
-                                    .forGetter(ThermoPlantRecipe::inputs),
-                            Outputs.CODEC.fieldOf("outputs")
-                                    .forGetter(ThermoPlantRecipe::outputs),
-                            TemperatureRange.CODEC.optionalFieldOf("temperature", TemperatureRange.any())
-                                    .forGetter(ThermoPlantRecipe::getOperatingTemperature),
-                            Codec.FLOAT.optionalFieldOf("pressure", 0f)
-                                    .forGetter(ThermoPlantRecipe::getRequiredPressure),
-                            Codec.FLOAT.optionalFieldOf("speed", 1f)
-                                    .forGetter(ThermoPlantRecipe::getRecipeSpeed),
-                            Codec.FLOAT.optionalFieldOf("air_use_multiplier", 1f)
-                                    .forGetter(ThermoPlantRecipe::getAirUseMultiplier),
-                            Codec.BOOL.optionalFieldOf("exothermic", false)
-                                    .forGetter(ThermoPlantRecipe::isExothermic)
-                    ).apply(inst, factory::create))
-                    .validate(recipe -> recipe.getInputItem().isPresent() || recipe.getInputFluid().isPresent() ?
-                            DataResult.success(recipe) :
-                            DataResult.error(() -> "at least one of item_input or fluid_input must be present!", recipe)
-                    );
-
-            this.streamCodec = NeoForgeStreamCodecs.composite(
-                    Inputs.STREAM_CODEC, ThermoPlantRecipe::inputs,
-                    Outputs.STREAM_CODEC, ThermoPlantRecipe::outputs,
-                    TemperatureRange.STREAM_CODEC, ThermoPlantRecipe::getOperatingTemperature,
-                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRequiredPressure,
-                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRecipeSpeed,
-                    ByteBufCodecs.FLOAT, ThermoPlantRecipe::getAirUseMultiplier,
-                    ByteBufCodecs.BOOL, ThermoPlantRecipe::isExothermic,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                Inputs.STREAM_CODEC, ThermoPlantRecipe::inputs,
+                Outputs.STREAM_CODEC, ThermoPlantRecipe::outputs,
+                TemperatureRange.STREAM_CODEC, ThermoPlantRecipe::getOperatingTemperature,
+                ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRequiredPressure,
+                ByteBufCodecs.FLOAT, ThermoPlantRecipe::getRecipeSpeed,
+                ByteBufCodecs.FLOAT, ThermoPlantRecipe::getAirUseMultiplier,
+                ByteBufCodecs.BOOL, ThermoPlantRecipe::isExothermic,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
+
 }

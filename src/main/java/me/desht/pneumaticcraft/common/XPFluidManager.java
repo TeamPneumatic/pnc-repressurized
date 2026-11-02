@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,9 +58,9 @@ public enum XPFluidManager {
 
     private void resolveFluidIngredients() {
         for (Pair<FluidIngredient, Integer> pair : pendingIngredients) {
-            for (FluidStack fluidStack: pair.getLeft().getStacks()) {
-                Fluid fluid = fluidStack.getFluid();
-                if (fluid.isSource(fluid.defaultFluidState()) && fluidStack.getAmount() > 0) {
+            for (Holder<Fluid> holder : pair.getLeft().fluids()) {
+                Fluid fluid = holder.value();
+                if (fluid.isSource(fluid.defaultFluidState())) {
                     registerXPFluid(fluid, pair.getRight());
                 }
             }

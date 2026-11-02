@@ -21,6 +21,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -90,12 +91,12 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.FLUID_MIXER.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.FLUID_MIXER.get();
     }
 
@@ -105,38 +106,25 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
                  FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime);
     }
 
-    public static class Serializer<T extends FluidMixerRecipe> implements RecipeSerializer<T> {
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    SizedFluidIngredient.FLAT_CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
-                    SizedFluidIngredient.FLAT_CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
-                    FluidStack.OPTIONAL_CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
-                    ItemStack.OPTIONAL_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
-                    Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
-                    Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
-            ).apply(builder, factory::create));
-            streamCodec = StreamCodec.composite(
-                    SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput1,
-                    SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput2,
-                    FluidStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
-                    ItemStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputItem,
-                    ByteBufCodecs.FLOAT, FluidMixerRecipe::getRequiredPressure,
-                    ByteBufCodecs.VAR_INT, FluidMixerRecipe::getProcessingTime,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
+    public static <T extends FluidMixerRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                SizedFluidIngredient.CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
+                SizedFluidIngredient.CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
+                FluidStack.OPTIONAL_CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
+                ItemStack.OPTIONAL_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
+                Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
+                Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
+        ).apply(builder, factory::create));
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput1,
+                SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput2,
+                FluidStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
+                ItemStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputItem,
+                ByteBufCodecs.FLOAT, FluidMixerRecipe::getRequiredPressure,
+                ByteBufCodecs.VAR_INT, FluidMixerRecipe::getProcessingTime,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
+
 }

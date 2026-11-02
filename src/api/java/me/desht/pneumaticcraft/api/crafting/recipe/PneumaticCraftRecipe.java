@@ -23,6 +23,8 @@ import net.minecraft.world.item.crafting.PlacementInfo;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategories;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
 /**
@@ -64,6 +66,12 @@ public abstract class PneumaticCraftRecipe implements Recipe<CraftingInput> {
     public PlacementInfo placementInfo() {
         return PlacementInfo.NOT_PLACEABLE;
     }
+
+    @Override
+    public abstract RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer();
+
+    @Override
+    public abstract RecipeType<? extends PneumaticCraftRecipe> getType();
 
     @Override
     public RecipeBookCategory recipeBookCategory() {

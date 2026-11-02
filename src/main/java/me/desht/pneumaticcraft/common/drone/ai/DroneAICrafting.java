@@ -66,7 +66,7 @@ public class DroneAICrafting extends Goal {
                     stacks.set(i, stack);
                 }
                 CraftingInput input = CraftingInput.of(craftingGrid.width(), craftingGrid.height(), stacks);
-                if (recipe.matches(input, drone.getDroneLevel()) && doCrafting(recipe.assemble(input, drone.getDroneLevel().registryAccess()), input)) {
+                if (recipe.matches(input, drone.getDroneLevel()) && doCrafting(recipe.assemble(input), input)) {
                     actionCount++;
                     return true;
                 }

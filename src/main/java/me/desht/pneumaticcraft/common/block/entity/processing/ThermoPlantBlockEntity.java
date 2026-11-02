@@ -52,7 +52,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -223,8 +222,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
     private int getInputItemCount() {
         if (currentRecipe != null) {
-            ItemStack[] stacks = currentRecipe.getInputItem().map(Ingredient::getItems).orElse(new ItemStack[0]);
-            return stacks.length > 0 ? stacks[0].getCount() : 0;
+            return currentRecipe.getInputItem().isPresent() ? 1 : 0;
         }
         return 0;
     }

@@ -16,6 +16,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
@@ -78,12 +80,17 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     private static boolean isCookable(RecipeType<? extends AbstractCookingRecipe> type, ItemStack stack) {
-        Level level = ServerLifecycleHooks.getCurrentServer().overworld();
-        //noinspection ConstantConditions
-        if (level == null) return false;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return false;
+        ServerLevel level = server.overworld();
         SingleRecipeInput input = new SingleRecipeInput(stack);
         // TODO cache this
-        return level.getRecipeManager().getRecipeFor(type, input, level).isPresent();
+        return level.recipeAccess().getRecipeFor(type, input, level).isPresent();
+    }
+
+    private static boolean isFuel(ItemStack stack) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        return server != null && stack.getBurnTime(RecipeType.SMELTING, server.fuelValues()) > 0;
     }
 
     public static MutableComponent xlateMatch(boolean matchAll) {
@@ -121,7 +128,7 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     public enum FilterCondition implements ITranslatableEnum, Predicate<ItemStack>, StringRepresentable {
-        FUEL_ITEM(Items.COAL, s -> s.getBurnTime(RecipeType.SMELTING) > 0),
+        FUEL_ITEM(Items.COAL, ClassifyFilterItem::isFuel),
         EDIBLE(Items.BREAD, s -> getOptionalComponent(s, DataComponents.FOOD).map(f -> f.nutrition() > 0).orElse(false)),
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
         FLUID_CONTAINER(Items.BUCKET, s -> IOHelper.getFluidHandlerForItem(s).isPresent()),

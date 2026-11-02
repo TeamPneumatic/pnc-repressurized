@@ -19,8 +19,10 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
@@ -29,10 +31,10 @@ import me.desht.pneumaticcraft.common.util.WildcardedRLMatcher;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -56,7 +58,11 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     private static final Lazy<WildcardedRLMatcher> BLACKLIST
             = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.disenchantingBlacklist);
 
-    public PressureDisenchantingRecipe(CraftingBookCategory ignoredCategory) {
+    public static final PressureDisenchantingRecipe INSTANCE = new PressureDisenchantingRecipe();
+    public static final RecipeSerializer<PressureDisenchantingRecipe> SERIALIZER
+            = new RecipeSerializer<>(MapCodec.unit(INSTANCE), StreamCodec.unit(INSTANCE));
+
+    private PressureDisenchantingRecipe() {
         super(Collections.emptyList(), -0.75f, List.of());
     }
 
@@ -167,7 +173,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.PRESSURE_CHAMBER_DISENCHANTING.get();
     }
 

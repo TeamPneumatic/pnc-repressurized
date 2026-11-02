@@ -44,9 +44,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
@@ -389,10 +390,10 @@ public enum AmadronOfferManager {
         return activeOffers.containsKey(offerId);
     }
 
-    @EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class EventListener {
         @SubscribeEvent
-        public static void onRecipesAvailable(RecipesUpdatedEvent event) {
+        public static void onRecipesAvailable(RecipesReceivedEvent event) {
             NetworkHandler.sendToServer(PacketSyncAmadronOffers.createRequest());
         }
     }

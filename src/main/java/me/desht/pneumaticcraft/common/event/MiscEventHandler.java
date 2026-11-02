@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -289,7 +290,7 @@ public class MiscEventHandler {
     public void onTagsUpdated(TagsUpdatedEvent event) {
         CommonArmorRegistry.getInstance().resolveBlockTags();
 
-        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.tag(PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.of(BuiltInRegistries.FLUID.getOrThrow(PneumaticCraftTags.Fluids.EXPERIENCE)), 20);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
