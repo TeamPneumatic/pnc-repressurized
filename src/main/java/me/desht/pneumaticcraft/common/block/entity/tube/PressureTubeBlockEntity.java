@@ -131,7 +131,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         ListTag moduleList = tag.getListOrEmpty("modules");
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundTag moduleTag = moduleList.getCompoundOrEmpty(i);
-            Item item = BuiltInRegistries.ITEM.get(Identifier.parse(moduleTag.getStringOr("type", "")));
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(moduleTag.getStringOr("type", "")));
             Direction dir = Direction.from3DDataValue(moduleTag.getIntOr("dir", 0));
             if (item instanceof TubeModuleItem) {
                 AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);

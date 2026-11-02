@@ -27,7 +27,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
@@ -67,8 +67,8 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
-        if (clickType == ClickType.CLONE && slotId >= 0 && slotId < MinigunItem.MAGAZINE_SIZE) {
+    public void clicked(int slotId, int dragType, ContainerInput clickType, Player player) {
+        if (clickType == ContainerInput.CLONE && slotId >= 0 && slotId < MinigunItem.MAGAZINE_SIZE) {
             // middle-click (or whatever "pick block" is bound to) to lock a slot
             ItemStack gunStack = player.getItemInHand(hand);
             if (gunStack.getItem() instanceof MinigunItem) {

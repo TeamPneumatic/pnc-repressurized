@@ -232,7 +232,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
      * @return the dropped item, or null if nothing should be dropped
      */
     protected Item getDroppedItem() {
-        return BuiltInRegistries.ITEM.get(getSemiblockId());
+        return BuiltInRegistries.ITEM.getValue(getSemiblockId());
     }
 
     @Override

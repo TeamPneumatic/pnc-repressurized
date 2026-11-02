@@ -57,7 +57,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -463,7 +463,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
 
         // Write the accessory valve list to NBT
         ListTag accList = accessoryValves.stream()
-                .map(valve -> NbtUtils.writeBlockPos(valve.getBlockPos()))
+                .map(valve -> BlockPos.CODEC.encodeStart(NbtOps.INSTANCE, valve.getBlockPos()).getOrThrow())
                 .collect(Collectors.toCollection(ListTag::new));
         tag.put("Valves", accList);
     }

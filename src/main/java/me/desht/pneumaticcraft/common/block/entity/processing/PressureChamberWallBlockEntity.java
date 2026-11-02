@@ -27,7 +27,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
@@ -160,7 +159,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        valvePos = NbtUtils.readBlockPos(tag, "valvePos").orElse(null);
+        valvePos = tag.read("valvePos", BlockPos.CODEC).orElse(null);
         teValve = null;
     }
 
@@ -169,7 +168,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
         super.saveAdditional(tag, provider);
 
         if (valvePos != null) {
-            tag.put("valvePos", NbtUtils.writeBlockPos(valvePos));
+            tag.store("valvePos", BlockPos.CODEC, valvePos);
         }
     }
 

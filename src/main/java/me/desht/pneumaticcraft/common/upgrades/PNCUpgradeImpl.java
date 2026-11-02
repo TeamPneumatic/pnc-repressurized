@@ -62,7 +62,7 @@ public class PNCUpgradeImpl implements PNCUpgrade {
 
     @Override
     public final Item getItem(int tier) {
-        return BuiltInRegistries.ITEM.get(getItemRegistryName(tier));
+        return BuiltInRegistries.ITEM.getValue(getItemRegistryName(tier));
     }
 
     @Override

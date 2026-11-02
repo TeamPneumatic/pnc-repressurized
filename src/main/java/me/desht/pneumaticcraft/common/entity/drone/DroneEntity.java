@@ -81,7 +81,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -1136,7 +1135,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (carriedEntityAIdisabled) tag.putBoolean("carriedEntityAIdisabled", true);
         tag.putInt("color", getDroneColor());
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
-        if (deployPos != null) tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
+        if (deployPos != null) tag.store("deployPos", BlockPos.CODEC, deployPos);
 
         ItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new ItemStackHandler(droneItemHandler.getSlots()));
         tag.put("Inventory", ValueIOBridge.serialize(tmpHandler, registryAccess()));
@@ -1177,7 +1176,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         upgradeCache.invalidateCache();
         getAirHandler().deserializeNBT(tag.getCompoundOrEmpty("airHandler"));
         carriedEntityAIdisabled = tag.getBooleanOr("carriedEntityAIdisabled", false);
-        deployPos = NbtUtils.readBlockPos(tag, "deployPos").orElse(null);
+        deployPos = tag.read("deployPos", BlockPos.CODEC).orElse(null);
 
         ItemStackHandler tmpInv = new ItemStackHandler();
         ValueIOBridge.deserialize(tmpInv, registryAccess(), tag.getCompoundOrEmpty("Inventory"));

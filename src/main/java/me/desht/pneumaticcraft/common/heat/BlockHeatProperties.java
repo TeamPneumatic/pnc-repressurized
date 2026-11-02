@@ -78,7 +78,7 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
     private void registerDefaultFluidValues() {
         // add defaulted values for all fluids which don't already have a custom entry
         for (Identifier fluidId : BuiltInRegistries.FLUID.keySet()) {
-            Fluid fluid = BuiltInRegistries.FLUID.get(fluidId);
+            Fluid fluid = BuiltInRegistries.FLUID.getValue(fluidId);
             if (fluid == Fluids.EMPTY) {
                 continue;
             } else if (!ConfigHelper.common().heat.addDefaultFluidEntries.get() && !fluidId.getNamespace().equals("minecraft")) {

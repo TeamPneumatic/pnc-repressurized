@@ -167,7 +167,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         for (int i = 0; i < textLines.length; i++) {
             Matcher m = ITEM_PAT.matcher(textLines[i]);
             if (m.matches()) {
-                icons[i] = new ItemStack(BuiltInRegistries.ITEM.get(Identifier.parse(m.group(1))));
+                icons[i] = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(m.group(1))));
             } else {
                 icons[i] = ItemStack.EMPTY;
                 if (textLines[i].contains("{redstone}")) {

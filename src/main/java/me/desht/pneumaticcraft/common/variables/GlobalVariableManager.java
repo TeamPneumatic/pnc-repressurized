@@ -25,7 +25,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -208,7 +207,7 @@ public class GlobalVariableManager extends SavedData {
         Map<String,BlockPos> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompoundOrEmpty(i);
-            NbtUtils.readBlockPos(t, "pos").ifPresent(pos -> map.put(t.getString("varName"), pos));
+            t.read("pos", BlockPos.CODEC).ifPresent(pos -> map.put(t.getString("varName"), pos));
         }
         return map;
     }
@@ -218,7 +217,7 @@ public class GlobalVariableManager extends SavedData {
         map.forEach((key, pos) -> {
             list.add(Util.make(new CompoundTag(), t -> {
                 t.putString("varName", key);
-                t.put("pos", NbtUtils.writeBlockPos(pos));
+                t.store("pos", BlockPos.CODEC, pos);
             }));
         });
         return list;

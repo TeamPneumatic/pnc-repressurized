@@ -9,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -50,7 +49,7 @@ public class HackTickTracker extends SavedData {
 
         for (int i = 0; i < list.size(); i++) {
             CompoundTag sub = list.getCompoundOrEmpty(i);
-            NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
+            sub.read("pos", BlockPos.CODEC).ifPresent(pos -> {
                 try {
                     Identifier id = Identifier.parse(sub.getStringOr("id", ""));
                     CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
@@ -71,7 +70,7 @@ public class HackTickTracker extends SavedData {
         ListTag blockTag = new ListTag();
         hackedBlocks.forEach((pos, hackable) -> {
             CompoundTag sub = new CompoundTag();
-            sub.put("pos", NbtUtils.writeBlockPos(pos));
+            sub.store("pos", BlockPos.CODEC, pos);
             sub.putString("id", hackable.getHackableId().toString());
             blockTag.add(sub);
         });
