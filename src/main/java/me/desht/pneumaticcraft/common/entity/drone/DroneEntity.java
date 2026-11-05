@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.entity.drone;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.portal.TeleportTransition;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
@@ -93,13 +96,11 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -128,7 +129,8 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -305,7 +307,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         EntityPathNavigateDrone nav = new EntityPathNavigateDrone(this, worldIn);
         nav.setCanOpenDoors(false);
         nav.setCanFloat(true);
-        nav.setCanPassDoors(true);
+        nav.getNodeEvaluator().setCanPassDoors(true);
         return nav;
     }
 
@@ -614,7 +616,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private static <T extends ParticleOptions> void spawnDebugParticle(Collection<ServerPlayer> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
-        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false,
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false, false,
                 posX, posY, posZ,
                 (float)xOffset, (float)yOffset, (float)zOffset,
                 (float)speed, particleCount
@@ -869,10 +871,10 @@ public class DroneEntity extends AbstractDroneEntity implements
 
                 oldTargetLine.setProgress(targetLine.getProgress());
                 targetLine.incProgressByDistance(0.2f);
-                noCulling = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
+                // TODO 26.1 render: Entity#noCulling is gone; the drone renderer should override affectedByCulling() to
+                //  return false while targetLine != null, so the target lines still render when the drone is off-screen
             } else {
                 targetLine = oldTargetLine = null;
-                noCulling = false;
             }
         }
         if (getVehicle() == null && isAccelerating()) {
@@ -903,7 +905,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!level.isClientSide()) {
-                return GPSToolItem.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
+                return GPSToolItem.getGPSLocation(player.getUUID(), stack).<InteractionResult>map(gpsPos -> {
                     getNavigation().moveTo(gpsPos.getX(), gpsPos.getY(), gpsPos.getZ(), 0.1D);
                     return InteractionResult.SUCCESS;
                 }).orElse(InteractionResult.PASS);
@@ -976,8 +978,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Nullable
     @Override
-    public Entity changeDimension(DimensionTransition transition) {
-        Entity entity = super.changeDimension(transition);
+    public Entity teleport(TeleportTransition transition) {
+        Entity entity = super.teleport(transition);
         if (entity != null) {
             restoreFluidBlocks(false);
         }
@@ -985,13 +987,13 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    protected void dropEquipment() {
+    protected void dropEquipment(ServerLevel level) {
         boolean wrenchedByOwner = wrenchedBy != null && wrenchedBy.equals(ownerUUID);
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             ItemStack stack = droneItemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (wrenchedByOwner || !EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
-                    spawnAtLocation(stack, 0);
+                    spawnAtLocation(level, stack);
                 }
                 droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
             }
@@ -1024,7 +1026,9 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (shouldDropAsItem()) {
             ItemStack stack = new ItemStack(getDroneItem());
             writeToItemStack(stack);
-            spawnAtLocation(stack, 0);
+            if (level() instanceof ServerLevel serverLevel) {
+                spawnAtLocation(serverLevel, stack);
+            }
             if (!level().isClientSide()) {
                 reportDroneDeath(getOwner(), damageSource);
             }
@@ -1052,7 +1056,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private Item getDroneItem() {
         // return the item which has the same registry ID as our entity type
         return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType())
-                .map(BuiltInRegistries.ITEM::get)
+                .map(BuiltInRegistries.ITEM::getValue)
                 .orElseThrow();
     }
 
@@ -1088,8 +1092,8 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean startRiding(Entity entity, boolean force) {
-        return canDroneBePickedUp() && super.startRiding(entity, force);
+    public boolean startRiding(Entity entity, boolean force, boolean sendEventAndTriggers) {
+        return canDroneBePickedUp() && super.startRiding(entity, force, sendEventAndTriggers);
     }
 
     public BasicAirHandler getAirHandler() {
@@ -1122,9 +1126,11 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
 
+        // TODO 26.1 ValueInput/ValueOutput: temporary bridge, see ValueIOBridge
+        CompoundTag tag = new CompoundTag();
         tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetUtils.putWidgetsToNBT(registryAccess(), progWidgets));
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
@@ -1141,7 +1147,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         tag.put("Inventory", ValueIOBridge.serialize(tmpHandler, registryAccess()));
         tag.put("upgrades", ValueIOBridge.serialize(upgradeInventory, registryAccess()));
 
-        fluidTank.writeToNBT(registryAccess(), tag);
+        fluidTank.serialize(output);
 
         tag.putString("owner", ownerName.getString());
         if (ownerUUID != null) {
@@ -1157,11 +1163,15 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (!displacedLiquids.isEmpty()) {
             DISPLACED_LIQUIDS_CODEC.encodeStart(NbtOps.INSTANCE, displacedLiquids).ifSuccess(t -> tag.put("displacedLiquids", t));
         }
+        output.store(tag);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+
+        // TODO 26.1 ValueInput/ValueOutput: temporary bridge, see ValueIOBridge
+        CompoundTag tag = ValueIOBridge.readAll(input);
 
         progWidgets = ProgWidgetUtils.getWidgetsFromNBT(registryAccess(), tag.getListOrEmpty(IProgrammable.NBT_WIDGETS));
         ProgWidgetUtils.updatePuzzleConnections(progWidgets);
@@ -1184,7 +1194,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
         fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
-        fluidTank.readFromNBT(registryAccess(), tag);
+        fluidTank.deserialize(input);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
@@ -1241,7 +1251,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean doHurtTarget(Entity entity) {
+    public boolean doHurtTarget(ServerLevel level, Entity entity) {
         getFakePlayer().attack(entity);
         if (entity instanceof LivingEntity livingEntity) {
             if (livingEntity.isAlive() && livingEntity.getLastHurtByMob() == getFakePlayer()) {
@@ -1258,15 +1268,15 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (source.is(DamageTypes.IN_WALL)) {
             if (suffocationCounter > 0) suffocationCounter--;
         }
-        return super.hurt(source, damage);
+        return super.hurtServer(level, source, damage);
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         if (source.is(DamageTypes.IN_WALL)) {
             return suffocationCounter > 0 || !ConfigHelper.common().drones.enableDroneSuffocation.get();
         }
@@ -1274,12 +1284,12 @@ public class DroneEntity extends AbstractDroneEntity implements
             return true;
         }
         Entity e = source.getEntity();
-        if (e != null && !level().isClientSide() && e.getId() == getFakePlayer().getId()) {
+        if (e != null && e.getId() == getFakePlayer().getId()) {
             // don't allow the drone's own fake player to damage the drone
             // e.g. if the drone is wielding an infinity hammer
             return true;
         }
-        return super.isInvulnerableTo(source);
+        return super.isInvulnerableTo(level, source);
     }
 
     @Override
@@ -1463,7 +1473,9 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void dropItem(ItemStack stack) {
-        spawnAtLocation(stack, 0);
+        if (level() instanceof ServerLevel serverLevel) {
+            spawnAtLocation(serverLevel, stack);
+        }
     }
 
     @Override
@@ -1569,7 +1581,9 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void overload(String msgKey, Object... params) {
-        kill();
+        if (level() instanceof ServerLevel serverLevel) {
+            kill(serverLevel);
+        }
         Player owner = getOwner();
         if (owner != null) {
             owner.sendSystemMessage(Component.literal(" - ")
@@ -1792,7 +1806,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         public void copyItemToFakePlayer(int slot) {
             super.copyItemToFakePlayer(slot);
 
-            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().selected && ConfigHelper.common().drones.dronesRenderHeldItem.get()) {
+            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().getSelectedSlot() && ConfigHelper.common().drones.dronesRenderHeldItem.get()) {
                 entityData.set(HELD_ITEM, getStackInSlot(slot));
             }
         }

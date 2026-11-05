@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
@@ -26,6 +28,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -45,7 +48,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -61,6 +63,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -132,9 +136,9 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (!level().isClientSide() && isAlive() && !canStay()) {
+        if (level() instanceof ServerLevel serverLevel && isAlive() && !canStay()) {
             beingRemoved = true;
-            kill();
+            kill(serverLevel);
         }
 
         Block curBlock = getBlockState().getBlock();
@@ -146,7 +150,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitVec) {
         Vec3 eye = player.getEyePosition(0f);
         Vec3 end = eye.add(player.getLookAngle().normalize().scale(5f));
         ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
@@ -302,11 +306,23 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         return tag;
     }
 
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based methods below, see ValueIOBridge.
+    //  The saved data format is unchanged.
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected final void readAdditionalSaveData(ValueInput input) {
+        readAdditionalSaveData(ValueIOBridge.readAll(input));
     }
 
     @Override
+    protected final void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        addAdditionalSaveData(tag);
+        output.store(tag);
+    }
+
+    protected void readAdditionalSaveData(CompoundTag compound) {
+    }
+
     protected void addAdditionalSaveData(CompoundTag compound) {
         serializeNBT(compound, registryAccess());
     }
@@ -385,21 +401,28 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         entity.level().playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
         dropOffset = entity.position().subtract(this.position()).normalize();
         beingRemoved = true;
-        kill();
+        if (level() instanceof ServerLevel serverLevel) {
+            kill(serverLevel);
+        }
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof Player)) {
+    public boolean hurtClient(DamageSource source) {
+        return !this.isInvulnerableToBase(source) && source.getDirectEntity() instanceof Player;
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (this.isInvulnerableToBase(source) || !(source.getDirectEntity() instanceof Player)) {
             return false;
-        } else if (!this.level().isClientSide() && this.isAlive()) {
+        } else if (this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
             if (this.getDamageTaken() > MAX_HEALTH) {
                 if (source.getEntity() != null) {
                     killedByEntity(source.getEntity());
                 } else {
-                    kill();
+                    kill(level);
                 }
             }
         }

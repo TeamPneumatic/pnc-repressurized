@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -33,13 +32,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.equine.Horse;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -72,7 +73,8 @@ public class MicromissileEntity extends ThrowableProjectile {
     }
 
     public MicromissileEntity(Level worldIn, LivingEntity thrower, ItemStack stack) {
-        super(ModEntityTypes.MICROMISSILE.get(), thrower, worldIn);
+        super(ModEntityTypes.MICROMISSILE.get(), thrower.getX(), thrower.getEyeY() - 0.1F, thrower.getZ(), worldIn);
+        setOwner(thrower);
 
         MicromissilesItem.Settings settings = stack.get(ModDataComponents.MICROMISSILE_SETTINGS);
         if (settings != null) {
@@ -194,9 +196,8 @@ public class MicromissileEntity extends ThrowableProjectile {
         if (thrower != null) {
             UUID throwerID = thrower.getUUID();
             if (thrower.equals(e)
-                    || e instanceof TamableAnimal t && throwerID.equals(t.getOwnerUUID())
-                    || e instanceof DroneEntity d && throwerID.equals(d.getOwnerUUID())
-                    || e instanceof Horse h && throwerID.equals(h.getOwnerUUID())) {
+                    || e instanceof OwnableEntity o && o.getOwnerReference() != null && throwerID.equals(o.getOwnerReference().getUUID())
+                    || e instanceof DroneEntity d && throwerID.equals(d.getOwnerUUID())) {
                 return false;
             }
         }
@@ -268,21 +269,21 @@ public class MicromissileEntity extends ThrowableProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("turnSpeed", turnSpeed);
-        compound.putFloat("explosionScaling", explosionPower);
-        compound.putFloat("topSpeedSq", maxVelocitySq);
-        compound.putString("filter", entityFilter.toString());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putFloat("turnSpeed", turnSpeed);
+        output.putFloat("explosionScaling", explosionPower);
+        output.putFloat("topSpeedSq", maxVelocitySq);
+        output.putString("filter", entityFilter.toString());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        turnSpeed = compound.getFloatOr("turnSpeed", 0f);
-        explosionPower = compound.getFloatOr("explosionScaling", 0f);
-        maxVelocitySq = compound.getFloatOr("topSpeedSq", 0f);
-        entityFilter = EntityFilter.fromString(compound.getStringOr("filter", ""));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        turnSpeed = input.getFloatOr("turnSpeed", 0f);
+        explosionPower = input.getFloatOr("explosionScaling", 0f);
+        maxVelocitySq = input.getFloatOr("topSpeedSq", 0f);
+        entityFilter = EntityFilter.fromString(input.getStringOr("filter", ""));
     }
 
     public void setTarget(Entity target) {

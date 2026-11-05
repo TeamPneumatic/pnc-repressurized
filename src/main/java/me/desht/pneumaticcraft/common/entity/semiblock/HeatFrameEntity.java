@@ -192,8 +192,9 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (slot >= 0 & slot < handler.getSlots()) {
             ItemStack stack = handler.getStackInSlot(slot);
             if (!stack.isEmpty()) {
-                return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), new SingleRecipeInput(stack)).map(recipe -> {
-                    ItemStack result = recipe.getResultItem(level().registryAccess()).copy();
+                SingleRecipeInput input = new SingleRecipeInput(stack);
+                return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), input).map(recipe -> {
+                    ItemStack result = recipe.assemble(input);
                     if (!result.isEmpty()) {
                         ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
                         if (remainder.isEmpty()) {

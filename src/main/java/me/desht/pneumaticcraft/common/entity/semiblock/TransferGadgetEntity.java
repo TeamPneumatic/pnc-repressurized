@@ -98,14 +98,14 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitVec) {
         // since this is a cheap early game item, let's allow toggling with empty hand
         // not force the player to craft & charge up a logistics configurator
         if (player.getItemInHand(hand).isEmpty()) {
             toggle(player);
             return InteractionResult.SUCCESS;
         } else {
-            return super.interactAt(player, hitVec, hand);
+            return super.interact(player, hand, hitVec);
         }
     }
 

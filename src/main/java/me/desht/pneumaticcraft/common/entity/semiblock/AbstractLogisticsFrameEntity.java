@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.TagValueInput;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -60,6 +62,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -121,13 +124,15 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
                 if (world.isClientSide() && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
                     // client-side entity creation doesn't load in custom data from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
-                    CompoundTag tag = logisticsFrame.saveWithoutId(new CompoundTag());
+                    TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, world.registryAccess());
+                    logisticsFrame.saveWithoutId(output);
+                    CompoundTag tag = output.buildResult();
                     UUID uuid = logisticsFrame.getUUID();
                     //noinspection ConstantConditions
                     CompoundTag toMerge = stack.get(ModDataComponents.SEMIBLOCK_DATA).copyTag();
                     tag.merge(toMerge);
                     logisticsFrame.setUUID(uuid);
-                    logisticsFrame.load(tag);
+                    logisticsFrame.load(TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), tag));
                 }
                 return logisticsFrame;
             }
