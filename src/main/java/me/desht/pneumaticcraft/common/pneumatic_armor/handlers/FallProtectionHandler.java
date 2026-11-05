@@ -17,7 +17,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -38,7 +38,7 @@ import java.util.List;
 public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.FALL_PROTECTION;
     }
 
@@ -84,7 +84,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                     return;
                 }
 
-                if (!player.level().isClientSide) {
+                if (!player.level().isClientSide()) {
                     float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
                     float extraAirNeeded = 0f;
 

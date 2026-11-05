@@ -10,7 +10,7 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.opengl.GL11;
 
 public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<EnderVisorHandler> {
@@ -19,7 +19,7 @@ public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleTo
     }
 
     public static class PumpkinLayer implements LayeredDraw.Layer {
-        private static final ResourceLocation PUMPKIN_OVERLAY = ResourceLocation.parse("textures/misc/pumpkinblur.png");
+        private static final Identifier PUMPKIN_OVERLAY = Identifier.parse("textures/misc/pumpkinblur.png");
 
         @Override
         public void render(GuiGraphics graphics, DeltaTracker pDeltaTracker) {

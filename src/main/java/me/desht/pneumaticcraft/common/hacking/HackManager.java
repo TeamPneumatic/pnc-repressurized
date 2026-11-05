@@ -42,15 +42,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.animal.Cow;
-import net.minecraft.world.entity.animal.Pufferfish;
-import net.minecraft.world.entity.animal.Sheep;
-import net.minecraft.world.entity.animal.Squid;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.fish.Pufferfish;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.animal.squid.Squid;
+import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.monster.*;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -72,7 +72,7 @@ public class HackManager {
     private long lastBlockPrune = 0L;
 
     private static HackManager getInstance(Level world) {
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             if (clientInstance == null) clientInstance = new HackManager();
             return clientInstance;
         } else {
@@ -195,7 +195,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, BlockGetter world, BlockPos pos, Player player) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             RenderBlockTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
@@ -207,7 +207,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableEntity<?> hackableEntity, Entity entity) {
-        if (entity.level().isClientSide) {
+        if (entity.level().isClientSide()) {
             RenderEntityTarget target = ClientArmorRegistry.getInstance()
                     .getClientHandler(CommonUpgradeHandlers.entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);

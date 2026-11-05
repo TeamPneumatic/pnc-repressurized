@@ -27,7 +27,7 @@ import org.joml.Vector3f;
 public class BlockIndicator {
     public static void indicateBlock(Level world, BlockPos pos) {
         if (world != null) {
-            if (world.isClientSide) {
+            if (world.isClientSide()) {
                 for (int i = 0; i < 5; i++) {
                     double dx = pos.getX() + 0.5;
                     double dy = pos.getY() + 0.5;

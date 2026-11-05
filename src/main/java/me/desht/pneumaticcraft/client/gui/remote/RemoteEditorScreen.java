@@ -37,14 +37,14 @@ import me.desht.pneumaticcraft.common.remote.*;
 import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
@@ -91,7 +91,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
             if (RemoteItem.hasSameSecuritySettings(remoteItem, invSearchGui.getSearchStack())) {
                 addWidgetsFromLayout(SavedRemoteLayout.fromItem(invSearchGui.getSearchStack()));
             } else {
-                ClientUtils.getClientPlayer().displayClientMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
+                ClientUtils.getClientPlayer().sendSystemMessage(Component.literal("pneumaticcraft.gui.remote.differentSecuritySettings"));
             }
         } else if (widgetMap.isEmpty()) {
             // initial opening of the editor screen; load saved widgets from the remote item data component
@@ -160,7 +160,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_REMOTE_EDITOR;
     }
 

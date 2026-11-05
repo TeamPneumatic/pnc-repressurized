@@ -22,7 +22,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 
 public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule> {
@@ -158,7 +158,7 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_GAUGE_UPGRADED : Textures.MODEL_GAUGE;
     }
 }

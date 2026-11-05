@@ -29,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -72,10 +73,10 @@ public class PneumaticDoorBaseBlock extends AbstractCamouflageBlock implements P
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable Orientation orientation, boolean isMoving) {
         world.getBlockEntity(pos, ModBlockEntityTypes.PNEUMATIC_DOOR_BASE.get()).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
-            teDoorBase.onNeighborBlockUpdate(fromPos);
+            teDoorBase.onNeighborBlockUpdate();
             BlockPos doorPos = pos.relative(teDoorBase.getRotation());
             BlockState doorState = world.getBlockState(doorPos);
             if (doorState.getBlock() instanceof PneumaticDoorBlock) {

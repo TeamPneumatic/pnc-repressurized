@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.inventory.SolarCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class SolarCompressorScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         if (te.canGenerateAir()) {
             return Textures.GUI_SOLAR_COMPRESSOR_ACTIVE;
         }

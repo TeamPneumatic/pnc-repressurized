@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.block.entity.utility.ReinforcedChestBlockE
 import me.desht.pneumaticcraft.common.inventory.ReinforcedChestMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class ReinforcedChestScreen extends AbstractPneumaticCraftContainerScreen<ReinforcedChestMenu, ReinforcedChestBlockEntity> {
@@ -32,7 +32,7 @@ public class ReinforcedChestScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_REINFORCED_CHEST;
     }
 

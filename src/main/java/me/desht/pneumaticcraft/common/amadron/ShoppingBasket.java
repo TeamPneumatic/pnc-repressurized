@@ -19,15 +19,15 @@ package me.desht.pneumaticcraft.common.amadron;
 
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderResponse;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class ShoppingBasket implements Iterable<ResourceLocation> {
-    protected final Map<ResourceLocation, Integer> basket;
+public abstract class ShoppingBasket implements Iterable<Identifier> {
+    protected final Map<Identifier, Integer> basket;
 
     public static ImmutableBasket empty() {
         return ImmutableBasket.EMPTY;
@@ -37,16 +37,16 @@ public abstract class ShoppingBasket implements Iterable<ResourceLocation> {
         return new MutableBasket();
     }
 
-    protected ShoppingBasket(Map<ResourceLocation,Integer> basket) {
+    protected ShoppingBasket(Map<Identifier,Integer> basket) {
         this.basket = basket;
     }
 
-    public int getUnits(ResourceLocation offerId) {
+    public int getUnits(Identifier offerId) {
         return basket.getOrDefault(offerId, 0);
     }
 
     @Override
-    public Iterator<ResourceLocation> iterator() {
+    public Iterator<Identifier> iterator() {
         return basket.keySet().iterator();
     }
 

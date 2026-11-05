@@ -26,15 +26,17 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -45,19 +47,19 @@ public class TagFilterItem extends Item implements IFilteringItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         if (context.registries() != null) {
-            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").withStyle(ChatFormatting.YELLOW));
             for (TagKey<Item> key : getConfiguredTagList(stack)) {
-                tooltip.add(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
+                tooltip.accept(Symbols.bullet().append(key.location().toString()).withStyle(ChatFormatting.GOLD));
             }
         }
     }
 
     public static Set<TagKey<Item>> getConfiguredTagList(ItemStack stack) {
-        List<ResourceLocation> tagIds = stack.get(ModDataComponents.TAG_FILTER_KEYS);
+        List<Identifier> tagIds = stack.get(ModDataComponents.TAG_FILTER_KEYS);
         return tagIds != null && !tagIds.isEmpty() ?
                 tagIds.stream().map(r -> TagKey.create(Registries.ITEM, r)).collect(Collectors.toSet()) :
                 Set.of();

@@ -63,12 +63,11 @@ public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements C
 
     private void handleClientSide(Player player) {
         if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
-            player.displayClientMessage(
-                    Component.translatable("pneumaticcraft.message.amadron.playerAddedTrade",
+            player.sendSystemMessage(Component.translatable("pneumaticcraft.message.amadron.playerAddedTrade",
                             offer.getVendorName(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()
-                    ), false);
+                    ));
         }
     }
 
@@ -76,7 +75,7 @@ public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements C
         if (player.containerMenu instanceof AmadronAddTradeMenu) {
             offer.updatePlayerId();
             if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
+                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"));
             } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
                 if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
                     NetworkHandler.sendToAll(this);
@@ -87,7 +86,7 @@ public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements C
                     AmadronTabletItem.openGui(player, InteractionHand.OFF_HAND);
                 }
             } else {
-                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
+                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"));
             }
         }
     }

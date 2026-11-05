@@ -36,7 +36,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
@@ -135,7 +135,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_CC;
     }
 
@@ -244,7 +244,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     private ProgWidgetItemFilter getItemFilter(String itemName, boolean matchComponents, boolean matchMod) throws IllegalArgumentException {
         if (!itemName.contains(":")) throw new IllegalArgumentException("Item/Block name doesn't contain a ':'!");
-        Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(itemName));
+        Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(itemName));
         if (item == Items.AIR) throw new IllegalArgumentException("Item not found for the name \"" + itemName + "\"!");
         ProgWidgetItemFilter itemFilter = new ProgWidgetItemFilter();
         itemFilter.setFilter(new ItemStack(item));
@@ -362,7 +362,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     private ProgWidgetLiquidFilter getFilterForArgs(String fluidName) throws IllegalArgumentException {
-        Fluid fluid = BuiltInRegistries.FLUID.get(ResourceLocation.parse(fluidName));
+        Fluid fluid = BuiltInRegistries.FLUID.getValue(Identifier.parse(fluidName));
         if (fluid == Fluids.EMPTY) throw new IllegalArgumentException("Can't find fluid for the name \"" + fluidName + "\"!");
         return ProgWidgetLiquidFilter.withFilter(fluid);
     }

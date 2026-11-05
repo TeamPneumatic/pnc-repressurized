@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Implement this interface and register it with {@link IClientArmorRegistry#registerBlockTrackEntry(ResourceLocation, Supplier)}.
+ * Implement this interface and register it with {@link IClientArmorRegistry#registerBlockTrackEntry(Identifier, Supplier)}.
  * Your implementation must provide a no-parameter constructor.
  * <p>
  * These trackers are singleton objects, so any instance data is in effect shared amongst all block positions for which
@@ -91,12 +91,12 @@ public interface IBlockTrackEntry {
 
     /**
      * Return a unique identifier for this block track entry. This is also used for translation key and keybind naming
-     * purposes; see {@link me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler#getStringKey(ResourceLocation)}
+     * purposes; see {@link me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler#getStringKey(Identifier)}
      *
      * @return the ID of this entry
      */
     @Nonnull
-    ResourceLocation getEntryID();
+    Identifier getEntryID();
 
     /**
      * Convenience method: check if the given capability provider provides the given capability on any block face.

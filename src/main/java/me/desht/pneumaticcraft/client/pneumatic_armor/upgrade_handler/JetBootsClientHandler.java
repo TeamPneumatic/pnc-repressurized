@@ -43,7 +43,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -64,10 +64,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
-    public static final ResourceLocation MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
-    public static final ResourceLocation MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
-    public static final ResourceLocation MODULE_HOVER = RL("jet_boots.module.hover");
-    public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
+    public static final Identifier MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
+    public static final Identifier MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
+    public static final Identifier MODULE_HOVER = RL("jet_boots.module.hover");
+    public static final Identifier MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
 
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsRight(0.5f, 0.005f);
 
@@ -224,7 +224,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public Collection<ResourceLocation> getSubKeybinds() {
+    public Collection<Identifier> getSubKeybinds() {
         return ImmutableList.of(
                 MODULE_BUILDER_MODE,
                 MODULE_FLIGHT_STABILIZERS,

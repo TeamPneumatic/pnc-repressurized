@@ -75,6 +75,6 @@ public class MovingSoundJackhammer extends AbstractTickableSoundInstance {
     }
 
     public static long lastJackHammerTime(Player player) {
-        return player.getCommandSenderWorld().getGameTime() - timers.getOrDefault(player.getUUID(), 0L);
+        return player.level().getGameTime() - timers.getOrDefault(player.getUUID(), 0L);
     }
 }

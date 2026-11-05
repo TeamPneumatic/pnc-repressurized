@@ -76,14 +76,14 @@ public interface IRemoteWidget {
 
     static String getTranslationKey(RemoteWidgetType<?> type) {
         String id = PNCRegistries.REMOTE_WIDGETS_REGISTRY.getResourceKey(type)
-                .map(key -> key.location().toLanguageKey())
+                .map(key -> key.identifier().toLanguageKey())
                 .orElse("unknown");
         return "pneumaticcraft.gui.remote.tray." + id + ".name";
     }
 
     static String getTooltipTranslationKey(RemoteWidgetType<?> type) {
         String id = PNCRegistries.REMOTE_WIDGETS_REGISTRY.getResourceKey(type)
-                .map(key -> key.location().toLanguageKey())
+                .map(key -> key.identifier().toLanguageKey())
                 .orElse("unknown");
         return "pneumaticcraft.gui.remote.tray." + id + ".tooltip";
     }

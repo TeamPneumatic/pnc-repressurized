@@ -79,8 +79,8 @@ public class VortexTubeBlockEntity extends AbstractAirHandlingBlockEntity implem
         super.loadAdditional(tag, provider);
 
         // hot side heat exchanger is the default, and handled in TileEntityPneumaticBase
-        coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
-        connectingExchanger.deserializeNBT(tag.getCompound("connector"));
+        coldHeatExchanger.deserializeNBT(tag.getCompoundOrEmpty("coldHeat"));
+        connectingExchanger.deserializeNBT(tag.getCompoundOrEmpty("connector"));
     }
 
     @Override

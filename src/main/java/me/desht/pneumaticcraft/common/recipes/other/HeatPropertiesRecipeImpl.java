@@ -24,6 +24,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicConstant;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
@@ -85,7 +86,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             try {
                 String regName = PneumaticCraftUtils.getRegistryName(block).orElseThrow().toString();
                 String str = regName + "[" + String.join(",", l) + "]";
-                BlockStateParser.BlockResult res = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), str, false);
+                BlockStateParser.BlockResult res = BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK, str, false);
                 return res.blockState();
             } catch (CommandSyntaxException e) {
                 return block.defaultBlockState();
@@ -151,12 +152,12 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.HEAT_PROPERTIES.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.BLOCK_HEAT_PROPERTIES.get();
     }
 
@@ -193,42 +194,29 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                  Map<String, String> predicates, String descriptionKey);
     }
 
-    public static class Serializer<T extends HeatPropertiesRecipe> implements RecipeSerializer<T> {
-        private static final Codec<Map<String,String>> PREDICATES_CODEC = Codec.unboundedMap(Codec.STRING, Codec.STRING);
-
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(HeatPropertiesRecipe::getBlock),
-                    Transforms.CODEC.optionalFieldOf("transforms", Transforms.NONE).forGetter(HeatPropertiesRecipe::getTransforms),
-                    ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("heatCapacity").forGetter(HeatPropertiesRecipe::getHeatCapacity),
-                    ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("temperature", 0).forGetter(HeatPropertiesRecipe::getTemperature),
-                    Codec.DOUBLE.optionalFieldOf("thermalResistance").forGetter(HeatPropertiesRecipe::getThermalResistance),
-                    PREDICATES_CODEC.optionalFieldOf("predicates", Map.of()).forGetter(HeatPropertiesRecipe::getBlockStatePredicates),
-                    Codec.STRING.optionalFieldOf("description", "").forGetter(HeatPropertiesRecipe::getDescriptionKey)
-            ).apply(builder, factory::create));
-            this.streamCodec = NeoForgeStreamCodecs.composite(
-                    ByteBufCodecs.fromCodec(BuiltInRegistries.BLOCK.byNameCodec()), HeatPropertiesRecipe::getBlock,
-                    Transforms.STREAM_CODEC, HeatPropertiesRecipe::getTransforms,
-                    ByteBufCodecs.optional(ByteBufCodecs.INT), HeatPropertiesRecipe::getHeatCapacity,
-                    ByteBufCodecs.INT, HeatPropertiesRecipe::getTemperature,
-                    ByteBufCodecs.optional(ByteBufCodecs.DOUBLE), HeatPropertiesRecipe::getThermalResistance,
-                    ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8), HeatPropertiesRecipe::getBlockStatePredicates,
-                    ByteBufCodecs.STRING_UTF8, HeatPropertiesRecipe::getDescriptionKey,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
+    public static <T extends HeatPropertiesRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                BuiltInRegistries.BLOCK.byNameCodec().fieldOf("block").forGetter(HeatPropertiesRecipe::getBlock),
+                Transforms.CODEC.optionalFieldOf("transforms", Transforms.NONE).forGetter(HeatPropertiesRecipe::getTransforms),
+                ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("heatCapacity").forGetter(HeatPropertiesRecipe::getHeatCapacity),
+                ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("temperature", 0).forGetter(HeatPropertiesRecipe::getTemperature),
+                Codec.DOUBLE.optionalFieldOf("thermalResistance").forGetter(HeatPropertiesRecipe::getThermalResistance),
+                PREDICATES_CODEC.optionalFieldOf("predicates", Map.of()).forGetter(HeatPropertiesRecipe::getBlockStatePredicates),
+                Codec.STRING.optionalFieldOf("description", "").forGetter(HeatPropertiesRecipe::getDescriptionKey)
+        ).apply(builder, factory::create));
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                ByteBufCodecs.fromCodec(BuiltInRegistries.BLOCK.byNameCodec()), HeatPropertiesRecipe::getBlock,
+                Transforms.STREAM_CODEC, HeatPropertiesRecipe::getTransforms,
+                ByteBufCodecs.optional(ByteBufCodecs.INT), HeatPropertiesRecipe::getHeatCapacity,
+                ByteBufCodecs.INT, HeatPropertiesRecipe::getTemperature,
+                ByteBufCodecs.optional(ByteBufCodecs.DOUBLE), HeatPropertiesRecipe::getThermalResistance,
+                ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.STRING_UTF8), HeatPropertiesRecipe::getBlockStatePredicates,
+                ByteBufCodecs.STRING_UTF8, HeatPropertiesRecipe::getDescriptionKey,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
+
+    private static final Codec<Map<String,String>> PREDICATES_CODEC = Codec.unboundedMap(Codec.STRING, Codec.STRING);
+
 }

@@ -469,10 +469,10 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        clawProgress = tag.getFloat("clawProgress");
-        shouldClawClose = tag.getBoolean("clawClosing");
-        state = tag.getByte("state");
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        clawProgress = tag.getFloatOr("clawProgress", 0f);
+        shouldClawClose = tag.getBooleanOr("clawClosing", false);
+        state = tag.getByteOr("state", (byte) 0);
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

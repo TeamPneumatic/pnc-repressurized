@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.special.ShapedPressurizableRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +38,7 @@ public class ShapedPressurizableRecipeBuilder extends PNCShapedRecipeBuilder {
     }
 
     @Override
-    protected @NotNull ShapedRecipe makeRecipe(ResourceLocation id) {
+    protected @NotNull ShapedRecipe makeRecipe(Identifier id) {
         return new ShapedPressurizableRecipe(super.makeRecipe(id));
     }
 }

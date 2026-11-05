@@ -23,6 +23,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 /**
  * Fired when a helmet Block Tracker is about to track a fluid tank. Can be canceled to prevent tracking.
@@ -45,6 +47,7 @@ public class FluidTrackEvent extends Event implements ICancellableEvent {
     }
 
     public IFluidHandler getFluidHandler(Direction face) {
-        return te.getLevel().getCapability(Capabilities.FluidHandler.BLOCK, te.getBlockPos(), te.getBlockState(), te, face);
+        ResourceHandler<FluidResource> handler = te.getLevel().getCapability(Capabilities.Fluid.BLOCK, te.getBlockPos(), te.getBlockState(), te, face);
+        return handler == null ? null : IFluidHandler.of(handler);
     }
 }

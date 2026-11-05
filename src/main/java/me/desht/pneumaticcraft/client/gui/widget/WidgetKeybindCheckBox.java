@@ -46,7 +46,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.neoforged.api.distmarker.Dist;
@@ -67,16 +67,16 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetKeybindCheckBox extends WidgetCheckBox {
     // maps upgrade ID to keybind widget
-    private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
+    private static final Map<Identifier, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
 
     private static WidgetKeybindCheckBox coreComponents;
 
-    private final ResourceLocation upgradeID;
-    private ResourceLocation ownerUpgradeID = null;
+    private final Identifier upgradeID;
+    private Identifier ownerUpgradeID = null;
     private boolean isListeningForBinding;
     private Component oldCheckboxText;
 
-    private WidgetKeybindCheckBox(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
+    private WidgetKeybindCheckBox(Identifier upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
         super(x, y, color,
                 xlate("pneumaticcraft.gui.enableModule", xlate(IArmorUpgradeHandler.getStringKey(upgradeID))),
                 pressable);
@@ -87,7 +87,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         buildTooltip();
     }
 
-    public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
+    public static WidgetKeybindCheckBox getOrCreate(Identifier upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
         return id2checkBox.computeIfAbsent(upgradeID, id -> {
             WidgetKeybindCheckBox newCheckBox = new WidgetKeybindCheckBox(id, x, y, color, pressable);
             newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(id);
@@ -103,7 +103,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         });
     }
 
-    public static WidgetKeybindCheckBox get(ResourceLocation upgradeID) {
+    public static WidgetKeybindCheckBox get(Identifier upgradeID) {
         return id2checkBox.get(upgradeID);
     }
 
@@ -120,7 +120,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
     }
 
     @Override
-    public ICheckboxWidget withOwnerUpgradeID(ResourceLocation ownerUpgradeID) {
+    public ICheckboxWidget withOwnerUpgradeID(Identifier ownerUpgradeID) {
         this.ownerUpgradeID = ownerUpgradeID;
         return this;
     }
@@ -293,7 +293,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
     }
 
     @Override
-    public ResourceLocation getUpgradeId() {
+    public Identifier getUpgradeId() {
         return upgradeID;
     }
 

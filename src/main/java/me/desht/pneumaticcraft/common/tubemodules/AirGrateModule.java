@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -57,6 +58,9 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -72,8 +76,8 @@ public class AirGrateModule extends AbstractTubeModule {
     private EntityFilter entityFilter = EntityFilter.allow();
     private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
-    private BlockCapabilityCache<IItemHandler,Direction> itemInsertionCache;
-    private BlockCapabilityCache<IFluidHandler,Direction> fluidInsertionCache;
+    private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> itemInsertionCache;
+    private BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> fluidInsertionCache;
 
     public AirGrateModule(Direction dir, PressureTubeBlockEntity pressureTube) {
         super(dir, pressureTube);
@@ -107,7 +111,7 @@ public class AirGrateModule extends AbstractTubeModule {
     }
 
     private void onGrateRangeChanged() {
-        if (!pressureTube.nonNullLevel().isClientSide) {
+        if (!pressureTube.nonNullLevel().isClientSide()) {
             PNCCapabilities.getAirHandler(getTube()).ifPresent(h ->
                     NetworkHandler.sendToAllTracking(PacketUpdatePressureBlock.create(getTube().getBlockPos(),
                             null, h.getSideLeaking(), h.getAir()), getTube())
@@ -148,7 +152,7 @@ public class AirGrateModule extends AbstractTubeModule {
             if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, traceVec)) {
                 continue;
             }
-            if (!entity.level().isClientSide) {
+            if (!entity.level().isClientSide()) {
                 tryInsertion(traceVec, entity);
             }
             double x = (entity.getX() - pos.getX() - 0.5D) / d0;
@@ -167,7 +171,7 @@ public class AirGrateModule extends AbstractTubeModule {
                 if (entity.onGround() && entity instanceof ItemEntity) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
                 entity.move(MoverType.SELF, new Vec3(x * d5, y * d5, z * d5));
                 entitiesMoved++;
-                if (world.isClientSide && world.random.nextDouble() < 0.2) {
+                if (world.isClientSide() && world.getRandom().nextDouble() < 0.2) {
                     if (vacuum) {
                         world.addParticle(AirParticleData.DENSE, entity.getX(), entity.getY(), entity.getZ(), -x, -y, -z);
                     } else {
@@ -176,7 +180,7 @@ public class AirGrateModule extends AbstractTubeModule {
                 }
             }
         }
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             int usage = pressureTube.getPressure() > 0 ? -PneumaticValues.USAGE_AIR_GRATE : PneumaticValues.USAGE_AIR_GRATE;
             pressureTube.addAir(entitiesMoved * usage);
         }
@@ -230,7 +234,7 @@ public class AirGrateModule extends AbstractTubeModule {
         return traceabilityCache.computeIfAbsent(pos, k -> {
             Vec3 entityVec = new Vec3(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
             ClipContext ctx = new ClipContext(entityVec, traceVec, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
-            BlockHitResult trace = entity.getCommandSenderWorld().clip(ctx);
+            BlockHitResult trace = entity.level().clip(ctx);
             return trace.getBlockPos().equals(pressureTube.getBlockPos());
         });
     }
@@ -239,26 +243,26 @@ public class AirGrateModule extends AbstractTubeModule {
         if (itemInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
-                if (level.getCapability(Capabilities.ItemHandler.BLOCK, neighborPos, dir.getOpposite()) != null) {
-                    itemInsertionCache = BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, level, neighborPos, dir.getOpposite(),
+                if (level.getCapability(Capabilities.Item.BLOCK, neighborPos, dir.getOpposite()) != null) {
+                    itemInsertionCache = BlockCapabilityCache.create(Capabilities.Item.BLOCK, level, neighborPos, dir.getOpposite(),
                             () -> !getTube().isRemoved(), () -> itemInsertionCache = null);
                 }
             }
         }
-        return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(itemInsertionCache.getCapability());
+        return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.legacy(itemInsertionCache));
     }
 
     private Optional<IFluidHandler> getFluidInsertionCap() {
         if (fluidInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
-                if (level.getCapability(Capabilities.FluidHandler.BLOCK, neighborPos, dir.getOpposite()) != null) {
-                    fluidInsertionCache = BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, level, neighborPos, dir.getOpposite(),
+                if (level.getCapability(Capabilities.Fluid.BLOCK, neighborPos, dir.getOpposite()) != null) {
+                    fluidInsertionCache = BlockCapabilityCache.create(Capabilities.Fluid.BLOCK, level, neighborPos, dir.getOpposite(),
                             () -> !getTube().isRemoved(), () -> itemInsertionCache = null);
                 }
             }
         }
-        return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(fluidInsertionCache.getCapability());
+        return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.legacyFluid(fluidInsertionCache));
     }
 
     private void coolHeatSinks() {
@@ -290,9 +294,9 @@ public class AirGrateModule extends AbstractTubeModule {
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        vacuum = tag.getBoolean("vacuum");
-        grateRange = tag.getInt("grateRange");
-        String f = tag.getString("entityFilter");
+        vacuum = tag.getBooleanOr("vacuum", false);
+        grateRange = tag.getIntOr("grateRange", 0);
+        String f = tag.getStringOr("entityFilter", "");
         entityFilter = f.isEmpty() ? EntityFilter.allow() : EntityFilter.fromString(f, EntityFilter.allow());
     }
 
@@ -356,7 +360,7 @@ public class AirGrateModule extends AbstractTubeModule {
 
     @Override
     public void onRemoved() {
-        if (pressureTube.nonNullLevel().isClientSide) {
+        if (pressureTube.nonNullLevel().isClientSide()) {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
         }
     }

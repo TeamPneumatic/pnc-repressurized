@@ -31,7 +31,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 /**
  * Base class for blocks which may be camouflaged, storing the camouflaged block state in the
@@ -48,7 +48,7 @@ public abstract class AbstractCamouflageBlock extends AbstractPneumaticCraftBloc
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level world, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         BlockEntity te = world.getBlockEntity(pos);
         if (te instanceof CamouflageableBlockEntity camo && !player.isCreative()) {
             BlockState camoState = camo.getCamouflage();
@@ -61,7 +61,7 @@ public abstract class AbstractCamouflageBlock extends AbstractPneumaticCraftBloc
                 return false;
             }
         }
-        return super.onDestroyedByPlayer(state, world, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, world, pos, player, toolStack, willHarvest, fluid);
     }
 
     @Override
@@ -82,16 +82,12 @@ public abstract class AbstractCamouflageBlock extends AbstractPneumaticCraftBloc
         return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getVisualShape(worldIn, pos, CollisionContext.empty());
     }
 
+    // TODO 26.1: occlusion shape and light dampening are now per blockstate (no level/pos), so they can't follow the
+    //  camouflage any more. An empty occlusion shape never hides a neighbour's face, so it is the safe choice;
+    //  light dampening uses the default for the uncamouflaged block.
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
-        CamouflageableBlockEntity camo = getCamoState(worldIn, pos);
-        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getBlockSupportShape(worldIn, pos);
-    }
-
-    @Override
-    public int getLightBlock(BlockState state, BlockGetter world, BlockPos pos) {
-        CamouflageableBlockEntity camo = getCamoState(world, pos);
-        return camo == null ? super.getLightBlock(state, world, pos) : camo.getCamouflage().getLightBlock(world, pos);
+    public VoxelShape getOcclusionShape(BlockState state) {
+        return Shapes.empty();
     }
 
     @Override
@@ -118,10 +114,6 @@ public abstract class AbstractCamouflageBlock extends AbstractPneumaticCraftBloc
 
     protected VoxelShape getUncamouflagedCollisionShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext ctx) {
         return getUncamouflagedShape(state, reader, pos, ctx);
-    }
-
-    protected VoxelShape getUncamouflagedRenderShape(BlockState state, BlockGetter reader, BlockPos pos) {
-        return getUncamouflagedShape(state, reader, pos, CollisionContext.empty());
     }
 
     protected VoxelShape getUncamouflagedRaytraceShape(BlockState state, BlockGetter reader, BlockPos pos) {

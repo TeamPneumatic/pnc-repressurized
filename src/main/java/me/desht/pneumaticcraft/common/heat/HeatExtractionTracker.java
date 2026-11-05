@@ -21,7 +21,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -67,10 +66,10 @@ public class HeatExtractionTracker extends SavedData {
     private HeatExtractionTracker readNBT(CompoundTag nbt) {
         extracted.clear();
 
-        ListTag list = nbt.getList("extracted", Tag.TAG_COMPOUND);
+        ListTag list = nbt.getListOrEmpty("extracted");
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag sub = list.getCompound(i);
-            NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> extracted.put(pos, sub.getDouble("heat")));
+            CompoundTag sub = list.getCompoundOrEmpty(i);
+            sub.read("pos", BlockPos.CODEC).ifPresent(pos -> extracted.put(pos, sub.getDouble("heat")));
         }
 
         return this;
@@ -81,7 +80,7 @@ public class HeatExtractionTracker extends SavedData {
         ListTag list = new ListTag();
         extracted.forEach((pos, heat) -> {
             CompoundTag sub = new CompoundTag();
-            sub.put("pos", NbtUtils.writeBlockPos(pos));
+            sub.store("pos", BlockPos.CODEC, pos);
             sub.putDouble("heat", heat);
             list.add(sub);
         });

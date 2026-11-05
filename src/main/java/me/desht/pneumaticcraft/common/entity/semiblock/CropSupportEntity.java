@@ -53,9 +53,9 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
         super.tick();
 
         Level level = level();
-        if (level.random.nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
-            if (!level.isClientSide) {
-                getBlockState().randomTick((ServerLevel) level, getBlockPos(), level.random);
+        if (level.getRandom().nextDouble() < ConfigHelper.common().machines.cropSticksGrowthBoostChance.get() && !getBlockState().isAir()) {
+            if (!level.isClientSide()) {
+                getBlockState().randomTick((ServerLevel) level, getBlockPos(), level.getRandom());
             } else {
                 level.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
             }
@@ -82,7 +82,7 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitVec) {
         BlockState state = getBlockState();
         if (state.isAir()) {
             // try a right click on the block below - makes it easier to plant crops in an empty crop support
@@ -95,6 +95,6 @@ public class CropSupportEntity extends AbstractSemiblockEntity {
                 return player.getItemInHand(hand).useOn(new UseOnContext(player, hand, brtr));
             }
         }
-        return super.interactAt(player, hitVec, hand);
+        return super.interact(player, hand, hitVec);
     }
 }

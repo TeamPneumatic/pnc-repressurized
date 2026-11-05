@@ -117,10 +117,10 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        shouldClawClose = tag.getBoolean("clawClosing");
-        clawProgress = tag.getFloat("clawProgress");
-        speed = tag.getFloat("speed");
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        shouldClawClose = tag.getBooleanOr("clawClosing", false);
+        clawProgress = tag.getFloatOr("clawProgress", 0f);
+        speed = tag.getFloatOr("speed", 0f);
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -139,8 +139,8 @@ public class AssemblyPlatformBlockEntity extends AbstractTickingBlockEntity impl
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         AssemblyControllerBlockEntity.invalidateSystem(nonNullLevel(), controllerPos);
     }

@@ -32,16 +32,15 @@ import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeMap;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
@@ -54,8 +53,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements RecipeType<T> {
     private static CacheReloadListener cacheReloadListener;
+    private static RecipeMap clientRecipeMap = RecipeMap.EMPTY;
 
-    private final Map<ResourceLocation, RecipeHolder<T>> cachedRecipes = new HashMap<>();
+    private final Map<Identifier, RecipeHolder<T>> cachedRecipes = new HashMap<>();
     private final String typeName;
 
     public PneumaticCraftRecipeType(String name) {
@@ -67,7 +67,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         return typeName;
     }
 
-    public Map<ResourceLocation, RecipeHolder<T>> getRecipeMap(Level level) {
+    public Map<Identifier, RecipeHolder<T>> getRecipeMap(Level level) {
         if (level == null) {
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
@@ -82,14 +82,13 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         }
 
         if (cachedRecipes.isEmpty()) {
-            RecipeManager recipeManager = level.getRecipeManager();
-            List<RecipeHolder<T>> recipes = recipeManager.getRecipesFor(this, CraftingInput.EMPTY, level);
-            recipes.forEach(recipe -> cachedRecipes.put(recipe.id(), recipe));
+            RecipeMap recipeMap = recipeMap(level);
+            Collection<RecipeHolder<T>> recipes = recipeMap.byType(this);
+            recipes.forEach(recipe -> cachedRecipes.put(recipe.id().identifier(), recipe));
 
             if (this == ModRecipeTypes.ASSEMBLY_DRILL_LASER.get()) {
-
-                var drillRecipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ASSEMBLY_DRILL.get());
-                var laserRecipes = level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ASSEMBLY_LASER.get());
+                var drillRecipes = List.copyOf(recipeMap.byType(ModRecipeTypes.ASSEMBLY_DRILL.get()));
+                var laserRecipes = List.copyOf(recipeMap.byType(ModRecipeTypes.ASSEMBLY_LASER.get()));
                 //noinspection unchecked
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes)
                         .forEach((id, recipe) -> cachedRecipes.put(id, (RecipeHolder<T>) recipe));
@@ -103,6 +102,28 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         }
 
         return cachedRecipes;
+    }
+
+    /**
+     * The client no longer gets all recipes from the server: PneumaticCraft recipe types are requested
+     * in {@link #onDatapackSync(OnDatapackSyncEvent)} and arrive in {@code RecipesReceivedEvent}, which hands
+     * them to {@link #setClientRecipeMap(RecipeMap)}.
+     */
+    private static RecipeMap recipeMap(Level level) {
+        return level instanceof ServerLevel serverLevel ? serverLevel.recipeAccess().recipeMap() : clientRecipeMap;
+    }
+
+    public static void setClientRecipeMap(RecipeMap recipeMap) {
+        clientRecipeMap = recipeMap;
+        clearCachedRecipes();
+    }
+
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        for (var type : ModRecipeTypes.RECIPE_TYPES.getEntries()) {
+            if (type.get() instanceof PneumaticCraftRecipeType<?> pncrType && pncrType != ModRecipeTypes.ASSEMBLY_DRILL_LASER.get()) {
+                event.sendRecipes(pncrType);
+            }
+        }
     }
 
     public Collection<RecipeHolder<T>> allRecipeHolders(Level level) {
@@ -123,7 +144,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 .findFirst();
     }
 
-    public Optional<RecipeHolder<T>> getRecipe(Level level, ResourceLocation recipeId) {
+    public Optional<RecipeHolder<T>> getRecipe(Level level, Identifier recipeId) {
         return Optional.ofNullable(getRecipeMap(level).get(recipeId));
     }
 
@@ -155,13 +176,13 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
     public static class CacheReloadListener implements PreparableReloadListener {
         @Override
-        public CompletableFuture<Void> reload(PreparationBarrier stage, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+        public CompletableFuture<Void> reload(SharedState currentReload, Executor taskExecutor, PreparationBarrier preparationBarrier, Executor reloadExecutor) {
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
                     NetworkHandler.sendToAll(PacketClearRecipeCache.INSTANCE);
                 }
-            }, gameExecutor).thenCompose(stage::wait);
+            }, reloadExecutor).thenCompose(preparationBarrier::wait);
         }
     }
 }

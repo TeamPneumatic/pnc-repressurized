@@ -25,6 +25,7 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -80,7 +81,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
     }
 
     @Override
-    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         if (!(entity instanceof LivingEntity livingEntity)) return;
 
         PneumaticCraftUtils.getBlockEntityAt(world, pos, HeatSinkBlockEntity.class).ifPresent(te -> {
@@ -99,7 +100,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
                     entity.setTicksFrozen(Math.min(entity.getTicksFrozen() + amplifier, entity.getTicksRequiredToFreeze() + 2));
                     if (entity.getTicksFrozen() >= entity.getTicksRequiredToFreeze()) {
                         int durationTicks = (int) ((243 - temp) * 2);
-                        livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, durationTicks, amplifier));
+                        livingEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, durationTicks, amplifier));
                         // more damage if cold-vulnerable, less damage if !canFreeze() (typically armour protection)
                         float dmg = entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2;
                         if (!canFreeze) dmg /= 2f;

@@ -27,7 +27,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedButton;
@@ -49,7 +49,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
-    private ResourceLocation resLoc;
+    private Identifier resLoc;
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
@@ -149,7 +149,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
-    public WidgetButtonExtended setRenderedIcon(ResourceLocation resLoc) {
+    public WidgetButtonExtended setRenderedIcon(Identifier resLoc) {
         this.resLoc = resLoc;
         this.renderedStacks = null;
         return this;
@@ -160,7 +160,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
-    public WidgetButtonExtended setTexture(Either<ItemStack,ResourceLocation> texture) {
+    public WidgetButtonExtended setTexture(Either<ItemStack,Identifier> texture) {
         texture.ifLeft(this::setRenderStacks).ifRight(this::setRenderedIcon);
         return this;
     }

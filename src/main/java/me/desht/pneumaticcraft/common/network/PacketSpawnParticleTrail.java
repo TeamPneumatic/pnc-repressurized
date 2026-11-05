@@ -59,9 +59,9 @@ public record PacketSpawnParticleTrail(ParticleOptions particle, Vector3f start,
             double py = Mth.lerp(pct, message.start.y(), message.end.y());
             double pz = Mth.lerp(pct, message.start.z(), message.end.z());
             level.addParticle(message.particle(),
-                    px + level.random.nextDouble() * 0.2 - 0.1,
-                    py + level.random.nextDouble() * 0.2 - 0.1,
-                    pz + level.random.nextDouble() * 0.2 - 0.1,
+                    px + level.getRandom().nextDouble() * 0.2 - 0.1,
+                    py + level.getRandom().nextDouble() * 0.2 - 0.1,
+                    pz + level.getRandom().nextDouble() * 0.2 - 0.1,
                     0, 0, 0);
         }
     }

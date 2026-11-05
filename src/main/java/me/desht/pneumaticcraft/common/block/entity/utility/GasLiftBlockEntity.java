@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -182,7 +183,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     private boolean tryDigDown() {
         if (isUnbreakable(getBlockPos().relative(Direction.DOWN, currentDepth + 1))) {
             status = Status.STUCK;
-        } else if (getBlockPos().getY() - currentDepth >= nonNullLevel().getMinBuildHeight()) {
+        } else if (getBlockPos().getY() - currentDepth >= nonNullLevel().getMinY()) {
             status = Status.DIGGING;
             currentDepth++;
             BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
@@ -308,7 +309,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
     }
@@ -317,9 +318,9 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
-        currentDepth = tag.getInt("currentDepth");
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
+        if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getStringOr("mode", ""));
+        currentDepth = tag.getIntOr("currentDepth", 0);
     }
 
     public IFluidTank getTank() {

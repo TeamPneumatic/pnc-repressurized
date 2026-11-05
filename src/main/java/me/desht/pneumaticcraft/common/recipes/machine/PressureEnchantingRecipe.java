@@ -17,19 +17,21 @@
 
 package me.desht.pneumaticcraft.common.recipes.machine;
 
+import com.mojang.serialization.MapCodec;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -46,9 +48,13 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
-    public static final ResourceLocation ID = RL("pressure_chamber_enchanting");
+    public static final Identifier ID = RL("pressure_chamber_enchanting");
 
-    public PressureEnchantingRecipe(CraftingBookCategory ignoredCategory) {
+    public static final PressureEnchantingRecipe INSTANCE = new PressureEnchantingRecipe();
+    public static final RecipeSerializer<PressureEnchantingRecipe> SERIALIZER
+            = new RecipeSerializer<>(MapCodec.unit(INSTANCE), StreamCodec.unit(INSTANCE));
+
+    private PressureEnchantingRecipe() {
         super(Collections.emptyList(), 2F, List.of());
     }
 
@@ -167,7 +173,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.PRESSURE_CHAMBER_ENCHANTING.get();
     }
 

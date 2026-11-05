@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.StructureManager;
@@ -75,7 +75,7 @@ public class OilLakeFilter extends PlacementFilter {
 
         private static boolean isDimensionOK(WorldGenLevel level) {
             // non-empty whitelist match OR no blacklist match
-            ResourceLocation name = level.getLevel().dimension().location();
+            Identifier name = level.getLevel().dimension().identifier();
             return dimensionMatcherW.get().isEmpty() ? !dimensionMatcherB.get().test(name) : dimensionMatcherW.get().test(name);
         }
 

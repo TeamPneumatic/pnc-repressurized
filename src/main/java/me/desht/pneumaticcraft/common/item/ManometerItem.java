@@ -34,7 +34,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -64,11 +63,11 @@ public class ManometerItem extends PressurizableItem {
         if (player == null) return InteractionResult.PASS;
         Level world = context.getLevel();
 
-        if (world.isClientSide) return InteractionResult.SUCCESS;
+        if (world.isClientSide()) return InteractionResult.SUCCESS;
 
         return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(ChatFormatting.RED), true);
+                player.sendOverlayMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(ChatFormatting.RED));
                 return InteractionResult.FAIL;
             }
 
@@ -128,7 +127,7 @@ public class ManometerItem extends PressurizableItem {
                 for (int i = 1; i < curInfo.size(); i++) {
                     curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                 }
-                curInfo.forEach(s -> player.displayClientMessage(s, false));
+                curInfo.forEach(s -> player.sendSystemMessage(s));
                 if (!player.isCreative()) {
                     h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                 }
@@ -157,26 +156,26 @@ public class ManometerItem extends PressurizableItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) return InteractionResultHolder.success(stack);
+        if (worldIn.isClientSide()) return InteractionResult.SUCCESS;
         return PNCCapabilities.getAirHandler(stack).map(h -> {
             if (h.getPressure() >= 0.1f) {
                 double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
-                playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(ChatFormatting.AQUA), false);
-                playerIn.displayClientMessage(Symbols.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
-                return InteractionResultHolder.consume(stack);
+                playerIn.sendSystemMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(ChatFormatting.AQUA));
+                playerIn.sendSystemMessage(Symbols.bullet().append(HeatUtil.formatHeatString((int) temp)));
+                return InteractionResult.CONSUME;
             }
-            return InteractionResultHolder.fail(stack);
-        }).orElse(InteractionResultHolder.pass(stack));
+            return InteractionResult.FAIL;
+        }).orElse(InteractionResult.PASS);
     }
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity entity, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             return PNCCapabilities.getAirHandler(iStack).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                    player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED), true);
+                    player.sendOverlayMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(ChatFormatting.RED));
                     return InteractionResult.FAIL;
                 }
                 List<Component> curInfo = new ArrayList<>();
@@ -190,7 +189,7 @@ public class ManometerItem extends PressurizableItem {
                     for (int i = 1; i < curInfo.size(); i++) {
                         curInfo.set(i, Symbols.bullet().append(curInfo.get(i)));
                     }
-                    curInfo.forEach(s -> player.displayClientMessage(s, false));
+                    curInfo.forEach(s -> player.sendSystemMessage(s));
                 }
                 return InteractionResult.SUCCESS;
             }).orElse(InteractionResult.PASS);

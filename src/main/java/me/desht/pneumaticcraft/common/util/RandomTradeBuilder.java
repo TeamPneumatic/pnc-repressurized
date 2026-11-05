@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

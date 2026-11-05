@@ -27,16 +27,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RenderShape;
@@ -102,7 +104,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         if (!canSurvive(stateIn, worldIn, currentPos)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -112,7 +114,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
             stateIn = stateIn.setValue(corner.prop, connected[corner.ordinal()]);
         }
 
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(stateIn, worldIn, ticks, currentPos, facing, facingPos, facingState, random);
     }
 
     @Override
@@ -171,7 +173,7 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
         getElevatorBase(world, pos).ifPresent(teBase -> {
             if (!teBase.isStopped()) {
                 int baseY = teBase.getBlockPos().getY();
@@ -218,13 +220,6 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        getElevatorBase(world, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
-
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    @Override
     public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos) {
         BlockState below = worldIn.getBlockState(pos.below());
         return below.getBlock() == this || below.getBlock() == ModBlocks.ELEVATOR_BASE.get();
@@ -236,10 +231,10 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (!player.isShiftKeyDown() && heldItem.getItem() == this.asItem()) {
             // build it scaffolding-style
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 BlockPos.MutableBlockPos mPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
                 int worldHeight = world.dimensionType().logicalHeight();
                 while (mPos.getY() < worldHeight && world.getBlockState(mPos).getBlock() == this) {
@@ -252,12 +247,12 @@ public class ElevatorFrameBlock extends AbstractPneumaticCraftBlock
                     if (!player.isCreative()) {
                         player.getItemInHand(hand).shrink(1);
                     }
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
-                    return ItemInteractionResult.FAIL;
+                    return InteractionResult.FAIL;
                 }
             } else {
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         } else {
             return super.useItemOn(heldItem, state, world, pos, player, hand, brtr);

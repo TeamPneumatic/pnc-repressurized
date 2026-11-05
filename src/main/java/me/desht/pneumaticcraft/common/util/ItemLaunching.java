@@ -42,9 +42,9 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.projectile.*;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -62,7 +62,7 @@ public class ItemLaunching {
     private static final List<ILaunchBehaviour> behaviours = new CopyOnWriteArrayList<>();
 
     public static void launchEntity(Entity launchedEntity, Vec3 initialPos, Vec3 velocity, boolean doSpawn) {
-        Level world = launchedEntity.getCommandSenderWorld();
+        Level world = launchedEntity.level();
 
         if (launchedEntity.getVehicle() != null) {
             launchedEntity.stopRiding();
@@ -90,20 +90,20 @@ public class ItemLaunching {
         launchedEntity.horizontalCollision = false;
         launchedEntity.verticalCollision = false;
 
-        if (doSpawn && !world.isClientSide) {
+        if (doSpawn && !world.isClientSide()) {
             world.addFreshEntity(launchedEntity);
         }
 
         for (int i = 0; i < 5; i++) {
-            double velX = velocity.x * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
-            double velY = velocity.y * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
-            double velZ = velocity.z * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
+            double velX = velocity.x * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
+            double velY = velocity.y * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
+            double velZ = velocity.z * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
             NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
                     initialPos.toVector3f(),
                     new Vec3(velX, velY, velZ).toVector3f()
             ), world, trackPos);
         }
-        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
+        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.getRandom().nextFloat() / 4f + 0.75f);
     }
 
     /**
@@ -219,7 +219,7 @@ public class ItemLaunching {
                 micromissile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1/3f, 0.0F);
 
                 // Puts micromissile on cooldown which is 1/3 of normal cooldown to reward launching
-                player.getCooldowns().addCooldown(stack.getItem(), ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
+                player.getCooldowns().addCooldown(stack, ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
 
                 return micromissile;
             }

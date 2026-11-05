@@ -27,8 +27,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
+import net.minecraft.world.item.component.TooltipDisplay;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class NetworkComponentItem extends Item implements IProgrammable {
     private final NetworkComponentType type;
@@ -64,17 +68,19 @@ public class NetworkComponentItem extends Item implements IProgrammable {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, context, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, curInfo, extraInfo);
 
         if (context.registries() != null) {
-            SecurityStationHackingScreen.addExtraHackInfoStatic(curInfo);
+            List<Component> hackInfo = new ArrayList<>();
+            SecurityStationHackingScreen.addExtraHackInfoStatic(hackInfo);
+            hackInfo.forEach(curInfo);
         }
     }
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (entity.getCommandSenderWorld().isClientSide && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
+        if (entity.level().isClientSide() && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
             entity.setExtendedLifetime();
         }
         return false;

@@ -30,18 +30,18 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -113,7 +113,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         if (worldIn instanceof Level level) {
             ModuleNetworkManager.getInstance(level).invalidateCache();
             AbstractNetworkedRedstoneModule.onNetworkReform(level, currentPos);
@@ -151,14 +151,14 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (tryPlaceModule(player, world, pos, brtr.getDirection(), hand, false)) {
-            return ItemInteractionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         if (!player.isShiftKeyDown()) {
             AbstractTubeModule module = getFocusedModule(world, pos, player);
             if (module != null) {
-                return module.onActivated(player, hand) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                return module.onActivated(player, hand) ? InteractionResult.SUCCESS : InteractionResult.TRY_WITH_EMPTY_HAND;
             }
         }
         return super.useItemOn(stack, state, world, pos, player, hand, brtr);
@@ -187,8 +187,8 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             if (tube.mayPlaceModule(module)) {
                 if (simulate) module.markFake();
                 tube.setModule(side, module);
-                if (!simulate && !world.isClientSide) {
-                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                if (!simulate && !world.isClientSide()) {
+                    neighborChanged(world.getBlockState(pos), world, pos, this, null, false);
                     world.updateNeighborsAt(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
                     world.playSound(null, pos, SoundType.GLASS.getStepSound(), SoundSource.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f);
@@ -202,7 +202,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
         } else if (heldStack.getItem() == ModItems.MODULE_EXPANSION_CARD.get() && !simulate) {
             AbstractTubeModule module = PressureTubeBlock.getFocusedModule(world, pos, player);
             if (module != null && !module.isUpgraded() && module.canUpgrade()) {
-                if (!world.isClientSide) {
+                if (!world.isClientSide()) {
                     module.upgrade();
                     tube.setChanged();
                     tube.sendDescriptionPacket();
@@ -316,12 +316,12 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
         Pair<Vec3, Vec3> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockHitInfo rayTraceResult = doTrace(world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = rayTraceResult.tubeHitInfo();
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
-            return super.getCloneItemStack(state, target, world, pos, player);
+            return super.getCloneItemStack(world, pos, state, includeData, player);
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             PressureTubeBlockEntity tube = getPressureTube(world, pos);
             if (tube != null) {
@@ -351,7 +351,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                     }
                 }
                 tube.setModule(module.getDirection(), null);
-                neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                neighborChanged(world.getBlockState(pos), world, pos, this, null, false);
                 world.updateNeighborsAt(pos, this);
             } else {
                 // drop the pressure tube as an item
@@ -393,23 +393,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             }
         }
         return doClose;
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.getBlock() != state.getBlock()) {
-            getModuleDrops(getPressureTube(world, pos))
-                    .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
-        }
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    private static NonNullList<ItemStack> getModuleDrops(PressureTubeBlockEntity tube) {
-        NonNullList<ItemStack> drops = NonNullList.create();
-        if (tube != null) {
-            tube.tubeModules().map(AbstractTubeModule::getDrops).forEach(drops::addAll);
-        }
-        return drops;
     }
 
     @Override

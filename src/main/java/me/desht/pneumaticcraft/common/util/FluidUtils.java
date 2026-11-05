@@ -40,7 +40,6 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -322,7 +321,7 @@ public class FluidUtils {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        world.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+        world.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.5F, 2.6F + (world.getRandom().nextFloat() - world.getRandom().nextFloat()) * 0.8F);
         for(int l = 0; l < 8; ++l) {
             world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
         }
@@ -330,7 +329,7 @@ public class FluidUtils {
 
     public static ItemStack createFluidContainingItem(ItemLike item, FluidStack fluid) {
         ItemStack tank = new ItemStack(item);
-        IFluidHandlerItem handler = tank.getCapability(Capabilities.FluidHandler.ITEM, null);
+        IFluidHandlerItem handler = LegacyFluidHandlerItem.of(tank);
         if (handler == null) {
             return ItemStack.EMPTY;
         } else {

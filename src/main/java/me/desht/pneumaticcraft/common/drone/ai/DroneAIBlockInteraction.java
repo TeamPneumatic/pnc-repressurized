@@ -124,7 +124,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     private boolean isYValid(int y) {
-        return y < drone.getDroneLevel().getMaxBuildHeight() && y >= drone.getDroneLevel().getMinBuildHeight() && order == Ordering.CLOSEST || y == curY;
+        return y < drone.getDroneLevel().getMaxY() + 1 && y >= drone.getDroneLevel().getMinY() && order == Ordering.CLOSEST || y == curY;
     }
 
     public DroneAIBlockInteraction<?> setMaxActions(int maxActions) {

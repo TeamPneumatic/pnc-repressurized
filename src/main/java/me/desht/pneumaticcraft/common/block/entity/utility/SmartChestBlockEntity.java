@@ -327,8 +327,8 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound(NBT_ITEMS));
-        pushPullModes = tag.getInt("pushPull");
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty(NBT_ITEMS));
+        pushPullModes = tag.getIntOr("pushPull", 0);
     }
 
     @Override
@@ -504,11 +504,11 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
             super.deserializeNBT(provider, nbt);
 
-            lastSlot = nbt.getInt("LastSlot");
-            ListTag l = nbt.getList("Filter", Tag.TAG_COMPOUND);
+            lastSlot = nbt.getIntOr("LastSlot", 0);
+            ListTag l = nbt.getListOrEmpty("Filter");
             for (int i = 0; i < l.size(); i++) {
-                CompoundTag tag = l.getCompound(i);
-                filter[tag.getInt("Slot")] = ItemStack.parseOptional(provider, tag);
+                CompoundTag tag = l.getCompoundOrEmpty(i);
+                filter[tag.getIntOr("Slot", 0)] = ItemStack.parseOptional(provider, tag);
             }
         }
 

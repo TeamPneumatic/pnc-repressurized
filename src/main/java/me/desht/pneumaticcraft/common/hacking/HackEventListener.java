@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncEntityHacks;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -53,7 +53,7 @@ public enum HackEventListener {
     public void onEntityTracking(PlayerEvent.StartTracking event) {
         if (event.getEntity() instanceof ServerPlayer sp) {
             HackManager.getActiveHacks(event.getEntity()).ifPresent(hacking -> {
-                List<ResourceLocation> ids = hacking.getCurrentHacks().stream().map(IHackableEntity::getHackableId).toList();
+                List<Identifier> ids = hacking.getCurrentHacks().stream().map(IHackableEntity::getHackableId).toList();
                 if (!ids.isEmpty()) {
                     NetworkHandler.sendToPlayer(PacketSyncEntityHacks.create(event.getTarget(), ids), sp);
                 }

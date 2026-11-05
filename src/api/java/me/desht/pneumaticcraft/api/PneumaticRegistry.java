@@ -32,7 +32,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeRegistry;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.fml.ModLoadingContext;
 
 /**
@@ -67,10 +67,10 @@ public final class PneumaticRegistry {
      * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.
      *
      * @param path the path
-     * @return a mod-specific ResourceLocation for the given path
+     * @return a mod-specific Identifier for the given path
      */
-    public static ResourceLocation RL(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier RL(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**

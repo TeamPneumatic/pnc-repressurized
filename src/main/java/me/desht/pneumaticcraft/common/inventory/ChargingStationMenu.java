@@ -21,12 +21,14 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
@@ -63,7 +65,7 @@ public class ChargingStationMenu extends AbstractPneumaticCraftMenu<ChargingStat
         ItemStack srcStack = srcSlot.getItem().copy();
         ItemStack copyOfSrcStack = srcStack.copy();
 
-        if (slot == 0 && srcStack.getItem() instanceof ArmorItem) {
+        if (slot == 0 && isHumanoidArmor(srcStack)) {
             // chargeable slot - move to armor if appropriate, player inv otherwise
             if (!moveItemStackTo(srcStack, 5, 9, false)
                     && !moveItemStackToHotbarOrInventory(srcStack, playerSlotsStart))
@@ -86,5 +88,10 @@ public class ChargingStationMenu extends AbstractPneumaticCraftMenu<ChargingStat
         srcSlot.onTake(player, srcStack);
 
         return copyOfSrcStack;
+    }
+
+    private static boolean isHumanoidArmor(ItemStack stack) {
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        return equippable != null && equippable.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
     }
 }

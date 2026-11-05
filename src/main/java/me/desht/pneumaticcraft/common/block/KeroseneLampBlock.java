@@ -20,17 +20,17 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.block.entity.utility.KeroseneLampBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -89,19 +89,11 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         return stateIn.setValue(CONNECTED, getConnectedDirection(worldIn, currentPos));
     }
 
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        PneumaticCraftUtils.getBlockEntityAt(world, pos, KeroseneLampBlockEntity.class)
-                .ifPresent(KeroseneLampBlockEntity::removeLights);
-
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    private Direction getConnectedDirection(LevelAccessor world, BlockPos pos) {
+    private Direction getConnectedDirection(LevelReader world, BlockPos pos) {
         Direction connectedDir = Direction.DOWN;
         for (Direction d : DirectionUtil.VALUES) {
             BlockPos neighborPos = pos.relative(d);
@@ -124,7 +116,7 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
         return new KeroseneLampBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockKeroseneLamp extends BlockItem implements ICustomTooltipName {
+    public static class ItemBlockKeroseneLamp extends PNCBlockItem implements ICustomTooltipName {
         public ItemBlockKeroseneLamp(Block blockIn) {
             super(blockIn, ModItems.defaultProps());
         }

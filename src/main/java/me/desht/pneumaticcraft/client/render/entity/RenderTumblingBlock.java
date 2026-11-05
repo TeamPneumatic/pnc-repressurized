@@ -22,21 +22,21 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.common.entity.projectile.TumblingBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 
 public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
     public RenderTumblingBlock(EntityRendererProvider.Context ctx) {
@@ -52,7 +52,7 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
         Block block = ((BlockItem) stack.getItem()).getBlock();
         BlockState state = block.defaultBlockState();
         if (state.getRenderShape() == RenderShape.MODEL) {
-            Level world = entity.getCommandSenderWorld();
+            Level world = entity.level();
             if (state != world.getBlockState(entity.blockPosition()) && state.getRenderShape() != RenderShape.INVISIBLE) {
                 matrixStackIn.pushPose();
                 if (entity.tumbleVec != null) {
@@ -75,7 +75,7 @@ public class RenderTumblingBlock extends EntityRenderer<TumblingBlockEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(TumblingBlockEntity entity) {
+    public Identifier getTextureLocation(TumblingBlockEntity entity) {
         return null;
     }
 }

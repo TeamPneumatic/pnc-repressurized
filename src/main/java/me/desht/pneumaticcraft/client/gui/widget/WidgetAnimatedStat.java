@@ -48,7 +48,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.FormattedCharSink;
 import net.minecraft.util.Mth;
@@ -145,7 +145,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         statIcon = StatIcon.of(icon);
     }
 
-    public WidgetAnimatedStat(Screen gui, int backgroundColor, ResourceLocation texture) {
+    public WidgetAnimatedStat(Screen gui, int backgroundColor, Identifier texture) {
         this(gui, backgroundColor);
         statIcon = StatIcon.of(texture);
     }
@@ -793,7 +793,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void setTexture(ResourceLocation texture) {
+    public void setTexture(Identifier texture) {
         this.statIcon = StatIcon.of(texture);
     }
 
@@ -809,9 +809,9 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     public static class StatIcon {
         public static final StatIcon NONE = StatIcon.of(ItemStack.EMPTY);
 
-        private final Either<ItemStack,ResourceLocation> texture;
+        private final Either<ItemStack,Identifier> texture;
 
-        private StatIcon(Either<ItemStack,ResourceLocation> texture) {
+        private StatIcon(Either<ItemStack,Identifier> texture) {
             this.texture = texture;
         }
 
@@ -823,7 +823,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             return new StatIcon(Either.left(new ItemStack(item, 1)));
         }
 
-        public static StatIcon of(ResourceLocation texture) {
+        public static StatIcon of(Identifier texture) {
             return new StatIcon(Either.right(texture));
         }
 

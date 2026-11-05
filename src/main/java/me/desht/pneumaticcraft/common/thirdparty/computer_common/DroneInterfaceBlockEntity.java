@@ -45,12 +45,13 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -132,14 +133,14 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        super.handleUpdateTag(tag, provider);
-        droneId = tag.getInt("drone");
+    public void handleUpdateTag(ValueInput input) {
+        super.handleUpdateTag(input);
+        droneId = input.getIntOr("drone", 0);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        droneId = pkt.getTag().getInt("drone");
+    public void onDataPacket(Connection net, ValueInput input) {
+        droneId = input.getIntOr("drone", 0);
     }
 
     private DroneEntity validateAndGetDrone() {
@@ -187,7 +188,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 PNCRegistries.PROG_WIDGETS_REGISTRY.entrySet().forEach(entry -> {
                     IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {
-                        actions.add(entry.getKey().location().toString());
+                        actions.add(entry.getKey().identifier().toString());
                     }
                 });
                 return new Object[]{getStringTable(actions)};
@@ -603,7 +604,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireArgs(args, 1, "<string> action_name");
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
-                ResourceLocation id = widgetName.contains(":") ? ResourceLocation.parse(widgetName) : RL(widgetName);
+                Identifier id = widgetName.contains(":") ? Identifier.parse(widgetName) : RL(widgetName);
                 ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(id);
 
                 Validate.notNull(type,
@@ -631,7 +632,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 if (curAction != null) {
                     return new Object[] {
                             PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, curAction.getType())
-                                    .map(ResourceLocation::toString)
+                                    .map(Identifier::toString)
                                     .orElse("?")
                     };
                 }

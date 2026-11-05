@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.PatchouliBookCrafting;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.BlockItem;
@@ -43,9 +42,10 @@ public class ModCreativeModeTab {
                 .flatMap(ro -> stacksForItem(ro.get()))
                 .sorted(new ItemSorter())
                 .collect(Collectors.toCollection(ArrayList::new));
-        if (ModList.get().isLoaded(ModIds.PATCHOULI)) {
-            items.add(PatchouliBookCrafting.makeGuideBook());
-        }
+        // TODO 26.1 integration: Patchouli
+//        if (ModList.get().isLoaded(ModIds.PATCHOULI)) {
+//            items.add(PatchouliBookCrafting.makeGuideBook());
+//        }
         output.acceptAll(items);
     }
 

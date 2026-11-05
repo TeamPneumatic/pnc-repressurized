@@ -33,7 +33,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -43,7 +43,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -66,6 +66,9 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joml.Vector3f;
 
@@ -338,8 +341,8 @@ public class PneumaticCraftUtils {
         if (filterStack.isEmpty() || stack.isEmpty()) return false;
 
         if (checkModSimilarity) {
-            String mod1 = getRegistryName(filterStack.getItem()).map(ResourceLocation::getNamespace).orElse("");
-            String mod2 = getRegistryName(stack.getItem()).map(ResourceLocation::getNamespace).orElse("");
+            String mod1 = getRegistryName(filterStack.getItem()).map(Identifier::getNamespace).orElse("");
+            String mod2 = getRegistryName(stack.getItem()).map(Identifier::getNamespace).orElse("");
             return mod1.equals(mod2);
         }
 
@@ -369,14 +372,14 @@ public class PneumaticCraftUtils {
     }
 
     public static void dropItemOnGround(ItemStack stack, Level world, double x, double y, double z) {
-        float dX = world.random.nextFloat() * 0.8F + 0.1F;
-        float dY = world.random.nextFloat() * 0.8F + 0.1F;
-        float dZ = world.random.nextFloat() * 0.8F + 0.1F;
+        float dX = world.getRandom().nextFloat() * 0.8F + 0.1F;
+        float dY = world.getRandom().nextFloat() * 0.8F + 0.1F;
+        float dZ = world.getRandom().nextFloat() * 0.8F + 0.1F;
 
         ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
         float factor = 0.05F;
-        entityItem.setDeltaMovement(world.random.nextGaussian() * factor, world.random.nextGaussian() * factor + 0.2, world.random.nextGaussian() * factor);
+        entityItem.setDeltaMovement(world.getRandom().nextGaussian() * factor, world.getRandom().nextGaussian() * factor + 0.2, world.getRandom().nextGaussian() * factor);
         world.addFreshEntity(entityItem);
     }
 
@@ -441,11 +444,11 @@ public class PneumaticCraftUtils {
      * @return true if an item was consumed
      */
     public static boolean consumeInventoryItem(Inventory inv, Item item) {
-        for (int i = 0; i < inv.items.size(); ++i) {
-            if (inv.items.get(i).getItem() == item) {
-                inv.items.get(i).shrink(1);
-                if (inv.items.get(i).getCount() <= 0) {
-                    inv.items.set(i, ItemStack.EMPTY);
+        for (int i = 0; i < inv.getNonEquipmentItems().size(); ++i) {
+            if (inv.getNonEquipmentItems().get(i).getItem() == item) {
+                inv.getNonEquipmentItems().get(i).shrink(1);
+                if (inv.getNonEquipmentItems().get(i).getCount() <= 0) {
+                    inv.getNonEquipmentItems().set(i, ItemStack.EMPTY);
                 }
                 return true;
             }
@@ -464,14 +467,15 @@ public class PneumaticCraftUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean consumeInventoryItem(Inventory inv, ItemStack stack) {
         int toConsume = stack.getCount();
-        for (int i = 0; i < inv.items.size(); ++i) {
-            ItemStack invStack = inv.items.get(i);
+        for (int i = 0; i < inv.getNonEquipmentItems().size(); ++i) {
+            ItemStack invStack = inv.getNonEquipmentItems().get(i);
             int consumed = 0;
             if (ItemStack.isSameItem(invStack, stack)) {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
-                IItemHandler handler = invStack.getCapability(Capabilities.ItemHandler.ITEM);
+                ResourceHandler<ItemResource> itemHandler = ItemAccess.forStack(invStack).getCapability(Capabilities.Item.ITEM);
+                IItemHandler handler = itemHandler == null ? null : IItemHandler.of(itemHandler);
                 if (handler != null) {
                     for (int j = 0; j < handler.getSlots(); j++) {
                         ItemStack invStack2 = handler.getStackInSlot(j);
@@ -594,7 +598,7 @@ public class PneumaticCraftUtils {
         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
         int filled = handler.fill(toFill, action);
         if (filled > 0 && filled < fluidAmount && action.execute()) {
-            orb.value = orb.value - Math.max(1, filled / ratio);  // partial fill, adjust the orb
+            orb.value = orb.getValue() - Math.max(1, filled / ratio);  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
     }
@@ -650,8 +654,8 @@ public class PneumaticCraftUtils {
      * @param str a string
      * @return a resource location
      */
-    public static ResourceLocation modDefaultedRL(String str) {
-        return str.indexOf(':') > 0 ? ResourceLocation.parse(str) : RL(str);
+    public static Identifier modDefaultedRL(String str) {
+        return str.indexOf(':') > 0 ? Identifier.parse(str) : RL(str);
     }
 
     /**
@@ -660,7 +664,7 @@ public class PneumaticCraftUtils {
      * @param rl a resource location
      * @return stringified resource location
      */
-    public static String modDefaultedString(ResourceLocation rl) {
+    public static String modDefaultedString(Identifier rl) {
         return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
     }
 
@@ -678,23 +682,23 @@ public class PneumaticCraftUtils {
         return item.builtInRegistryHolder().tags().collect(Collectors.toSet());
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Item item) {
+    public static Optional<Identifier> getRegistryName(Item item) {
         return getRegistryName(BuiltInRegistries.ITEM, item);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Block block) {
+    public static Optional<Identifier> getRegistryName(Block block) {
         return getRegistryName(BuiltInRegistries.BLOCK, block);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Fluid fluid) {
+    public static Optional<Identifier> getRegistryName(Fluid fluid) {
         return getRegistryName(BuiltInRegistries.FLUID, fluid);
     }
 
-    public static Optional<ResourceLocation> getRegistryName(Entity entity) {
+    public static Optional<Identifier> getRegistryName(Entity entity) {
         return getRegistryName(BuiltInRegistries.ENTITY_TYPE, entity.getType());
     }
 
-    public static <T> Optional<ResourceLocation> getRegistryName(Registry<T> registry, T object) {
+    public static <T> Optional<Identifier> getRegistryName(Registry<T> registry, T object) {
         return Optional.ofNullable(registry.getKey(object));
     }
 

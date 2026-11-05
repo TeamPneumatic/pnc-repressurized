@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.painting.Painting;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class EntityTrackEntryPainting implements IEntityTrackEntry {
     @Override
     public void addInfo(Entity entity, List<Component> curInfo, boolean isLookingAtTarget) {
         if (entity instanceof Painting painting && painting.getVariant().isBound()) {
-            ResourceLocation rl = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).getKey(painting.getVariant().value());
+            Identifier rl = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).getKey(painting.getVariant().value());
             if (rl != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", rl.toString()));
             }

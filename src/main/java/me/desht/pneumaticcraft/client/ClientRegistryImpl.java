@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRendere
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -60,7 +60,7 @@ public class ClientRegistryImpl implements IClientRegistry {
     }
 
     @Override
-    public IGuiAnimatedStat getAnimatedStat(Screen gui, ResourceLocation iconTexture, int backgroundColor) {
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, Identifier iconTexture, int backgroundColor) {
         return new WidgetAnimatedStat(gui, backgroundColor, iconTexture);
     }
 

@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -33,12 +33,12 @@ import net.minecraft.world.entity.player.Player;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final ResourceLocation REACH_BOOST_ID = RL("reach_boost");
+    private static final Identifier REACH_BOOST_ID = RL("reach_boost");
 
     public static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_BOOST_ID, 3.5D, AttributeModifier.Operation.ADD_VALUE);
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.REACH_DISTANCE;
     }
 

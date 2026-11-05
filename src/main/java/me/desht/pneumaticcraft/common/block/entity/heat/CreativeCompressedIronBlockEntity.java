@@ -67,7 +67,7 @@ public class CreativeCompressedIronBlockEntity extends CompressedIronBlockEntity
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        targetTemperature = tag.getInt("targetTemperature");
+        targetTemperature = tag.getIntOr("targetTemperature", 0);
     }
 
     @Override

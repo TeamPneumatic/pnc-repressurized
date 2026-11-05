@@ -152,7 +152,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
             addAir(PneumaticValues.USAGE_SPAWNER_EXTRACTOR);
             if (progress >= 1f) {
                 extractSpawnerCore();
-            } else if (currentSpeed > 0.1f && nonNullLevel().random.nextInt(defenderChance) == 0) {
+            } else if (currentSpeed > 0.1f && nonNullLevel().getRandom().nextInt(defenderChance) == 0) {
                 // spawn defending entities; each entity nearby will slow down the extraction process
                 nonNullLevel().getBlockEntity(worldPosition.below(), BlockEntityType.MOB_SPAWNER).ifPresent(te -> {
                     if (!trySpawnDefender(te)) {
@@ -183,12 +183,12 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
             return false;
         }
         BlockPos pos = te.getBlockPos();
-        ListTag listnbt = nbt.getList("Pos", Tag.TAG_DOUBLE);
+        ListTag listnbt = nbt.getListOrEmpty("Pos");
         int size = listnbt.size();
         Level level = nonNullLevel();
-        double x = size >= 1 ? listnbt.getDouble(0) : (double)pos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-        double y = size >= 2 ? listnbt.getDouble(1) : (double)(pos.getY() + level.random.nextInt(3) - 1);
-        double z = size >= 3 ? listnbt.getDouble(2) : (double)pos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
+        double x = size >= 1 ? listnbt.getDouble(0) : (double)pos.getX() + (level.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D;
+        double y = size >= 2 ? listnbt.getDouble(1) : (double)(pos.getY() + level.getRandom().nextInt(3) - 1);
+        double z = size >= 3 ? listnbt.getDouble(2) : (double)pos.getZ() + (level.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D;
         if (level.noCollision(optional.get().getSpawnAABB(x, y, z))) {
             ServerLevel serverworld = (ServerLevel) level;
             Entity entity = EntityType.loadEntityRecursive(nbt, level, (e1) -> {
@@ -204,13 +204,13 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
                 return false;
             }
 
-            entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
+            entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.getRandom().nextFloat() * 360.0F, 0.0F);
             if (entity instanceof Mob mobentity) {
-                if (nbt.size() == 1 && nbt.contains("id", Tag.TAG_STRING)) {
+                if (nbt.size() == 1 && nbt.contains("id")) {
                     EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
                     // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
                     if (level.getDifficulty() == Difficulty.HARD) {
-                        getRandomEffects(level.random).forEach(effect ->
+                        getRandomEffects(level.getRandom()).forEach(effect ->
                                 mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2))
                         );
                     }
@@ -314,10 +314,10 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        progress = tag.getFloat("progress");
-        mode = Mode.values()[tag.getByte("mode")];
-        targetSpeed = tag.getFloat("targetSpeed");
-        spawnFailures = tag.getInt("spawnFailures");
+        progress = tag.getFloatOr("progress", 0f);
+        mode = Mode.values()[tag.getByteOr("mode", (byte) 0)];
+        targetSpeed = tag.getFloatOr("targetSpeed", 0f);
+        spawnFailures = tag.getIntOr("spawnFailures", 0);
     }
 
     @Override

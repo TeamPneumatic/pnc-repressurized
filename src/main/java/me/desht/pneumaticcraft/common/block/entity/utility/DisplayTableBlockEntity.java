@@ -59,7 +59,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
 
-        displayedStack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
+        displayedStack = ItemStack.parseOptional(provider, tag.getCompoundOrEmpty("Item"));
         inventory.initStack(displayedStack);
     }
 
@@ -79,7 +79,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
 
             if (slot == 0) {
                 displayedStack = getStackInSlot(0);
-                if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+                if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
             }
         }
 

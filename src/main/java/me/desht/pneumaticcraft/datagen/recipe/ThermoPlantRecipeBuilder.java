@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final ThermoPlantRecipe.Inputs inputs;
@@ -45,7 +45,7 @@ public class ThermoPlantRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, Identifier id) {
         output.accept(id, new ThermoPlantRecipeImpl(
                 inputs, outputs, operatingTemperature,
                 requiredPressure, recipeSpeed, airUseMultiplier,

@@ -22,27 +22,26 @@ import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.Tags;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class DroneColorCrafting extends ShapelessRecipe {
+public class DroneColorCrafting extends PNCSpecialCraftingRecipe {
     private static final List<Predicate<ItemStack>> ITEM_PREDICATES = List.of(
             stack -> stack.getItem() instanceof DroneItem,
             stack -> DyeColor.getColor(stack) != null
     );
 
     public DroneColorCrafting(CraftingBookCategory category) {
-        super("", category, new ItemStack(ModItems.DRONE.get()),
-                NonNullList.of(Ingredient.EMPTY, Ingredient.of(Tags.Items.DYES), Ingredient.of(ModItems.DRONE.get()))
-        );
+        super(category);
     }
 
     @Override
@@ -51,7 +50,7 @@ public class DroneColorCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput container, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput container) {
         List<ItemStack> stacks = ModCraftingHelper.findItems(container, ITEM_PREDICATES);
         ItemStack drone = stacks.get(0).copyWithCount(1);
         DyeColor dyeColor = DyeColor.getColor(stacks.get(1));
@@ -65,13 +64,20 @@ public class DroneColorCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int w, int h) {
-        return w * h >= 2;
+    protected List<SlotDisplay> displayIngredients() {
+        return List.of(
+                new SlotDisplay.TagSlotDisplay(Tags.Items.DYES),
+                new SlotDisplay.ItemSlotDisplay(ModItems.DRONE.get())
+        );
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.DRONE_COLOR_CRAFTING.get();
+    protected SlotDisplay displayResult() {
+        return new SlotDisplay.ItemSlotDisplay(ModItems.DRONE.get());
     }
 
+    @Override
+    public RecipeSerializer<DroneColorCrafting> getSerializer() {
+        return ModRecipeSerializers.DRONE_COLOR_CRAFTING.get();
+    }
 }

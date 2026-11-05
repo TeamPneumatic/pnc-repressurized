@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 
 public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModule> {
@@ -58,7 +58,7 @@ public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModul
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_REGULATOR_MODULE_UPGRADED : Textures.MODEL_REGULATOR_MODULE;
     }
 }

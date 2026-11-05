@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.block.AbstractPNCBlockWithBoundingBlocks;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHasBoundingBlocks;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
@@ -72,6 +73,14 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         else {
             heatExchanger.setThermalCapacity(100);
         }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (state.getBlock() instanceof AbstractPNCBlockWithBoundingBlocks bb) {
+            bb.onBlockEntityRemoved(state, nonNullLevel(), pos);
+        }
+        super.preRemoveSideEffects(pos, state);
     }
 
     @Override
@@ -318,7 +327,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        isBroken = tag.getBoolean(NBTKeys.NBT_BROKEN);
+        isBroken = tag.getBooleanOr(NBTKeys.NBT_BROKEN, false);
     }
 
     @Override

@@ -22,6 +22,8 @@ import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * Fired when a helmet Block Tracker is about to track an inventory. Can be canceled to prevent tracking.
@@ -44,6 +46,7 @@ public class InventoryTrackEvent extends Event implements ICancellableEvent {
     }
 
     public IItemHandler getInventory() {
-        return te.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, te.getBlockPos(), te.getBlockState(), te, null);
+        ResourceHandler<ItemResource> handler = te.getLevel().getCapability(Capabilities.Item.BLOCK, te.getBlockPos(), te.getBlockState(), te, null);
+        return handler == null ? null : IItemHandler.of(handler);
     }
 }

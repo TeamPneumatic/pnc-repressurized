@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHa
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -38,15 +38,15 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(ClientArmorRegistry.getInstance().makeStatMoveButton(30, settingsYposition() + 12, getClientUpgradeHandler()));
 
-        ResourceLocation blockTrackerID = CommonUpgradeHandlers.blockTrackerHandler.getID();
+        Identifier blockTrackerID = CommonUpgradeHandlers.blockTrackerHandler.getID();
 
         List<IBlockTrackEntry> entries = BlockTrackHandler.getInstance().getEntries();
-        ResourceLocation owningId = getClientUpgradeHandler().getID();
+        Identifier owningId = getClientUpgradeHandler().getID();
         IClientArmorRegistry registry = PneumaticRegistry.getInstance().getClientArmorRegistry();
         for (int i = 0; i < entries.size(); i++) {
             ICheckboxWidget checkBox = registry.makeKeybindingCheckBox(
                     entries.get(i).getEntryID(), 5, 53 + i * 12, 0xFFFFFFFF, cb -> {
-                        ResourceLocation subID = cb.getUpgradeId();
+                        Identifier subID = cb.getUpgradeId();
                         HUDHandler.getInstance().addFeatureToggleMessage(IArmorUpgradeHandler.getStringKey(blockTrackerID), IArmorUpgradeHandler.getStringKey(subID), cb.isChecked());
                     }).withOwnerUpgradeID(owningId);
             gui.addWidget(checkBox.asWidget());

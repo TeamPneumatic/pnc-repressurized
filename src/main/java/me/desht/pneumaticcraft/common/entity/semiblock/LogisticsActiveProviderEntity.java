@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ public class LogisticsActiveProviderEntity extends AbstractLogisticsFrameEntity 
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.MODEL_LOGISTICS_FRAME_ACTIVE_PROVIDER;  // TODO ridanisaurus
     }
 

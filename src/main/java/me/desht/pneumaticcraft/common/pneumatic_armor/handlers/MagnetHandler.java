@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -41,7 +41,7 @@ import java.util.List;
 public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.MAGNET;
     }
 
@@ -69,7 +69,7 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
 
-        if (player.level().isClientSide || player.isSpectator() || !enabled
+        if (player.level().isClientSide() || player.isSpectator() || !enabled
                 || (player.level().getGameTime() & 0x3) != 0
                 || !commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST))
             return;
@@ -79,7 +79,7 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
         int magnetRadiusSq = magnetRadius * magnetRadius;
 
         AABB box = new AABB(player.blockPosition()).inflate(magnetRadius);
-        List<Entity> itemList = player.getCommandSenderWorld().getEntitiesOfClass(Entity.class, box,
+        List<Entity> itemList = player.level().getEntitiesOfClass(Entity.class, box,
                 e -> (e instanceof ExperienceOrb || e instanceof ItemEntity) && e.isAlive());
 
         Vec3 playerVec = player.position();

@@ -38,14 +38,15 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -55,6 +56,7 @@ import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -63,6 +65,7 @@ public class MicromissilesItem extends Item {
         super(ModItems.defaultProps()
                 .stacksTo(1)
                 .durability(100)
+                .repairable(Items.TNT)
                 .component(ModDataComponents.MICROMISSILE_SETTINGS, Settings.DEFAULT)
         );
     }
@@ -73,12 +76,7 @@ public class MicromissilesItem extends Item {
     }
 
     @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return toRepair.getItem() == this && repair.getItem() == Blocks.TNT.asItem();
-    }
-
-    @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
 
         if (stack.get(ModDataComponents.MICROMISSILE_SETTINGS) == Settings.DEFAULT) {
@@ -86,10 +84,10 @@ public class MicromissilesItem extends Item {
         }
 
         if (playerIn.isShiftKeyDown()) {
-            if (worldIn.isClientSide) {
+            if (worldIn.isClientSide()) {
                 MicromissileScreen.openGui(stack.getHoverName(), handIn);
             }
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
 
         MicromissileEntity missile = new MicromissileEntity(worldIn, playerIn, stack);
@@ -97,7 +95,7 @@ public class MicromissilesItem extends Item {
         missile.setPos(newPos.x, newPos.y, newPos.z);
         missile.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldowns().addCooldown(this, ConfigHelper.common().micromissiles.launchCooldown.get());
+        playerIn.getCooldowns().addCooldown(stack, ConfigHelper.common().micromissiles.launchCooldown.get());
 
         if (playerIn.level() instanceof ServerLevel serverLevel) {
             HitResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
@@ -113,7 +111,7 @@ public class MicromissilesItem extends Item {
             }
         }
 
-        return InteractionResultHolder.sidedSuccess(stack, playerIn.level().isClientSide());
+        return InteractionResult.SUCCESS;
     }
 
     private float getInitialVelocity(ItemStack stack) {
@@ -122,30 +120,30 @@ public class MicromissilesItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> curInfo, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, context, curInfo, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, curInfo, extraInfo);
 
-        curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
+        curInfo.accept(xlate("pneumaticcraft.gui.micromissile.remaining")
                 .append(Component.literal(Integer.toString(stack.getMaxDamage() - stack.getDamageValue())).withStyle(ChatFormatting.AQUA))
         );
         if (stack.has(ModDataComponents.MICROMISSILE_SETTINGS)) {
             FireMode mode = getFireMode(stack);
-            curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
+            curInfo.accept(xlate("pneumaticcraft.gui.micromissile.firingMode")
                     .append(": ")
                     .append(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA)));
             if (mode == FireMode.SMART) {
                 String filter = stack.get(ModDataComponents.MICROMISSILE_SETTINGS).entityFilter();
                 if (!filter.isEmpty()) {
-                    curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
+                    curInfo.accept(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
                             .append(": ")
                             .append(ChatFormatting.AQUA + filter));
                 }
             }
         }
         if (ConfigHelper.common().micromissiles.damageTerrain.get()) {
-            curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
+            curInfo.accept(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
         } else {
-            curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
+            curInfo.accept(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
         }
     }
 

@@ -38,7 +38,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -64,18 +64,18 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private int pendingPayments;
     private BlockEntity cachedInput, cachedOutput;
 
-    private AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, PlayerFilter whitelist, PlayerFilter blacklist) {
+    private AmadronPlayerOffer(Identifier id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId, PlayerFilter whitelist, PlayerFilter blacklist) {
         super(id, input, output, true, false, 0, -1, -1, whitelist, blacklist);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
         inStock = 0;
     }
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, Player offeringPlayer, PlayerFilter whitelist, PlayerFilter blacklist) {
-        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId(), whitelist, blacklist);
+    public AmadronPlayerOffer(Identifier id, AmadronTradeResource input, AmadronTradeResource output, Player offeringPlayer, PlayerFilter whitelist, PlayerFilter blacklist) {
+        this(id, input, output, offeringPlayer.getGameProfile().name(), offeringPlayer.getGameProfile().id(), whitelist, blacklist);
     }
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, Player player) {
+    public AmadronPlayerOffer(Identifier id, AmadronTradeResource input, AmadronTradeResource output, Player player) {
         this(id, input, output, player, PlayerFilter.YES, PlayerFilter.NO);
     }
 
@@ -99,13 +99,13 @@ public class AmadronPlayerOffer extends AmadronOffer {
     /**
      * Create an offer which is the reverse of this offer.  Used for Amadron restocking and returning of unsold stock
      * when a player offer is removed.  Note that the reversed offer has "_rev" appended to its ID; this new offer is
-     * available via {@link AmadronOfferManager#getOffer(ResourceLocation)} (assuming the original offer is) but will
+     * available via {@link AmadronOfferManager#getOffer(Identifier)} (assuming the original offer is) but will
      * never appear in the active offers list.  If this is called on an already-reversed offer, the original offer will
      * be returned.
      * @return a new Amadron offer with the input and output swapped
      */
     public AmadronPlayerOffer getReversedOffer() {
-        ResourceLocation reversedId = getReversedId(getOfferId());
+        Identifier reversedId = getReversedId(getOfferId());
         AmadronPlayerOffer reversed = new AmadronPlayerOffer(reversedId, getOutput(), getInput(), offeringPlayerName, offeringPlayerId, whitelist, blacklist);
         reversed.providingPos = providingPos;
         reversed.returningPos = returningPos;
@@ -116,7 +116,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     public void updatePlayerId() {
         ServerPlayer player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
-        if (player != null) offeringPlayerId = player.getGameProfile().getId();
+        if (player != null) offeringPlayerId = player.getGameProfile().id();
     }
 
     public void addPayment(int payment) {
@@ -148,7 +148,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public void notifyRestock() {
         ServerPlayer player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
         if (player != null) {
-            player.displayClientMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
+            player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()));
         }
     }
 
@@ -303,10 +303,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return super.hashCode() * 31 + offeringPlayerId.hashCode();
     }
 
-    public static ResourceLocation getReversedId(ResourceLocation id) {
+    public static Identifier getReversedId(Identifier id) {
         String s = id.toString();
         return s.endsWith("_rev") ?
-                ResourceLocation.parse(s.replaceFirst("_rev$", "")):
-                ResourceLocation.parse(s + "_rev");
+                Identifier.parse(s.replaceFirst("_rev$", "")):
+                Identifier.parse(s + "_rev");
     }
 }

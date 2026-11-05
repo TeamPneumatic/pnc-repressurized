@@ -31,7 +31,7 @@ import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.ItemStack;
@@ -112,7 +112,7 @@ public class ModLootTablesProvider extends LootTableProvider {
             return l;
         }
 
-        private void addStandardSerializedDrop(Block block, ResourceLocation blockId) {
+        private void addStandardSerializedDrop(Block block, Identifier blockId) {
             LootPoolSingletonContainer.Builder<?> lootBuilder = LootItem.lootTableItem(block)
                     .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
 

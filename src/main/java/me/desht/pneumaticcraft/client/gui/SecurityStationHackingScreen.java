@@ -39,7 +39,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
@@ -116,7 +116,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_HACKING;
     }
 
@@ -204,7 +204,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
 
         stopWorms = 0;
         nukeViruses = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().items) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().getNonEquipmentItems()) {
             if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
             if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
         }

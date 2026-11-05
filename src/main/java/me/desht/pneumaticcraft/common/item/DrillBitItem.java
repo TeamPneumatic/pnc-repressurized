@@ -23,7 +23,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
+import net.minecraft.world.item.component.TooltipDisplay;
+
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -42,12 +45,12 @@ public class DrillBitItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(ChatFormatting.YELLOW)
+        tooltip.accept(xlate("pneumaticcraft.gui.tooltip.item.drillBit.blocks").withStyle(ChatFormatting.YELLOW)
                 .append(Component.literal(Integer.toString(getType().getBestDigType().getBlocksDug())).withStyle(ChatFormatting.GOLD)));
-        tooltip.add(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(ChatFormatting.YELLOW)
+        tooltip.accept(xlate("pneumaticcraft.gui.tooltip.item.drillBit.speed").withStyle(ChatFormatting.YELLOW)
                 .append(Component.literal(Integer.toString(getType().baseEfficiency)).withStyle(ChatFormatting.GOLD)));
     }
 

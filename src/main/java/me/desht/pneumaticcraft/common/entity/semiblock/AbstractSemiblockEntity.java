@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +40,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -61,6 +63,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -132,9 +136,9 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (!level().isClientSide && isAlive() && !canStay()) {
+        if (level() instanceof ServerLevel serverLevel && isAlive() && !canStay()) {
             beingRemoved = true;
-            kill();
+            kill(serverLevel);
         }
 
         Block curBlock = getBlockState().getBlock();
@@ -146,7 +150,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public InteractionResult interactAt(Player player, Vec3 hitVec, InteractionHand hand) {
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 hitVec) {
         Vec3 eye = player.getEyePosition(0f);
         Vec3 end = eye.add(player.getLookAngle().normalize().scale(5f));
         ClipContext ctx = new ClipContext(eye, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, player);
@@ -156,7 +160,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
             return InteractionResult.PASS;
         }
 
-        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level().isClientSide) {
+        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get() && !player.level().isClientSide()) {
             if (player.isShiftKeyDown()) {
                 killedByEntity(player);
                 return InteractionResult.SUCCESS;
@@ -232,7 +236,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
      * @return the dropped item, or null if nothing should be dropped
      */
     protected Item getDroppedItem() {
-        return BuiltInRegistries.ITEM.get(getSemiblockId());
+        return BuiltInRegistries.ITEM.getValue(getSemiblockId());
     }
 
     @Override
@@ -293,7 +297,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     }
 
     @Override
-    public ResourceLocation getSemiblockId() {
+    public Identifier getSemiblockId() {
         return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType()).orElseThrow();
     }
 
@@ -302,11 +306,23 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         return tag;
     }
 
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based methods below, see ValueIOBridge.
+    //  The saved data format is unchanged.
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected final void readAdditionalSaveData(ValueInput input) {
+        readAdditionalSaveData(ValueIOBridge.readAll(input));
     }
 
     @Override
+    protected final void addAdditionalSaveData(ValueOutput output) {
+        CompoundTag tag = new CompoundTag();
+        addAdditionalSaveData(tag);
+        output.store(tag);
+    }
+
+    protected void readAdditionalSaveData(CompoundTag compound) {
+    }
+
     protected void addAdditionalSaveData(CompoundTag compound) {
         serializeNBT(compound, registryAccess());
     }
@@ -321,7 +337,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         super.onAddedToLevel();
 
         Level level = level();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             SemiblockTracker tracker = SemiblockTracker.getInstance();
             tracker.putSemiblock(level, blockPos, this);
             NeoForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
@@ -332,7 +348,7 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
     @Override
     public void onRemovedFromLevel() {
         Level level = level();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             Direction dir = IDirectionalSemiblock.getDirection(this);
             SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
 
@@ -385,21 +401,28 @@ public abstract class AbstractSemiblockEntity extends Entity implements ISemiBlo
         entity.level().playSound(null, blockPos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 1.0f);
         dropOffset = entity.position().subtract(this.position()).normalize();
         beingRemoved = true;
-        kill();
+        if (level() instanceof ServerLevel serverLevel) {
+            kill(serverLevel);
+        }
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof Player)) {
+    public boolean hurtClient(DamageSource source) {
+        return !this.isInvulnerableToBase(source) && source.getDirectEntity() instanceof Player;
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (this.isInvulnerableToBase(source) || !(source.getDirectEntity() instanceof Player)) {
             return false;
-        } else if (!this.level().isClientSide && this.isAlive()) {
+        } else if (this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
             if (this.getDamageTaken() > MAX_HEALTH) {
                 if (source.getEntity() != null) {
                     killedByEntity(source.getEntity());
                 } else {
-                    kill();
+                    kill(level);
                 }
             }
         }

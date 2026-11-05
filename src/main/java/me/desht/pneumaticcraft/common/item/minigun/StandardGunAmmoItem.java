@@ -35,10 +35,12 @@ import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +89,8 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, context, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, extraInfo);
         ItemStack potion = getPotionStack(stack);
         if (!potion.isEmpty()) {
             List<Component> potionInfo = new ArrayList<>();
@@ -99,9 +101,9 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
             } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.getFirst()).append(extra));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.getFirst()).append(extra));
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }
     }
 
@@ -134,7 +136,7 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;
-            if (shooter.level().random.nextInt(100) < chance) {
+            if (shooter.level().getRandom().nextInt(100) < chance) {
                 ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
                 entityPotion.setItem(potion);
                 BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());

@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
@@ -30,9 +29,10 @@ public class CapabilitySetup {
                 ModEntityTypes.AMADRONE
         ).forEach(d -> {
             event.registerEntity(PNCCapabilities.AIR_HANDLER_ENTITY, d.get(), (drone, ctx) -> drone.getAirHandler());
-            event.registerEntity(Capabilities.ItemHandler.ENTITY, d.get(), (drone, ctx) -> drone.getDroneItemHandler());
-            event.registerEntity(Capabilities.FluidHandler.ENTITY, d.get(), (drone, ctx) -> drone.getFluidTank());
-            event.registerEntity(Capabilities.EnergyStorage.ENTITY, d.get(), (drone, ctx) -> drone.getEnergyStorage());
+            // TODO 26.1 transfer: export as ResourceHandler/EnergyHandler (PR2)
+//            event.registerEntity(Capabilities.ItemHandler.ENTITY, d.get(), (drone, ctx) -> drone.getDroneItemHandler());
+//            event.registerEntity(Capabilities.FluidHandler.ENTITY, d.get(), (drone, ctx) -> drone.getFluidTank());
+//            event.registerEntity(Capabilities.EnergyStorage.ENTITY, d.get(), (drone, ctx) -> drone.getEnergyStorage());
         });
 
         event.registerEntity(PNCCapabilities.HEAT_EXCHANGER_ENTITY, ModEntityTypes.HEAT_FRAME.get(), (frame, ctx) -> frame.getHeatExchangerLogic());
@@ -52,18 +52,20 @@ public class CapabilitySetup {
         // block entities
         ModBlockEntityTypes.streamBlockEntities().forEach(blockEntity -> {
             if (blockEntity instanceof AbstractPneumaticCraftBlockEntity pncBE) {
-                if (pncBE.hasItemCapability()) {
-                    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, pncBE.getType(),
-                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getItemHandler(dir) : null);
-                }
-                if (pncBE.hasFluidCapability()) {
-                    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, pncBE.getType(),
-                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getFluidHandler(dir) : null);
-                }
-                if (pncBE.hasEnergyCapability()) {
-                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, pncBE.getType(),
-                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getEnergyHandler(dir) : null);
-                }
+                // TODO 26.1 transfer: PNC's item/fluid/energy handlers still implement the legacy interfaces and
+                //  can't be registered for the new Capabilities.Item/Fluid/Energy; exported in PR2
+//                if (pncBE.hasItemCapability()) {
+//                    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, pncBE.getType(),
+//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getItemHandler(dir) : null);
+//                }
+//                if (pncBE.hasFluidCapability()) {
+//                    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, pncBE.getType(),
+//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getFluidHandler(dir) : null);
+//                }
+//                if (pncBE.hasEnergyCapability()) {
+//                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, pncBE.getType(),
+//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getEnergyHandler(dir) : null);
+//                }
                 if (pncBE instanceof IHeatExchangingTE) {
                     event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, pncBE.getType(),
                             (object, dir) -> object instanceof IHeatExchangingTE heat ? heat.getHeatExchanger(dir) : null);
@@ -80,9 +82,10 @@ public class CapabilitySetup {
             if (entry.get() instanceof IPressurizableItem) {
                 event.registerItem(PNCCapabilities.AIR_HANDLER_ITEM, (stack, ctx) -> new AirHandlerItemStack(stack), entry.get());
             }
-            if (entry.get() instanceof IFluidCapProvider f) {
-                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> f.provideFluidCapability(stack), entry.get());
-            }
+            // TODO 26.1 transfer: item fluid handlers are exported in PR2
+//            if (entry.get() instanceof IFluidCapProvider f) {
+//                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> f.provideFluidCapability(stack), entry.get());
+//            }
         });
     }
 }

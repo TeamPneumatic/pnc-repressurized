@@ -35,9 +35,9 @@ public class AirParticle extends TextureSheetParticle {
         lifetime = 50;
         quadSize = scale;
 
-        xd = xSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
-        yd = ySpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
-        zd = zSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
+        xd = xSpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
+        yd = ySpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
+        zd = zSpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
 
         setSpriteFromAge(sprite);
     }

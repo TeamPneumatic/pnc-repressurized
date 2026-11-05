@@ -31,7 +31,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
@@ -82,8 +82,8 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         for (int i = 0; i < 3; i++) {
-            int min = i == 1 ? ClientUtils.getClientLevel().getMinBuildHeight(): Integer.MIN_VALUE;
-            int max = i == 1 ? ClientUtils.getClientLevel().getMaxBuildHeight() : Integer.MAX_VALUE;
+            int min = i == 1 ? ClientUtils.getClientLevel().getMinY(): Integer.MIN_VALUE;
+            int max = i == 1 ? ClientUtils.getClientLevel().getMaxY() + 1 : Integer.MAX_VALUE;
             textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 16 + i * 22, TEXTFIELD_WIDTH, font.lineHeight + 3)
                     .setValue(oldText[i])
                     .setRange(min, max)
@@ -171,7 +171,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 }

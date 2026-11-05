@@ -24,7 +24,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public record DimensionMatcher(List<ResourceLocation> dimensionIds) implements IPlayerMatcher {
+public record DimensionMatcher(List<Identifier> dimensionIds) implements IPlayerMatcher {
     public static final MapCodec<DimensionMatcher> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            ResourceLocation.CODEC.listOf().fieldOf("dimensions").forGetter(DimensionMatcher::dimensionIds)
+            Identifier.CODEC.listOf().fieldOf("dimensions").forGetter(DimensionMatcher::dimensionIds)
     ).apply(inst, DimensionMatcher::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, DimensionMatcher> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()), DimensionMatcher::dimensionIds,
+            Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()), DimensionMatcher::dimensionIds,
             DimensionMatcher::new
     );
 
@@ -59,6 +59,6 @@ public record DimensionMatcher(List<ResourceLocation> dimensionIds) implements I
 
     @Override
     public boolean test(Player playerEntity) {
-        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().location());
+        return dimensionIds.isEmpty() || dimensionIds.contains(playerEntity.level().dimension().identifier());
     }
 }

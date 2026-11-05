@@ -23,20 +23,20 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.*;
 
 public class ModuleNetworkManager {
-    private static final Map<ResourceLocation, ModuleNetworkManager> INSTANCES = new HashMap<>();
+    private static final Map<Identifier, ModuleNetworkManager> INSTANCES = new HashMap<>();
 
     private final Map<AbstractTubeModule, Set<AbstractTubeModule>> connectionCache = new HashMap<>();
     private boolean needInvalidate = false;
 
     public static ModuleNetworkManager getInstance(Level w) {
-        return INSTANCES.computeIfAbsent(w.dimension().location(), dimId -> new ModuleNetworkManager());
+        return INSTANCES.computeIfAbsent(w.dimension().identifier(), dimId -> new ModuleNetworkManager());
     }
 
     Set<AbstractTubeModule> getConnectedModules(AbstractTubeModule module) {

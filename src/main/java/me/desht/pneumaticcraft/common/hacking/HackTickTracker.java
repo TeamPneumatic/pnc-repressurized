@@ -4,14 +4,13 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -46,18 +45,18 @@ public class HackTickTracker extends SavedData {
     }
 
     private HackTickTracker readNBT(CompoundTag tag, HolderLookup.Provider ignored) {
-        ListTag list = tag.getList("block_hacks", Tag.TAG_COMPOUND);
+        ListTag list = tag.getListOrEmpty("block_hacks");
 
         for (int i = 0; i < list.size(); i++) {
-            CompoundTag sub = list.getCompound(i);
-            NbtUtils.readBlockPos(sub, "pos").ifPresent(pos -> {
+            CompoundTag sub = list.getCompoundOrEmpty(i);
+            sub.read("pos", BlockPos.CODEC).ifPresent(pos -> {
                 try {
-                    ResourceLocation id = ResourceLocation.parse(sub.getString("id"));
+                    Identifier id = Identifier.parse(sub.getStringOr("id", ""));
                     CommonArmorRegistry.getInstance().getHackableBlockForId(id).ifPresentOrElse(
                             hackable -> hackedBlocks.put(pos, hackable),
                             () -> Log.error("unknown hackable block ID '{}'", id)
                     );
-                } catch (ResourceLocationException e) {
+                } catch (IdentifierException e) {
                     Log.error("invalid hackable block ID '{}'", sub.getString("id"));
                 }
             });
@@ -71,7 +70,7 @@ public class HackTickTracker extends SavedData {
         ListTag blockTag = new ListTag();
         hackedBlocks.forEach((pos, hackable) -> {
             CompoundTag sub = new CompoundTag();
-            sub.put("pos", NbtUtils.writeBlockPos(pos));
+            sub.store("pos", BlockPos.CODEC, pos);
             sub.putString("id", hackable.getHackableId().toString());
             blockTag.add(sub);
         });

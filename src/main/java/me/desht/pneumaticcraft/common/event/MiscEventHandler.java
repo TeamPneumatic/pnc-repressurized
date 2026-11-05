@@ -44,8 +44,10 @@ import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
+import me.desht.pneumaticcraft.common.util.LegacyFluidHandlerItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -54,11 +56,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.MinecartSpawner;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.minecart.MinecartSpawner;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -66,7 +69,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -90,7 +92,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class MiscEventHandler {
-    private static final Set<ResourceLocation> needsTPSSync = new HashSet<>();
+    private static final Set<Identifier> needsTPSSync = new HashSet<>();
 
     /**
      * Call this from the tick method of block entities which require server TPS to be synced to client.
@@ -99,7 +101,7 @@ public class MiscEventHandler {
      */
     public static void needsTPSSync(Level level) {
         if (level != null && (level.getGameTime() & 0x3f) == 0) {
-            needsTPSSync.add(level.dimension().location());
+            needsTPSSync.add(level.dimension().identifier());
         }
     }
 
@@ -108,10 +110,10 @@ public class MiscEventHandler {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             DroneClaimManager.getInstance(serverLevel).tick();
 
-            if ((serverLevel.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(serverLevel.dimension().location())) {
+            if ((serverLevel.getGameTime() & 0x7f) == 0 && needsTPSSync.contains(serverLevel.dimension().identifier())) {
                 double tickTime = event.getLevel().getServer().getAverageTickTimeNanos() / 1_000_000D;
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), serverLevel);
-                needsTPSSync.remove(serverLevel.dimension().location());
+                needsTPSSync.remove(serverLevel.dimension().identifier());
             }
         }
     }
@@ -139,7 +141,8 @@ public class MiscEventHandler {
     }
 
     private int amountTaken(int origAmount, ItemStack stack) {
-        IFluidHandlerItem handler = stack.getCraftingRemainingItem().getCapability(Capabilities.FluidHandler.ITEM);
+        ItemStackTemplate remainder = stack.getCraftingRemainder();
+        IFluidHandlerItem handler = remainder == null ? null : LegacyFluidHandlerItem.of(remainder.create());
         if (handler != null) {
             int newAmount = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount();
             return origAmount - newAmount;
@@ -149,7 +152,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void explosionCraftingEvent(ExplosionEvent.Detonate event) {
-        if (event.getLevel().isClientSide) {
+        if (event.getLevel().isClientSide()) {
             return;
         }
 
@@ -202,7 +205,7 @@ public class MiscEventHandler {
             if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     NetworkHandler.sendToServer(PacketModWrenchBlock.forSide(event.getPos(), event.getHand(), event.getFace()));
                 }
                 event.setCanceled(true);
@@ -216,7 +219,7 @@ public class MiscEventHandler {
             if (event.getHand() == InteractionHand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(InteractionHand.MAIN_HAND))) {
                 event.setCanceled(true);
             } else if (ModdedWrenchUtils.getInstance().isModdedWrench(event.getEntity().getItemInHand(event.getHand()))) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     NetworkHandler.sendToServer(PacketModWrenchBlock.forEntity(event.getPos(), event.getHand(), event.getTarget().getId()));
                 }
                 event.setCanceled(true);
@@ -238,7 +241,7 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level world && !world.isClientSide) {
+        if (event.getLevel() instanceof Level world && !world.isClientSide()) {
             ModuleNetworkManager.getInstance(world).invalidateCache();
         }
     }
@@ -289,7 +292,7 @@ public class MiscEventHandler {
     public void onTagsUpdated(TagsUpdatedEvent event) {
         CommonArmorRegistry.getInstance().resolveBlockTags();
 
-        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.tag(PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+        PneumaticRegistry.getInstance().getMiscHelpers().registerXPFluid(FluidIngredient.of(BuiltInRegistries.FLUID.getOrThrow(PneumaticCraftTags.Fluids.EXPERIENCE)), 20);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

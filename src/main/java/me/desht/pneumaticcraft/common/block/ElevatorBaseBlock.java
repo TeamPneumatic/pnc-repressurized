@@ -24,7 +24,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -81,7 +80,7 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         return super.useItemOn(heldItem, state, level, getCoreElevatorPos(level, pos), player, hand, brtr);
     }
 
@@ -100,18 +99,6 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
 
     public static Optional<ElevatorBaseBlockEntity> getCoreBlockEntity(Level level, BlockPos pos) {
         return PneumaticCraftUtils.getBlockEntityAt(level, pos, ElevatorBaseBlockEntity.class);
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (level.getBlockState(pos.relative(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-                PneumaticCraftUtils.getBlockEntityAt(level, pos.below(), ElevatorBaseBlockEntity.class)
-                        .ifPresent(ElevatorBaseBlockEntity::moveUpgradesFromAbove);
-            }
-            getCoreBlockEntity(level, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
     }
 
     @Nullable

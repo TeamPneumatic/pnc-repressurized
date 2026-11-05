@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -92,10 +92,10 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         // Prevents any interactions with bounding blocks of compressor
         if (state.getValue(BOUNDING)) {
-            return ItemInteractionResult.FAIL;
+            return InteractionResult.FAIL;
         }
 
         // Only can repair if proper block entity type and is broken
@@ -103,7 +103,7 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
                 && solarCompressor.isBroken()
                 && stack.getItem() == ModItems.SOLAR_CELL.get()) {
 
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 // Only consumes solar cell when player is not in creative
                 if (!player.isCreative()) {
                     player.getMainHandItem().shrink(1);
@@ -113,14 +113,13 @@ public class SolarCompressorBlock extends AbstractPNCBlockWithBoundingBlocks {
                 level.playSound(null, pos, SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1 ,1.5f);
             }
 
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.SUCCESS;
         }
 
         // Allows other interactions if we cannot do repair interaction
         return super.useItemOn(stack, state, level, pos, player, hand, brtr);
     }
 
-    @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> curInfo, TooltipFlag flag) {
         super.appendHoverText(stack, context, curInfo, flag);
 

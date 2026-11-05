@@ -22,11 +22,10 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -78,9 +77,9 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
     }
 
     @Override
-    public ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
+    public InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult brtr) {
         if (player.isShiftKeyDown()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.TRY_WITH_EMPTY_HAND;
         }
         if (player instanceof ServerPlayer sp) {
             if (level.getBlockEntity(pos) instanceof PressureChamberValveBlockEntity te) {
@@ -95,40 +94,17 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
                         }
                     }
                 } else {
-                    return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                    return InteractionResult.TRY_WITH_EMPTY_HAND;
                 }
-                return ItemInteractionResult.CONSUME;
+                return InteractionResult.CONSUME;
             } else {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         } else {
             return level.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get())
                     .filter(te -> te.multiBlockSize > 0)
-                    .map(te -> ItemInteractionResult.SUCCESS)
-                    .orElse(ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
-        }
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            invalidateMultiBlock(world, pos);
-        }
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    private void invalidateMultiBlock(Level world, BlockPos pos) {
-        if (!world.isClientSide) {
-            PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
-                if (teValve.multiBlockSize > 0) {
-                    teValve.onMultiBlockBreak();
-                } else if (!teValve.accessoryValves.isEmpty()) {
-                    teValve.accessoryValves.stream()
-                            .filter(valve -> valve.multiBlockSize > 0)
-                            .findFirst()
-                            .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
-                }
-            });
+                    .map(te -> InteractionResult.SUCCESS)
+                    .orElse(InteractionResult.TRY_WITH_EMPTY_HAND);
         }
     }
 

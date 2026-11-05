@@ -35,13 +35,13 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +99,7 @@ public class GuiUtils {
 
         Fluid fluid = fluidStack.getFluid();
         IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
-        ResourceLocation fluidStill = renderProps.getStillTexture(fluidStack);
+        Identifier fluidStill = renderProps.getStillTexture(fluidStack);
         if (fluidStill == null) {
             fluidStill = MissingTextureAtlasSprite.getLocation();
         }
@@ -280,7 +280,7 @@ public class GuiUtils {
         GuiUtils.drawNineSliced(graphics, Textures.GUI_INSET_PANEL, x, y, 0, width, height, 256, 128, 1);
     }
 
-    public static void drawNineSliced(GuiGraphics graphics, ResourceLocation texture, int x, int y, int z, int width, int height, int texWidth, int texHeight, int corner) {
+    public static void drawNineSliced(GuiGraphics graphics, Identifier texture, int x, int y, int z, int width, int height, int texWidth, int texHeight, int corner) {
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
 

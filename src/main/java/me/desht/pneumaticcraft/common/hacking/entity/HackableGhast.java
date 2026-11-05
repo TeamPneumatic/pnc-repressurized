@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.projectile.Fireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -29,14 +29,14 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableGhast extends AbstractPersistentEntityHack<Ghast> {
-    private static final ResourceLocation ID = RL("ghast");
+    private static final Identifier ID = RL("ghast");
 
     public HackableGhast() {
         super(StockHackTypes.DISARM);
     }
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

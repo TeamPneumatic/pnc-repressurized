@@ -129,7 +129,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
 
     private void maybeLightningStrike() {
         Level level = nonNullLevel();
-        RandomSource rnd = level.random;
+        RandomSource rnd = level.getRandom();
         if (rnd.nextInt(getStrikeChance()) == 0) {
             int dist = rnd.nextInt(6);
             float angle = rnd.nextFloat() * (float)Math.PI * 2;

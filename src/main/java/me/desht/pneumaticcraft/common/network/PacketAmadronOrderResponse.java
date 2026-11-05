@@ -23,7 +23,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -34,11 +34,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
  * (This needs a round trip rather than just updating client-side, since server needs to validate and cap
  *  requested shopping amounts)
  */
-public record PacketAmadronOrderResponse(ResourceLocation offerId, int amount) implements CustomPacketPayload {
+public record PacketAmadronOrderResponse(Identifier offerId, int amount) implements CustomPacketPayload {
     public static final Type<PacketAmadronOrderResponse> TYPE = new Type<>(RL("amadron_order_response"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketAmadronOrderResponse> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, PacketAmadronOrderResponse::offerId,
+            Identifier.STREAM_CODEC, PacketAmadronOrderResponse::offerId,
             ByteBufCodecs.VAR_INT, PacketAmadronOrderResponse::amount,
             PacketAmadronOrderResponse::new
     );

@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.model.HumanoidModel;
@@ -55,7 +56,7 @@ import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -67,6 +68,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
@@ -93,6 +95,11 @@ public class PneumaticCraftRepressurizedClient {
         NeoForge.EVENT_BUS.register(HUDHandler.getInstance());
         NeoForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         NeoForge.EVENT_BUS.register(KeyHandler.getInstance());
+        NeoForge.EVENT_BUS.addListener(this::onRecipesReceived);
+    }
+
+    private void onRecipesReceived(RecipesReceivedEvent event) {
+        PneumaticCraftRecipeType.setClientRecipeMap(event.getRecipeMap());
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {

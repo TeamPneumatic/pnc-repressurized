@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -45,7 +45,7 @@ public class ExplosionCrafting implements IRecipeManager<ExplosionCraftingRecipe
     @ZenCodeType.Method
     public void addRecipe(String name, IIngredientWithAmount input, IItemStack[] outputs, int lossRate) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(Identifier.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                 new ExplosionCraftingRecipeImpl(
                         CTUtils.toSizedIngredient(input),
                         lossRate,

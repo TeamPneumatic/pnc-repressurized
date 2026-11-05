@@ -36,7 +36,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.ArrayUtils;
@@ -112,7 +112,7 @@ public class AphorismTileScreen extends Screen {
 
         if (itemSearchGui != null && !itemSearchGui.getSearchStack().isEmpty()) {
             // returning from the item selector screen
-            ResourceLocation regName = PneumaticCraftUtils.getRegistryName(itemSearchGui.getSearchStack().getItem()).orElseThrow();
+            Identifier regName = PneumaticCraftUtils.getRegistryName(itemSearchGui.getSearchStack().getItem()).orElseThrow();
             String text = "{item:" + regName + "}";
             textLines[cursorY] = text;
             cursorX = text.length();

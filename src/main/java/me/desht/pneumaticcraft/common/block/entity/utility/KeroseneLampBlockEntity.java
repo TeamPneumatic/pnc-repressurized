@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -150,8 +151,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         super.tickClient();
 
         final Level level = nonNullLevel();
-        if (getBlockState().getValue(LIT) && level.random.nextInt(10) == 0) {
-            level.addParticle(ParticleTypes.FLAME, getBlockPos().getX() + 0.4 + 0.2 * level.random.nextDouble(), getBlockPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getBlockPos().getZ() + 0.4 + 0.2 * level.random.nextDouble(), 0, 0, 0);
+        if (getBlockState().getValue(LIT) && level.getRandom().nextInt(10) == 0) {
+            level.addParticle(ParticleTypes.FLAME, getBlockPos().getX() + 0.4 + 0.2 * level.getRandom().nextDouble(), getBlockPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getBlockPos().getZ() + 0.4 + 0.2 * level.getRandom().nextDouble(), 0, 0, 0);
         }
     }
 
@@ -202,6 +203,12 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         checkingX = getBlockPos().getX();
         checkingY = getBlockPos().getY();
         checkingZ = getBlockPos().getZ();
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        removeLights();
+        super.preRemoveSideEffects(pos, state);
     }
 
     public void removeLights() {
@@ -323,7 +330,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
                 .ifPresent(t -> tag.put("lights", t));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
     }
 
     @Override
@@ -334,10 +341,10 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         BLOCKPOS_LIST_CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag.get("lights")).result()
                 .ifPresent(managingLights::addAll);
         fuelQuality = calculateFuelQuality(tank.getFluid().getFluid());
-        targetRange = tag.getByte("targetRange");
-        range = tag.getByte("range");
+        targetRange = tag.getByteOr("targetRange", (byte) 0);
+        range = tag.getByteOr("range", (byte) 0);
         rangeSq = range * range;
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override

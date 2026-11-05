@@ -2,7 +2,6 @@ import me.modmuss50.mpp.ReleaseType
 
 buildscript {
 	dependencies {
-		classpath 'org.parchmentmc:librarian:1.+'
 		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
 	}
 }
@@ -12,7 +11,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-	id 'net.neoforged.moddev' version '2.0.115'
+	id 'net.neoforged.moddev' version '2.0.148'
     id "me.modmuss50.mod-publish-plugin" version "0.7.2"
 }
 
@@ -55,6 +54,7 @@ repositories {
 			includeGroup "vazkii.patchouli"
 			includeGroup "vazkii.botania"
 			includeGroup "mezz.jei"
+			includeGroup "net.mezzdev.config"
 			includeGroup "blusunrize.immersiveengineering"
 			includeGroup "com.blamejared.crafttweaker"
 			includeGroup "net.darkhax.gamestages"
@@ -92,7 +92,7 @@ base {
     archivesName = "${archive_base_name}-${mod_version}+mc${minecraft_version}"
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 sourceSets {
 	api {
@@ -113,13 +113,21 @@ sourceSets {
 	}
 }
 
+// TODO 26.1 integration: integration code for mods that have no 26.1.2 build yet (or whose integration
+//  is not ported yet) is excluded from compilation; ThirdPartyManager doesn't load it
+def disabledIntegrations = [
+		'botania', 'coldsweat', 'computercraft', 'crafttweaker', 'create', 'curios', 'ffs', 'ftbteams',
+		'gamestages', 'immersiveengineering', 'jei', 'mekanism', 'patchouli', 'theoneprobe', 'waila'
+]
+sourceSets.main.java {
+	disabledIntegrations.each { exclude "me/desht/pneumaticcraft/common/thirdparty/${it}/**" }
+	// TODO 26.1 datagen: data providers are ported in a later PR; until then the generated resources
+	//  from 1.21.1 stay in src/generated (and need regenerating once datagen works again)
+	exclude "me/desht/pneumaticcraft/datagen/**"
+}
+
 neoForge {
 	version = "${neo_version}"
-
-	parchment {
-		mappingsVersion = project.parchment_mappings_version
-		minecraftVersion = project.parchment_minecraft_version
-	}
 
 	addModdingDependenciesTo(sourceSets.api)
 
@@ -132,7 +140,7 @@ neoForge {
 			gameDirectory = project.file('runs/client')
 		}
 		data {
-			data()
+			clientData()
 			jvmArgument("-Xmx4G")
 			gameDirectory = project.file('runs/data')
 			programArguments = [ '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath() ]
@@ -163,51 +171,53 @@ dependencies {
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.0-M2'
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.0-M2'
 
-	localImplementation("mcjty.theoneprobe:theoneprobe:${top_version}")
+	// TODO 26.1 integration: dependencies with no 26.1.2 build yet are commented out, and the matching
+	//  integration code is excluded from compilation (see disabledIntegrations below)
+//	localImplementation("mcjty.theoneprobe:theoneprobe:${top_version}")
 //			{
 //		exclude group: "net.minecraftforge", module: "forge"
 //	}
 
-	compileOnly("mezz.jei:jei-1.21.1-common-api:${jei_version}")
-	compileOnly("mezz.jei:jei-1.21.1-neoforge-api:${jei_version}")
-	localRuntime("mezz.jei:jei-1.21.1-common:${jei_version}")
-	localRuntime("mezz.jei:jei-1.21.1-neoforge:${jei_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+	compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+	localRuntime("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
+	localRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
-	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
-	localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+//	compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}:api")
+//	localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
-	compileOnly("vazkii.botania:Botania:${botania_version}:api")
+//	compileOnly("vazkii.botania:Botania:${botania_version}:api")
 	//runtimeOnly("vazkii.botania:Botania:${botania_version}")
 
-	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-	localRuntime("vazkii.patchouli:Patchouli:${patchouli_version}")
+//	compileOnly("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+//	localRuntime("vazkii.patchouli:Patchouli:${patchouli_version}")
 
-	localImplementation("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
+//	localImplementation("curse.maven:cc-tweaked-282001:${cc_tweaked_curse_id}")
 
-	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
-	compileOnly("dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}") { transitive = false }
+//	compileOnly("dev.ftb.mods:ftb-filter-system-neoforge:${ffs_version}") { transitive = false }
+//	compileOnly("dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}") { transitive = false }
 
-	localImplementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+//	localImplementation("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 
-	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
-	localRuntime("mekanism:Mekanism:${mekanism_version}")
+//	compileOnly("mekanism:Mekanism:${mekanism_version}:api")
+//	localRuntime("mekanism:Mekanism:${mekanism_version}")
 
-	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
+//	compileOnly("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
 
-	localImplementation("curse.maven:jade-324717:${jade_curse_id}")
+//	localImplementation("curse.maven:jade-324717:${jade_curse_id}")
 
-	localImplementation("curse.maven:cold-sweat-506194:${cold_sweat_curse_id}-sources-${cold_sweat_curse_sources_id}")
+//	localImplementation("curse.maven:cold-sweat-506194:${cold_sweat_curse_id}-sources-${cold_sweat_curse_sources_id}")
 
-	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.21.1:${crafttweaker_version}")
+//	compileOnly("com.blamejared.crafttweaker:CraftTweaker-neoforge-1.21.1:${crafttweaker_version}")
 
-	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-	compileOnly("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
-	compileOnly("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
-	compileOnly("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
-	compileOnly("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
-	compileOnly("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
+//	compileOnly("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+//	compileOnly("curse.maven:thermal_cultivation-271835:${thermal_cultivation_curse_id}")
+//	compileOnly("curse.maven:thermal_expansion-69163:${thermal_expansion_curse_id}")
+//	compileOnly("curse.maven:thermal_foundation-222880:${thermal_foundation_curse_id}")
+//	compileOnly("curse.maven:thermal_innovation-291737:${thermal_innovation_curse_id}")
+//	compileOnly("curse.maven:thermal_locomotion-406959:${thermal_locomotion_curse_id}")
 
-	compileOnly("net.darkhax.gamestages:GameStages-Forge-1.20.1:${gamestages_version}")
+//	compileOnly("net.darkhax.gamestages:GameStages-Forge-1.20.1:${gamestages_version}")
 
 	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
 	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {

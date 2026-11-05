@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -36,10 +36,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableVillager implements IHackableEntity<Villager> {
-    private static final ResourceLocation ID = RL("villager");
+    private static final Identifier ID = RL("villager");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -67,17 +67,17 @@ public class HackableVillager implements IHackableEntity<Villager> {
     @Override
     public void onHackFinished(Villager entity, Player player) {
         Level level = player.level();
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             if (entity.shouldRestock()) {
                 entity.restock();
             }
-            int n = level.random.nextInt(25);
+            int n = level.getRandom().nextInt(25);
             if (n == 0) {
-                ItemStack emeralds = new ItemStack(Items.EMERALD, level.random.nextInt(3) + 1);
+                ItemStack emeralds = new ItemStack(Items.EMERALD, level.getRandom().nextInt(3) + 1);
                 level.addFreshEntity(new ItemEntity(level, entity.getX(), entity.getY(), entity.getZ(), emeralds));
             } else if (n == 1 ) {
                 MerchantOffers offers = entity.getOffers();
-                MerchantOffer offer = offers.get(level.random.nextInt(offers.size()));
+                MerchantOffer offer = offers.get(level.getRandom().nextInt(offers.size()));
                 if (!offer.getResult().isEmpty() && !offer.isOutOfStock()) {
                     level.addFreshEntity(new ItemEntity(level, entity.getX(), entity.getY(), entity.getZ(), offer.getResult()));
                     offer.increaseUses();

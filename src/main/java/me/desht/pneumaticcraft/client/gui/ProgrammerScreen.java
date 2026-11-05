@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -65,7 +65,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -296,7 +296,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 
@@ -467,7 +467,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (Minecraft.getInstance().options.advancedItemTooltips) {
-                    ResourceLocation id = PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
+                    Identifier id = PNCRegistries.PROG_WIDGETS_REGISTRY.getKey(widget.getType());
                     if (id != null) tooltip.add(Component.literal(id.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 }
                 if (!tooltip.isEmpty()) {
@@ -829,7 +829,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
 
     private int countPlayerPuzzlePieces() {
         int count = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().items) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().getNonEquipmentItems()) {
             if (stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
                 count += stack.getCount();
             }
@@ -1262,7 +1262,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;
-        final double velX = (ClientUtils.getClientLevel().random.nextDouble() - 0.5) * 3;
+        final double velX = (ClientUtils.getClientLevel().getRandom().nextDouble() - 0.5) * 3;
         double velY = -4;
 
         private RemovingWidget(IProgWidget widget) {

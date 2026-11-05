@@ -25,8 +25,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -55,11 +55,11 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
         if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && targetedEntity instanceof ExperienceOrb orb) {
             ItemStack heldStack = drone.getInv().getStackInSlot(0);
             if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.has(heldStack, EnchantmentEffectComponents.REPAIR_WITH_XP)) {
-                int toRepair = Math.min((int)(orb.value * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
-                orb.value -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
+                int toRepair = Math.min((int)(orb.getValue() * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
+                orb.getValue() -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
                 heldStack.setDamageValue(heldStack.getDamageValue() - toRepair);
             }
-            if (orb.value <= 0 || PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), orb, FluidAction.EXECUTE)) {
+            if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), orb, FluidAction.EXECUTE)) {
                 targetedEntity.discard();
             }
         } else {

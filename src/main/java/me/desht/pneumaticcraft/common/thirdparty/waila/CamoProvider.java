@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.thirdparty.waila;
 
 import me.desht.pneumaticcraft.common.block.entity.CamouflageableBlockEntity;
 import me.desht.pneumaticcraft.common.item.CamoApplicatorItem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -31,7 +31,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class CamoProvider {
     public static class ComponentProvider implements IBlockComponentProvider {
-        private static final ResourceLocation ID = RL("camo");
+        private static final Identifier ID = RL("camo");
 
         @Override
         public void appendTooltip(ITooltip iTooltip, BlockAccessor blockAccessor, IPluginConfig iPluginConfig) {
@@ -43,7 +43,7 @@ public class CamoProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

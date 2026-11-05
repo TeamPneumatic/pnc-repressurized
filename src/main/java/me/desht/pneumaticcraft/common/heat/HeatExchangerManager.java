@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -78,7 +78,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
     }
 
     @Override
-    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> heatBehaviour) {
+    public void registerHeatBehaviour(Identifier id, Supplier<? extends HeatBehaviour> heatBehaviour) {
         HeatBehaviourManager.getInstance().registerBehaviour(id, heatBehaviour);
     }
 

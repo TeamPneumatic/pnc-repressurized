@@ -39,7 +39,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -120,7 +120,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
             availableOffers.validate(tablet, false);
 
             for (int i = 0; i < activeOffers.size(); i++) {
-                ResourceLocation offerId = activeOffers.get(i).getOfferId();
+                Identifier offerId = activeOffers.get(i).getOfferId();
 
                 int wantedUnits = savedBasket.getUnits(offerId);
                 int availableUnits = availableOffers.getUnits(offerId);
@@ -135,7 +135,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 }
             }
             basketEmpty = shoppingBasket.isEmpty();
-            currentPlayerOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().getId());
+            currentPlayerOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().id());
             maxPlayerOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : ConfigHelper.common().amadron.maxTradesPerPlayer.get();
             problemState = EnumProblemState.NO_PROBLEMS;
         }
@@ -145,7 +145,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         this(windowId, playerInventory, buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
 
-    public void updateBasket(ResourceLocation offerId, int amount) {
+    public void updateBasket(Identifier offerId, int amount) {
         // called clientside when PacketAmadronOrderResponse is received
         shoppingBasket.setUnits(offerId, amount);
     }
@@ -167,7 +167,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 if (h.getPressure() > 0) {
                     return true;
                 } else {
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.tab.problems.notEnoughPressure"), false);
+                    player.sendSystemMessage(Component.translatable("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
                     return false;
                 }
             }).orElse(false);
@@ -188,7 +188,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
      * @param shiftPressed true if shift-clicked
      * @param player the player
      */
-    public void clickOffer(ResourceLocation offerId, int mouseButton, boolean shiftPressed, ServerPlayer player) {
+    public void clickOffer(Identifier offerId, int mouseButton, boolean shiftPressed, ServerPlayer player) {
         problemState = EnumProblemState.NO_PROBLEMS;
         if (AmadronOfferManager.getInstance().isActive(offerId)) {
             if (mouseButton == 2) {
@@ -230,7 +230,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         } else if (tag.equals("addPlayerTrade")) {
             openTradeGui(player);
         } else if (tag.startsWith("remove:") && shiftHeld) {
-            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(ResourceLocation.parse(tag.substring(7)));
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(Identifier.parse(tag.substring(7)));
             if (offer instanceof AmadronPlayerOffer) {
                 tryRemoveCustomOffer(player, (AmadronPlayerOffer) offer);
             }
@@ -242,7 +242,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
 
         String playerName = player.getName().getString();
         boolean orderPlaced = false;
-        for (ResourceLocation offerId : shoppingBasket) {
+        for (Identifier offerId : shoppingBasket) {
             int amount = shoppingBasket.getUnits(offerId);
             if (AmadronOfferManager.getInstance().isActive(offerId) && amount > 0) {
                 AmadronOffer offer = AmadronOfferManager.getInstance().getOffer(offerId);
@@ -257,7 +257,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 }
             }
         }
-        for (ResourceLocation offerId : shoppingBasket) {
+        for (Identifier offerId : shoppingBasket) {
             NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, 0), player);
         }
         shoppingBasket.clear();
@@ -344,14 +344,14 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
         return true;
     }
 
-    public int getShoppingBasketUnits(ResourceLocation offerId) {
+    public int getShoppingBasketUnits(Identifier offerId) {
         return shoppingBasket.getUnits(offerId);
     }
 
     @Override
     public void removed(Player player) {
         super.removed(player);
-        if (!player.level().isClientSide && player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
+        if (!player.level().isClientSide() && player.getItemInHand(hand).getItem() == ModItems.AMADRON_TABLET.get()) {
             AmadronTabletItem.saveShoppingCart(player.getItemInHand(hand), shoppingBasket);
         }
     }

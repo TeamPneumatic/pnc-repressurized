@@ -34,6 +34,7 @@ import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.FluidFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -45,8 +46,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
@@ -59,6 +61,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -116,16 +121,18 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         if (stack.getItem() instanceof SemiblockItem semiblockItem) {
             AbstractSemiblockEntity semiblock = semiblockItem.createEntity(world, stack, player, BlockPos.ZERO);
             if (semiblock instanceof AbstractLogisticsFrameEntity logisticsFrame) {
-                if (world.isClientSide && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
+                if (world.isClientSide() && stack.has(ModDataComponents.SEMIBLOCK_DATA)) {
                     // client-side entity creation doesn't load in custom data from the itemstack; we need to do it ourselves in this case
                     // see EntityType#applyItemNBT()
-                    CompoundTag tag = logisticsFrame.saveWithoutId(new CompoundTag());
+                    TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, world.registryAccess());
+                    logisticsFrame.saveWithoutId(output);
+                    CompoundTag tag = output.buildResult();
                     UUID uuid = logisticsFrame.getUUID();
                     //noinspection ConstantConditions
                     CompoundTag toMerge = stack.get(ModDataComponents.SEMIBLOCK_DATA).copyTag();
                     tag.merge(toMerge);
                     logisticsFrame.setUUID(uuid);
-                    logisticsFrame.load(tag);
+                    logisticsFrame.load(TagValueInput.create(ProblemReporter.DISCARDING, world.registryAccess(), tag));
                 }
                 return logisticsFrame;
             }
@@ -169,7 +176,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     @Override
     public abstract int getColor();
 
-    public abstract ResourceLocation getTexture();
+    public abstract Identifier getTexture();
 
     public abstract int getPriority();
 
@@ -251,7 +258,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public void tick() {
         super.tick();
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             Iterator<Map.Entry<ItemStack, Integer>> iterator = incomingStacks.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<ItemStack, Integer> entry = iterator.next();
@@ -333,24 +340,24 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
 
-        itemFilterHandler.deserializeNBT(registryAccess(), tag.getCompound(NBT_ITEM_FILTERS));
-        fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompound(NBT_FLUID_FILTERS)).result()
+        ValueIOBridge.deserialize(itemFilterHandler, registryAccess(), tag.getCompoundOrEmpty(NBT_ITEM_FILTERS));
+        fluidFilter = FluidFilter.CODEC.parse(registryAccess().createSerializationContext(NbtOps.INSTANCE), tag.getCompoundOrEmpty(NBT_FLUID_FILTERS)).result()
                 .orElse(new FluidFilter(FLUID_FILTER_SLOTS));
-        setSemiblockInvisible(tag.getBoolean(NBT_INVISIBLE));
-        setMatchComponents(tag.getBoolean(NBT_MATCH_COMPONENTS));
-        setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
-        setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
-        setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
-        setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
-        setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getInt(NBT_SIDE)) : Direction.UP);
+        setSemiblockInvisible(tag.getBooleanOr(NBT_INVISIBLE, false));
+        setMatchComponents(tag.getBooleanOr(NBT_MATCH_COMPONENTS, false));
+        setMatchDurability(tag.getBooleanOr(NBT_MATCH_DURABILITY, false));
+        setMatchModId(tag.getBooleanOr(NBT_MATCH_MODID, false));
+        setItemWhiteList(tag.getBooleanOr(NBT_ITEM_WHITELIST, false));
+        setFluidWhiteList(tag.getBooleanOr(NBT_FLUID_WHITELIST, false));
+        setSide(tag.contains(NBT_SIDE) ? Direction.from3DDataValue(tag.getIntOr(NBT_SIDE, 0)) : Direction.UP);
 
         if (this instanceof ISpecificRequester spr) {
-            spr.setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
-            spr.setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
+            spr.setMinItemOrderSize(Math.max(1, tag.getIntOr(ISpecificRequester.NBT_MIN_ITEMS, 0)));
+            spr.setMinFluidOrderSize(Math.max(1, tag.getIntOr(ISpecificRequester.NBT_MIN_FLUID, 0)));
         }
         if (this instanceof ISpecificProvider spp) {
-            spp.setKeepItemsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_ITEMS));
-            spp.setKeepFluidsStocked(tag.getInt(ISpecificProvider.NBT_STOCK_FLUID));
+            spp.setKeepItemsStocked(tag.getIntOr(ISpecificProvider.NBT_STOCK_ITEMS, 0));
+            spp.setKeepFluidsStocked(tag.getIntOr(ISpecificProvider.NBT_STOCK_FLUID, 0));
         }
     }
 
@@ -358,7 +365,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     public CompoundTag serializeNBT(CompoundTag tag, HolderLookup.Provider provider) {
         CompoundTag tag1 = super.serializeNBT(tag, provider);
 
-        tag1.put(NBT_ITEM_FILTERS, itemFilterHandler.serializeNBT(provider));
+        tag1.put(NBT_ITEM_FILTERS, ValueIOBridge.serialize(itemFilterHandler, provider));
         FluidFilter.CODEC.encodeStart(registryAccess().createSerializationContext(NbtOps.INSTANCE), fluidFilter)
                 .ifSuccess(t -> tag1.put(NBT_FLUID_FILTERS, t));
         tag1.put(NBT_FLUID_FILTERS, FluidFilter.CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), fluidFilter).result().orElse(new CompoundTag()));
@@ -565,8 +572,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         }
 
         @Override
-        public void deserializeNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-            super.deserializeNBT(provider, nbt);
+        public void deserialize(ValueInput input) {
+            super.deserialize(input);
 
             buildFilterList();
         }

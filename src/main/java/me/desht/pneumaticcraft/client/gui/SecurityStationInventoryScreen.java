@@ -42,7 +42,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -119,7 +119,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_SECURITY_STATION;
     }
 
@@ -203,7 +203,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         } else if (te.isHacked()) {
             text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).withStyle(ChatFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(Component.literal("  ").append(Symbols.bullet()).append(hacker.getName()).withStyle(ChatFormatting.RED));
+                text.add(Component.literal("  ").append(Symbols.bullet()).append(hacker.name()).withStyle(ChatFormatting.RED));
             }
         } else if (te.hasValidNetwork()) {
             text.add(Component.literal("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).withStyle(ChatFormatting.GREEN));
@@ -252,7 +252,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
             button.setVisible(false);
             accessStat.addSubWidget(button);
             sharedUserList.add(button);
-            button.visible = !name.equals(ClientUtils.getClientPlayer().getGameProfile().getName());
+            button.visible = !name.equals(ClientUtils.getClientPlayer().getGameProfile().name());
             n++;
         }
     }

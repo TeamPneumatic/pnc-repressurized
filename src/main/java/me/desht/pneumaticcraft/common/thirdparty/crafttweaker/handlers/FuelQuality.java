@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.openzen.zencode.java.ZenCodeType;
@@ -39,7 +39,7 @@ public class FuelQuality implements IRecipeManager<FuelQualityRecipe> {
     @ZenCodeType.Method
     public void addRecipe(String name, CTFluidIngredient ingredient, int airPerBucket, @ZenCodeType.OptionalFloat(1f) float burnRate) {
         CraftTweakerAPI.apply(new ActionAddRecipe<>(this,
-                new RecipeHolder<>(ResourceLocation.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
+                new RecipeHolder<>(Identifier.fromNamespaceAndPath("crafttweaker", fixRecipeName(name)),
                         new FuelQualityRecipeImpl(
                                 CTUtils.toFluidIngredient(ingredient),
                                 airPerBucket,

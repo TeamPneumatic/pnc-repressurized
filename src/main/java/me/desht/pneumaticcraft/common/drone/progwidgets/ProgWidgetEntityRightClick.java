@@ -30,7 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -109,7 +109,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_ENTITY_RIGHT_CLICK;
     }
 
@@ -132,13 +132,13 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                         || targetedEntity.interact(fakePlayer, InteractionHand.MAIN_HAND).consumesAction()) {
                     // fake player's inventory has probably been modified in some way
                     // copy items back to drone inventory, dropping on the ground any items that don't fit
-                    for (int i = 0; i < fakePlayer.getInventory().items.size(); i++) {
-                        ItemStack fakePlayerStack = fakePlayer.getInventory().items.get(i);
+                    for (int i = 0; i < fakePlayer.getInventory().getNonEquipmentItems().size(); i++) {
+                        ItemStack fakePlayerStack = fakePlayer.getInventory().getNonEquipmentItems().get(i);
                         if (i < drone.getInv().getSlots()) {
                             drone.getInv().setStackInSlot(i, fakePlayerStack);
                         } else if (!fakePlayerStack.isEmpty()) {
                             drone.dropItem(fakePlayerStack);
-                            fakePlayer.getInventory().items.set(i, ItemStack.EMPTY);
+                            fakePlayer.getInventory().getNonEquipmentItems().set(i, ItemStack.EMPTY);
                         }
                     }
                 }

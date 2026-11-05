@@ -36,7 +36,7 @@ public class HoldingEnchantableProvider {
         // TODO figure out how to init this now that enchantments are in a datapack registry
 
         // Gets if Holding enchantment has been registered
-        holdingEnchantment = null; // BuiltInRegistries.ENCHANTMENT.get(ResourceLocation.fromNamespaceAndPath(ModIds.COFH_CORE, "holding"));
+        holdingEnchantment = null; // BuiltInRegistries.ENCHANTMENT.get(Identifier.fromNamespaceAndPath(ModIds.COFH_CORE, "holding"));
 
         // Registers the volume modifier for the Holding enchant if it's present and config-enabled
         if (holdingEnchantment != null && holdingEnabled) {
