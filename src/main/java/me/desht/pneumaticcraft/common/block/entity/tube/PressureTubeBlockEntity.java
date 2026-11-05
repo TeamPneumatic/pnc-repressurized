@@ -43,6 +43,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -278,6 +279,13 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         sidesVisuallyConnected = calculateVisuallyConnected();
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        tubeModules().map(AbstractTubeModule::getDrops).forEach(drops -> drops.forEach(drop ->
+                nonNullLevel().addFreshEntity(new ItemEntity(nonNullLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop))));
+        super.preRemoveSideEffects(pos, state);
+    }
+
     public Stream<AbstractTubeModule> tubeModules() {
         return modules.values().stream().filter(Objects::nonNull);
     }
@@ -333,8 +341,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         tubeModules().forEach(AbstractTubeModule::onNeighborBlockUpdate);
 

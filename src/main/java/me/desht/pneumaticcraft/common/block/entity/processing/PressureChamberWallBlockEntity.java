@@ -85,6 +85,13 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
             setChanged();
         }
     }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        onBlockBreak();
+        super.preRemoveSideEffects(pos, state);
+    }
+
     public void onBlockBreak() {
         teValve = getPrimaryValve();
         if (teValve != null) {

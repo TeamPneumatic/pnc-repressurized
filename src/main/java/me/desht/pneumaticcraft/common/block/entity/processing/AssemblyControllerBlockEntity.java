@@ -195,8 +195,8 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         invalidateAssemblySystem();
     }

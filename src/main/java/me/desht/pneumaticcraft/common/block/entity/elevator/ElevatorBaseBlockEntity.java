@@ -409,8 +409,8 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
         getCoreElevator().updateRedstoneInputLevel();
         connectAsMultiblock();
         updateConnections();

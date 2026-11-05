@@ -251,7 +251,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                             neighbourBE.getBlockState(), neighbourBE, actualLeakDir.getOpposite());
                     if (cap != null) {
                         // looks like a false leak?
-                        airBE.onNeighborBlockUpdate(pos2);
+                        airBE.onNeighborBlockUpdate();
                         return true;
                     }
                 }

@@ -63,7 +63,7 @@ public class CreativeCompressorBlock extends AbstractPneumaticCraftBlock impleme
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state) {
         return ALMOST_FULL_SHAPE;
     }
 

@@ -198,22 +198,24 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             this.capacity = ((FluidTankBlock) block).size.capacity;
         }
 
-        @Override
-        public boolean hasCraftingRemainingItem(ItemStack stack) {
-            // the tank is a container item if it's being used in fluid crafting
-            // but an empty tank used in crafting is not a container item
-            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
-        }
+        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
+        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
+//        @Override
+//        public boolean hasCraftingRemainingItem(ItemStack stack) {
+//            // the tank is a container item if it's being used in fluid crafting
+//            // but an empty tank used in crafting is not a container item
+//            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
+//        }
 
-        @Override
-        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
-                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-                return handler.getContainer();
-            }).orElseThrow(RuntimeException::new);
-        }
+//        @Override
+//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
+//            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
+//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+//                return handler.getContainer();
+//            }).orElseThrow(RuntimeException::new);
+//        }
 
         @Override
         public IFluidItemRenderInfoProvider getFluidItemRenderer() {

@@ -30,7 +30,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -188,7 +187,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                 if (simulate) module.markFake();
                 tube.setModule(side, module);
                 if (!simulate && !world.isClientSide()) {
-                    neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                    neighborChanged(world.getBlockState(pos), world, pos, this, null, false);
                     world.updateNeighborsAt(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
                     world.playSound(null, pos, SoundType.GLASS.getStepSound(), SoundSource.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f);
@@ -316,12 +315,12 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader world, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData, Player player) {
         Pair<Vec3, Vec3> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockHitInfo rayTraceResult = doTrace(world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = rayTraceResult.tubeHitInfo();
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
-            return super.getCloneItemStack(state, target, world, pos, player);
+            return super.getCloneItemStack(world, pos, state, includeData, player);
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             PressureTubeBlockEntity tube = getPressureTube(world, pos);
             if (tube != null) {
@@ -351,7 +350,7 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
                     }
                 }
                 tube.setModule(module.getDirection(), null);
-                neighborChanged(world.getBlockState(pos), world, pos, this, pos.relative(side), false);
+                neighborChanged(world.getBlockState(pos), world, pos, this, null, false);
                 world.updateNeighborsAt(pos, this);
             } else {
                 // drop the pressure tube as an item
@@ -393,23 +392,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
             }
         }
         return doClose;
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (newState.getBlock() != state.getBlock()) {
-            getModuleDrops(getPressureTube(world, pos))
-                    .forEach(drop -> world.addFreshEntity(new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop)));
-        }
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    private static NonNullList<ItemStack> getModuleDrops(PressureTubeBlockEntity tube) {
-        NonNullList<ItemStack> drops = NonNullList.create();
-        if (tube != null) {
-            tube.tubeModules().map(AbstractTubeModule::getDrops).forEach(drops::addAll);
-        }
-        return drops;
     }
 
     @Override

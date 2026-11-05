@@ -528,6 +528,19 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
     }
 
     @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (multiBlockSize > 0) {
+            onMultiBlockBreak();
+        } else if (!accessoryValves.isEmpty()) {
+            accessoryValves.stream()
+                    .filter(valve -> valve.multiBlockSize > 0)
+                    .findFirst()
+                    .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
+        }
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    @Override
     public void onDescUpdate() {
         super.onDescUpdate();
 

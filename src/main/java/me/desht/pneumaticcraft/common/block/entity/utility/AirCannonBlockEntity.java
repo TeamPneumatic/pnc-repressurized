@@ -578,9 +578,9 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
+    public void onNeighborBlockUpdate() {
         boolean wasPowered = rsController.getCurrentRedstonePower() > 0;
-        super.onNeighborBlockUpdate(fromPos);
+        super.onNeighborBlockUpdate();
         boolean isPowered = rsController.getCurrentRedstonePower() > 0;
         if (isPowered && !wasPowered && rsController.shouldRun()) {
             lastFireOK.set(fire());

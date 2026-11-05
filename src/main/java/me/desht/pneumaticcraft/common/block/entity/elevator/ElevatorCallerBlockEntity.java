@@ -107,9 +107,9 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
+    public void onNeighborBlockUpdate() {
         boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
-        super.onNeighborBlockUpdate(fromPos);
+        super.onNeighborBlockUpdate();
         if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
             ElevatorCallerBlock.setSurroundingElevators(getLevel(), getBlockPos(), thisFloor);
         }

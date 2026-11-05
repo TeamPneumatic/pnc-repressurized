@@ -168,8 +168,8 @@ public abstract class AbstractAirHandlingBlockEntity extends AbstractTickingBloc
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         initializeHullAirHandlers();
     }

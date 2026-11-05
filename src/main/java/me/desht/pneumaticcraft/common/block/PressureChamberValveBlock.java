@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.api.pressure.PressureTier;
 import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberValveBlockEntity;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -106,29 +105,6 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
                     .filter(te -> te.multiBlockSize > 0)
                     .map(te -> InteractionResult.SUCCESS)
                     .orElse(InteractionResult.TRY_WITH_EMPTY_HAND);
-        }
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            invalidateMultiBlock(world, pos);
-        }
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
-
-    private void invalidateMultiBlock(Level world, BlockPos pos) {
-        if (!world.isClientSide()) {
-            PneumaticCraftUtils.getBlockEntityAt(world, pos, PressureChamberValveBlockEntity.class).ifPresent(teValve -> {
-                if (teValve.multiBlockSize > 0) {
-                    teValve.onMultiBlockBreak();
-                } else if (!teValve.accessoryValves.isEmpty()) {
-                    teValve.accessoryValves.stream()
-                            .filter(valve -> valve.multiBlockSize > 0)
-                            .findFirst()
-                            .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
-                }
-            });
         }
     }
 

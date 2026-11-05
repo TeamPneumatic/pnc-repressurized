@@ -84,13 +84,13 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         if (!willHarvest && level.getBlockEntity(pos) instanceof SmartChestBlockEntity be) {
             // broken with wrong tool; ensure any contents get dropped even if the block itself doesn't
             PneumaticCraftUtils.forceDropContents(level, pos, be.getItemHandler());
         }
 
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, level, pos, player, toolStack, willHarvest, fluid);
     }
 
     public static class ItemBlockBlockSmartChest extends PNCBlockItem implements IInventoryItem {

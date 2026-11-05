@@ -66,7 +66,7 @@ public class PressureChamberGlassBlock extends AbstractPressureWallBlock {
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState p_200123_1_, BlockGetter p_200123_2_, BlockPos p_200123_3_) {
+    public boolean propagatesSkylightDown(BlockState state) {
         return true;
     }
 

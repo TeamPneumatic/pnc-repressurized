@@ -17,8 +17,12 @@
 
 package me.desht.pneumaticcraft.common.block;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.LevelReader;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -35,23 +39,20 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.*;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -63,6 +64,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -97,8 +99,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public boolean canPlaceLiquid(Player player, BlockGetter pLevel, BlockPos pPos, BlockState pState, Fluid pFluid) {
-        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(player, pLevel, pPos, pState, pFluid);
+    public boolean canPlaceLiquid(@Nullable LivingEntity user, BlockGetter pLevel, BlockPos pPos, BlockState pState, Fluid pFluid) {
+        return pState.hasProperty(WATERLOGGED) && SimpleWaterloggedBlock.super.canPlaceLiquid(user, pLevel, pPos, pState, pFluid);
     }
 
     @Override
@@ -107,8 +109,8 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public ItemStack pickupBlock(Player player, LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
-        return pState.hasProperty(WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(player, pLevel, pPos, pState) : ItemStack.EMPTY;
+    public ItemStack pickupBlock(@Nullable LivingEntity user, LevelAccessor pLevel, BlockPos pPos, BlockState pState) {
+        return pState.hasProperty(WATERLOGGED) ? SimpleWaterloggedBlock.super.pickupBlock(user, pLevel, pPos, pState) : ItemStack.EMPTY;
     }
 
     @Override
@@ -329,10 +331,10 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable Orientation orientation, boolean isMoving) {
         if (!world.isClientSide()) {
             PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class)
-                    .ifPresent(pncBE -> pncBE.onNeighborBlockUpdate(fromPos));
+                    .ifPresent(pncBE -> pncBE.onNeighborBlockUpdate());
         }
     }
 
@@ -398,7 +400,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos) {
+    public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos, Direction direction) {
         return pLevel.getBlockEntity(pPos) instanceof IComparatorSupport comp ? comp.getComparatorValue() : 0;
     }
 
@@ -408,24 +410,9 @@ public abstract class AbstractPneumaticCraftBlock extends Block
     }
 
     @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(pncBE -> {
-                NonNullList<ItemStack> drops = NonNullList.create();
-                pncBE.getContentsToDrop(drops);
-                drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
-                if (!pncBE.shouldPreserveStateOnBreak()) {
-                    PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(pncBE);
-                }
-            });
-            super.onRemove(state, world, pos, newState, isMoving);
-        }
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         if (stateIn.hasProperty(WATERLOGGED) && stateIn.getValue(WATERLOGGED)) {
-            worldIn.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
+            ticks.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(worldIn));
         }
         if (stateIn.hasProperty(connectionProperty(facing))) {
             BlockEntity ourTE = worldIn.getBlockEntity(currentPos);
@@ -439,7 +426,7 @@ public abstract class AbstractPneumaticCraftBlock extends Block
             }
             return stateIn;
         }
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(stateIn, worldIn, ticks, currentPos, facing, facingPos, facingState, random);
     }
 
     @Override

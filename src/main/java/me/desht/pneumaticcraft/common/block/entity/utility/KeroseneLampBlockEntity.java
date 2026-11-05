@@ -205,6 +205,12 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         checkingZ = getBlockPos().getZ();
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        removeLights();
+        super.preRemoveSideEffects(pos, state);
+    }
+
     public void removeLights() {
         // called from KeroseneLampBlock#onRemove()
         // note: this should *not* be done in setRemoved(), since that's also called on level unload!

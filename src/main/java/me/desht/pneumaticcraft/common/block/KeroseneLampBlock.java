@@ -23,13 +23,11 @@ import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -91,14 +89,6 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
     @Override
     public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
         return stateIn.setValue(CONNECTED, getConnectedDirection(worldIn, currentPos));
-    }
-
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
-        PneumaticCraftUtils.getBlockEntityAt(world, pos, KeroseneLampBlockEntity.class)
-                .ifPresent(KeroseneLampBlockEntity::removeLights);
-
-        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     private Direction getConnectedDirection(LevelAccessor world, BlockPos pos) {

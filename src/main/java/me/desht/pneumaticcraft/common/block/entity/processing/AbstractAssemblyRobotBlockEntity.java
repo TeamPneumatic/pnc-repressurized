@@ -63,8 +63,8 @@ public abstract class AbstractAssemblyRobotBlockEntity extends AbstractTickingBl
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         AssemblyControllerBlockEntity.invalidateSystem(nonNullLevel(), controllerPos);
     }

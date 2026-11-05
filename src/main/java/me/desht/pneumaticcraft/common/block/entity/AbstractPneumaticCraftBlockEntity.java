@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -475,9 +476,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     /**
      * Called when a neighboring block changes state (i.e. blockstate update)
-     * @param fromPos the blockpos of the block that caused this update
      */
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
+    public void onNeighborBlockUpdate() {
         if (this instanceof IHeatExchangingTE he) {
             he.initializeHullHeatExchangers(level, worldPosition);
         }
@@ -618,6 +618,18 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return getLevel() instanceof ServerLevel serverLevel ?
                 BlockCapabilityCache.create(Capabilities.Fluid.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+
+        NonNullList<ItemStack> drops = NonNullList.create();
+        getContentsToDrop(drops);
+        drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, nonNullLevel(), pos));
+        if (!shouldPreserveStateOnBreak()) {
+            PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(this);
+        }
     }
 
     /**

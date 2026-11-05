@@ -57,20 +57,22 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
             super(block, ModItems.defaultProps());
         }
 
-        @Override
-        public boolean hasCraftingRemainingItem(ItemStack stack) {
-            return true;
-        }
+        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
+        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
+//        @Override
+//        public boolean hasCraftingRemainingItem(ItemStack stack) {
+//            return true;
+//        }
 
-        @Override
-        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
-                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-                return handler.getContainer().copy();
-            }).orElseThrow(RuntimeException::new);
-        }
+//        @Override
+//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
+//            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
+//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+//                return handler.getContainer().copy();
+//            }).orElseThrow(RuntimeException::new);
+//        }
 
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
