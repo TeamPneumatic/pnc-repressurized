@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature.FeatureSetting;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -198,6 +199,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                     }
                 }
                 doArmorActions(slot);
+            }
+            if (slot == EquipmentSlot.CHEST && !player.level().isClientSide()) {
+                ElytraHandler.updateGlider(this, armorStack);
             }
         } else {
             airHandlers.set(slot.getIndex(), null);

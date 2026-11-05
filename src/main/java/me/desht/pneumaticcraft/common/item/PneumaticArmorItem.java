@@ -365,21 +365,14 @@ public class PneumaticArmorItem extends Item implements
         return UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.CREATIVE.get()) == 0;
     }
 
-    // TODO 26.1: IItemExtension#canElytraFly() and #elytraFlightTick() are gone; gliding is now driven by the
-    //  minecraft:glider item component. See QUESTIONS_FOR_DESHT: how should the Elytra upgrade work?
-//    @Override
-//    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-//        if (entity instanceof Player player
-//                && CommonArmorHandler.getHandlerForPlayer(player).upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
-//            return true;
-//        }
-//        return super.canElytraFly(stack, entity);
-//    }
-//
-//    @Override
-//    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-//        return ElytraHandler.handleFlightTick(entity, flightTicks) || super.elytraFlightTick(stack, entity, flightTicks);
-//    }
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
+        // the Elytra upgrade glides on air (see ElytraHandler), not on durability
+        if (type == ArmorType.CHESTPLATE && entity != null && ElytraHandler.isGlidingDamage(stack, entity, amount)) {
+            return 0;
+        }
+        return super.damageItem(stack, amount, entity, onBroken);
+    }
 
     public int getPrimaryColor(ItemStack stack) {
         return stack.getOrDefault(DataComponents.DYED_COLOR, DEFAULT_PRIMARY_COLOR).rgb();
