@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -27,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -93,7 +93,7 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
     }
 
-    public static class ItemBlockBlockSmartChest extends BlockItem implements IInventoryItem {
+    public static class ItemBlockBlockSmartChest extends PNCBlockItem implements IInventoryItem {
         public ItemBlockBlockSmartChest(Block block) {
             super(block, ModItems.defaultProps());
         }

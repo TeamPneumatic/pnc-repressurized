@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
@@ -11,7 +12,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.*;
@@ -160,7 +160,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
         return state -> state.getValue(LIT) ? 15 : 0;
     }
 
-    public static class ItemWallLamp extends BlockItem implements ICustomTooltipName {
+    public static class ItemWallLamp extends PNCBlockItem implements ICustomTooltipName {
         public ItemWallLamp(WallLampBlock blockWallLamp) {
             super(blockWallLamp, ModItems.defaultProps());
         }

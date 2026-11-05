@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBaseBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.PneumaticDoorBlockEntity;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -34,7 +35,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -309,7 +309,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
         list.add(ModDataComponents.DOOR_COLOR.get());
     }
 
-    public static class ItemBlockPneumaticDoor extends BlockItem implements ColorHandlers.ITintableItem {
+    public static class ItemBlockPneumaticDoor extends PNCBlockItem implements ColorHandlers.ITintableItem {
         public ItemBlockPneumaticDoor(Block blockIn) {
             super(blockIn, ModItems.defaultProps());
         }

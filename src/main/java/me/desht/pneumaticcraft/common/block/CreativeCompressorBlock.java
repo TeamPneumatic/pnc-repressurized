@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.compressor.CreativeCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -83,7 +83,7 @@ public class CreativeCompressorBlock extends AbstractPneumaticCraftBlock impleme
         return new CreativeCompressorBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockCreativeCompressor extends BlockItem {
+    public static class ItemBlockCreativeCompressor extends PNCBlockItem {
         public ItemBlockCreativeCompressor(Block block) {
             super(block, ModItems.defaultProps().rarity(Rarity.EPIC));
         }

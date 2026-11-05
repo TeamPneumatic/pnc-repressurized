@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.PNCDamageSource;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,6 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -178,7 +178,7 @@ public class PlasticBrickBlock extends Block implements ColorHandlers.ITintableB
         }
     }
 
-    public static class ItemPlasticBrick extends BlockItem implements ICustomTooltipName {
+    public static class ItemPlasticBrick extends PNCBlockItem implements ICustomTooltipName {
         public ItemPlasticBrick(PlasticBrickBlock blockPlasticBrick) {
             super(blockPlasticBrick, ModItems.defaultProps());
         }

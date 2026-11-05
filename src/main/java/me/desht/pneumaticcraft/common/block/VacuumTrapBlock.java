@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.block.entity.spawning.VacuumTrapBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.item.SpawnerCoreItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -13,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -145,7 +145,7 @@ public class VacuumTrapBlock extends AbstractPneumaticCraftBlock implements Simp
         list.add(ModDataComponents.BLOCK_ENTITY_SAVED_INV.get());
     }
 
-    public static class ItemBlockVacuumTrap extends BlockItem {
+    public static class ItemBlockVacuumTrap extends PNCBlockItem {
         public ItemBlockVacuumTrap(VacuumTrapBlock blockVacuumTrap) {
             super(blockVacuumTrap, ModItems.defaultProps());
         }

@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
@@ -31,7 +32,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -188,7 +188,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         return size.beFactory.apply(pPos, pState);
     }
 
-    public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered, IFluidCapProvider {
+    public static class ItemBlockFluidTank extends PNCBlockItem implements IFluidRendered, IFluidCapProvider {
         private final int capacity;
 
         private RenderFluidTank.ItemRenderInfoProvider renderInfoProvider;

@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.gui.AphorismTileScreen;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.utility.AphorismTileBlockEntity.SavedData;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -266,7 +267,7 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
         list.add(ModDataComponents.APHORISM_TILE_DATA.get());
     }
 
-    public static class ItemBlockAphorismTile extends BlockItem implements ColorHandlers.ITintableItem {
+    public static class ItemBlockAphorismTile extends PNCBlockItem implements ColorHandlers.ITintableItem {
         public ItemBlockAphorismTile(AphorismTileBlock blockAphorismTile) {
             super(blockAphorismTile, ModItems.defaultProps());
         }

@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,7 +50,7 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
         return new LiquidHopperBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
+    public static class ItemBlockLiquidHopper extends PNCBlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
         Lazy<RenderLiquidHopper.ItemRenderInfoProvider> renderInfoProvider = Lazy.of(RenderLiquidHopper.ItemRenderInfoProvider::new);
 
         public ItemBlockLiquidHopper(Block block) {
