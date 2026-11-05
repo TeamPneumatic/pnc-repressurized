@@ -409,6 +409,16 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (nonNullLevel().getBlockState(pos.below()).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
+            PneumaticCraftUtils.getBlockEntityAt(nonNullLevel(), pos.below(), ElevatorBaseBlockEntity.class)
+                    .ifPresent(ElevatorBaseBlockEntity::moveUpgradesFromAbove);
+        }
+        updateMaxElevatorHeight();
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    @Override
     public void onNeighborBlockUpdate() {
         super.onNeighborBlockUpdate();
         getCoreElevator().updateRedstoneInputLevel();

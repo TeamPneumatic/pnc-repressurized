@@ -101,18 +101,6 @@ public class ElevatorBaseBlock extends AbstractCamouflageBlock implements Pneuma
         return PneumaticCraftUtils.getBlockEntityAt(level, pos, ElevatorBaseBlockEntity.class);
     }
 
-    @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            if (level.getBlockState(pos.relative(Direction.DOWN)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-                PneumaticCraftUtils.getBlockEntityAt(level, pos.below(), ElevatorBaseBlockEntity.class)
-                        .ifPresent(ElevatorBaseBlockEntity::moveUpgradesFromAbove);
-            }
-            getCoreBlockEntity(level, pos).ifPresent(ElevatorBaseBlockEntity::updateMaxElevatorHeight);
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {

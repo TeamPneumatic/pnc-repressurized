@@ -12,6 +12,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -211,8 +212,12 @@ public abstract class AbstractPNCBlockWithBoundingBlocks extends AbstractPneumat
 
     // Ensures that all blocks are broken when one block breaks
     // Common breaks should handle everything on their own, this is a failsafe
-    @Override
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean isMoving) {
+    /**
+     * Called from the block entity's {@link BlockEntity#preRemoveSideEffects(BlockPos, BlockState)} when the main
+     * block or a bounding block is removed ({@code Block#onRemove()} is gone in 26.1), while the block entities of the
+     * main and bounding blocks are all still present.
+     */
+    public void onBlockEntityRemoved(BlockState state, Level world, BlockPos pos) {
         if (!state.getValue(BOUNDING)
                 && world.getBlockEntity(pos) instanceof IHasBoundingBlocks blockEntity
                 && !blockEntity.getBoundingRemoved()) {
@@ -224,8 +229,6 @@ public abstract class AbstractPNCBlockWithBoundingBlocks extends AbstractPneumat
             // Does not apply when bounding blocks are removed through removeBoundingBlocks method
             world.removeBlock(getMainPos(state, world, pos), false);
         }
-
-        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     @Override

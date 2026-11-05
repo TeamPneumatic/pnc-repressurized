@@ -39,6 +39,15 @@ public class ElevatorFrameBlockEntity extends AbstractPneumaticCraftBlockEntity 
         return false;
     }
 
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        ElevatorBaseBlockEntity base = getElevatorBase();
+        if (base != null) {
+            base.updateMaxElevatorHeight();
+        }
+        super.preRemoveSideEffects(pos, state);
+    }
+
     public ElevatorBaseBlockEntity getElevatorBase() {
         if (baseRef == null || baseRef.get() == null) {
             ElevatorBaseBlockEntity base = findElevatorBase();
