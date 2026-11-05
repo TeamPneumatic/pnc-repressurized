@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.25]
+
+### Fixed
+* Fixed `IClientRegistry#drawPressureGauge` drawing a gauge with an invisible needle (thanks @Loulouw)
+
 ## [8.2.24]
 
 ### Changed
