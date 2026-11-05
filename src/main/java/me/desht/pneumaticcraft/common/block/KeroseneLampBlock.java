@@ -26,9 +26,11 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -87,11 +89,11 @@ public class KeroseneLampBlock extends AbstractPneumaticCraftBlock implements Pn
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         return stateIn.setValue(CONNECTED, getConnectedDirection(worldIn, currentPos));
     }
 
-    private Direction getConnectedDirection(LevelAccessor world, BlockPos pos) {
+    private Direction getConnectedDirection(LevelReader world, BlockPos pos) {
         Direction connectedDir = Direction.DOWN;
         for (Direction d : DirectionUtil.VALUES) {
             BlockPos neighborPos = pos.relative(d);

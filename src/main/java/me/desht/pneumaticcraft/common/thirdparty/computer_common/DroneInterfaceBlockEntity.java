@@ -51,6 +51,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -132,14 +133,14 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        super.handleUpdateTag(tag, provider);
-        droneId = tag.getIntOr("drone", 0);
+    public void handleUpdateTag(ValueInput input) {
+        super.handleUpdateTag(input);
+        droneId = input.getIntOr("drone", 0);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        droneId = pkt.getTag().getIntOr("drone", 0);
+    public void onDataPacket(Connection net, ValueInput input) {
+        droneId = input.getIntOr("drone", 0);
     }
 
     private DroneEntity validateAndGetDrone() {

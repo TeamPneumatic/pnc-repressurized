@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
@@ -13,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -71,7 +73,7 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         boolean[] connected = getConnections(worldIn, currentPos, stateIn);
         return stateIn.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3]);
     }
@@ -113,7 +115,7 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
         return false;
     }
 
-    private boolean[] getConnections(LevelAccessor world, BlockPos pos, BlockState state) {
+    private boolean[] getConnections(LevelReader world, BlockPos pos, BlockState state) {
         BlockPos below = pos.below();
         if (shelfLegs() && !world.getBlockState(below).isFaceSturdy(world, below, Direction.UP)) {
             // no ground below; hide all legs
@@ -133,7 +135,7 @@ public class DisplayTableBlock extends AbstractPneumaticCraftBlock implements Pn
         return res;
     }
 
-    private boolean isMatch(LevelAccessor world, BlockPos pos, BlockState state, Direction dir) {
+    private boolean isMatch(LevelReader world, BlockPos pos, BlockState state, Direction dir) {
         BlockState state2 = world.getBlockState(pos.relative(dir));
         return state2.getBlock() == this && getRotation(state) == getRotation(state2);
     }
