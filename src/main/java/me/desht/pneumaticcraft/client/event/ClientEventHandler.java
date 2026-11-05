@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.List;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -33,6 +34,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -55,7 +57,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.List;
 
 @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -220,6 +221,16 @@ public class ClientEventHandler {
             } else {
                 crouchSelected = -1;
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        // Item#inventoryTick() is server-side only in 26.1; the local player's held minigun still needs a client tick
+        Player player = event.getEntity();
+        if (player.level().isClientSide() && player == Minecraft.getInstance().player
+                && player.getMainHandItem().getItem() instanceof MinigunItem minigunItem) {
+            minigunItem.clientTick(player.getMainHandItem(), player);
         }
     }
 

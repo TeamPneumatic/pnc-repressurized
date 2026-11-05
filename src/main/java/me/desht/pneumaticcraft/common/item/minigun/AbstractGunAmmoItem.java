@@ -45,12 +45,7 @@ public abstract class AbstractGunAmmoItem extends Item {
     public AbstractGunAmmoItem() {
         // note: max uses (MAX_DAMAGE component) for each ammo type is set in config, which isn't available at this point
         //       hence the arbitrary durability value, which is overridden by getMaxDamage() for each ammo type
-        super(ModItems.defaultProps().setNoRepair().durability(2000));
-    }
-
-    @Override
-    public int getEnchantmentValue(ItemStack stack) {
-        return 9;
+        super(ModItems.defaultProps().setNoCombineRepair().durability(2000).enchantable(9));
     }
 
     /**

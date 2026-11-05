@@ -43,8 +43,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.Weight;
-import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -216,7 +214,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                 weightedEntities.add(new WeightedEntity(null, unused));
             }
 
-            return WeightedRandom.getRandomItem(RandomSource.createNewThreadLocalInstance(), weightedEntities)
+            return WeightedRandom.getRandomItem(RandomSource.createThreadLocalInstance(), weightedEntities, WeightedEntity::weight)
                     .map(WeightedEntity::type)
                     .orElse(null);
         }
@@ -226,11 +224,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             return EMPTY;
         }
 
-        private record WeightedEntity(EntityType<?> type, int weight) implements WeightedEntry {
-            @Override
-            public Weight getWeight() {
-                return Weight.of(weight);
-            }
+        private record WeightedEntity(EntityType<?> type, int weight) {
         }
     }
 

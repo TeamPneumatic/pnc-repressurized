@@ -80,7 +80,7 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> curInfo, TooltipFlag extraInfo) {
         super.appendHoverText(stack, context, tooltipDisplay, curInfo, extraInfo);
 
-        addLogisticsTooltip(stack, context, curInfo, ClientUtils.hasShiftDown());
+        addLogisticsTooltip(stack, context, new ArrayList<>(), ClientUtils.hasShiftDown()).forEach(curInfo);
     }
 
     public static List<Component> addLogisticsTooltip(ItemStack stack, TooltipContext context, List<Component> curInfo, boolean sneaking) {

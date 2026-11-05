@@ -37,10 +37,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -52,10 +54,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.apache.commons.lang3.Validate;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -141,25 +145,27 @@ public class GPSAreaToolItem extends Item implements IPositionProvider, IGPSTool
         super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
 
         ClientUtils.getOptionalClientLevel().ifPresent(level ->  {
-            ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
-            int n = infoList.size();
+            List<Component> lines = new ArrayList<>();
+            ClientUtils.addGuiContextSensitiveTooltip(stack, lines);
+            int n = lines.size();
             ProgWidgetArea area = getArea(ClientUtils.getClientPlayer(), stack);
             for (int index = 0; index < 2; index++) {
                 final int i = index;
                 getGPSLocation(ClientUtils.getClientPlayer(), stack, index)
-                        .ifPresent(pos -> infoList.accept(getMessageText(level, pos, i)));
+                        .ifPresent(pos -> lines.add(getMessageText(level, pos, i)));
                 String varName = area.getVarName(index);
                 if (!varName.isEmpty()) {
-                    infoList.accept(Component.literal(" ").append(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName)));
+                    lines.add(Component.literal(" ").append(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName)));
                 }
             }
-            if (infoList.size() - n >= 2) area.addAreaTypeTooltip(infoList);
+            if (lines.size() - n >= 2) area.addAreaTypeTooltip(lines);
+            lines.forEach(infoList);
         });
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
-        if (!world.isClientSide() && entity instanceof Player p) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
+        if (entity instanceof Player p) {
             ProgWidgetArea area = getArea(p, stack);
             for (int index = 0; index < 2; index++) {
                 String varName = area.getVarName(index);

@@ -36,7 +36,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -184,13 +184,6 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         toggleXPAbsorption(sender, sender.getMainHandItem());
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (shouldAbsorbXPOrbs(stack) && entityIn instanceof Player && itemSlot >= 0) {
-            cacheMemoryStickLocation((Player) entityIn, MemoryStickLocator.playerInv(itemSlot));
-        }
-    }
-
     public static boolean isRoomInStick(ItemStack stick) {
         return stick.getItem() instanceof MemoryStickItem && IOHelper.getFluidHandlerForItem(stick)
                 .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
@@ -258,6 +251,17 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         }
 
         private static ItemStack findMemoryStick(Player player) {
+            // player inventory: scanned when an orb is picked up, rather than tracked every tick
+            // (Item#inventoryTick() no longer gets the inventory slot in 26.1)
+            Inventory inv = player.getInventory();
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+                ItemStack stack = inv.getItem(i);
+                if (stack.getItem() instanceof MemoryStickItem && shouldAbsorbXPOrbs(stack) && isRoomInStick(stack)) {
+                    return stack;
+                }
+            }
+
+            // other inventories (e.g. Curios) register their memory sticks in the cache
             Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUUID());
             if (locators == null || locators.isEmpty()) return ItemStack.EMPTY;
 

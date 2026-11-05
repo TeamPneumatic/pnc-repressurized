@@ -31,10 +31,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -43,9 +45,11 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -94,7 +98,9 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
 
         ClientUtils.getOptionalClientLevel().ifPresent(level -> {
-            ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
+            List<Component> guiTooltip = new ArrayList<>();
+            ClientUtils.addGuiContextSensitiveTooltip(stack, guiTooltip);
+            guiTooltip.forEach(infoList);
             getGPSLocation(ClientUtils.getClientPlayer().getUUID(), stack).ifPresent(pos -> {
                 MutableComponent blockName;
                 if (level.isLoaded(pos)) {
@@ -114,9 +120,9 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
         String var = getVariable(stack);
-        if (!var.isEmpty() && !world.isClientSide() && entity instanceof Player) {
+        if (!var.isEmpty() && entity instanceof Player) {
             getGPSLocation(entity.getUUID(), stack).ifPresent(curPos -> {
                 BlockPos varPos = GlobalVariableHelper.getInstance().getPos(entity.getUUID(), var, PneumaticCraftUtils.invalidPos());
                 if (!varPos.equals(curPos)) {

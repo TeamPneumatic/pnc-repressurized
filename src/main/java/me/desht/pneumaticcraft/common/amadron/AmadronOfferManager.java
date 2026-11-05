@@ -330,7 +330,7 @@ public enum AmadronOfferManager {
         // this only needs to be done once, on first load
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
-            RandomSource rand = RandomSource.createNewThreadLocalInstance();
+            RandomSource rand = RandomSource.createThreadLocalInstance();
             VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
                     MerchantOffer offer = getOfferForNullVillager(trades[i], rand);

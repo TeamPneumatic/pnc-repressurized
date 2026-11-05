@@ -50,6 +50,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -81,6 +82,7 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,21 +135,37 @@ public class MinigunItem extends PressurizableItem implements
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean currentItem) {
-        super.inventoryTick(stack, world, entity, slot, currentItem);
-
-        Player player = (Player) entity;
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
+        if (!(entity instanceof Player player)) return;
 
         Minigun minigun = null;
-        if (currentItem) {
+        if (slot == EquipmentSlot.MAINHAND) {
             minigun = getMinigun(stack, player);
             minigun.tick(player.getX(), player.getY(), player.getZ());
         }
-        if (!world.isClientSide() && slot >= 0 && slot <= 8) {
+        if (isOnHotbar(player, stack)) {
             // if on hotbar, possibility of ammo replenishment via item life upgrades
             if (minigun == null) minigun = getMinigun(stack, player);
             handleAmmoRepair(stack, world, minigun);
         }
+    }
+
+    /**
+     * Client-side tick for the minigun held by the local player (spin-up and rotation). {@link Item#inventoryTick}
+     * is only called server-side in 26.1, so this is called from a client player tick handler.
+     *
+     * @param stack the held minigun
+     * @param player the local player
+     */
+    public void clientTick(ItemStack stack, Player player) {
+        getMinigun(stack, player).tick(player.getX(), player.getY(), player.getZ());
+    }
+
+    private static boolean isOnHotbar(Player player, ItemStack stack) {
+        for (int i = 0; i < Inventory.getSelectionSize(); i++) {
+            if (player.getInventory().getItem(i) == stack) return true;
+        }
+        return false;
     }
 
     private void handleAmmoRepair(ItemStack stack, Level world, Minigun minigun) {

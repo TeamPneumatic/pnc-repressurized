@@ -43,10 +43,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -65,6 +65,7 @@ public class MicromissilesItem extends Item {
         super(ModItems.defaultProps()
                 .stacksTo(1)
                 .durability(100)
+                .repairable(Items.TNT)
                 .component(ModDataComponents.MICROMISSILE_SETTINGS, Settings.DEFAULT)
         );
     }
@@ -72,11 +73,6 @@ public class MicromissilesItem extends Item {
     @Override
     public int getMaxDamage(ItemStack stack) {
         return ConfigHelper.common().micromissiles.missilePodSize.get();
-    }
-
-    @Override
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return toRepair.getItem() == this && repair.getItem() == Blocks.TNT.asItem();
     }
 
     @Override

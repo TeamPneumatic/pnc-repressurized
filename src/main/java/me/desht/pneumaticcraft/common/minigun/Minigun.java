@@ -62,7 +62,7 @@ public abstract class Minigun {
     private float minigunSpeed;
     private int minigunTriggerTimeOut;
     //    private int minigunSoundCounter = -1;
-    private final RandomSource rand = RandomSource.createNewThreadLocalInstance();
+    private final RandomSource rand = RandomSource.createThreadLocalInstance();
     private float minigunRotation, oldMinigunRotation;
     public float minigunYaw, oldMinigunYaw;
     public float minigunPitch, oldMinigunPitch;

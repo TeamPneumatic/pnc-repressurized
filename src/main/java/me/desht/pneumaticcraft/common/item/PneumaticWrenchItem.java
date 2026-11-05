@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import net.minecraft.server.level.ServerLevel;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
@@ -33,6 +34,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,6 +42,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 
 public class PneumaticWrenchItem extends PressurizableItem {
 
@@ -119,7 +123,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel worldIn, Entity entityIn, @Nullable EquipmentSlot slot) {
         if (entityIn instanceof ServerPlayer sp
                 && stack.getItem() instanceof PneumaticWrenchItem pw
                 && (worldIn.getGameTime() & 0xf) == 0

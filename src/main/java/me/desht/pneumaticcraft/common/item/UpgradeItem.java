@@ -48,6 +48,7 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.Validate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -85,7 +86,9 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
-            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, infoList);
+            List<Component> upgradeInfo = new ArrayList<>();
+            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, upgradeInfo);
+            upgradeInfo.forEach(infoList);
         } else {
             infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }

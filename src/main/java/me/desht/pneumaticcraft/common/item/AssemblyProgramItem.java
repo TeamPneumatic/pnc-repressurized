@@ -69,7 +69,7 @@ public class AssemblyProgramItem extends Item {
         infoList.accept(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
         Arrays.stream(getProgram().getRequiredMachines())
                 .map(machine -> bullet().append(xlate(machine.getMachineBlock().getDescriptionId())))
-                .forEach(infoList::add);
+                .forEach(infoList);
     }
 
     public static AssemblyProgramItem fromProgramType(AssemblyProgramType program) {

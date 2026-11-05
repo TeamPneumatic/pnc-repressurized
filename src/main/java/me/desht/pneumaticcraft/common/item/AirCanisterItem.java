@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.item;
 
+import net.minecraft.server.level.ServerLevel;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
@@ -29,12 +30,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -77,9 +80,7 @@ public class AirCanisterItem extends PressurizableItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        if (pEntity.level().isClientSide()) return;
-
+    public void inventoryTick(ItemStack pStack, ServerLevel pLevel, Entity pEntity, @Nullable EquipmentSlot pSlot) {
         ChargeMode mode = getChargeMode(pStack);
         if (pEntity instanceof Player player && mode != ChargeMode.NONE && pLevel.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL == 15) {
             PNCCapabilities.getAirHandler(pStack).ifPresent(srcHandler -> {

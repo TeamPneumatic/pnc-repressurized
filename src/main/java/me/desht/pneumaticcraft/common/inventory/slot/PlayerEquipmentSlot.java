@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.common.inventory.slot;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -61,10 +60,10 @@ public class PlayerEquipmentSlot extends Slot {
     }
 
     @Override
-    public Pair<Identifier, Identifier> getNoItemIcon() {
+    public Identifier getNoItemIcon() {
         return slotType.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ?
-                Pair.of(InventoryMenu.BLOCK_ATLAS, ARMOR_SLOT_TEXTURES[slotType.getIndex()]) :
-                Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);
+                ARMOR_SLOT_TEXTURES[slotType.getIndex()] :
+                InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD;
     }
 
     private static int getIndexForSlot(EquipmentSlot type) {

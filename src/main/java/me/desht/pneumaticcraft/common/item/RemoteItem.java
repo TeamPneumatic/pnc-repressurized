@@ -30,11 +30,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -46,9 +48,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -161,12 +163,10 @@ public class RemoteItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack remote, Level world, Entity entity, int slot, boolean holdingItem) {
-        if (!world.isClientSide()) {
-            GlobalPos gPos = getSecurityStationPos(remote);
-            if (gPos != null && !(GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity)) {
-                setSecurityStationPos(remote, null);
-            }
+    public void inventoryTick(ItemStack remote, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
+        GlobalPos gPos = getSecurityStationPos(remote);
+        if (gPos != null && !(GlobalPosHelper.getTileEntity(gPos) instanceof SecurityStationBlockEntity)) {
+            setSecurityStationPos(remote, null);
         }
     }
 

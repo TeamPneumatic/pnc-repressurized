@@ -63,6 +63,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -150,8 +151,8 @@ public class JackHammerItem extends PressurizableItem
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
-        return JACKHAMMER_ABILITIES.contains(itemAbility)
+    public boolean canPerformAction(ItemInstance instance, ItemAbility itemAbility) {
+        return JACKHAMMER_ABILITIES.contains(itemAbility) && instance instanceof ItemStack stack
                 && PNCCapabilities.getAirHandler(stack).map(h -> h.getPressure() > 0.1f).orElse(false);
     }
 

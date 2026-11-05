@@ -29,6 +29,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import net.minecraft.world.item.component.TooltipDisplay;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -71,7 +72,9 @@ public class NetworkComponentItem extends Item implements IProgrammable {
         super.appendHoverText(stack, context, tooltipDisplay, curInfo, extraInfo);
 
         if (context.registries() != null) {
-            SecurityStationHackingScreen.addExtraHackInfoStatic(curInfo);
+            List<Component> hackInfo = new ArrayList<>();
+            SecurityStationHackingScreen.addExtraHackInfoStatic(hackInfo);
+            hackInfo.forEach(curInfo);
         }
     }
 
