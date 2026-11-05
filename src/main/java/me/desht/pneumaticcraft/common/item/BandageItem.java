@@ -50,7 +50,7 @@ public class BandageItem extends Item {
             stack.shrink(1);
             int cooldown = ConfigHelper.common().general.bandageCooldown.get();
             if (cooldown > 0) {
-                player.getCooldowns().addCooldown(stack.getItem(), cooldown);
+                player.getCooldowns().addCooldown(stack, cooldown);
             }
             if (worldIn.isClientSide()) {
                 Vec3 pos = player.getEyePosition(1f).add(player.getLookAngle().scale(0.5));

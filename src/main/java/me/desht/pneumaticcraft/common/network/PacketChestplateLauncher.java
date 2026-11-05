@@ -64,7 +64,7 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
 
         // Allows launching if upgrade is active, there is an offhand item, and the item is not on cooldown
         if (handler.upgradeUsable(CommonUpgradeHandlers.chestplateLauncherHandler, false) && !stack.isEmpty()
-                && !sp.getCooldowns().isOnCooldown(stack.getItem())) {
+                && !sp.getCooldowns().isOnCooldown(stack)) {
 
             ItemStack toFire = stack;
 

@@ -99,7 +99,7 @@ public class MicromissilesItem extends Item {
         missile.setPos(newPos.x, newPos.y, newPos.z);
         missile.shootFromRotation(playerIn, playerIn.getXRot(), playerIn.getYRot(), 0.0F, getInitialVelocity(stack), 0.0F);
 
-        playerIn.getCooldowns().addCooldown(this, ConfigHelper.common().micromissiles.launchCooldown.get());
+        playerIn.getCooldowns().addCooldown(stack, ConfigHelper.common().micromissiles.launchCooldown.get());
 
         if (playerIn.level() instanceof ServerLevel serverLevel) {
             HitResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);

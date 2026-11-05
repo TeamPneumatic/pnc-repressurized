@@ -219,7 +219,7 @@ public class ItemLaunching {
                 micromissile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1/3f, 0.0F);
 
                 // Puts micromissile on cooldown which is 1/3 of normal cooldown to reward launching
-                player.getCooldowns().addCooldown(stack.getItem(), ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
+                player.getCooldowns().addCooldown(stack, ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
 
                 return micromissile;
             }

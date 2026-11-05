@@ -434,6 +434,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     public boolean isOnCooldown(EquipmentSlot slot) {
-        return player.getCooldowns().isOnCooldown(player.getItemBySlot(slot).getItem());
+        return player.getCooldowns().isOnCooldown(player.getItemBySlot(slot));
     }
 }

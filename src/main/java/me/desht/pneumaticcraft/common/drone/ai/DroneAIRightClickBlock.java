@@ -136,7 +136,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             InteractionResult ret = stack.onItemUseFirst(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
             if (ret != InteractionResult.PASS) return ret.consumesAction();
 
-            if (stack.isEmpty() || fakePlayer.getCooldowns().isOnCooldown(stack.getItem())) {
+            if (stack.isEmpty() || fakePlayer.getCooldowns().isOnCooldown(stack)) {
                 return false;
             }
 
