@@ -151,8 +151,10 @@ public interface IOptionPage {
 
     /**
      * Called immediately after {@link net.minecraft.client.gui.screens.Screen#tick()}
+     *
+     * @param gui the screen
      */
-    default void tick() { }
+    default void tick(IGuiScreen gui) { }
 
     /**
      * Get the keybinding button for this page, if any.  You can create a keybinding button with

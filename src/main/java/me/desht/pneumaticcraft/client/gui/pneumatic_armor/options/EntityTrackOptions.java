@@ -42,10 +42,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import org.lwjgl.glfw.GLFW;
 
 public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrackerClientHandler> {
-
     private EditBox textField;
     private WidgetButtonExtended warningButton;
     private int sendTimer = 0;
+    private int ticks = 0;
 
     public EntityTrackOptions(IGuiScreen screen, EntityTrackerClientHandler renderHandler) {
         super(screen, renderHandler);
@@ -65,7 +65,6 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
             }
         });
         gui.addWidget(textField);
-        gui.setFocusedWidget(textField);
 
         warningButton = new WidgetButtonExtended(175, 57, 20, 20, Component.empty());
         warningButton.setVisible(false);
@@ -100,7 +99,14 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void tick() {
+    public void tick(IGuiScreen gui) {
+        ticks++;
+
+        // deferred a couple of ticks so keypress doesn't pass through into the textfield
+        if (ticks == 2) {
+            gui.setFocusedWidget(textField);
+        }
+
         if (sendTimer > 0 && --sendTimer == 0) {
             DataComponentPatch patch = DataComponentPatch.builder()
                     .set(ModDataComponents.ENTITY_FILTER.get(), textField.getValue())

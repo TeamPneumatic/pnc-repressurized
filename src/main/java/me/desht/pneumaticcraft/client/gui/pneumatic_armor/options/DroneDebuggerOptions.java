@@ -166,7 +166,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     }
 
     @Override
-    public void tick() {
+    public void tick(IGuiScreen gui) {
         programmerUnit.tick();
 
         showStart.active = isDroneValid() && !selectedDrone.getProgWidgets().isEmpty();
