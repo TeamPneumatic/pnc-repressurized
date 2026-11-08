@@ -55,6 +55,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -97,6 +98,7 @@ public enum AmadronOfferManager {
     public boolean addPlayerOffer(AmadronPlayerOffer offer) {
         if (hasSimilarPlayerOffer(offer)) return false;
         if (offer.getInput().isEmpty() || offer.getOutput().isEmpty()) return false;
+        if (getPlayerOffers(offer.getPlayerId()).count() >= ConfigHelper.common().amadron.maxTradesPerPlayer.get()) return false;
 
         getPlayerOffers().put(offer.getOfferId(), offer);
         addOffer(activeOffers, offer);
@@ -126,6 +128,10 @@ public enum AmadronOfferManager {
 
     private Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {
         return AmadronPlayerOffers.INSTANCE.getPlayerOffers();
+    }
+
+    private Stream<AmadronPlayerOffer> getPlayerOffers(UUID playerId) {
+        return getPlayerOffers().values().stream().filter(o -> o.getPlayerId().equals(playerId));
     }
 
     /**

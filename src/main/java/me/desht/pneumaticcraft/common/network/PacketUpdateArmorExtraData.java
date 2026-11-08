@@ -87,15 +87,15 @@ public record PacketUpdateArmorExtraData(EquipmentSlot slot, ResourceLocation up
     public static void handle(PacketUpdateArmorExtraData message, IPayloadContext ctx) {
         ItemStack stack = ctx.player().getItemBySlot(message.slot());
         if (stack.getItem() instanceof PneumaticArmorItem && stack.getComponents() instanceof PatchedDataComponentMap pdcm) {
-            message.patch.forget(type -> !isTypeOKForSlot(message.slot, type));
+            var filteredPatch = message.patch.forget(type -> !isTypeOKForSlot(message.slot, type));
 
-            if (!message.patch.isEmpty()) {
-                pdcm.applyPatch(message.patch);
+            if (!filteredPatch.isEmpty()) {
+                pdcm.applyPatch(filteredPatch);
 
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.player());
                 IArmorUpgradeHandler<?> upgradeHandler = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(message.upgradeID());
                 if (upgradeHandler != null) {
-                    message.patch.entrySet().forEach(entry ->
+                    filteredPatch.entrySet().forEach(entry ->
                             upgradeHandler.onDataFieldUpdated(handler, entry.getKey(), entry.getValue().orElse(null))
                     );
                 }

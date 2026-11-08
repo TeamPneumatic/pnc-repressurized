@@ -66,10 +66,12 @@ public record PacketUpdateMicromissileSettings(MicromissilesItem.Settings settin
     }
 
     private void applySettings(Player player, ItemStack stack) {
-        stack.set(ModDataComponents.MICROMISSILE_SETTINGS, settings.sanitize());
+        MicromissilesItem.Settings safeSettings = settings.sanitize();
+
+        stack.set(ModDataComponents.MICROMISSILE_SETTINGS, safeSettings);
 
         if (saveDefault) {
-            MicromissileDefaults.INSTANCE.setDefaults(player, settings);
+            MicromissileDefaults.INSTANCE.setDefaults(player, safeSettings);
             MicromissileDefaults.INSTANCE.tryWriteToFile();
             player.level().playSound(null, player.blockPosition(), ModSounds.CHIRP.get(), SoundSource.PLAYERS, 1f, 1f);
         }

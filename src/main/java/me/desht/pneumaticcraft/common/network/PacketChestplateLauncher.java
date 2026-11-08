@@ -77,7 +77,10 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(sp.getCommandSenderWorld(), toFire, sp,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
-            float clampedAmount = Mth.clamp(message.amount(), 0f, 1f);
+            float clampedAmount = Float.isFinite(message.amount()) ? Mth.clamp(message.amount(), 0f, 1f) : 0f;
+            if (clampedAmount == 0f) {
+                return;
+            }
 
             Vec3 velocity = sp.getLookAngle().normalize().scale(clampedAmount * upgrades * SCALE_FACTOR);
 

@@ -79,7 +79,7 @@ public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements C
                     player.displayClientMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
                 } else if (AmadronOfferManager.getInstance().addPlayerOffer(safeOffer)) {
                     if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
-                        NetworkHandler.sendToAll(this);
+                        NetworkHandler.sendToAll(new PacketAmadronTradeAddCustom(safeOffer));
                     }
                     if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
                         AmadronTabletItem.openGui(player, InteractionHand.MAIN_HAND);

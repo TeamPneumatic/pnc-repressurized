@@ -200,7 +200,10 @@ public class MicromissilesItem extends Item {
         }
 
         public Settings sanitize() {
-            if (topSpeed + turnSpeed + damage > 1.00001) {  // allow small epsilon for float imprecision
+            if (topSpeed < 0f || topSpeed > 1f || turnSpeed < 0f || turnSpeed > 1f || damage < 0f || damage > 1f
+                    || topSpeed + turnSpeed + damage > 1.00001   // allow small epsilon for float imprecision
+                    || !Float.isFinite(topSpeed) || !Float.isFinite(turnSpeed) || !Float.isFinite(damage))
+            {
                 return DEFAULT;
             }
             return this;
