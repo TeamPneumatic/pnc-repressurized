@@ -41,11 +41,13 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -58,7 +60,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     );
 
     private final String offeringPlayerName;
-    private UUID offeringPlayerId;
+    private final UUID offeringPlayerId;
     private GlobalPos providingPos;
     private GlobalPos returningPos;
     private int pendingPayments;
@@ -112,11 +114,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
         reversed.inStock = this.inStock;
         reversed.pendingPayments = this.pendingPayments;
         return reversed;
-    }
-
-    public void updatePlayerId() {
-        ServerPlayer player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
-        if (player != null) offeringPlayerId = player.getGameProfile().getId();
     }
 
     public void addPayment(int payment) {
@@ -309,4 +306,25 @@ public class AmadronPlayerOffer extends AmadronOffer {
                 ResourceLocation.parse(s.replaceFirst("_rev$", "")):
                 ResourceLocation.parse(s + "_rev");
     }
+
+    public Optional<AmadronPlayerOffer> sanitize(ServerPlayer player) {
+        String id = player.getName().getString().toLowerCase() + "_" + (System.currentTimeMillis() / 1000);
+        if (validateInvPos(player, providingPos) && validateInvPos(player, returningPos)) {
+            return Optional.of(new AmadronPlayerOffer(RL(id), input, output, player)
+                    .setProvidingPosition(providingPos)
+                    .setReturningPosition(returningPos)
+            );
+        }
+        return Optional.empty();
+    }
+
+    private boolean validateInvPos(ServerPlayer player, GlobalPos gpos) {
+        assert player.getServer() != null;
+        Level level = player.getServer().getLevel(gpos.dimension());
+        if (level == null || !level.isLoaded(gpos.pos())) {
+            return false;
+        }
+        return PneumaticCraftUtils.playerMayRightClick(player, gpos.pos());
+    }
+
 }

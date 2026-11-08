@@ -198,6 +198,13 @@ public class MicromissilesItem extends Item {
         public Settings withEntityFilter(String filterString) {
             return new Settings(topSpeed, turnSpeed, damage, point, filterString, fireMode);
         }
+
+        public Settings sanitize() {
+            if (topSpeed + turnSpeed + damage > 1.00001) {  // allow small epsilon for float imprecision
+                return DEFAULT;
+            }
+            return this;
+        }
     }
 
     public enum FireMode implements ITranslatableEnum, StringRepresentable {

@@ -22,6 +22,8 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.EntityTrac
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -72,11 +74,16 @@ public record PacketHackingEntityStart(int entityId) implements CustomPacketPayl
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(CommonUpgradeHandlers.entityTrackerHandler, true)) {
                 Entity entity = player.level().getEntity(message.entityId());
-                if (entity != null) {
+                if (entity != null && isValidEntity(handler, sp, entity)) {
                     handler.getExtensionData(CommonUpgradeHandlers.hackHandler).setHackedEntity(entity);
                     NetworkHandler.sendToPlayer(message, sp);
                 }
             }
         }
+    }
+
+    private static boolean isValidEntity(CommonArmorHandler handler, ServerPlayer player, Entity entity) {
+        float dist = EntityTrackerHandler.getEntityTrackRange(handler);
+        return player.distanceToSqr(entity) < dist * dist && PneumaticCraftUtils.playerMayRightClick(player, entity);
     }
 }

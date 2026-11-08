@@ -28,6 +28,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -75,12 +76,15 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
 
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(sp.getCommandSenderWorld(), toFire, sp,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlot.CHEST, ModUpgrades.DISPENSER.get(), PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
-            Vec3 velocity = sp.getLookAngle().normalize().scale(message.amount() * upgrades * SCALE_FACTOR);
+
+            float clampedAmount = Mth.clamp(message.amount(), 0f, 1f);
+
+            Vec3 velocity = sp.getLookAngle().normalize().scale(clampedAmount * upgrades * SCALE_FACTOR);
 
             // Special launch case for arrows/tridents
             if (launchedEntity instanceof AbstractArrow arrow) {
                 arrow.pickup = sp.isCreative() ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;
-                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * message.amount());
+                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * clampedAmount);
             }
 
             // Launches item
@@ -88,7 +92,7 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
 
             // Uses air from chestplate (unless in creative)
             if (!sp.isCreative()) {
-                int usedAir = (int) (20 * upgrades * message.amount());
+                int usedAir = (int) (20 * upgrades * clampedAmount);
                 handler.addAir(EquipmentSlot.CHEST, -usedAir);
             }
         }

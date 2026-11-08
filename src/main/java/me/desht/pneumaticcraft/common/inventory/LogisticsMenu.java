@@ -165,4 +165,8 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
             }
         }
     }
+
+    public boolean isForEntity(int entityID) {
+        return logistics != null && logistics.getId() == entityID;
+    }
 }

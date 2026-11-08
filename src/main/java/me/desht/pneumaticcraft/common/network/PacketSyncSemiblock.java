@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
 import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.Util;
@@ -92,7 +93,7 @@ public record PacketSyncSemiblock(int entityID, RegistryFriendlyByteBuf payload)
             } else {
                 Log.warning("PacketSyncSemiblock: received packet with entity id -1, but player is not holding a semiblock item?");
             }
-        } else {
+        } else if (sender.containerMenu instanceof LogisticsMenu menu && menu.isForEntity(entityID)) {
             processEntity(sender.level());
         }
     }

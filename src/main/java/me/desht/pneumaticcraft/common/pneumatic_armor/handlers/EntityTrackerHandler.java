@@ -22,13 +22,30 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 
 public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
-    private static final float ENTITY_TRACKING_RANGE = 16F;
+    public static final float ENTITY_TRACKING_RANGE = 16F;
+    public static final int MAX_RANGE_UPGRADES = 5;
+
+    public static float getEntityTrackRange(ICommonArmorHandler armorHandler) {
+        return getEntityTrackRange(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()));
+    }
+
+    public static float getEntityTrackRange(int rangeUpgrades) {
+        return ENTITY_TRACKING_RANGE + Math.min(rangeUpgrades, MAX_RANGE_UPGRADES) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY;
+    }
+
+    public static boolean isPlayerInRange(Player player, Entity entity) {
+        var range = getEntityTrackRange(CommonArmorHandler.getHandlerForPlayer(player));
+        return player.distanceToSqr(entity) <= range * range;
+    }
 
     @Override
     public ResourceLocation getID() {
@@ -43,7 +60,7 @@ public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensio
     @Override
     public float getIdleAirUsage(ICommonArmorHandler armorHandler) {
         int upgrades = armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.ENTITY_TRACKER.get());
-        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(5, upgrades)
+        return PneumaticValues.USAGE_ENTITY_TRACKER * (1 + (float) Math.min(MAX_RANGE_UPGRADES, upgrades)
                 * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY / ENTITY_TRACKING_RANGE);
     }
 

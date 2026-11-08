@@ -22,6 +22,8 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.BlockTrack
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.FriendlyByteBuf;
@@ -29,6 +31,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -68,11 +71,18 @@ public record PacketHackingBlockStart(BlockPos pos) implements CustomPacketPaylo
         } else if (player instanceof ServerPlayer sp) {
             // server
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true) && isValidPos(handler, sp, message.pos)) {
                 handler.getExtensionData(CommonUpgradeHandlers.hackHandler)
                         .setHackedBlockPos(GlobalPos.of(player.level().dimension(), message.pos));
                 NetworkHandler.sendToPlayer(message, sp);
             }
         }
+    }
+
+    private static boolean isValidPos(CommonArmorHandler handler, ServerPlayer player, BlockPos pos) {
+        int dist = BlockTrackerHandler.getBlockTrackRange(handler);
+        return player.level().isLoaded(pos)
+                && player.distanceToSqr(Vec3.atCenterOf(pos)) < dist * dist
+                && PneumaticCraftUtils.playerMayRightClick(player, pos);
     }
 }

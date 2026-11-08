@@ -37,6 +37,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.Mob;
@@ -51,15 +53,21 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -567,8 +575,8 @@ public class PneumaticCraftUtils {
         return INVALID_POS;
     }
 
-    public static <T extends BlockEntity> Optional<T> getBlockEntityAt(BlockGetter w, BlockPos pos, Class<T> cls) {
-        if (w != null && pos != null) {
+    public static <T extends BlockEntity> Optional<T> getBlockEntityAt(LevelReader w, BlockPos pos, Class<T> cls) {
+        if (w != null && pos != null && w.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.FULL, false) != null) {
             BlockEntity te = w.getBlockEntity(pos);
             if (te != null && cls.isAssignableFrom(te.getClass())) {
                 //noinspection unchecked
@@ -719,5 +727,16 @@ public class PneumaticCraftUtils {
             }
         }
         return false;
+    }
+
+    public static boolean playerMayRightClick(ServerPlayer player, BlockPos pos) {
+        BlockHitResult bhr = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, true);
+        PlayerInteractEvent.RightClickBlock event = CommonHooks.onRightClickBlock(player, InteractionHand.MAIN_HAND, pos, bhr);
+        return !event.isCanceled();
+    }
+
+    public static boolean playerMayRightClick(ServerPlayer player, Entity entity) {
+        var res = CommonHooks.onInteractEntity(player, entity, InteractionHand.MAIN_HAND);
+        return res != InteractionResult.FAIL;
     }
 }

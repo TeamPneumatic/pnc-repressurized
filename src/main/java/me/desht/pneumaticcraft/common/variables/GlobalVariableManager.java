@@ -47,6 +47,11 @@ import java.util.*;
 public class GlobalVariableManager extends SavedData {
     public static final int MAX_VARIABLE_LEN = 64;
 
+    private static final int MAX_GLOBAL_POS_SIZE = 100;
+    private static final int MAX_GLOBAL_STACK_SIZE = 100;
+    private static final int MAX_PLAYER_POS_SIZE = 100;
+    private static final int MAX_PLAYER_STACK_SIZE = 100;
+
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 
@@ -105,7 +110,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (pos == null) {
                 globalVars.remove(varName);
-            } else {
+            } else if (globalVars.size() <= MAX_GLOBAL_POS_SIZE) {
                 globalVars.put(varName, pos);
             }
             setDirty();
@@ -116,7 +121,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (coord == null) {
                 playerVars.remove(ownerUUID, varName);
-            } else {
+            } else if (playerVars.row(ownerUUID).size() <= MAX_PLAYER_POS_SIZE) {
                 playerVars.put(ownerUUID, varName, coord);
             }
             setDirty();
@@ -127,7 +132,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (item.isEmpty()) {
                 globalItemVars.remove(varName);
-            } else {
+            } else if (globalItemVars.size() <= MAX_GLOBAL_STACK_SIZE) {
                 globalItemVars.put(varName, item);
             }
             setDirty();
@@ -138,7 +143,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (item.isEmpty()) {
                 playerItemVars.remove(ownerUUID, varName);
-            } else {
+            } else if (playerItemVars.row(ownerUUID).size() <= MAX_PLAYER_STACK_SIZE) {
                 playerItemVars.put(ownerUUID, varName, item);
             }
             setDirty();

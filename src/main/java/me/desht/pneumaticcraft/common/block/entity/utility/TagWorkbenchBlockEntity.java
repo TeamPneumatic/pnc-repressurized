@@ -48,6 +48,8 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public static final int PAPER_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
 
+    private static final int MAX_TAGS_IN_ITEM = 32;
+
     private final TagMatcherItemHandler inventory = new TagMatcherItemHandler();
 
     public int paperItemId;
@@ -76,11 +78,19 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
             }
             if (!outputStack.isEmpty()) {
                 Set<TagKey<Item>> tags = new HashSet<>(TagFilterItem.getConfiguredTagList(outputStack));
-                for (String s : data) {
-                    tags.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(s)));
+                if (tags.size() < MAX_TAGS_IN_ITEM) {
+                    for (String s : data) {
+                        ResourceLocation id = ResourceLocation.tryParse(s);
+                        if (id != null) {
+                            tags.add(TagKey.create(Registries.ITEM, id));
+                        }
+                        if (tags.size() >= MAX_TAGS_IN_ITEM) {
+                            break;
+                        }
+                    }
+                    TagFilterItem.setConfiguredTagList(outputStack, tags);
+                    inventory.setStackInSlot(OUTPUT_SLOT, outputStack);
                 }
-                TagFilterItem.setConfiguredTagList(outputStack, tags);
-                inventory.setStackInSlot(OUTPUT_SLOT, outputStack);
             }
         }
     }

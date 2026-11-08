@@ -36,6 +36,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -172,10 +173,10 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
 
     @Override
     public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
-        if (world != null && pos != null) {
+        if (world instanceof LevelReader reader && pos != null) {
             switch (tintIndex) {
                 case 0:
-                    return PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractHopperBlockEntity.class)
+                    return PneumaticCraftUtils.getBlockEntityAt(reader, pos, AbstractHopperBlockEntity.class)
                             .filter(te -> te.isCreative)
                             .map(te -> 0xFFDB46CF).orElse(0xFF2b2727);
                 case 1:
