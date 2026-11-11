@@ -63,7 +63,7 @@ public class HackableCaveSpider implements IHackableEntity<CaveSpider> {
         if (!entity.level().isClientSide()) {
             entity.discard();
             Spider spider = new Spider(EntityType.SPIDER, entity.level());
-            spider.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+            spider.absSnapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
             spider.setHealth(entity.getHealth());
             spider.yBodyRot = entity.yBodyRot;
             entity.level().addFreshEntity(spider);

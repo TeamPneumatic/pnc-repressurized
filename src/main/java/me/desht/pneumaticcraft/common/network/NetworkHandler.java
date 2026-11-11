@@ -231,7 +231,7 @@ public class NetworkHandler {
 
 	public static void sendToAllTracking(CustomPacketPayload message, Level level, BlockPos pos) {
 		if (level instanceof ServerLevel serverLevel) {
-			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), message);
+			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, ChunkPos.containing(pos), message);
 		}
 	}
 
@@ -261,7 +261,7 @@ public class NetworkHandler {
 				sendToAll(packet);
 			} else {
 				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-					if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
+					if (!player.level().getServer().isSingleplayerOwner(player.nameAndId())) {
 						sendToPlayer(packet, player);
 					}
 				}
@@ -275,7 +275,7 @@ public class NetworkHandler {
 	 * @param packet the packet to send
 	 */
 	public static void sendNonLocal(ServerPlayer player, CustomPacketPayload packet) {
-		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
+		if (!player.level().getServer().isSingleplayerOwner(player.nameAndId())) {
 			sendToPlayer(packet, player);
 		}
 	}

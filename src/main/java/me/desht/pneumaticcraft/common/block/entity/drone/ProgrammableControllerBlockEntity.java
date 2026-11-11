@@ -405,7 +405,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             shouldUpdateNeighbours = true;
         }
         if (doChunkloadCheck && chunkLoader != null) {
-            chunkLoader.updateLoadedChunks((ServerLevel) level, new ChunkPos(worldPosition));
+            chunkLoader.updateLoadedChunks((ServerLevel) level, ChunkPos.containing(worldPosition));
         }
         setChanged();
     }
@@ -545,7 +545,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         chunkLoader = DynamicChunkLoader.forProgrammableController(this);
 
         if (chunkloadSelf) {
-            chunkLoader.updateLoadedChunks((ServerLevel) nonNullLevel(), new ChunkPos(worldPosition));
+            chunkLoader.updateLoadedChunks((ServerLevel) nonNullLevel(), ChunkPos.containing(worldPosition));
         }
     }
 

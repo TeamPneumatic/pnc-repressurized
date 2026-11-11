@@ -158,7 +158,7 @@ public enum AmadronOfferManager {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null && !server.isDedicatedServer()) {
             for (Player player : server.getPlayerList().getPlayers()) {
-                if (server.isSingleplayerOwner(player.getGameProfile())) {
+                if (server.isSingleplayerOwner(player.nameAndId())) {
                     maybeNotifyPlayerOfUpdates(player);
                     break;
                 }

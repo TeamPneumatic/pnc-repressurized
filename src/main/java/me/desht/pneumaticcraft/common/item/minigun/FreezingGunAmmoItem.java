@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -94,7 +95,7 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         Level world = minigun.getWorld();
         BlockPos pos = brtr.getBlockPos();
-        if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
+        if (!world.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
             BlockPos pos1;
             if (world.getBlockState(pos).getShape(world, pos) == Shapes.block() || brtr.getDirection() != Direction.UP) {
                 pos1 = pos.relative(brtr.getDirection());

@@ -92,7 +92,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
         }
 
         private void tickBlockHack(ServerPlayer player) {
-            Level level = GlobalPosHelper.getWorldForGlobalPos(player.getServer(), hackedBlockPos);
+            Level level = GlobalPosHelper.getWorldForGlobalPos(player.level().getServer(), hackedBlockPos);
             BlockPos pos = hackedBlockPos.pos();
 
             IHackableBlock hackableBlock = HackManager.getHackableForBlock(level, pos, player);

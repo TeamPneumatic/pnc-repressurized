@@ -46,7 +46,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
@@ -859,7 +859,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     private void messageToDrone(DyeColor color) {
-        messageToDrone(FastColor.ARGB32.color(255, color.getTextureDiffuseColor()));
+        messageToDrone(ARGB.color(255, color.getTextureDiffuseColor()));
     }
 
     private void messageToDrone(int color) {

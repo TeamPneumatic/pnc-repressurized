@@ -64,7 +64,7 @@ public class DroneEntityAIPickupItems extends Goal {
         }
         pickableItems.sort(theNearestAttackableTargetSorter);
         for (Entity ent : pickableItems) {
-            if (ent.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT) && !canSteal) {
+            if (ent.getPersistentData().getBooleanOr(Names.PREVENT_REMOTE_MOVEMENT, false) && !canSteal) {
                 continue;
             }
             ItemStack stack = ((ItemEntity) ent).getItem();

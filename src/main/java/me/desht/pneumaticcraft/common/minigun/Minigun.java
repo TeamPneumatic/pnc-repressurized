@@ -285,7 +285,7 @@ public abstract class Minigun {
                     ammoCost.setValue(Math.min(ammoCost.intValue(), durability - 1));
                 }
                 if (!isInfiniteAmmo() && player instanceof ServerPlayer serverPlayer) {
-                    ammoStack.hurtAndBreak(ammoCost.intValue(), serverPlayer.serverLevel(), serverPlayer,
+                    ammoStack.hurtAndBreak(ammoCost.intValue(), serverPlayer.level(), serverPlayer,
                             item -> lastShotOfAmmo.setValue(true)
                     );
                 }

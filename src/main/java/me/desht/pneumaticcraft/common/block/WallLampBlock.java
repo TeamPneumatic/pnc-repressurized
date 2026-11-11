@@ -10,7 +10,7 @@ import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -55,7 +55,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
 
     static {
         for (DyeColor c : DyeColor.values()) {
-            TintColor tc = new TintColor(FastColor.ARGB32.color(255, c.getTextureDiffuseColor()));
+            TintColor tc = new TintColor(ARGB.color(255, c.getTextureDiffuseColor()));
             COLORS_ON[c.getId()] = tc.getARGB();
             COLORS_OFF[c.getId()] = tc.darker().getARGB();
         }

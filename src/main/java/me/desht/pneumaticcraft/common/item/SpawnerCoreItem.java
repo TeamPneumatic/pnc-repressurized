@@ -116,11 +116,11 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     CompoundTag nbt = new CompoundTag();
                     nbt.putString("id", regName.toString());
                     Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
-                        e1.moveTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
+                        e1.snapTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
                         return e1;
                     });
                     if (entity != null) {
-                        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), world.getRandom().nextFloat() * 360.0F, 0.0F);
+                        entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), world.getRandom().nextFloat() * 360.0F, 0.0F);
                         if (serverworld.tryAddFreshEntityWithPassengers(entity)) {
                             stats.addAmount(type, -1).save(stack);
                             return true;

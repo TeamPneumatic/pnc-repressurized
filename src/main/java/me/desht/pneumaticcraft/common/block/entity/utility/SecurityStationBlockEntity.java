@@ -48,6 +48,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -200,7 +201,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 removeTrustedUser(name);
             } else if (tag.startsWith("add:") && isOwner(player)) {
                 String name = tag.split(":", 2)[1];
-                PneumaticCraftUtils.getProfileForName(player.getServer(), name).ifPresent(this::addTrustedUser);
+                PneumaticCraftUtils.getProfileForName(player.level().getServer(), name).ifPresent(this::addTrustedUser);
             }
         } else if (player.containerMenu instanceof SecurityStationHackingMenu && isPlayerHacking(player)) {
             if (tag.equals("end_test") && simulationController.isJustTesting()) {
@@ -469,7 +470,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
 
     public void retaliate(Player hacker) {
         hacker.hurt(PNCDamageSource.securityStation(getLevel()), hacker.getMaxHealth() - 0.5f);
-        hacker.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 100));
+        hacker.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100));
         hacker.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200));
         hacker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 300, 3));
     }
@@ -632,7 +633,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private static boolean isPlayerExempt(Player player) {
         // can player ignore security stations entirely? server ops and possibly creative mode players
         return player.isCreative() && ConfigHelper.common().machines.securityStationCreativePlayersExempt.get()
-                || player.hasPermissions(2);
+                || player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
     }
 
     private class SecurityStationHandler extends BaseItemStackHandler {
@@ -700,7 +701,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                             "pneumaticcraft.message.securityStation.accessPrevented"
                     ).withStyle(ChatFormatting.RED));
                     if (heldItem.getItem() instanceof BlockItem) {
-                        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().selected, heldItem));
+                        player.connection.send(new ClientboundContainerSetSlotPacket(-2, 0, player.getInventory().getSelectedSlot(), heldItem));
                     }
                     return false;
                 }
@@ -766,7 +767,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
             if (event.getEntity() instanceof ServerPlayer player && event.getContainer() instanceof SecurityStationHackingMenu menu) {
                 SecurityStationBlockEntity teSS = menu.blockEntity;
                 if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
-                    MinecraftServer server = player.getServer();
+                    MinecraftServer server = player.level().getServer();
                     if (server != null) {
                         // deferring is important to avoid infinite close/open loop
                         server.tell(new TickTask(server.getTickCount(), () -> player.openMenu(teSS, teSS.getBlockPos())));

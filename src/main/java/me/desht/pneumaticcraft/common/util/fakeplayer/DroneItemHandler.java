@@ -142,7 +142,7 @@ public class DroneItemHandler extends ItemStackHandler {
         ItemStack newStack = getStackInSlot(slot);
 
         fakePlayer.getInventory().getNonEquipmentItems().set(slot, newStack);
-        if (slot == fakePlayer.getInventory().selected) {
+        if (slot == fakePlayer.getInventory().getSelectedSlot()) {
             // currentItem is always 0 but we'll use that rather than a literal 0
             // maybe one day drones will be able to change their current held-item slot
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, newStack);

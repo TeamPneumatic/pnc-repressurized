@@ -44,6 +44,7 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.IdentifierArgument;
@@ -88,7 +89,7 @@ public class ModCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(literal("pncr")
                 .then(literal("dump_components")
-                        .requires(cs -> cs.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(ctx -> dumpComponents(ctx.getSource(), false))
                         .then(literal("all")
                                 .executes(ctx -> dumpComponents(ctx.getSource(), true))
@@ -125,7 +126,7 @@ public class ModCommands {
                         )
                 )
                 .then(literal("amadrone_deliver")
-                        .requires(cs -> cs.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(argument("toPos", BlockPosArgument.blockPos())
                                 .then(argument("fromPos", BlockPosArgument.blockPos())
                                         .executes(ctx -> amadroneDeliver(ctx.getSource(), getLoadedBlockPos(ctx, "toPos"), getLoadedBlockPos(ctx, "fromPos")))

@@ -27,6 +27,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -274,7 +275,7 @@ public class FluidUtils {
             if (world.isEmptyBlock(pos) || isNotSolid || isReplaceable
                     || block instanceof LiquidBlockContainer lbc && lbc.canPlaceLiquid(null, world, pos, blockstate, toPlace.getFluid())) {
                 if (action.execute()) {
-                    if (world.dimensionType().ultraWarm() && fluid.is(FluidTags.WATER)) {
+                    if (world.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && fluid.is(FluidTags.WATER)) {
                         // no pouring water in the nether!
                         playEvaporationEffects(world, pos);
                     } else if (block instanceof LiquidBlockContainer) {

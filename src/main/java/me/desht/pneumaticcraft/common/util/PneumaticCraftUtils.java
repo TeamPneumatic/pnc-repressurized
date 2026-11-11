@@ -36,6 +36,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -399,7 +400,7 @@ public class PneumaticCraftUtils {
     }
 
     public static boolean isPlayerOp(Player player) {
-        return player.hasPermissions(2);
+        return player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER);
     }
 
     /**

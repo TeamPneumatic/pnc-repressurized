@@ -65,7 +65,7 @@ public class HackablePainting implements IHackableEntity<Painting> {
     public void onHackFinished(Painting entity, Player player) {
         PaintingVariant art = entity.getVariant().value();
 
-        var candidates = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).holders()
+        var candidates = entity.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).holders()
                 .filter(h -> h.value().height() == art.height() && h.value().width() == art.width())
                 .toList();
         entity.setVariant(candidates.get(entity.level().getRandom().nextInt(candidates.size())));

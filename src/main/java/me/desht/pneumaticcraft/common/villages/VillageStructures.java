@@ -75,10 +75,10 @@ public class VillageStructures {
     public static void addMechanicHouse(final ServerAboutToStartEvent event) {
         int weight = ConfigHelper.common().villagers.mechanicHouseWeight.get();
         if (weight > 0) {
-            Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().registryOrThrow(Registries.PROCESSOR_LIST)
+            Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST)
                     .getHolderOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, Identifier.parse("minecraft:empty")));
 
-            Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().registryOrThrow(Registries.TEMPLATE_POOL);
+            Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
 
             for (VillageBiome v : VillageBiome.values()) {
                 // desert & snowy villages don't have street pieces large enough to support a PNC house

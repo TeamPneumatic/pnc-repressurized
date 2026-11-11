@@ -129,7 +129,7 @@ public class AmadronMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCra
                 if (wantedUnits > 0 && availableUnits > 0) {
                     shoppingBasket.setUnits(offerId, Math.min(availableUnits, wantedUnits));
                     // delay packet sending since clientside container not open yet
-                    Objects.requireNonNull(player.getServer()).tell(new TickTask(player.getServer().getTickCount(), () ->
+                    Objects.requireNonNull(player.level().getServer()).tell(new TickTask(player.level().getServer().getTickCount(), () ->
                             NetworkHandler.sendToPlayer(new PacketAmadronOrderResponse(offerId, availableUnits), player))
                     );
                 }

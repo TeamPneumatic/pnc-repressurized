@@ -72,7 +72,7 @@ public class HackableCow implements IHackableEntity<Cow> {
         if (!entity.level().isClientSide()) {
             entity.discard();
             MushroomCow entitycow = new MushroomCow(EntityType.MOOSHROOM, entity.level());
-            entitycow.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+            entitycow.snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
             entitycow.setHealth(entity.getHealth());
             entitycow.yBodyRot = entity.yBodyRot;
             entity.level().addFreshEntity(entitycow);

@@ -132,7 +132,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
             Vec3 trapVec = Vec3.atCenterOf(worldPosition);
             double min = nonNullLevel().getFluidState(worldPosition).getType() == Fluids.WATER ? 2.5 : 1.75;
             for (Mob e : targetEntities) {
-                if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
+                if (!e.isAlive() || e.entityTags().contains(DEFENDER_TAG)) continue;
                 // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
                 if (e.distanceToSqr(trapVec) <= min) {
                     absorbEntity(e);
@@ -179,12 +179,12 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private boolean isApplicable(LivingEntity e) {
-        return e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED) ||
-                !e.getType().is(Tags.EntityTypes.BOSSES)
+        return e.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED) ||
+                !e.is(Tags.EntityTypes.BOSSES)
                 && !(e instanceof DroneEntity)
                 && !(e instanceof Warden)
                 && !(e instanceof TamableAnimal t && t.isTame())
-                && !e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
+                && !e.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
     @Override

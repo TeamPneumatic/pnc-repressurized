@@ -192,7 +192,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         if (level.noCollision(optional.get().getSpawnAABB(x, y, z))) {
             ServerLevel serverworld = (ServerLevel) level;
             Entity entity = EntityType.loadEntityRecursive(nbt, level, (e1) -> {
-                e1.moveTo(x, y, z, e1.getYRot(), e1.getXRot());
+                e1.snapTo(x, y, z, e1.getYRot(), e1.getXRot());
                 return e1;
             });
             if (entity == null) {
@@ -204,7 +204,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
                 return false;
             }
 
-            entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.getRandom().nextFloat() * 360.0F, 0.0F);
+            entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), level.getRandom().nextFloat() * 360.0F, 0.0F);
             if (entity instanceof Mob mobentity) {
                 if (nbt.size() == 1 && nbt.contains("id")) {
                     EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
@@ -233,8 +233,8 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         List<Holder<MobEffect>> l = new ArrayList<>();
         int n = rand.nextInt(100);
         if (n > 50) l.add(MobEffects.FIRE_RESISTANCE);
-        if (n > 75) l.add(MobEffects.MOVEMENT_SPEED);
-        if (n > 82) l.add(MobEffects.DAMAGE_BOOST);
+        if (n > 75) l.add(MobEffects.SPEED);
+        if (n > 82) l.add(MobEffects.STRENGTH);
         if (n > 92) l.add(MobEffects.REGENERATION);
         if (n > 96) l.add(MobEffects.INVISIBILITY);
         return l;

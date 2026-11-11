@@ -66,7 +66,7 @@ public class SemiblockItem extends Item {
         return BuiltInRegistries.ENTITY_TYPE.getOptional(regName).map(type -> {
             Entity e = type.create(world);
             if (e instanceof AbstractSemiblockEntity semi) {
-                e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
+                e.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
                 EntityType.updateCustomEntityTag(world, player, e, stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY));
                 return semi;
             }

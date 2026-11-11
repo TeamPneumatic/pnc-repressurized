@@ -191,7 +191,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         Direction dir = inputDir.getOpposite();
         int remaining = maxItems;
         for (Entity e : cachedInputEntities) {
-            if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
+            if (e.isAlive() && !e.is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
                 int imported = IOHelper.getSidedInventoryForEntity(e, dir)

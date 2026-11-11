@@ -49,7 +49,7 @@ public class HackableSquid implements IHackableEntity<Squid> {
         if (!entity.level().isClientSide()) {
             entity.discard();
             GlowSquid glowSquid = new GlowSquid(EntityType.GLOW_SQUID, entity.level());
-            glowSquid.moveTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
+            glowSquid.snapTo(entity.getX(), entity.getY(), entity.getZ(), entity.getYRot(), entity.getXRot());
             glowSquid.setHealth(entity.getHealth());
             glowSquid.yBodyRot = entity.yBodyRot;
             entity.level().addFreshEntity(glowSquid);

@@ -100,7 +100,7 @@ public enum FilterModifiers {
     }
 
     private static boolean testEntityTypeTag(Entity entity, String val, TagKey<EntityType<?>> key) {
-        return val.equalsIgnoreCase(entity.getType().is(key) ? "yes" : "no");
+        return val.equalsIgnoreCase(entity.is(key) ? "yes" : "no");
     }
 
     private static boolean testAge(Entity entity, String val) {
@@ -113,12 +113,12 @@ public enum FilterModifiers {
     }
 
     private static boolean testEntityTag(Entity entity, String val) {
-        return entity.getTags().contains(val);
+        return entity.entityTags().contains(val);
     }
 
     private static boolean testTypeTag(Entity entity, String val) {
         return Identifier.read(val).result()
-                .map(rl -> entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, rl)))
+                .map(rl -> entity.is(TagKey.create(Registries.ENTITY_TYPE, rl)))
                 .orElse(false);
     }
 

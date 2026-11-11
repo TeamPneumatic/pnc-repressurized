@@ -88,7 +88,7 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
 
             if (item.position().distanceToSqr(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
-                    && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
+                    && !item.getPersistentData().getBooleanOr(Names.PREVENT_REMOTE_MOVEMENT, false)) {
                 if (!commonArmorHandler.hasMinPressure(EquipmentSlot.CHEST)) break;
                 item.setPos(player.getX(), player.getY(), player.getZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickUpDelay(0);

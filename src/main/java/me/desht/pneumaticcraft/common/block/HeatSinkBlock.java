@@ -102,7 +102,7 @@ public class HeatSinkBlock extends AbstractPneumaticCraftBlock implements ColorH
                         int durationTicks = (int) ((243 - temp) * 2);
                         livingEntity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, durationTicks, amplifier));
                         // more damage if cold-vulnerable, less damage if !canFreeze() (typically armour protection)
-                        float dmg = entity.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2;
+                        float dmg = entity.is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES) ? 5 : 2;
                         if (!canFreeze) dmg /= 2f;
                         entity.hurt(entity.damageSources().freeze(), dmg);
                     }

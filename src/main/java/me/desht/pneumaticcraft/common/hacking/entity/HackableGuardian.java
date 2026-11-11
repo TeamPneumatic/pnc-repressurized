@@ -50,7 +50,7 @@ public class HackableGuardian extends AbstractPersistentEntityHack<Guardian> {
         entity.setTarget(null);
 
         if (entity instanceof ElderGuardian) {
-            player.removeEffectNoUpdate(MobEffects.DIG_SLOWDOWN);
+            player.removeEffectNoUpdate(MobEffects.MINING_FATIGUE);
         }
     }
 

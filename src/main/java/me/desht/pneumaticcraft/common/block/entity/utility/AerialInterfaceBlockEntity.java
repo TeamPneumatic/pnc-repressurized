@@ -270,7 +270,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (getLevel() instanceof ServerLevel serverLevel && (validatePlayerNow || (getLevel().getGameTime() & 0xf) == 0)) {
             ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerUUID);
             setPlayer(player);
-            if (player != null && player.getTags().contains(NO_AERIAL_INTERFACE)) {
+            if (player != null && player.entityTags().contains(NO_AERIAL_INTERFACE)) {
                 operatingProblem = OperatingProblem.PLAYER_BARRED;
             } else if (isDimensionBlacklisted(serverLevel, player)) {
                 operatingProblem = OperatingProblem.BAD_DIMENSION;

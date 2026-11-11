@@ -42,7 +42,7 @@ public class OilLakeFilter extends PlacementFilter {
             SectionPos sectionPos = SectionPos.of(origin);
             ChunkAccess chunkAccess = region.getChunk(origin);
 
-            Registry<Structure> reg = region.registryAccess().registryOrThrow(Registries.STRUCTURE);
+            Registry<Structure> reg = region.registryAccess().lookupOrThrow(Registries.STRUCTURE);
             StructureManager manager = region.getLevel().structureManager().forWorldGenRegion(region);
 
             if (ConfigHelper.common().worldgen.noOilLakesInStructures.get() && manager.hasAnyStructureAt(origin)) {
