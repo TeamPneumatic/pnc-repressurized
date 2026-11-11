@@ -265,7 +265,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
             initializeHullAirHandlers();
             discoverConnectedNeighbors();
             setChanged();
-            level.blockUpdated(getBlockPos(), getBlockState().getBlock());
+            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock(), null);
             purgeShapeCacheKey();
         }
     }

@@ -41,6 +41,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -164,7 +165,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         entityFilter = componentInput.getOrDefault(ModDataComponents.ENTITY_FILTER, "@mob");
@@ -237,7 +238,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
         if (ownerId != null) {
-            tag.putUUID("ownerId", ownerId);
+            tag.store("ownerId", UUIDUtil.CODEC, ownerId);
         }
     }
 
@@ -248,9 +249,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
         idleYaw = tag.getFloatOr("idleYaw", 0f);
         setText(0, tag.getStringOr(NBT_ENTITY_FILTER, ""));
-        if (tag.contains("ownerId")) {
-            ownerId = tag.getUUID("ownerId");
-        }
+        tag.read("ownerId", UUIDUtil.CODEC).ifPresent(id -> ownerId = id);
     }
 
     @Override

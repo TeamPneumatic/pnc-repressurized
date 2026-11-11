@@ -30,6 +30,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -122,7 +123,7 @@ public class ReinforcedChestBlockEntity extends AbstractPneumaticCraftBlockEntit
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         inventory.loadContainerContents(componentInput.getOrDefault(ModDataComponents.BLOCK_ENTITY_SAVED_INV, ItemContainerContents.EMPTY));

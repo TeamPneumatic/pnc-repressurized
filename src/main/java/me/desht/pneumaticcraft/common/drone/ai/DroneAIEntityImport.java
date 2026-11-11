@@ -56,7 +56,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
             ItemStack heldStack = drone.getInv().getStackInSlot(0);
             if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.has(heldStack, EnchantmentEffectComponents.REPAIR_WITH_XP)) {
                 int toRepair = Math.min((int)(orb.getValue() * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
-                orb.getValue() -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
+                orb.setValue(orb.getValue() - toRepair / 2);  // see ExperienceOrbEntity#durabilityToXp()
                 heldStack.setDamageValue(heldStack.getDamageValue() - toRepair);
             }
             if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), orb, FluidAction.EXECUTE)) {

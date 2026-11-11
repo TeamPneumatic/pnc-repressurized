@@ -71,7 +71,7 @@ public interface CamouflageableBlockEntity {
 
     static BlockState readCamo(CompoundTag tag) {
         BlockState state = tag.contains("camoState") ?
-                NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("camoState")) :
+                NbtUtils.readBlockState(BuiltInRegistries.BLOCK, tag.getCompoundOrEmpty("camoState")) :
                 null;
         return state != null && state.getBlock() == Blocks.AIR ? null : state;
     }

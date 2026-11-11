@@ -474,10 +474,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.loadAdditional(tag, provider);
 
         inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
-        tank.readFromNBT(provider, tag.getCompoundOrEmpty("tank"));
+        ValueIOBridge.deserialize(tank, provider, tag.getCompoundOrEmpty("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getStringOr("ownerID", "")) : FALLBACK_UUID;
-        ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
+        ownerName = Component.literal(tag.getStringOr("ownerName", FALLBACK_NAME));
         ownerNameClient = ownerName.getString();
 
         ItemStackHandler tmpInv = new ItemStackHandler();
@@ -504,9 +504,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         tag.put("Items", inventory.serializeNBT(provider));
 
-        CompoundTag tankTag = new CompoundTag();
-        tank.writeToNBT(provider, tankTag);
-        tag.put("tank", tankTag);
+        tag.put("tank", ValueIOBridge.serialize(tank, provider));
 
         ItemStackHandler handler = new ItemStackHandler(droneItemHandler.getSlots());
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {

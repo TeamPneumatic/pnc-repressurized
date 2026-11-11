@@ -609,7 +609,7 @@ public class PneumaticCraftUtils {
         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
         int filled = handler.fill(toFill, action);
         if (filled > 0 && filled < fluidAmount && action.execute()) {
-            orb.value = orb.getValue() - Math.max(1, filled / ratio);  // partial fill, adjust the orb
+            orb.setValue(orb.getValue() - Math.max(1, filled / ratio));  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
     }
@@ -718,8 +718,8 @@ public class PneumaticCraftUtils {
     }
 
     public static Optional<GameProfile> getProfileForName(MinecraftServer server, String playerName) {
-        if (server == null || server.getProfileCache() == null) return Optional.empty();
-        return server.getProfileCache().get(playerName);
+        if (server == null) return Optional.empty();
+        return server.services().nameToIdCache().get(playerName).map(nameAndId -> new GameProfile(nameAndId.id(), nameAndId.name()));
     }
 
     public static <T> Optional<T> getOptionalComponent(ItemStack stack, DataComponentType<T> type) {

@@ -17,6 +17,8 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -45,12 +47,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -257,7 +261,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         // overridden to only update neighbours if this BE actually has a useful comparator output
         if (level != null) {
             if (level.isLoaded(worldPosition)) {
-                level.getChunkAt(worldPosition).setUnsaved(true);
+                level.getChunkAt(worldPosition).markUnsaved();
             }
             if (this instanceof IComparatorSupport && !this.getBlockState().isAir()) {
                 this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
@@ -357,7 +361,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
 
         if (customName != null) {
-            tag.putString("CustomName", Component.Serializer.toJson(customName, provider));
+            // saved as a JSON string, as in 1.21.1
+            tag.putString("CustomName", ComponentSerialization.CODEC.encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), customName).getOrThrow().toString());
         }
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT(provider));
@@ -378,7 +383,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
 
         if (tag.contains("CustomName")) {
-            customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);
+            customName = ComponentSerialization.CODEC.parse(provider.createSerializationContext(JsonOps.INSTANCE), JsonParser.parseString(tag.getStringOr("CustomName", ""))).result().orElse(null);
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(provider, tag.getCompoundOrEmpty(NBTKeys.NBT_UPGRADE_INVENTORY));
@@ -696,7 +701,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         if (this instanceof ISerializableTanks st) {

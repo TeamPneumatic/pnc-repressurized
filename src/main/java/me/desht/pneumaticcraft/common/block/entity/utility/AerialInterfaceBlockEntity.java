@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
@@ -59,10 +58,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -139,7 +138,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private final IntList chargeableSlots = new IntArrayList();
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
-    public GameProfile gameProfileClient;  // for rendering
+    public ResolvableProfile gameProfileClient;  // for rendering
     private boolean validatePlayerNow;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
@@ -242,8 +241,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (playerName.isEmpty()) {
             gameProfileClient = null;
         } else {
-            SkullBlockEntity.fetchGameProfile(playerName)
-                    .thenAcceptAsync(optProfile -> gameProfileClient = optProfile.orElse(null));
+            // resolved (skin etc.) by the renderer when needed; TODO 26.1 render: AerialInterfaceRenderer
+            gameProfileClient = ResolvableProfile.createUnresolved(playerName);
         }
     }
 
@@ -366,7 +365,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
         playerUUID = UUID.fromString(tag.getStringOr("playerUUID", ""));
         feedMode = FeedMode.valueOf(tag.getStringOr("feedMode", ""));
-        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(Identifier.parse(tag.getStringOr("curXpFluid", ""))) : Fluids.EMPTY;
+        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.getValue(Identifier.parse(tag.getStringOr("curXpFluid", ""))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 

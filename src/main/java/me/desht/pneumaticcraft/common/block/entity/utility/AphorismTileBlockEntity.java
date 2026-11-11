@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -93,7 +94,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         SavedData savedData = componentInput.get(ModDataComponents.APHORISM_TILE_DATA);

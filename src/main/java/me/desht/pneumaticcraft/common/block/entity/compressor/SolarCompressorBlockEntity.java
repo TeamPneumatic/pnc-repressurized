@@ -19,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -149,7 +150,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
 
             // Plays sounds for the compressor breaking
             level.playSound(null, mainPos, SoundEvents.GENERIC_BURN, SoundSource.BLOCKS, 1 ,1);
-            level.playSound(null, mainPos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1 ,1);
+            level.playSound(null, mainPos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1 ,1);
         }
     }
 
@@ -195,7 +196,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         final Level level = nonNullLevel();
 
         // Sets false for bounding blocks, during the night, and during rain
-        if (isBounding(this) || level.isNight() || level.isRaining())
+        if (isBounding(this) || level.isDarkOutside() || level.isRaining())
         {
             canSeeSunlight = false;
         }
@@ -339,7 +340,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         isBroken = componentInput.getOrDefault(ModDataComponents.SOLAR_BROKEN, false);
