@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -68,7 +69,7 @@ public class HackableVillager implements IHackableEntity<Villager> {
     public void onHackFinished(Villager entity, Player player) {
         Level level = player.level();
         if (!level.isClientSide()) {
-            if (entity.shouldRestock()) {
+            if (entity.shouldRestock((ServerLevel) level)) {
                 entity.restock();
             }
             int n = level.getRandom().nextInt(25);

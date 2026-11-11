@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.mixin.accessors.AbstractFurnaceBlockEntityAccess;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
@@ -61,7 +62,7 @@ public class HeatBehaviourFurnace extends HeatBehaviour {
                 int progress = Math.max(0, ((int) getHeatExchanger().getTemperature() - 343) / 30);
                 progress = Math.min(5, progress);
                 for (int i = 0; i < progress; i++) {
-                    AbstractFurnaceBlockEntity.serverTick(getWorld(), furnace.getBlockPos(), furnace.getBlockState(), furnace);
+                    AbstractFurnaceBlockEntity.serverTick((ServerLevel) getWorld(), furnace.getBlockPos(), furnace.getBlockState(), furnace);
                 }
             }
         }

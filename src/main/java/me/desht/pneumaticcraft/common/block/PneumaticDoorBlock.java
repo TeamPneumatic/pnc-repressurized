@@ -84,7 +84,7 @@ public class PneumaticDoorBlock extends AbstractPneumaticCraftBlock implements P
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.INVISIBLE;  // rendered by the block entity renderer
     }
 
     public static boolean isTopDoor(BlockState state) {

@@ -50,6 +50,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -90,6 +91,15 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class PneumaticCraftUtils {
+    /**
+     * {@return the item left behind when the given item is used in crafting (e.g. an empty bucket), or an empty stack}
+     * Item#getCraftingRemainingItem() is gone in 26.1; the remainder is now an ItemStackTemplate.
+     */
+    public static ItemStack getCraftingRemainder(ItemStack stack) {
+        ItemStackTemplate remainder = stack.getCraftingRemainder();
+        return remainder == null ? ItemStack.EMPTY : remainder.create();
+    }
+
     // an impossible blockpos to indicate invalid positions
     private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
 

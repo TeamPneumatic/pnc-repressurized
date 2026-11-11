@@ -271,7 +271,7 @@ public class PneumaticArmorHandler {
             repairedItem.setDamageValue(repairedItem.getDamageValue() - damageRepaired);
 
             event.setOutput(repairedItem);
-            event.setCost(Math.max(1, ingotsToUse / 2));
+            event.setXpCost(Math.max(1, ingotsToUse / 2));
             event.setMaterialCost(ingotsToUse);
         }
     }

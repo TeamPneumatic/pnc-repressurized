@@ -50,6 +50,7 @@ import net.minecraft.world.entity.animal.equine.Horse;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.monster.*;
+import net.minecraft.world.entity.monster.spider.CaveSpider;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;

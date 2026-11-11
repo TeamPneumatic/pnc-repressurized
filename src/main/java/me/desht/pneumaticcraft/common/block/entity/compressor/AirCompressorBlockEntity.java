@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -103,8 +104,8 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
             if (itemBurnTime > 0) {
                 burnTime += itemBurnTime;
                 maxBurnTime = burnTime;
-                if (fuelStack.hasCraftingRemainingItem()) {
-                    itemHandler.setStackInSlot(FUEL_SLOT, fuelStack.getCraftingRemainingItem());
+                if (fuelStack.getCraftingRemainder() != null) {
+                    itemHandler.setStackInSlot(FUEL_SLOT, PneumaticCraftUtils.getCraftingRemainder(fuelStack));
                 } else {
                     itemHandler.extractItem(FUEL_SLOT, 1, false);
                 }

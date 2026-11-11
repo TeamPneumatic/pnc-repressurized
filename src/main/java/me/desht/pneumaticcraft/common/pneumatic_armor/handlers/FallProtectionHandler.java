@@ -62,7 +62,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
         @SubscribeEvent
         public static void onPlayerFall(LivingFallEvent event) {
             if (event.getDistance() > 3.0F && event.getEntity() instanceof Player player) {
-                float origDistance = event.getDistance();
+                float origDistance = (float) event.getDistance();
 
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
@@ -85,7 +85,7 @@ public class FallProtectionHandler extends BaseArmorUpgradeHandler<IArmorExtensi
                 }
 
                 if (!player.level().isClientSide()) {
-                    float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
+                    float airNeeded = (float) event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
                     float extraAirNeeded = 0f;
 
                     int airAvailable = handler.getAir(EquipmentSlot.FEET);

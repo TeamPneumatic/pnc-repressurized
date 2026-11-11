@@ -148,7 +148,7 @@ public class WallLampBlock extends AbstractPneumaticCraftBlock implements ColorH
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (tintIndex == 1 && state != null) {
             return state.getValue(LIT) ? COLORS_ON[color.getId()] : COLORS_OFF[color.getId()];
         }

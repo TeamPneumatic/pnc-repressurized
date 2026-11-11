@@ -55,6 +55,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.animal.cow.CowSoundVariants;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.boat.Boat;
@@ -122,7 +124,7 @@ public class MiscEventHandler {
     public void handleFuelEvent(FurnaceFuelBurnTimeEvent event) {
         // allow burning of PNC fuel fluids in any container item, iff item.hasContainer() is true
         ItemStack containerStack = event.getItemStack();
-        if (containerStack.hasCraftingRemainingItem()) {
+        if (containerStack.getCraftingRemainder() != null) {
             FluidUtil.getFluidContained(containerStack).ifPresent(fluidStack -> {
                 PneumaticCraftUtils.getRegistryName(fluidStack.getFluid()).ifPresent(regName -> {
                     if (Names.MOD_ID.equals(regName.getNamespace())) {
@@ -233,7 +235,7 @@ public class MiscEventHandler {
         ServerPlayer player = event.getPlayer();
         if (username.equals("Quetzz") && event.getMessage().getString().equals("m00")) {
             for (int i = 0; i < 4; i++) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_AMBIENT, SoundSource.NEUTRAL,
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.COW_SOUNDS.get(CowSoundVariants.SoundSet.CLASSIC).ambientSound().value(), SoundSource.NEUTRAL,
                         (float) player.getX(), (float) player.getY(), (float) player.getZ(), 1, 1, true), player);
             }
         }
@@ -265,7 +267,8 @@ public class MiscEventHandler {
                 }
             } else if (event.getSlot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
-                for (ItemStack stack : player.getArmorSlots()) {
+                for (EquipmentSlot armorSlot : EquipmentSlotGroup.ARMOR) {
+                    ItemStack stack = player.getItemBySlot(armorSlot);
                     if (!(stack.getItem() instanceof PneumaticArmorItem)) {
                         return;
                     }

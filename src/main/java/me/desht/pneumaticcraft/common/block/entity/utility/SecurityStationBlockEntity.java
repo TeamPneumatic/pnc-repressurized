@@ -48,6 +48,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
@@ -85,6 +86,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -260,7 +262,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.AI).applyStopWorm(r);
             } else {
                 // client is lying about how many stop worms they have!
-                player.kill();
+                if (player.level() instanceof ServerLevel serverLevel) player.kill(serverLevel);
             }
         }
     }
@@ -272,7 +274,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                 simulationController.getSimulation(HackingSide.PLAYER).initiateNukeVirus(nodePos);
             } else {
                 // client is lying about how many nuke viruses they have!
-                player.kill();
+                if (player.level() instanceof ServerLevel serverLevel) player.kill(serverLevel);
             }
         } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
             Log.warning("security station @ {}: ignoring bad message {}} from {}}",
@@ -725,7 +727,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        public static void onBlockBreak(BreakBlockEvent event) {
             // Note: the PlayerInteractEvent handler will handle real player (or even drone) interaction, but direct
             // block breaking by fake players from other mods will need to go through here to be safely caught
             Player player = event.getPlayer();
@@ -736,10 +738,11 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
-        public static void onBlockExplode(ExplosionEvent.Start event) {
+        public static void onBlockExplode(ExplosionEvent.Detonate event) {
+            // the blocks to destroy are only known at detonation time in 26.1
             final Player player = getPlayerForExplosion(event);
             if (player != null && !isPlayerExempt(player) && !event.getLevel().isClientSide()) {
-                event.getExplosion().getToBlow().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
+                event.getAffectedBlocks().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
             }
         }
 
@@ -770,7 +773,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
                     MinecraftServer server = player.level().getServer();
                     if (server != null) {
                         // deferring is important to avoid infinite close/open loop
-                        server.tell(new TickTask(server.getTickCount(), () -> player.openMenu(teSS, teSS.getBlockPos())));
+                        server.schedule(new TickTask(server.getTickCount(), () -> player.openMenu(teSS, teSS.getBlockPos())));
                     }
                 }
             }

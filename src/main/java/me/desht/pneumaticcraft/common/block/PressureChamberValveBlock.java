@@ -103,7 +103,7 @@ public class PressureChamberValveBlock extends AbstractPneumaticCraftBlock imple
         } else {
             return level.getBlockEntity(pos, ModBlockEntityTypes.PRESSURE_CHAMBER_VALVE.get())
                     .filter(te -> te.multiBlockSize > 0)
-                    .map(te -> InteractionResult.SUCCESS)
+                    .<InteractionResult>map(te -> InteractionResult.SUCCESS)
                     .orElse(InteractionResult.TRY_WITH_EMPTY_HAND);
         }
     }

@@ -503,7 +503,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 FluidStack itemContents = fluidHandlerItem.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
 
                 IOHelper.getFluidHandlerForBlock(this).ifPresent(fluidHandler -> {
-                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemStack.isSameItemSameComponents(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
+                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemStack.isSameItemSameComponents(PneumaticCraftUtils.getCraftingRemainder(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         // there must be only a single filled container in the input slot!
                         if (inputStack.getCount() != 1) {

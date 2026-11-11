@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -94,13 +94,15 @@ public class ColorHandlers {
     /**
      * Items implementing this will be automatically registered in the ColorHandler.Block event
      */
+    // TODO 26.1 render: block colours are now registered as BlockTintSource; the level passed at runtime is the client
+    //  BlockAndTintGetter, typed here as the common BlockAndLightGetter so that common block classes can implement this
     public interface ITintableBlock {
-        int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex);
+        int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex);
     }
 
     public interface IHeatTintable extends ITintableBlock {
         @Override
-        default int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
+        default int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex) {
             if (world != null && pos != null) {
                 BlockEntity te = world.getBlockEntity(pos);
                 TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;

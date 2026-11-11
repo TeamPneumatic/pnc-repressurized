@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.mixin.accessors.MobAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -96,7 +97,9 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
                 int l = stack.getMaxDamage() - rand.nextInt(rand.nextInt(k) + 1);
                 stack.setDamageValue(Mth.clamp(l, 1, k));
             }
-            entity.spawnAtLocation(stack, 0f);
+            if (entity.level() instanceof ServerLevel serverLevel) {
+                entity.spawnAtLocation(serverLevel, stack);
+            }
         }
         entity.setItemSlot(slot, ItemStack.EMPTY);
         return true;

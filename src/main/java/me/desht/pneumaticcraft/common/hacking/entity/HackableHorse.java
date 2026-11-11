@@ -49,7 +49,7 @@ public class HackableHorse extends AbstractTameableHack<Horse> {
             entity.getNavigation().stop();
             entity.setTarget(null);
             entity.setHealth(20.0F);
-            entity.setOwnerUUID(player.getUUID());
+            entity.setOwner(player);
             entity.level().broadcastEntityEvent(entity, (byte) 7);
             entity.setTamed(true);
         }
