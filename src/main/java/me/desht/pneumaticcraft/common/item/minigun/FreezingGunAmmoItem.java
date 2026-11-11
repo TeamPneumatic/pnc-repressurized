@@ -79,7 +79,7 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     private void createFreezeCloud(Minigun minigun, Entity target) {
         Level world = target.level();
         AreaEffectCloud cloud = new AreaEffectCloud(world, target.getX(), target.getY(), target.getZ());
-        cloud.setPotionContents(new PotionContents(Optional.of(Potions.SLOWNESS), Optional.of(0xFF00C0FF), List.of()));
+        cloud.setPotionContents(new PotionContents(Optional.of(Potions.SLOWNESS), Optional.of(0xFF00C0FF), List.of(), Optional.empty()));
         cloud.setOwner(minigun.getPlayer());
         cloud.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 3));
         cloud.addEffect(new MobEffectInstance(MobEffects.WITHER, 20, 1));

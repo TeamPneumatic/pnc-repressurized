@@ -42,9 +42,11 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.projectile.*;
+import net.minecraft.world.entity.projectile.arrow.*;
+import net.minecraft.world.entity.projectile.hurtingprojectile.*;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.*;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.entity.vehicle.boat.Boat;
-import net.minecraft.world.entity.vehicle.minecart.Minecart;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -166,12 +168,12 @@ public class ItemLaunching {
                 return boat;
 
             } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new ThrownExperienceBottle(level, player);
+                return new ThrownExperienceBottle(level, player, stack);
 
             } else if (item instanceof PotionItem) {
-                ThrownPotion potionEntity = new ThrownPotion(level, player);
-                potionEntity.setItem(stack);
-                return potionEntity;
+                return item == Items.LINGERING_POTION ?
+                        new ThrownLingeringPotion(level, player, stack) :
+                        new ThrownSplashPotion(level, player, stack);
 
             } else if (item == Blocks.TNT.asItem()) {
                 PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, player);
@@ -179,7 +181,7 @@ public class ItemLaunching {
                 return tnt;
 
             } else if (item == Items.EGG) {
-                return new ThrownEgg(level, player);
+                return new ThrownEgg(level, player, stack);
 
             } else if (item == Items.FIRE_CHARGE) {
                 SmallFireball e = new SmallFireball(level, player, Vec3.ZERO);
@@ -187,7 +189,7 @@ public class ItemLaunching {
                 return e;
 
             } else if (item == Items.SNOWBALL) {
-                return new Snowball(level, player);
+                return new Snowball(level, player, stack);
 
             } else if (item instanceof SpawnEggItem egg) {
                 EntityType<?> type = egg.getType(stack);
@@ -200,8 +202,8 @@ public class ItemLaunching {
                 return e;
 
             } else if (item instanceof MinecartItem mi) {
-                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType(), stack, player);
-                minecart.setYRot(playerYaw);
+                AbstractMinecart minecart = AbstractMinecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType(), EntitySpawnReason.DISPENSER, stack, player);
+                if (minecart != null) minecart.setYRot(playerYaw);
                 return minecart;
 
             } else if (item == Items.FIREWORK_ROCKET) {
