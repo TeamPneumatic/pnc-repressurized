@@ -43,7 +43,7 @@ public class DroneFakePlayer extends FakePlayer {
         drone.getDroneLevel().addFreshEntity(orb);
     }
 
-    @Override
+    // TODO 26.1: Player#playNotifySound() is gone; nothing calls this any more
     public void playNotifySound(SoundEvent soundEvent, SoundSource category, float volume, float pitch) {
         drone.playSound(soundEvent, category, volume, pitch);
     }

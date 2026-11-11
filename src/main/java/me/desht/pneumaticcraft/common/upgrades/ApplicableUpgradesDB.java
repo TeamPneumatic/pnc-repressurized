@@ -103,7 +103,7 @@ public enum ApplicableUpgradesDB implements IUpgradeRegistry {
             List<Component> tempList = new ArrayList<>(acceptors.size());
             for (Item acceptor : acceptors) {
                 if (!UpgradableItemUtils.isUpgradeBlacklisted(acceptor, upgrade.getItemStack())) {
-                    tempList.add(Symbols.bullet().append(acceptor.getDescription().copy().withStyle(ChatFormatting.DARK_AQUA)));
+                    tempList.add(Symbols.bullet().append(acceptor.getName(new ItemStack(acceptor)).copy().withStyle(ChatFormatting.DARK_AQUA)));
                 }
             }
             if (tempList.isEmpty()) {

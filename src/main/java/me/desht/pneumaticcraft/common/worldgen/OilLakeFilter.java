@@ -50,7 +50,7 @@ public class OilLakeFilter extends PlacementFilter {
             }
 
             // don't allow oil lakes to generate within any structure in pneumaticcraft:no_oil_lakes tag
-            for (Holder<Structure> structureHolder : reg.getOrCreateTag(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
+            for (Holder<Structure> structureHolder : reg.getTagOrEmpty(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
                 StructureStart start = manager.getStartForStructure(sectionPos, structureHolder.value(), chunkAccess);
                 if (start != null && start.isValid()) {
                     return false;

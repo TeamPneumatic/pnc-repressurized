@@ -46,7 +46,7 @@ public class VillageStructures {
      */
     private static void addPieceToPool(Registry<StructureTemplatePool> templatePoolRegistry, Holder<StructureProcessorList> emptyProcessor, Identifier poolRL, String nbtPieceRL, StructureTemplatePool.Projection projection, int weight) {
         // Grab the pool we want to add to
-        StructureTemplatePool pool = templatePoolRegistry.get(poolRL);
+        StructureTemplatePool pool = templatePoolRegistry.getValue(poolRL);
         if (pool == null) return;
 
         // Grabs the nbt piece and creates a SingleJigsawPiece of it that we can add to a structure's pool.
@@ -76,7 +76,7 @@ public class VillageStructures {
         int weight = ConfigHelper.common().villagers.mechanicHouseWeight.get();
         if (weight > 0) {
             Holder<StructureProcessorList> emptyProcessor = event.getServer().registryAccess().lookupOrThrow(Registries.PROCESSOR_LIST)
-                    .getHolderOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, Identifier.parse("minecraft:empty")));
+                    .getOrThrow(ResourceKey.create(Registries.PROCESSOR_LIST, Identifier.parse("minecraft:empty")));
 
             Registry<StructureTemplatePool> templatePoolRegistry = event.getServer().registryAccess().lookupOrThrow(Registries.TEMPLATE_POOL);
 

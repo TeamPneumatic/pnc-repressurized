@@ -30,7 +30,7 @@ public interface ICustomTooltipName {
     static String getTranslationKey(ItemStack stack, boolean brief) {
         String key = "gui.tooltip." + (stack.getItem() instanceof ICustomTooltipName c ?
                 c.getCustomTooltipTranslationKey() :
-                stack.getDescriptionId());
+                stack.getItem().getDescriptionId());
 
         // brief version (if exists) is used for item/block tooltips
         // long/default version is used in JEI info tab and GUI side tab

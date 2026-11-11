@@ -129,7 +129,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                 ItemStack stack = drone.getInv().getStackInSlot(0);
                 Player fakePlayer = drone.getFakePlayer();
                 if (stack.getItem().interactLivingEntity(stack, fakePlayer, targetedEntity, InteractionHand.MAIN_HAND).consumesAction()
-                        || targetedEntity.interact(fakePlayer, InteractionHand.MAIN_HAND).consumesAction()) {
+                        || targetedEntity.interact(fakePlayer, InteractionHand.MAIN_HAND, targetedEntity.position()).consumesAction()) {
                     // fake player's inventory has probably been modified in some way
                     // copy items back to drone inventory, dropping on the ground any items that don't fit
                     for (int i = 0; i < fakePlayer.getInventory().getNonEquipmentItems().size(); i++) {

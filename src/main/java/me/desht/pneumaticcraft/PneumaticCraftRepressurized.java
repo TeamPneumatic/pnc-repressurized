@@ -119,7 +119,7 @@ public class PneumaticCraftRepressurized {
     private void thirdPartyPreInit() {
         ModList.get().getModContainerById(Names.MOD_ID).ifPresent(pncMod -> {
             ThirdPartyManager.instance().preInit(pncMod.getEventBus());
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 ThirdPartyManager.instance().clientPreInit(pncMod.getEventBus());
             }
         });
@@ -147,7 +147,6 @@ public class PneumaticCraftRepressurized {
         ModCriterionTriggers.CRITERION_TRIGGERS.register(modBus);
         ModDataComponents.COMPONENTS.register(modBus);
         ModAttachmentTypes.ATTACHMENT_TYPES.register(modBus);
-        ModArmorMaterials.ARMOR_MATERIALS.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);

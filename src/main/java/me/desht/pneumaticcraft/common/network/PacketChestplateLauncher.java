@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.mixin.accessors.AbstractArrowAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -80,7 +81,7 @@ public record PacketChestplateLauncher(float amount) implements CustomPacketPayl
             // Special launch case for arrows/tridents
             if (launchedEntity instanceof AbstractArrow arrow) {
                 arrow.pickup = sp.isCreative() ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;
-                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * message.amount());
+                arrow.setBaseDamage(((AbstractArrowAccess) arrow).getBaseDamage() + 0.25 * upgrades * message.amount());
             }
 
             // Launches item

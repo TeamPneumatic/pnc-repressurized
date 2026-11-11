@@ -182,7 +182,7 @@ public class ModCommands {
 
         if (!stack.getComponents().isEmpty()) {
             int amount = stack.getComponents().size();
-            source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.components_header", amount, stack.getItem().getDescription())
+            source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.components_header", amount, stack.getItem().getName(stack))
                     .withStyle(ChatFormatting.YELLOW), false);
             if (!all) {
                 source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.non_default_components")
@@ -290,7 +290,7 @@ public class ModCommands {
                 GlobalVariableHelper.getInstance().setPos(id, v, pos);
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
             }).ifRight(item -> {
-                ItemStack stack = new ItemStack(item.getItem());
+                ItemStack stack = new ItemStack(item.item());
                 GlobalVariableHelper.getInstance().setStack(id, v, stack);
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
             });

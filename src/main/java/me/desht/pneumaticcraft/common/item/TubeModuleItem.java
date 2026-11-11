@@ -71,7 +71,7 @@ public class TubeModuleItem extends Item {
             BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             if (state.getBlock() instanceof PressureTubeBlock) {
                 BlockHitResult brtr = new BlockHitResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
-                return state.useItemOn(context.getItemInHand(), context.getLevel(), context.getPlayer(), context.getHand(), brtr).result();
+                return state.useItemOn(context.getItemInHand(), context.getLevel(), context.getPlayer(), context.getHand(), brtr);
             }
         }
         return super.useOn(context);

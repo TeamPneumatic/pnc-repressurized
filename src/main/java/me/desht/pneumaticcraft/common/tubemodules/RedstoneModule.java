@@ -337,7 +337,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
         if (comparatorInput && upgraded) {
             BlockPos pos2 = pressureTube.getBlockPos().relative(getDirection());
             BlockState state = world.getBlockState(pos2);
-            return state.hasAnalogOutputSignal() ? state.getAnalogOutputSignal(world, pos2) : 0;
+            return state.hasAnalogOutputSignal() ? state.getAnalogOutputSignal(world, pos2, getDirection().getOpposite()) : 0;
         } else {
             return world.getSignal(pressureTube.getBlockPos().relative(getDirection()), getDirection());
         }

@@ -152,7 +152,9 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 InteractionResult result = stack.useOn(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
                 if (result == InteractionResult.PASS) {
                     InteractionResult rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
-                    fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, rightClickResult.getObject());
+                    if (rightClickResult instanceof InteractionResult.Success success && success.heldItemTransformedTo() != null) {
+                        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, success.heldItemTransformedTo());
+                    }
                 }
                 if (fakePlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
                     net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(fakePlayer, copyBeforeUse, InteractionHand.MAIN_HAND);

@@ -606,7 +606,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
                 Identifier id = widgetName.contains(":") ? Identifier.parse(widgetName) : RL(widgetName);
-                ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(id);
+                ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.getValue(id);
 
                 Validate.notNull(type,
                         "No action with the name '" + widgetName + "'!");

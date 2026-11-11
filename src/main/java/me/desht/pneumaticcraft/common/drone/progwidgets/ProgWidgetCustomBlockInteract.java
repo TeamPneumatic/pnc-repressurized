@@ -72,7 +72,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            customType = PNCRegistries.PROG_WIDGETS_REGISTRY.get(RL(interactor.getID()));
+            customType = PNCRegistries.PROG_WIDGETS_REGISTRY.getValue(RL(interactor.getID()));
             Objects.requireNonNull(customType);
         }
         return customType;

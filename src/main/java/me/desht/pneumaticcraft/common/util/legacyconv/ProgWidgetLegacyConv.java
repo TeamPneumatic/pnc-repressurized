@@ -331,7 +331,7 @@ public class ProgWidgetLegacyConv {
                 Log.error("Legacy import: no area converter found for {}! Substituting 'box'.", oldType);
                 return new AreaTypeBox();
             } else {
-                var s = PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.get(RL(newTypeId));
+                var s = PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.getValue(RL(newTypeId));
                 return s != null ? Util.make(s.createDefaultInstance(), t -> t.convertFromLegacy(oldType, subTypeInfo)) : new AreaTypeBox();
             }
         }
