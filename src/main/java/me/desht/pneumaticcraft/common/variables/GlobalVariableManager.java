@@ -20,6 +20,9 @@ package me.desht.pneumaticcraft.common.variables;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -31,6 +34,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,13 +44,16 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 /**
  * Manages global variables. These are prefixed with '#' or '%'.
  */
 public class GlobalVariableManager extends SavedData {
     public static final int MAX_VARIABLE_LEN = 64;
 
-    private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
+    private static final SavedDataType<GlobalVariableManager> TYPE = new SavedDataType<>(RL("global_variables"),
+            level -> new GlobalVariableManager(), ValueIOBridge.savedDataCodec(GlobalVariableManager::load, (data, provider) -> data.save(new CompoundTag(), provider)));
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 
     private static ServerLevel overworld;
@@ -60,7 +67,7 @@ public class GlobalVariableManager extends SavedData {
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
             return CLIENT_INSTANCE;
         } else {
-            return getOverworld().getDataStorage().computeIfAbsent(new Factory<>(GlobalVariableManager::new, GlobalVariableManager::load), DATA_KEY);
+            return getOverworld().getDataStorage().computeIfAbsent(TYPE);
         }
     }
 
@@ -172,18 +179,17 @@ public class GlobalVariableManager extends SavedData {
         globalItemVars.putAll(readItemList(provider, tag.getListOrEmpty("globalItemVars")));
 
         CompoundTag playerPos = tag.getCompoundOrEmpty("playerVars");
-        for (String id : playerPos.getAllKeys()) {
+        for (String id : playerPos.keySet()) {
             readPosList(playerPos.getListOrEmpty(id)).forEach((k, v) -> playerVars.put(UUID.fromString(id), k, v));
         }
 
         CompoundTag playerItems = tag.getCompoundOrEmpty("playerItemVars");
-        for (String id : playerItems.getAllKeys()) {
+        for (String id : playerItems.keySet()) {
             readItemList(provider, playerItems.getListOrEmpty(id)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
     }
 
-    @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+    private CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.put("globalVars", writePosList(globalVars));
 
         tag.put("globalItemVars", writeItemList(provider, globalItemVars));
@@ -207,7 +213,7 @@ public class GlobalVariableManager extends SavedData {
         Map<String,BlockPos> map = new HashMap<>();
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompoundOrEmpty(i);
-            t.read("pos", BlockPos.CODEC).ifPresent(pos -> map.put(t.getString("varName"), pos));
+            t.read("pos", BlockPos.CODEC).ifPresent(pos -> map.put(t.getStringOr("varName", ""), pos));
         }
         return map;
     }
@@ -225,21 +231,21 @@ public class GlobalVariableManager extends SavedData {
 
     private Map<String,ItemStack> readItemList(HolderLookup.Provider provider, ListTag list) {
         Map<String,ItemStack> map = new HashMap<>();
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompoundOrEmpty(i);
-            map.put(t.getString("varName"), ItemStack.parseOptional(provider, t.getCompoundOrEmpty("item")));
+            map.put(t.getStringOr("varName", ""), t.read("item", ItemStack.OPTIONAL_CODEC, ops).orElse(ItemStack.EMPTY));
         }
         return map;
     }
 
     private ListTag writeItemList(HolderLookup.Provider provider, Map<String, ItemStack> map) {
         ListTag list = new ListTag();
+        RegistryOps<Tag> ops = provider.createSerializationContext(NbtOps.INSTANCE);
         for (Map.Entry<String, ItemStack> entry : map.entrySet()) {
             CompoundTag t = new CompoundTag();
             t.putString("varName", entry.getKey());
-            CompoundTag itemTag = new CompoundTag();
-            entry.getValue().save(provider, itemTag);
-            t.put("item", itemTag);
+            t.store("item", ItemStack.OPTIONAL_CODEC, ops, entry.getValue());
             list.add(t);
         }
         return list;

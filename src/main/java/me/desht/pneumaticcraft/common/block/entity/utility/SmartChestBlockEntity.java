@@ -43,6 +43,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -492,7 +493,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
                 if (!filter[i].isEmpty()) {
                     CompoundTag subTag = new CompoundTag();
                     subTag.putInt("Slot", i);
-                    filter[i].save(provider, subTag);
+                    subTag.store(ItemStack.MAP_CODEC, provider.createSerializationContext(NbtOps.INSTANCE), filter[i]);
                     l.add(subTag);
                 }
             }
@@ -508,7 +509,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             ListTag l = nbt.getListOrEmpty("Filter");
             for (int i = 0; i < l.size(); i++) {
                 CompoundTag tag = l.getCompoundOrEmpty(i);
-                filter[tag.getIntOr("Slot", 0)] = ItemStack.parseOptional(provider, tag);
+                filter[tag.getIntOr("Slot", 0)] = tag.read(ItemStack.MAP_CODEC, provider.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
             }
         }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.heat;
 
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -25,18 +26,18 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class HeatExtractionTracker extends SavedData {
-    private static final String DATA_NAME = "PneumaticCraftHeatExtraction";
+    private static final SavedDataType<HeatExtractionTracker> TYPE = new SavedDataType<>(RL("heat_extraction"),
+            level -> new HeatExtractionTracker(), ValueIOBridge.savedDataCodec(HeatExtractionTracker::load, (data, provider) -> data.save(new CompoundTag(), provider)));
 
     private final Map<BlockPos, Double> extracted = new HashMap<>();
-
-    public static SavedData.Factory<HeatExtractionTracker> factory() {
-        return new SavedData.Factory<>(HeatExtractionTracker::new, HeatExtractionTracker::load, null);
-    }
 
     private HeatExtractionTracker() {
     }
@@ -46,7 +47,7 @@ public class HeatExtractionTracker extends SavedData {
     }
 
     public static HeatExtractionTracker getInstance(Level world) {
-        return ((ServerLevel) world).getDataStorage().computeIfAbsent(HeatExtractionTracker.factory(), DATA_NAME);
+        return ((ServerLevel) world).getDataStorage().computeIfAbsent(TYPE);
     }
 
     public double getHeatExtracted(BlockPos pos) {
@@ -69,14 +70,13 @@ public class HeatExtractionTracker extends SavedData {
         ListTag list = nbt.getListOrEmpty("extracted");
         for (int i = 0; i < list.size(); i++) {
             CompoundTag sub = list.getCompoundOrEmpty(i);
-            sub.read("pos", BlockPos.CODEC).ifPresent(pos -> extracted.put(pos, sub.getDouble("heat")));
+            sub.read("pos", BlockPos.CODEC).ifPresent(pos -> extracted.put(pos, sub.getDoubleOr("heat", 0.0)));
         }
 
         return this;
     }
 
-    @Override
-    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
+    private CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         ListTag list = new ListTag();
         extracted.forEach((pos, heat) -> {
             CompoundTag sub = new CompoundTag();

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.hacking;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorRegistry;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.IdentifierException;
 import net.minecraft.core.BlockPos;
@@ -15,16 +16,20 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
 public class HackTickTracker extends SavedData {
     // Note: only block hacks are serialized to world saved data
     // Entity hacks are saved on the entity via CapabilityHacking
-    private static final String DATA_NAME = "PneumaticCraftBlockHacks";
+    private static final SavedDataType<HackTickTracker> TYPE = new SavedDataType<>(RL("block_hacks"),
+            level -> new HackTickTracker(), ValueIOBridge.savedDataCodec(HackTickTracker::load, (data, provider) -> data.save(new CompoundTag(), provider)));
 
     private static final HackTickTracker clientInstance = new HackTickTracker();
 
@@ -40,7 +45,7 @@ public class HackTickTracker extends SavedData {
 
     public static HackTickTracker getInstance(Level level) {
         return level instanceof ServerLevel s ?
-                s.getDataStorage().computeIfAbsent(new Factory<>(HackTickTracker::new, HackTickTracker::load), DATA_NAME) :
+                s.getDataStorage().computeIfAbsent(TYPE) :
                 clientInstance;
     }
 
@@ -65,8 +70,7 @@ public class HackTickTracker extends SavedData {
         return this;
     }
 
-    @Override
-    public CompoundTag save(CompoundTag pCompoundTag, HolderLookup.Provider provider) {
+    private CompoundTag save(CompoundTag pCompoundTag, HolderLookup.Provider provider) {
         ListTag blockTag = new ListTag();
         hackedBlocks.forEach((pos, hackable) -> {
             CompoundTag sub = new CompoundTag();
