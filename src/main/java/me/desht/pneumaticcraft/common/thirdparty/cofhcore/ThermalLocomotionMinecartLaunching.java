@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Map;
@@ -30,7 +31,7 @@ public class ThermalLocomotionMinecartLaunching {
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
             EntityType<?> entityType = launchMap.get(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow());
-            return entityType != null ? entityType.create(player.level()) : null;
+            return entityType != null ? entityType.create(player.level(), EntitySpawnReason.TRIGGERED) : null;
         });
     }
 

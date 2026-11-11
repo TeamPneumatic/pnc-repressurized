@@ -36,7 +36,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -134,7 +134,7 @@ public class DroneItem extends PressurizableItem
 
             if (level instanceof ServerLevelAccessor serverLevel) {
                 EventHooks.finalizeMobSpawn(drone, serverLevel, serverLevel.getCurrentDifficultyAt(placePos),
-                        MobSpawnType.TRIGGERED, null);
+                        EntitySpawnReason.TRIGGERED, null);
             }
 
             return true;

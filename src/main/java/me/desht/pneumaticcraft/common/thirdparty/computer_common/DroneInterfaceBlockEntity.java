@@ -47,6 +47,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
@@ -184,7 +185,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
+                DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel(), EntitySpawnReason.TRIGGERED);
                 PNCRegistries.PROG_WIDGETS_REGISTRY.entrySet().forEach(entry -> {
                     IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {

@@ -28,6 +28,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -56,7 +57,7 @@ public class VortexCannonItem extends PressurizableItem {
         } else {
             if (airHandler.getPressure() > 0.1f) {
                 world.playSound(playerIn, playerIn.getX(), playerIn.getY(), playerIn.getZ(), ModSounds.AIR_CANNON.get(), SoundSource.PLAYERS, 1.0F, 0.7F + factor * 0.2F);
-                VortexEntity vortex = ModEntityTypes.VORTEX.get().create(world);
+                VortexEntity vortex = ModEntityTypes.VORTEX.get().create(world, EntitySpawnReason.TRIGGERED);
                 if (vortex != null) {
                     Vec3 directionVec = playerIn.getLookAngle().normalize().scale(playerIn.isSprinting() ? -0.35 : -0.15);
                     Vec3 vortexPos = playerIn.position().add(0, playerIn.getEyeHeight() / 2, 0).add(directionVec);

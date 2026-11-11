@@ -46,6 +46,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -115,7 +116,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     ServerLevel serverworld = (ServerLevel)world;
                     CompoundTag nbt = new CompoundTag();
                     nbt.putString("id", regName.toString());
-                    Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
+                    Entity entity = EntityType.loadEntityRecursive(nbt, world, EntitySpawnReason.SPAWNER, (e1) -> {
                         e1.snapTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
                         return e1;
                     });

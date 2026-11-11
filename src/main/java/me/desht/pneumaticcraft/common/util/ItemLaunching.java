@@ -35,9 +35,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
@@ -191,7 +191,7 @@ public class ItemLaunching {
 
             } else if (item instanceof SpawnEggItem egg) {
                 EntityType<?> type = egg.getType(stack);
-                Entity e = type.spawn(level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+                Entity e = type.spawn(level, stack, player, player.blockPosition(), EntitySpawnReason.SPAWN_ITEM_USE, false, false);
 
                 if (e instanceof LivingEntity && stack.has(DataComponents.CUSTOM_NAME)) {
                     e.setCustomName(stack.getHoverName());

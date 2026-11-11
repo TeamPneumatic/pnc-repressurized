@@ -38,9 +38,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -133,12 +133,12 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
             double y = worldPosition.getY() + serverLevel.getRandom().nextInt(3) - 1;
             double z = (double)worldPosition.getZ() + (serverLevel.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D;
             if (serverLevel.noCollision(type.getSpawnAABB(x, y, z))) {
-                Entity entity = type.create(serverLevel);
+                Entity entity = type.create(serverLevel, EntitySpawnReason.SPAWNER);
                 if (!(entity instanceof Mob mobentity)) return false;
                 int entityCount = serverLevel.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.snapTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
-                EventHooks.finalizeMobSpawnSpawner(mobentity, serverLevel, serverLevel.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
+                EventHooks.finalizeMobSpawnSpawner(mobentity, serverLevel, serverLevel.getCurrentDifficultyAt(getPosition()), EntitySpawnReason.SPAWNER, null, this, true);
                 if (!serverLevel.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();

@@ -29,11 +29,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
@@ -64,10 +66,13 @@ public class SemiblockItem extends Item {
     public AbstractSemiblockEntity createEntity(Level world, ItemStack stack, Player player, BlockPos pos) {
         Identifier regName = PneumaticCraftUtils.getRegistryName(this).orElseThrow();
         return BuiltInRegistries.ENTITY_TYPE.getOptional(regName).map(type -> {
-            Entity e = type.create(world);
+            Entity e = type.create(world, EntitySpawnReason.SPAWN_ITEM_USE);
             if (e instanceof AbstractSemiblockEntity semi) {
                 e.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
-                EntityType.updateCustomEntityTag(world, player, e, stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY));
+                CustomData data = stack.getOrDefault(ModDataComponents.SEMIBLOCK_DATA, CustomData.EMPTY);
+                if (!data.isEmpty()) {
+                    EntityType.updateCustomEntityTag(world, player, e, TypedEntityData.<EntityType<?>>of(type, data.copyTag()));
+                }
                 return semi;
             }
             return null;

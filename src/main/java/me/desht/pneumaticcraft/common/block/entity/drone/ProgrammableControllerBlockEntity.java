@@ -70,6 +70,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -245,7 +246,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.tickClient();
 
         if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(BlockPos.containing(curX, curY, curZ))) {
-            drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
+            drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel(), EntitySpawnReason.TRIGGERED);
             if (drone != null) {
                 drone.setController(this);
                 drone.setPos(curX, curY, curZ);
