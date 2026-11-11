@@ -24,12 +24,13 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
@@ -51,7 +52,7 @@ public class FluidYeastCulture {
         }
 
         @Override
-        public void tick(Level worldIn, BlockPos pos, FluidState state) {
+        public void tick(ServerLevel worldIn, BlockPos pos, BlockState blockState, FluidState state) {
             if (ConfigHelper.common().recipes.inWorldYeastCrafting.get()) {
                 List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AABB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
@@ -70,7 +71,7 @@ public class FluidYeastCulture {
                     }
                 }
             }
-            super.tick(worldIn, pos, state);
+            super.tick(worldIn, pos, blockState, state);
         }
     }
 

@@ -41,7 +41,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -62,7 +61,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                             Codec.STRING.optionalFieldOf("var", "").forGetter(ProgWidgetItemFilter::getVariable)
                     )
             ).apply(builder, ProgWidgetItemFilter::new));
-    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemFilter> STREAM_CODEC = NeoForgeStreamCodecs.composite(
+    public static final StreamCodec<RegistryFriendlyByteBuf, ProgWidgetItemFilter> STREAM_CODEC = StreamCodec.composite(
             PositionFields.STREAM_CODEC, ProgWidget::getPosition,
             ItemStack.OPTIONAL_STREAM_CODEC, ProgWidgetItemFilter::getFilter,
             ByteBufCodecs.BOOL, ProgWidgetItemFilter::isCheckDurability,

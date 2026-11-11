@@ -37,7 +37,7 @@ public record PacketSetEntityMotion(Vector3f vec, int entityId) implements Custo
     public static final Type<PacketSetEntityMotion> TYPE = new Type<>(RL("set_entity_motion"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketSetEntityMotion> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, PacketSetEntityMotion::vec,
+            NetworkHandler.VECTOR3F, PacketSetEntityMotion::vec,
             ByteBufCodecs.INT, PacketSetEntityMotion::entityId,
             PacketSetEntityMotion::new
     );

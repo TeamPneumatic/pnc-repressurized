@@ -36,12 +36,9 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
-import net.minecraft.world.item.trading.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
@@ -55,7 +52,6 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -327,35 +323,8 @@ public enum AmadronOfferManager {
     }
 
     private void setupVillagerTrades() {
-        // this only needs to be done once, on first load
-        if (villagerTrades.isEmpty()) {
-            Set<VillagerProfession> validSet = new HashSet<>();
-            RandomSource rand = RandomSource.createThreadLocalInstance();
-            VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
-                IntStream.range(0, trades.length).forEach(i -> {
-                    MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
-                    if (offer != null && !offer.getBaseCostA().isEmpty() && !offer.getResult().isEmpty()) {
-                        Identifier offerId = Identifier.parse(profession + "_" + level + "_" + i);
-                        String key = profession.toString() + "_" + level;
-                        villagerTrades.computeIfAbsent(key, k ->
-                                new ArrayList<>()).add(AmadronOffer.villagerTrade(offerId, offer, level));
-                        validSet.add(profession);
-                    }
-                });
-            }));
-            validProfessions.addAll(validSet);
-        }
-    }
-
-    private MerchantOffer getOfferForNullVillager(VillagerTrades.ItemListing trade, RandomSource rand) {
-        try {
-            // shouldn't really pass null here, but creating a fake villager can cause worldgen-related server lockups
-            // https://github.com/TeamPneumatic/pnc-repressurized/issues/899
-            //noinspection ConstantConditions
-            return trade.getOffer(null, rand);
-        }catch (NullPointerException ignored) {
-            return null;
-        }
+        // TODO 26.1 trades: VillagerTrades.TRADES is gone; villager trades are data-driven trade sets now, so this
+        //  needs to build offers from the TradeSet registry instead. No villager trades are offered until then.
     }
 
     public void rebuildRequired() {

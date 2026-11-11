@@ -124,6 +124,8 @@ sourceSets.main.java {
 	// TODO 26.1 datagen: data providers are ported in a later PR; until then the generated resources
 	//  from 1.21.1 stay in src/generated (and need regenerating once datagen works again)
 	exclude "me/desht/pneumaticcraft/datagen/**"
+	// TODO 26.1 trades: villager trades are data-driven trade sets now; ported with the trade sets
+	exclude "me/desht/pneumaticcraft/common/util/RandomTradeBuilder.java"
 }
 
 neoForge {

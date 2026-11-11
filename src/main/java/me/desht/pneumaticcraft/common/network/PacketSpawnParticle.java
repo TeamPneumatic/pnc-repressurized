@@ -41,10 +41,10 @@ public record PacketSpawnParticle(ParticleOptions particle, Vector3f pos, Vector
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketSpawnParticle> STREAM_CODEC = StreamCodec.composite(
             ParticleTypes.STREAM_CODEC, PacketSpawnParticle::particle,
-            ByteBufCodecs.VECTOR3F, PacketSpawnParticle::pos,
-            ByteBufCodecs.VECTOR3F, PacketSpawnParticle::speed,
+            NetworkHandler.VECTOR3F, PacketSpawnParticle::pos,
+            NetworkHandler.VECTOR3F, PacketSpawnParticle::speed,
             ByteBufCodecs.VAR_INT, PacketSpawnParticle::numParticles,
-            ByteBufCodecs.optional(ByteBufCodecs.VECTOR3F), PacketSpawnParticle::randomOffset,
+            ByteBufCodecs.optional(NetworkHandler.VECTOR3F), PacketSpawnParticle::randomOffset,
             PacketSpawnParticle::new
     );
 

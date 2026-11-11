@@ -42,7 +42,7 @@ public record PacketSpawnRing(Vector3f vec, int targetEntityId, int color) imple
     public static final Type<PacketSpawnRing> TYPE = new Type<>(RL("spawn_ring"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketSpawnRing> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, PacketSpawnRing::vec,
+            NetworkHandler.VECTOR3F, PacketSpawnRing::vec,
             ByteBufCodecs.INT, PacketSpawnRing::targetEntityId,
             ByteBufCodecs.INT, PacketSpawnRing::color,
             PacketSpawnRing::new

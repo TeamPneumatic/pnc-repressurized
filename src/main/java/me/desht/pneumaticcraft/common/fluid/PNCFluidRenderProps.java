@@ -22,6 +22,11 @@ import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtension
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
+/**
+ * TODO 26.1 render: fluid textures and tint are no longer part of {@link IClientFluidTypeExtensions}; they come from
+ *  a {@code FluidModel}, registered in {@code RegisterFluidModelsEvent} (client). The client port should register a
+ *  {@code FluidModel.Unbaked} for each PNC fluid from these properties.
+ */
 public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     private final Identifier still;
     private final Identifier flowing;
@@ -53,17 +58,14 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
         return new PNCFluidRenderProps(textureBase + "_still", textureBase + "_flow", colorTint);
     }
 
-    @Override
     public Identifier getStillTexture() {
         return still;
     }
 
-    @Override
     public Identifier getFlowingTexture() {
         return flowing;
     }
 
-    @Override
     public int getTintColor() {
         return colorTint;
     }

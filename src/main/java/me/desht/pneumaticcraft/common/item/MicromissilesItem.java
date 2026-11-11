@@ -52,7 +52,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
+import net.neoforged.neoforge.event.AnvilUpdateEvent;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
 import java.util.List;
@@ -161,8 +161,9 @@ public class MicromissilesItem extends Item {
     @EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
-        public static void onMissilesRepair(AnvilRepairEvent event) {
+        public static void onMissilesRepair(AnvilUpdateEvent event) {
             // allow repeated repairing without XP costs spiralling
+            // (AnvilRepairEvent is gone, and AnvilCraftEvent only has copies of the stacks, so this is done on the anvil result)
             if (event.getOutput().getItem() instanceof MicromissilesItem) {
                 event.getOutput().set(DataComponents.REPAIR_COST, 0);
             }

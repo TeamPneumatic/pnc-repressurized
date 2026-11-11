@@ -30,8 +30,12 @@ public class PNCDungeonLootModifier extends LootModifier {
             () -> RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, PNCDungeonLootModifier::new))
     );
 
+    public PNCDungeonLootModifier(LootItemCondition[] conditions, int priority) {
+        super(conditions, priority);
+    }
+
     public PNCDungeonLootModifier(LootItemCondition[] conditions) {
-        super(conditions);
+        this(conditions, IGlobalLootModifier.DEFAULT_PRIORITY);
     }
 
     @Override

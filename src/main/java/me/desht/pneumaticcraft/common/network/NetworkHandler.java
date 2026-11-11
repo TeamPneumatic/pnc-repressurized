@@ -34,8 +34,11 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -46,14 +49,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
+
+    /**
+     * ByteBufCodecs.VECTOR3F is typed as the read-only Vector3fc in 26.1; PNC packets carry a mutable Vector3f
+     */
+    public static final StreamCodec<ByteBuf, Vector3f> VECTOR3F = ByteBufCodecs.VECTOR3F.map(Vector3f::new, v -> v);
 
 	@SubscribeEvent
 	public static void register(final RegisterPayloadHandlersEvent event) {
@@ -246,7 +256,7 @@ public class NetworkHandler {
     }
 
     public static void sendToServer(CustomPacketPayload message) {
-		PacketDistributor.sendToServer(message);
+		ClientPacketDistributor.sendToServer(message);
     }
 
 	/**

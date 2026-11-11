@@ -137,7 +137,7 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return !state.is(getDrillBit(stack).getTier().getIncorrectBlocksForDrops());
+        return !state.is(getDrillBit(stack).getTier().incorrectBlocksForDrops());
     }
 
     @Override
