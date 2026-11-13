@@ -147,8 +147,13 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
     }
 
     public Component getDescription() {
+        return getDescription(currentMode);
+    }
+
+    public Component getDescription(int mode) {
         if (te != null) {
-            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
+            int idx = mode >= 0 && mode < modes.size() ? mode : 0;
+            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(idx).getTranslationKey()).withStyle(ChatFormatting.YELLOW));
         } else {
             return Component.empty();
         }

@@ -73,21 +73,22 @@ public record PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) implements C
 
     private void handleServerSide(ServerPlayer player) {
         if (player.containerMenu instanceof AmadronAddTradeMenu) {
-            offer.updatePlayerId();
-            if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
-                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"));
-            } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
-                if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
-                    NetworkHandler.sendToAll(this);
+            offer.sanitize(player).ifPresent(safeOffer -> {
+                if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(safeOffer.getReversedOffer())) {
+                    player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"));
+                } else if (AmadronOfferManager.getInstance().addPlayerOffer(safeOffer)) {
+                    if (ConfigHelper.common().amadron.notifyOfTradeAddition.get()) {
+                        NetworkHandler.sendToAll(new PacketAmadronTradeAddCustom(safeOffer));
+                    }
+                    if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
+                        AmadronTabletItem.openGui(player, InteractionHand.MAIN_HAND);
+                    } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
+                        AmadronTabletItem.openGui(player, InteractionHand.OFF_HAND);
+                    }
+                } else {
+                    player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"));
                 }
-                if (player.getMainHandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    AmadronTabletItem.openGui(player, InteractionHand.MAIN_HAND);
-                } else if (player.getOffhandItem().getItem() == ModItems.AMADRON_TABLET.get()) {
-                    AmadronTabletItem.openGui(player, InteractionHand.OFF_HAND);
-                }
-            } else {
-                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"));
-            }
+            });
         }
     }
 }

@@ -27,6 +27,7 @@ public class DataGenerators {
         DataGenerator generator = event.getGenerator();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        PackOutput packOutput = generator.getPackOutput();
 
         generator.addProvider(event.includeServer(), new ModRecipeProvider(generator, lookupProvider));
         generator.addProvider(event.includeServer(), new ModLootTablesProvider(generator, lookupProvider));
@@ -39,9 +40,11 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModAdvancementProvider(generator, lookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModGLMProvider(generator, lookupProvider));
         generator.addProvider(event.includeServer(), new ModPoiTypeTagsProvider(generator, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModDataMapProvider(packOutput, lookupProvider));
         generator.addProvider(event.includeServer(), new ModStructureTagsProvider(generator, lookupProvider, event.getExistingFileHelper()));
+        generator.addProvider(event.includeServer(), new ModGameEventTagsProvider(packOutput, lookupProvider, event.getExistingFileHelper()));
 
-        makeProviders(generator.getPackOutput(), lookupProvider, existingFileHelper)
+        makeProviders(packOutput, lookupProvider, existingFileHelper)
                 .forEach(p -> generator.addProvider(event.includeServer(), p));
     }
 
@@ -50,7 +53,9 @@ public class DataGenerators {
                 .add(Registries.CONFIGURED_FEATURE, ModWorldGenProvider.ConfiguredFeatures::bootstrap)
                 .add(Registries.PLACED_FEATURE, ModWorldGenProvider.PlacedFeatures::bootstrap)
                 .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGenProvider.BiomeModifiers::bootstrap)
-                .add(Registries.DAMAGE_TYPE, ModDamageTypeProvider::bootstrap);
+                .add(Registries.DAMAGE_TYPE, ModDamageTypeProvider::bootstrap)
+//                .add(Registries.GAME_EVENT, ModGameEventProvider::bootstrap)
+                ;
         return List.of(
                 new DatapackBuiltinEntriesProvider(output, vanillaRegistries, builder, Set.of(Names.MOD_ID)),
                 new ModDamageTypeTagsProvider(output, append(vanillaRegistries, builder), efh)

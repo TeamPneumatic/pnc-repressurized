@@ -41,6 +41,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -243,8 +244,8 @@ public class AphorismTileBlock extends AbstractPneumaticCraftBlock implements Co
 
     @Override
     public int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex) {
-        if (world != null && pos != null) {
-            return PneumaticCraftUtils.getBlockEntityAt(world, pos, AphorismTileBlockEntity.class).map(teAt -> switch (tintIndex) {
+        if (world instanceof LevelReader reader && pos != null) {
+            return PneumaticCraftUtils.getBlockEntityAt(reader, pos, AphorismTileBlockEntity.class).map(teAt -> switch (tintIndex) {
                 case 0 -> // border
                         DyeColor.byId(teAt.getBorderColor()).getTextureDiffuseColor();
                 case 1 -> // background

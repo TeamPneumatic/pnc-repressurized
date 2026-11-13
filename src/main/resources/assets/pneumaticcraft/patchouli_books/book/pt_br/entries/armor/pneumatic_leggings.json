@@ -22,7 +22,7 @@
     {
       "type": "text",
       "title": "Melhoria de Velocidade (cont.)",
-      "text": "A GUI da armadura permite que o aumento de velocidade seja reduzido na hora, se você quiser alterar sua velocidade sem precisar encontrar uma $(l:machines/charging_station)Estação de Carregamento/$ para trocar melhorias."
+      "text": "A GUI da armadura permite que o aumento de velocidade seja reduzido na hora, se você quiser alterar sua velocidade sem precisar encontrar uma $(l:machines/charging_station)Estação de Carga/$ para trocar melhorias."
     },
     {
       "type": "spotlight",
@@ -32,7 +32,7 @@
     {
       "type": "text",
       "title": "Melhoria de Pulo (cont.)",
-      "text": "A GUI da armadura permite que o aumento de pulo seja reduzido na hora, se você quiser alterar a altura do seu pulo sem precisar encontrar uma $(l:machines/charging_station)Estação de Carregamento/$ para trocar melhorias."
+      "text": "A GUI da armadura permite que o aumento de pulo seja reduzido na hora, se você quiser alterar a altura do seu pulo sem precisar encontrar uma $(l:machines/charging_station)Estação de Carga/$ para trocar melhorias."
     }
   ]
 }

@@ -779,7 +779,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public void updateLabel() {
-        label = aiManager != null ? getAIManager().getLabel() : "Main";
+        label = aiManager != null ? getAIManager().getLabel() : DroneAIManager.LABEL_MAIN;
     }
 
     @Override

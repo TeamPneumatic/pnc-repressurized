@@ -52,6 +52,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class GlobalVariableManager extends SavedData {
     public static final int MAX_VARIABLE_LEN = 64;
 
+    private static final int MAX_GLOBAL_POS_SIZE = 100;
+    private static final int MAX_GLOBAL_STACK_SIZE = 100;
+    private static final int MAX_PLAYER_POS_SIZE = 100;
+    private static final int MAX_PLAYER_STACK_SIZE = 100;
+
     private static final SavedDataType<GlobalVariableManager> TYPE = new SavedDataType<>(RL("global_variables"),
             level -> new GlobalVariableManager(), ValueIOBridge.savedDataCodec(GlobalVariableManager::load, (data, provider) -> data.save(new CompoundTag(), provider)));
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
@@ -107,11 +112,15 @@ public class GlobalVariableManager extends SavedData {
         return pos == null ? BlockPos.ZERO : pos;
     }
 
+    private <K> boolean mayInsert(Map<K, ?> map, K key, int limit) {
+        return map.size() < limit || map.containsKey(key);
+    }
+
     void setPos(String varName, BlockPos pos) {
         if (!varName.isEmpty()) {
             if (pos == null) {
                 globalVars.remove(varName);
-            } else {
+            } else if (mayInsert(globalVars, varName, MAX_GLOBAL_POS_SIZE)) {
                 globalVars.put(varName, pos);
             }
             setDirty();
@@ -122,7 +131,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (coord == null) {
                 playerVars.remove(ownerUUID, varName);
-            } else {
+            } else if (mayInsert(playerVars.row(ownerUUID), varName, MAX_PLAYER_POS_SIZE)) {
                 playerVars.put(ownerUUID, varName, coord);
             }
             setDirty();
@@ -133,7 +142,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (item.isEmpty()) {
                 globalItemVars.remove(varName);
-            } else {
+            } else if (mayInsert(globalItemVars, varName, MAX_GLOBAL_STACK_SIZE)) {
                 globalItemVars.put(varName, item);
             }
             setDirty();
@@ -144,7 +153,7 @@ public class GlobalVariableManager extends SavedData {
         if (!varName.isEmpty()) {
             if (item.isEmpty()) {
                 playerItemVars.remove(ownerUUID, varName);
-            } else {
+            } else if (mayInsert(playerItemVars.row(ownerUUID), varName, MAX_PLAYER_STACK_SIZE)) {
                 playerItemVars.put(ownerUUID, varName, item);
             }
             setDirty();

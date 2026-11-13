@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.IInfluenceDispersing;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
@@ -321,6 +322,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
             sendDescriptionPacket();
             setChanged();
             purgeShapeCacheKey();
+            ModuleNetworkManager.getInstance(level).invalidateCache();
         }
     }
 
@@ -360,6 +362,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         if (sidesActuallyConnected != prevSidesConnected) {
             purgeShapeCacheKey();
+            ModuleNetworkManager.getInstance(level).invalidateCache();
         }
     }
 

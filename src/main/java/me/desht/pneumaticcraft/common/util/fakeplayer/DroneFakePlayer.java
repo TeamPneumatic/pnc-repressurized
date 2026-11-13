@@ -71,7 +71,8 @@ public class DroneFakePlayer extends FakePlayer {
 
     @Override
     public Vec3 position() {
-        return drone.getFakePlayerPos();
+        // shouldn't ever be null, but https://github.com/TeamPneumatic/pnc-repressurized/issues/1535
+        return drone == null ? Vec3.ZERO : drone.getFakePlayerPos();
     }
 
     @Override

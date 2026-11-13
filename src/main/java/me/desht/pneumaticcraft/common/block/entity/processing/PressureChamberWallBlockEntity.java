@@ -88,14 +88,15 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
 
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        onBlockBreak();
+        // not called when the block is moved (UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS), so never moving here
+        onBlockBreak(false);
         super.preRemoveSideEffects(pos, state);
     }
 
-    public void onBlockBreak() {
+    public void onBlockBreak(boolean isMoving) {
         teValve = getPrimaryValve();
         if (teValve != null) {
-            teValve.onMultiBlockBreak();
+            teValve.onMultiBlockBreak(isMoving);
         }
     }
 

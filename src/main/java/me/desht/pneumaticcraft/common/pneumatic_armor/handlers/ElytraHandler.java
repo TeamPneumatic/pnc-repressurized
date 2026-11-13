@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -66,14 +67,14 @@ public class ElytraHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     /**
      * Gliding is driven by the vanilla {@code minecraft:glider} item component, so keep that component on the
      * chestplate in step with whether the Elytra upgrade can be used right now (installed, switched on, and
-     * enough pressure). Called every tick for the worn chestplate, server-side; the component only actually
+     * enough pressure, and Jet Boots not in builder mode). Called every tick for the worn chestplate, server-side; the component only actually
      * changes when usability changes.
      *
      * @param handler the player's armor handler
      * @param chestStack the worn chestplate
      */
     public static void updateGlider(CommonArmorHandler handler, ItemStack chestStack) {
-        boolean usable = handler.upgradeUsable(CommonUpgradeHandlers.elytraHandler, true);
+        boolean usable = handler.upgradeUsable(CommonUpgradeHandlers.elytraHandler, true) && !isJetBootsBuilderMode(handler);
         if (usable != chestStack.has(DataComponents.GLIDER)) {
             if (usable) {
                 chestStack.set(DataComponents.GLIDER, Unit.INSTANCE);
@@ -81,6 +82,12 @@ public class ElytraHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
                 chestStack.remove(DataComponents.GLIDER);
             }
         }
+    }
+
+    private static boolean isJetBootsBuilderMode(CommonArmorHandler handler) {
+        Player player = handler.getPlayer();
+        return handler.upgradeUsable(CommonUpgradeHandlers.jetBootsHandler, true)
+                && JetBootsStateTracker.getTracker(player).getJetBootsState(player).isBuilderMode();
     }
 
     /**

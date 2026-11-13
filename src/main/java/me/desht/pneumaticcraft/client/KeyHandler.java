@@ -87,14 +87,14 @@ public enum KeyHandler {
 
     @SubscribeEvent
     public void onKey(InputEvent.Key event) {
-        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.PRESS) {
             knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
         }
     }
 
     @SubscribeEvent
     public void onMouse(InputEvent.MouseButton.Post event) {
-        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.PRESS) {
             knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
         }
     }

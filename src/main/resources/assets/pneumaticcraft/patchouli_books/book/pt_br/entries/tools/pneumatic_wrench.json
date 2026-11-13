@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "$(li)$(thing)Clicar com o botão direito/$ em $(l:base_concepts/drones)Drones/$ para desmontá-los, derrubando-os como um item.$(li)$(thing)Clicar com o botão direito/$ em $(l:tubes/pressure_tubes)Tubos de Pressão/$ para fechar/reabrir seções para isolá-las umas das outras.$(p)A $(item)Chaves Inglesas Pneumática/$ deve ser pressurizada em uma $(l:machines/charging_station)Estação de Carregamento/$ antes do uso."
+      "text": "$(li)$(thing)Clicar com o botão direito/$ em $(l:base_concepts/drones)Drones/$ para desmontá-los, derrubando-os como um item.$(li)$(thing)Clicar com o botão direito/$ em $(l:tubes/pressure_tubes)Tubos de Pressão/$ para fechar/reabrir seções para isolá-las umas das outras.$(p)A $(item)Chaves Inglesas Pneumática/$ deve ser pressurizada em uma $(l:machines/charging_station)Estação de Carga/$ antes do uso."
     },
     {
       "type": "crafting",

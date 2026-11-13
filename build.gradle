@@ -12,7 +12,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
 	id 'net.neoforged.moddev' version '2.0.148'
-    id "me.modmuss50.mod-publish-plugin" version "0.7.2"
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
 
 ext {
@@ -61,10 +61,6 @@ repositories {
 			includeGroup "net.darkhax.bookshelf"
 			includeGroup "org.openzen.zencode"
 		}
-	}
-	maven {
-		name = "OctoStudios"
-		url = uri("https://maven.octo-studios.com/releases")
 	}
 	maven {
 		name "K-4u Mod maven"
@@ -325,6 +321,8 @@ publishMods {
         projectSlug = "pneumaticcraft-repressurized"
         announcementTitle = "Download from Curseforge"
         optional("patchouli", "ctm")
+		client = true
+		server = true
     }
 
     modrinth {

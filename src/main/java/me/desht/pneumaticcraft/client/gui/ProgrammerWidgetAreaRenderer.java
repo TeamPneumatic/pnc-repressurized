@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
@@ -40,6 +41,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -161,7 +163,7 @@ public class ProgrammerWidgetAreaRenderer {
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
             PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, widget.getType())
-                            .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
+                    .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }
 
@@ -183,12 +185,12 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
-    public void render(GuiGraphics graphics, int x, int y, boolean showFlow, boolean showInfo) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, boolean showFlow, boolean showInfo) {
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
             float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
-            translatedX += shift * (x - translatedX) / prevScale;
-            translatedY += shift * (y - translatedY) / prevScale;
+            translatedX += shift * (mouseX - translatedX) / prevScale;
+            translatedY += shift * (mouseY - translatedY) / prevScale;
         }
         lastZoom = scaleScroll.getState();
 
@@ -202,7 +204,7 @@ public class ProgrammerWidgetAreaRenderer {
         float scale = getScale();
         poseStack.scale(scale, scale, 1);
 
-        if (showFlow) showFlow(graphics);
+        if (showFlow) showFlow(graphics, mouseX, mouseY);
 
         for (IProgWidget widget : progWidgets) {
             poseStack.pushPose();
@@ -273,12 +275,11 @@ public class ProgrammerWidgetAreaRenderer {
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
-    private void showFlow(GuiGraphics graphics) {
-        RenderSystem.lineWidth(1);
+    private void showFlow(GuiGraphics graphics, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.lineWidth(3f);
 
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
-
+        IProgWidget hovered = getHoveredWidget(mouseX, mouseY);
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
         for (IProgWidget w : progWidgets) {
             if (w instanceof ILabel l) {
@@ -286,34 +287,49 @@ public class ProgrammerWidgetAreaRenderer {
             }
         }
 
-        Matrix4f posMat = graphics.pose().last().pose();
+        float pt = 0.125f + (Minecraft.getInstance().level.getGameTime() % 30 + Minecraft.getInstance().getTimer().getGameTimeDeltaTicks()) / 40f;
+
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump jump) {
                 for (String jumpLocation : jump.getPossibleJumpLocations()) {
-                    for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, Collections.emptyList())) {
+                    for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, List.of())) {
                         int x1 = widget.getX() + widget.getWidth() / 4;
                         int y1 = widget.getY() + widget.getHeight() / 4;
                         int x2 = labelWidget.getX() + labelWidget.getWidth() / 4;
                         int y2 = labelWidget.getY() + labelWidget.getHeight() / 4;
-                        float midX = (x2 + x1) / 2F;
-                        float midY = (y2 + y1) / 2F;
-                        wr.addVertex(posMat,guiLeft + x1, guiTop + y1, 0.0f);
-                        wr.addVertex(posMat,guiLeft + x2, guiTop + y2, 0.0f);
-                        Vec3 arrowVec = new Vec3(x1 - x2, y1 - y2, 0).normalize();
-                        arrowVec = new Vec3(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
-                        arrowVec = arrowVec.yRot(ARROW_ANGLE);
-                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
-                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
-                        arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
-                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
-                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
+                        float angle = (float) Mth.atan2(y2 - y1, x2 - x1);
+                        int len = (int) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+
+                        boolean highlight = widget == hovered || labelWidget == hovered;
+                        float arrowPos = len * (highlight ? pt : 0.5f);
+                        int colorHi = highlight ? 0xFF00FF00 : 0xFFFFFFFF;
+                        int colorLo = highlight ? 0xFF008000 : 0xFF606060;
+
+                        graphics.pose().pushPose();
+                        graphics.pose().translate(guiLeft + x1, guiTop + y1, highlight ? 100f : 0f);
+                        graphics.pose().mulPose(Axis.ZP.rotation(angle));
+                        Matrix4f posMat = graphics.pose().last().pose();
+
+                        GuiUtils.drawWithTesselator(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, wr -> {
+                            for (int i = 0; i < 2; i++) {
+                                int color = i == 0 ? colorHi : colorLo;
+                                float yOff = i == 0 ? 0f : 0.13f;
+                                wr.addVertex(posMat, 0f, yOff, 0f).setColor(color);
+                                wr.addVertex(posMat, len, yOff, 0f).setColor(color);
+
+                                Vec3 arrowVec = new Vec3(-ARROW_SIZE, 0, 0);
+                                arrowVec = arrowVec.yRot(ARROW_ANGLE);
+                                wr.addVertex(posMat, arrowPos, yOff, 0.0f).setColor(color);
+                                wr.addVertex(posMat, arrowPos + (float) arrowVec.x, (float) arrowVec.z + yOff, 0.0f).setColor(color);
+                                arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
+                                wr.addVertex(posMat, arrowPos, yOff, 0.0f).setColor(color);
+                                wr.addVertex(posMat, arrowPos + (float) arrowVec.x, (float) arrowVec.z + yOff, 0.0f).setColor(color);
+                            }
+                        });
+                        graphics.pose().popPose();
                     }
                 }
             }
-        }
-        MeshData meshData = wr.build();
-        if (meshData != null) {
-            BufferUploader.drawWithShader(meshData);
         }
     }
 

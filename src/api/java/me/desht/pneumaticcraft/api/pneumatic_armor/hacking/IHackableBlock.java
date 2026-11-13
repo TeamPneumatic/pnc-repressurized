@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -139,7 +140,11 @@ public interface IHackableBlock {
      */
     default Optional<BlockHitResult> fakeRayTrace(Player player, BlockPos targetPos) {
         BlockState state = player.level().getBlockState(targetPos);
-        AABB aabb = state.getShape(player.level(), targetPos).bounds().move(targetPos);
+        VoxelShape shape = state.getShape(player.level(), targetPos);
+        if (shape.isEmpty()) {
+            return Optional.empty();
+        }
+        AABB aabb = shape.bounds().move(targetPos);
         Optional<Vec3> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
         Direction dir = Direction.orderedByNearest(player)[0];
         return hit.map(v -> new BlockHitResult(v, dir.getOpposite(), targetPos, false));

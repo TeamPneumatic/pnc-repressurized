@@ -468,7 +468,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         tag.put("Valves", accList);
     }
 
-    public void onMultiBlockBreak() {
+    public void onMultiBlockBreak(boolean isMoving) {
         if (isPrimaryValve()) {
             Iterator<ItemStack> itemsInChamberIterator = new ItemStackHandlerIterable(allItems).iterator();
             while (itemsInChamberIterator.hasNext()) {
@@ -529,13 +529,14 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
 
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        // not called when the block is moved (UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS), so never moving here
         if (multiBlockSize > 0) {
-            onMultiBlockBreak();
+            onMultiBlockBreak(false);
         } else if (!accessoryValves.isEmpty()) {
             accessoryValves.stream()
                     .filter(valve -> valve.multiBlockSize > 0)
                     .findFirst()
-                    .ifPresent(PressureChamberValveBlockEntity::onMultiBlockBreak);
+                    .ifPresent(valve -> valve.onMultiBlockBreak(false));
         }
         super.preRemoveSideEffects(pos, state);
     }

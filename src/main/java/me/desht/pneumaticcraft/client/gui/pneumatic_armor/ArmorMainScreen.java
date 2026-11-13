@@ -220,7 +220,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         super.tick();
 
         IOptionPage optionPage = getCurrentOptionsPage().page;
-        optionPage.tick();
+        optionPage.tick(this);
     }
 
     @Override

@@ -38,7 +38,6 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -104,6 +103,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 
     private static final Lazy<WildcardedRLMatcher> dimensionBlacklist
             = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist);
+
+    private static boolean curiosIntegrationEnabled = false;
 
     @DescSynced
     private String playerName = "";
@@ -171,12 +172,16 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
 
         // TODO 26.1 integration: Curios
-//        if (Curios.available) {
+//        if (Curios.available && curiosIntegrationEnabled) {
 //            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
 //            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
 //                    Capabilities.Item.BLOCK, () -> playerCuriosHandler);
 //            invHandlers.add(playerCuriosHandler);
 //        }
+    }
+
+    public static void onConfigRefresh() {
+        curiosIntegrationEnabled = ConfigHelper.common().integration.curiosAerialInterfaceAccess.get();
     }
 
     public String getPlayerName() {
@@ -575,7 +580,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
 //    private class PlayerCuriosHandler extends PlayerInvHandler {
 //        @Override
 //        protected IItemHandler getInvWrapper(Player player) {
-//            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
+//            // do not cache curios handlers because they can change size dynamically
+//            return CuriosUtils.makeCombinedInvWrapper(player);
 //        }
 //    }
 

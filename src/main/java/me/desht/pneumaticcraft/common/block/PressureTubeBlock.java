@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.api.block.ITubeNetworkConnector;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.tubemodules.AbstractNetworkedRedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.INetworkedModule;
 import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
@@ -110,15 +109,6 @@ public class PressureTubeBlock extends AbstractCamouflageBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
         return blockEntityFactory.apply(pPos, pState);
-    }
-
-    @Override
-    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
-        if (worldIn instanceof Level level) {
-            ModuleNetworkManager.getInstance(level).invalidateCache();
-            AbstractNetworkedRedstoneModule.onNetworkReform(level, currentPos);
-        }
-        return stateIn;
     }
 
     @Override

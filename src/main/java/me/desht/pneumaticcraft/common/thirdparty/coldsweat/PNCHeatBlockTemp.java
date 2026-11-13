@@ -21,11 +21,32 @@ import org.jetbrains.annotations.Nullable;
 
 public class PNCHeatBlockTemp extends BlockTemp {
     public PNCHeatBlockTemp() {
-        super(ConfigHelper.common().integration.coldSweatMinBlockEffect.get(), ConfigHelper.common().integration.coldSweatMaxBlockEffect.get(),
-                Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY,
-                3, true, false,
-                heatBlocks()
-        );
+        super(heatBlocks());
+    }
+
+    @Override
+    public double getMaxEffect(@Nullable LivingEntity entity, Level level, BlockPos pos, BlockState state) {
+        return ConfigHelper.common().integration.coldSweatMaxBlockEffect.get();
+    }
+
+    @Override
+    public double getMinEffect(@Nullable LivingEntity entity, Level level, BlockPos pos, BlockState state) {
+        return ConfigHelper.common().integration.coldSweatMinBlockEffect.get();
+    }
+
+    @Override
+    public double getRange(@Nullable LivingEntity entity, Level level, BlockPos pos, BlockState state) {
+        return 3.0;
+    }
+
+    @Override
+    public boolean fades(@Nullable LivingEntity entity, Level level, BlockPos pos, BlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isLogarithmic(@Nullable LivingEntity entity, Level level, BlockPos pos, BlockState state) {
+        return false;
     }
 
     private static Block[] heatBlocks() {

@@ -292,7 +292,8 @@ public class ModCommands {
             }).ifRight(item -> {
                 ItemStack stack = new ItemStack(item.item());
                 GlobalVariableHelper.getInstance().setStack(id, v, stack);
-                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
+                ResourceLocation itemId = PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, itemId.toString()), true);
             });
         } catch (CommandSyntaxException e) {
             source.sendFailure(xlate("pneumaticcraft.command.globalVariable.contextError"));

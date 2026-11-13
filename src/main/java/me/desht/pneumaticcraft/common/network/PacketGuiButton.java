@@ -36,7 +36,7 @@ public record PacketGuiButton(String tag, boolean shiftHeld) implements CustomPa
     public static final Type<PacketGuiButton> TYPE = new Type<>(RL("gui_button"));
 
     public static final StreamCodec<FriendlyByteBuf, PacketGuiButton> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, PacketGuiButton::tag,
+            ByteBufCodecs.stringUtf8(256), PacketGuiButton::tag,
             ByteBufCodecs.BOOL, PacketGuiButton::shiftHeld,
             PacketGuiButton::new
     );

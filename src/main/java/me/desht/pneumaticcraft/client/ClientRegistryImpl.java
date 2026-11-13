@@ -66,7 +66,7 @@ public class ClientRegistryImpl implements IClientRegistry {
 
     @Override
     public void drawPressureGauge(GuiGraphics graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
-        PressureGaugeRenderer2D.drawPressureGauge(graphics, fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0x00000000);
+        PressureGaugeRenderer2D.drawPressureGauge(graphics, fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos);
     }
 
     @Override

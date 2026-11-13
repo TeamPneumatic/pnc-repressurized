@@ -6,6 +6,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
 import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -23,10 +25,10 @@ public interface DronePacket extends CustomPacketPayload {
         Level level = player.level();
         if (message.entityId() >= 0) {
             Entity entity = level.getEntity(message.entityId());
-            if (entity instanceof DroneEntity drone) {
+            if (entity instanceof DroneEntity drone && EntityTrackerHandler.isPlayerInRange(player, drone)) {
                 message.handle(player, drone);
             }
-        } else if (message.pos() != null) {
+        } else if (message.pos() != null && level.isLoaded(message.pos()) && BlockTrackerHandler.isPlayerInRange(player, message.pos())) {
             BlockEntity te = level.getBlockEntity(message.pos());
             if (te instanceof ProgrammableControllerBlockEntity pc) {
                 message.handle(player, pc);

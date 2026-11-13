@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetDimensionCondition;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLogistics;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
@@ -227,6 +228,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private int attackCount; // tracks number of times drone has starting attacking something
     private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
     private BlockPos digSourcePos;  // where the drone fake player is digging from, not always same as drone pos
+    private boolean canUsePortal;  // will be true if drone has any Drone Condition: Dimension pieces
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -331,6 +333,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (droneItem.canProgram(droneStack)) {
             progWidgets = SavedDroneProgram.loadProgWidgets(droneStack);
             ProgWidgetUtils.updatePuzzleConnections(progWidgets);
+            canUsePortal = progWidgets.stream().anyMatch(w -> w instanceof ProgWidgetDimensionCondition);
         }
 
         setDroneColor(droneItem.getDroneColor(droneStack).getId());
@@ -414,6 +417,11 @@ public class DroneEntity extends AbstractDroneEntity implements
         ownerUUID = buffer.readUUID();
         ownerName = ComponentSerialization.STREAM_CODEC.decode(buffer);
         securityUpgradeCount = buffer.readVarInt();
+    }
+
+    @Override
+    public boolean canUsePortal(boolean allowPassengers) {
+        return canUsePortal && super.canUsePortal(allowPassengers);
     }
 
     /**
@@ -1619,7 +1627,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void updateLabel() {
-        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
+        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : DroneAIManager.LABEL_MAIN);
     }
 
     @Override

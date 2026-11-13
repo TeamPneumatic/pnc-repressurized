@@ -67,9 +67,9 @@ public class JEIThermopneumaticProcessingPlantCategory extends AbstractPNCCatego
         int outputAmount = recipe.getOutputFluid().getAmount();
         if (outputAmount > 0) {
             if (inputAmount > outputAmount) {
-                outH = Math.min(64, outputAmount * 64 / inputAmount);
+                outH = Math.clamp(outputAmount * 64L / inputAmount, 1, 64);
             } else {
-                inH = Math.min(64, inputAmount * 64 / outputAmount);
+                inH = Math.clamp(inputAmount * 64L / outputAmount, 1, 64);
             }
         }
 

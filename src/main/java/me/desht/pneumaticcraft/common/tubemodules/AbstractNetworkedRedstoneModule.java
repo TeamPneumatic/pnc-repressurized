@@ -1,12 +1,9 @@
 package me.desht.pneumaticcraft.common.tubemodules;
 
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
-import java.util.Set;
 
 public abstract class AbstractNetworkedRedstoneModule extends AbstractTubeModule {
     private int inputLevel = -1; // the cached input level
@@ -63,11 +60,11 @@ public abstract class AbstractNetworkedRedstoneModule extends AbstractTubeModule
             return false;
         }
 
-        int in = calculateInputLevel();
-        if (in != inputLevel) {
-            inputLevel = in;
+        int newInputLevel = calculateInputLevel();
+        if (newInputLevel != inputLevel) {
+            inputLevel = newInputLevel;
             inputChangedThisTick = true;
-            onInputLevelChange(in);
+            onInputLevelChange(newInputLevel);
             notifyInputLevelsChanged(getInputChannel());
             return true;
         }
@@ -126,24 +123,6 @@ public abstract class AbstractNetworkedRedstoneModule extends AbstractTubeModule
      * @param levels the input levels of all channels
      */
     protected void updateOutput(@Nullable byte[] levels) { }
-
-    /**
-     * Called when the network is reformed (e.g. tube place and destroy)
-     */
-    public static void onNetworkReform(Level level, BlockPos pos) {
-        if (level.isClientSide()) return;
-
-        ModuleNetworkManager netManager = ModuleNetworkManager.getInstance(level);
-        Set<AbstractTubeModule> modules = netManager.computeConnections(level, pos);
-        for (Direction dir : Direction.values()) {
-            modules.addAll(netManager.computeConnections(level, pos.relative(dir)));
-        }
-        modules.forEach(module -> {
-            if (module instanceof AbstractNetworkedRedstoneModule rsModule) {
-                rsModule.notifyInputLevelsChanged(-1);
-            }
-        });
-    }
 
     @Override
     public final boolean canConnectTo(AbstractTubeModule other) {

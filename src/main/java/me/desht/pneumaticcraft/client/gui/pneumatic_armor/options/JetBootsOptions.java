@@ -102,8 +102,8 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void tick(IGuiScreen gui) {
+        super.tick(gui);
 
         int nUpgrades = CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlot.FEET, ModUpgrades.JET_BOOTS.get());
         checkBoxBuilderMode.asWidget().active = nUpgrades >= JetBootsHandler.BUILDER_MODE_LEVEL;

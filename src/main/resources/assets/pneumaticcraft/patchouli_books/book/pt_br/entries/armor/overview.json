@@ -19,7 +19,7 @@
     },
     {
       "type": "text",
-      "text": "No entanto, esta armadura é altamente aprimorável. Para usar melhorias (e para pressurizar a armadura), coloque a armadura em uma $(l:machines/charging_station)Estação de Carregamento/$.$(p)Melhorias comuns a todas as peças são descritas nas páginas a seguir. Melhorias específicas de peças são descritas separadamente nas páginas de cada peça da armadura."
+      "text": "No entanto, esta armadura é altamente aprimorável. Para usar melhorias (e para pressurizar a armadura), coloque a armadura em uma $(l:machines/charging_station)Estação de Carga/$.$(p)Melhorias comuns a todas as peças são descritas nas páginas a seguir. Melhorias específicas de peças são descritas separadamente nas páginas de cada peça da armadura."
     },
     {
       "type": "text",
@@ -66,13 +66,13 @@
       "flag": "mod:mekanism",
       "title": "Radiação do Mekanism",
       "item": "pneumaticcraft:radiation_shielding_upgrade",
-      "text": "A $(l:base_concepts/upgrades#radiation_shielding)Melhoria de Proteção contra Radiação/$ fornece proteção contra os efeitos nocivos da radiação do Mekanism, o mesmo que a própria $(l:https://wiki.aidancbrady.com/wiki/Radiation_Shielding_Unit)Unidade de Proteção contra Radiação/$ do Mekanism. Note que você deve ter uma Melhoria de Proteção em cada peça de armadura para receber proteção total."
+      "text": "A $(l:base_concepts/upgrades#radiation_shielding)Melhoria de Escudo de Radiação/$ fornece proteção contra os efeitos nocivos da radiação do Mekanism, o mesmo que a própria $(l:https://wiki.aidancbrady.com/wiki/Radiation_Shielding_Unit)Unidade de Melhoria de Escudo de Radiação/$ do Mekanism. Note que você deve ter uma Melhoria de Proteção em cada peça de armadura para receber proteção total."
     },
     {
       "type": "text",
       "title": "Thaumcraft",
       "flag": "mod:thaumcraft",
-      "text": "$(l:base_concepts/upgrades#thaumcraft)Melhorias do Thaumcraft/$ fornecem à peça de armadura o desconto de vis equivalente à correspondente $(thing)armadura de Taumaturgo/$. Além disso, uma Melhoria do Thaumcraft instalada no $(l:armor/helmet)Capacete/$ age como um $(item)Óculos de Revelação/$, mostrando $(thing)nodos de aura/$ e exibindo quantidades de $(thing)aspectos/$ em recipientes."
+      "text": "$(l:base_concepts/upgrades#thaumcraft)Melhorias do Thaumcraft/$ fornecem à peça de armadura o desconto de vis equivalente à correspondente $(thing)armadura de Taumaturgo/$. Além disso, uma Melhoria do Thaumcraft instalada no $(l:armor/helmet)Capacete/$ age como um $(item)Óculos de Revelação/$, mostrando $(thing)nodos de aura/$ e exibindo quantidades de $(thing)aspectos/$ em Cilindros."
     }
   ]
 }
