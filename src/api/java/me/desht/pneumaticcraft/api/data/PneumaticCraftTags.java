@@ -230,7 +230,7 @@ public class PneumaticCraftTags {
         public static final TagKey<GameEvent> JET_BOOTS = modTag("jet_boots");
 
         static TagKey<GameEvent> tag(String modid, String name) {
-            return TagKey.create(Registries.GAME_EVENT, ResourceLocation.fromNamespaceAndPath(modid, name));
+            return TagKey.create(Registries.GAME_EVENT, Identifier.fromNamespaceAndPath(modid, name));
         }
 
         static TagKey<GameEvent> modTag(String name) {

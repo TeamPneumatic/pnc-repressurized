@@ -209,7 +209,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
                     }
                     if (tank.getFluidAmount() >= tank.getCapacity()) break;
                 } else if (e instanceof ExperienceOrb orb && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
-                    if (orb.value <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, FluidAction.EXECUTE)) {
+                    if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, FluidAction.EXECUTE)) {
                         orb.discard();
                     }
                 }

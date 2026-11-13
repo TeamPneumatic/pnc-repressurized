@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.block;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -39,11 +39,11 @@ import static net.minecraft.world.level.block.SculkSensorBlock.PHASE;
 import static net.minecraft.world.level.block.state.properties.SculkSensorPhase.COOLDOWN;
 
 public class HackableSculkSensor implements IHackableBlock {
-    private static final ResourceLocation ID = RL("sculk_sensor");
+    private static final Identifier ID = RL("sculk_sensor");
     private static final int SILENCE_TIME = 200;
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -71,7 +71,7 @@ public class HackableSculkSensor implements IHackableBlock {
             world.setBlock(pos, state.setValue(PHASE, SculkSensorPhase.INACTIVE), Block.UPDATE_ALL);
 
             // and once the cooldown duration is passed, set it into cooldown mode for the silencing duration
-            serverLevel.getServer().tell(new TickTask(serverLevel.getServer().getTickCount() + SculkSensorBlock.COOLDOWN_TICKS + 1, () -> {
+            serverLevel.getServer().schedule(new TickTask(serverLevel.getServer().getTickCount() + SculkSensorBlock.COOLDOWN_TICKS + 1, () -> {
                 if (world.getBlockState(pos).getBlock() instanceof SculkSensorBlock) {
                     world.setBlock(pos, state.setValue(PHASE, COOLDOWN).setValue(SculkSensorBlock.POWER, 0), Block.UPDATE_ALL);
                     world.scheduleTick(pos, state.getBlock(), SILENCE_TIME);

@@ -319,8 +319,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     private boolean validateInvPos(ServerPlayer player, GlobalPos gpos) {
-        assert player.getServer() != null;
-        Level level = player.getServer().getLevel(gpos.dimension());
+        Level level = player.level().getServer().getLevel(gpos.dimension());
         if (level == null || !level.isLoaded(gpos.pos())) {
             return false;
         }

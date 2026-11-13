@@ -11,7 +11,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class ProgWidgetDimensionCondition extends ProgWidgetConditionBase {
 
     @Override
     public boolean evaluate(IDrone drone, IProgWidget widget) {
-        ResourceLocation dimId = drone.getDroneLevel().dimension().location();
+        Identifier dimId = drone.getDroneLevel().dimension().identifier();
         return !checkDimensions(false, dimId) && checkDimensions(true, dimId);
     }
 
@@ -58,7 +58,7 @@ public class ProgWidgetDimensionCondition extends ProgWidgetConditionBase {
         }
     }
 
-    private boolean checkDimensions(boolean whitelist, ResourceLocation dimId) {
+    private boolean checkDimensions(boolean whitelist, Identifier dimId) {
         List<String> list = getDimList(whitelist);
         return list.isEmpty() ? whitelist : new WildcardedRLMatcher(list).test(dimId);
     }
@@ -74,7 +74,7 @@ public class ProgWidgetDimensionCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_CONDITION_DIMENSION;
     }
 
