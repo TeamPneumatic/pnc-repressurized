@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.shaders.FogShape;
-import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
@@ -155,9 +154,6 @@ public class ClientEventHandler {
 
         // custom durability bars
         AbstractContainerScreen<?> container = event.getContainerScreen();
-        PoseStack poseStack = event.getGuiGraphics().pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 300);
         for (Slot s : container.getMenu().slots) {
             if (s.getItem().getItem() instanceof ICustomDurabilityBar custom) {
                 if (custom.shouldShowCustomDurabilityBar(s.getItem())) {
@@ -174,7 +170,6 @@ public class ClientEventHandler {
                 }
             }
         }
-        poseStack.popPose();
     }
 
     @SubscribeEvent
@@ -185,11 +180,8 @@ public class ClientEventHandler {
                     .map(l -> (IDrawAfterRender) l)
                     .toList();
             if (!toDraw.isEmpty()) {
-                PoseStack poseStack = event.getGuiGraphics().pose();
-                poseStack.pushPose();
-                poseStack.translate(0, 0, 500);
+                event.getGuiGraphics().nextStratum();
                 toDraw.forEach(d -> d.renderAfterEverythingElse(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick()));
-                poseStack.popPose();
             }
         }
     }
@@ -197,7 +189,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollingEvent event) {
         Player player = ClientUtils.getClientPlayer();
-        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().selected == crouchSelected) {
+        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().getSelectedSlot() == crouchSelected) {
             if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
@@ -217,7 +209,7 @@ public class ClientEventHandler {
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         if (event.getEntity().level().isClientSide()) {
             if (event.getEntity().isShiftKeyDown()) {
-                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().selected;
+                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().getSelectedSlot();
             } else {
                 crouchSelected = -1;
             }

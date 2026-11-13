@@ -119,7 +119,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
-                    toRemove.add(entityId.intValue());
+                    toRemove.add(entityId);
                 }
             }
         });

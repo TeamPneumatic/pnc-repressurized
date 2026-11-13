@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.overlays;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
@@ -18,11 +17,10 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.opengl.GL11;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 
 import java.util.List;
 
@@ -31,7 +29,7 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
+public class PneumaticArmorHUDOverlay implements GuiLayer {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final boolean[] gaveCriticalWarning = new boolean[4];  // per-slot
@@ -98,12 +96,9 @@ public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
             int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
             float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
             progress = Math.min(100, progress + partialTicks);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             ProgressBarRenderer.render2d(graphics, mw.getGuiScaledWidth() / 2f, yOffset,
-                    mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
+                    mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1,
                     progress, 0xAAFFC000, 0xAA00FF00);
-            RenderSystem.disableBlend();
             graphics.item(armorStack, xLeft + 2, yOffset);
         }
     }

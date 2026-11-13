@@ -17,12 +17,10 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import org.lwjgl.opengl.GL11;
 
 import static me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation.GRID_WIDTH;
 
@@ -38,12 +36,9 @@ public class HackSimulationRenderer {
     }
 
     public void render(GuiGraphicsExtractor graphics, HackSimulation hackSimulation, int color) {
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (HackSimulation.ConnectionEntry entry : hackSimulation.allConnections) {
             GuiUtils.renderProgressingLine2d(graphics, makeProgressingLine(entry), color, 3F);
         }
-        RenderSystem.disableBlend();
     }
 
     private ProgressingLine makeProgressingLine(HackSimulation.ConnectionEntry entry) {

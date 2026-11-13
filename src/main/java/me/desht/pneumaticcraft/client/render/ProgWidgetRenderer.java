@@ -17,24 +17,24 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,28 +57,18 @@ public class ProgWidgetRenderer {
      * @param alpha transparerncy
      */
     public static void renderProgWidget2d(GuiGraphicsExtractor graphics, IProgWidget progWidget, int alpha) {
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, progWidget.getTexture());
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
         int height = progWidget.getHeight() + (progWidget.hasStepOutput() ? 10 : 0);
         Pair<Float,Float> maxUV = progWidget.getMaxUV();
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
-        Matrix4f posMat = graphics.pose().last().pose();
-        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-        wr.addVertex(posMat, 0, 0, 0)
-                .setUv(0, 0)
-                .setColor(255, 255, 255, alpha);
-        wr.addVertex(posMat, 0, height, 0)
-                .setUv(0, v)
-                .setColor(255, 255, 255, alpha);
-        wr.addVertex(posMat, width, height, 0)
-                .setUv(u, v)
-                .setColor(255, 255, 255, alpha);
-        wr.addVertex(posMat, width, 0, 0)
-                .setUv(u, 0)
-                .setColor(255, 255, 255, alpha);
-        BufferUploader.drawWithShader(wr.buildOrThrow());
+        int color = ARGB.white(alpha);
+        GuiVertexRenderState.submit(graphics, RenderPipelines.GUI_TEXTURED, GuiVertexRenderState.textureSetup(progWidget.getTexture()), wr -> wr
+                .vertex(0, 0, 0, 0, color)
+                .vertex(0, height, 0, v, color)
+                .vertex(width, height, u, v, color)
+                .vertex(width, 0, u, 0, color)
+        );
     }
 
     public static void renderProgWidget2d(GuiGraphicsExtractor graphics, IProgWidget progWidget) {

@@ -210,12 +210,13 @@ public class GuiUtils {
      * @param graphics the matrix stack
      * @param line the line to render
      * @param color line's colour
+     * @param lineWidth line width, in screen pixels
      */
     public static void renderProgressingLine2d(GuiGraphicsExtractor graphics, ProgressingLine line, int color, float lineWidth) {
         float progress = line.getProgress();
 
         GuiVertexRenderState.submit(graphics, b -> b.line(line.startX, line.startY,
-                lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lineWidth, color));
+                lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), GuiVertexRenderState.pixels(lineWidth), color));
     }
 
     public static void drawPlayerSlots(GuiGraphicsExtractor graphics, int x, int y) {

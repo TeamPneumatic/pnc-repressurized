@@ -97,7 +97,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
         }
         graphics.pose().rotate((float) Math.toRadians(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
-        ProgressBarRenderer.render2d(graphics, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
+        ProgressBarRenderer.render2d(graphics, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12,
                 progress, 0xAA0000A0, 0xAA40A0FF);
         graphics.pose().popMatrix();
     }

@@ -175,7 +175,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
      */
     private void nextScanPos(BlockPos.MutableBlockPos pos, Player player, int range) {
         Vec3 look = player.getLookAngle();
-        Direction dir = Direction.getNearest(look.x(), look.y(), look.z());
+        Direction dir = Direction.getApproximateNearest(look.x(), look.y(), look.z());
         switch (dir) {
             case UP:
                 if (++xOff > range) {

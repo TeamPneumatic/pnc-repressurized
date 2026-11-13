@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.render.overlays;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -10,18 +9,18 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import org.lwjgl.opengl.GL11;
 
-public class MinigunOverlay implements LayeredDraw.Layer {
+public class MinigunOverlay implements GuiLayer {
     private static final float MINIGUN_TEXT_SIZE = 0.55f;
 
     @Override
@@ -51,11 +50,7 @@ public class MinigunOverlay implements LayeredDraw.Layer {
             graphics.text(mc.font, text, 0, 0, GuiUtils.textColor(minigun.getAmmoColor()), false);
             graphics.pose().popMatrix();
         }
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderSystem.setShaderColor(0.2f, 0.7f, 0.2f, 0.75f);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.MINIGUN_CROSSHAIR, width / 2 - 7, height / 2 - 7, 0, 0, 16, 16, 16, 16);
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.MINIGUN_CROSSHAIR, width / 2 - 7, height / 2 - 7, 0, 0, 16, 16, 16, 16, ARGB.colorFromFloat(0.75f, 0.2f, 0.7f, 0.2f));
     }
 
     @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
