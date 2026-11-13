@@ -21,7 +21,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
@@ -30,7 +30,7 @@ import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.normalLine;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class ProgressBarRenderer {
     public static void render3d(PoseStack poseStack, MultiBufferSource buffer, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
@@ -58,7 +58,7 @@ public class ProgressBarRenderer {
         });
     }
 
-    public static void render2d(GuiGraphics graphics, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
+    public static void render2d(GuiGraphicsExtractor graphics, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
         Pair<float[], float[]> cols = calcColors(color1, color2, progress);
         float[] f1 = cols.getLeft();
         float[] f2 = cols.getRight();

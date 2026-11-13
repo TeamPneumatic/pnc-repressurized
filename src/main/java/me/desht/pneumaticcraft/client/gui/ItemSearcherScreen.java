@@ -24,9 +24,12 @@ import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -39,7 +42,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
@@ -79,9 +82,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     private long lastClickTime = 0L;
 
     public ItemSearcherScreen(ItemSearcherMenu container, Inventory playerInventory, Component displayString) {
-        super(container, playerInventory, displayString);
-
-        imageHeight = 176;
+        super(container, playerInventory, displayString, 176, 176);
         parentScreen = Minecraft.getInstance().screen;
         container.init(this);
     }
@@ -96,7 +97,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput type) {
         if (slot != null) {
             if (slot.index == SEARCH_SLOT) {
                 slot.set(ItemStack.EMPTY);
@@ -164,19 +165,20 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
         }
-        return !searchField.keyPressed(keyCode, scanCode, modifiers)
-                && searchField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
+        return !searchField.keyPressed(event)
+                && searchField.canConsumeInput() || super.keyPressed(event);
     }
 
     private Stream<SearchEntry> getSearchEntries() {
         if (cachedSearchEntries == null) {
             LocalPlayer player = Minecraft.getInstance().player;
             if (player != null) {  // should always be the case at this point
-                CreativeModeTabs.tryRebuildTabContents(player.connection.enabledFeatures(), Minecraft.getInstance().options.operatorItemsTab().get(), player.clientLevel.registryAccess());
+                CreativeModeTabs.tryRebuildTabContents(player.connection.enabledFeatures(), Minecraft.getInstance().options.operatorItemsTab().get(), player.level().registryAccess());
             }
             cachedSearchEntries = CreativeModeTabs.searchTab().getDisplayItems().stream()
                     .map(SearchEntry::new)
@@ -218,22 +220,26 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         isScrolling = button == 0 && needsScrollBars() && scrollArea.contains((int)mouseX, (int)mouseY);
         if (isScrolling) {
             scrollTo(mouseY);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseY = event.y();
         if (isScrolling) {
             scrollTo(mouseY);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     private void scrollTo(double mouseY) {
@@ -243,36 +249,30 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         isScrolling = false;
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        super.render(graphics, x, y, partialTicks);
-
-        renderTooltip(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int par1, int par2) {
+        graphics.text(font, xlate("pneumaticcraft.armor.upgrade.search"), 5, 5, 0xFF404040, false);
+        graphics.text(font, xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0xFF404040, false);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int par1, int par2) {
-        graphics.drawString(font, xlate("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040, false);
-        graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040, false);
-    }
-
-    @Override
-    protected void renderBg(GuiGraphics graphics, float par1, int par2, int par3) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int par2, int par3, float par1) {
+        super.extractBackground(graphics, par2, par3, par1);
         int xStart = (width - imageWidth) / 2;
         int yStart = (height - imageHeight) / 2;
-        graphics.blit(GUI_TEXTURE, xStart, yStart, 0, 0, imageWidth, imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, GUI_TEXTURE, xStart, yStart, 0, 0, imageWidth, imageHeight, 256, 256);
 
         int x = scrollArea.getX();
         int y1 = scrollArea.getY();
         int y2 = y1 + scrollArea.getHeight();
 
-        graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), (needsScrollBars() ? 0 : 12), 0, 12, 15, 26, 15);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_VERTICAL_SCROLLBAR, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), (needsScrollBars() ? 0 : 12), 0, 12, 15, 26, 15);
 
     }
 

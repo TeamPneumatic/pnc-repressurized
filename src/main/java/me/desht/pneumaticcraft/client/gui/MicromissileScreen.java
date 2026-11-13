@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -25,6 +24,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem.FireMode;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem.Settings;
@@ -35,14 +35,14 @@ import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -149,20 +149,20 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        super.render(graphics, x, y, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractRenderState(graphics, x, y, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         } else if (textField.isHoveredOrFocused()) {
             String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
-            graphics.drawString(font, str, guiLeft + (xSize - font.width(str)) / 2, guiTop + ySize + 5, 0x808080, false);
+            graphics.text(font, str, guiLeft + (xSize - font.width(str)) / 2, guiTop + ySize + 5, 0xFF808080, false);
         }
     }
 
     @Override
-    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         if (fireMode == FireMode.DUMB) {
             return;
         }
@@ -170,46 +170,34 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
         if (point != null) {
             float px = point.x();
             float py = point.y();
-            graphics.pose().pushPose();
-            graphics.pose().translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY());
 
             // crosshairs
             int size = dragging ? 5 : 3;
-            RenderSystem.lineWidth(2);
+            float thick = GuiVertexRenderState.pixels(2);
+            float thin = GuiVertexRenderState.pixels(1);
 
-            Matrix4f posMat = graphics.pose().last().pose();
-            BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-            wr.addVertex(posMat, px - size, py, 0).setColor(32, 32, 32, 255);
-            wr.addVertex(posMat, px + size, py, 0).setColor(32, 32, 32, 255);
-            wr.addVertex(posMat, px, py - size, 0).setColor(32, 32, 32, 255);
-            wr.addVertex(posMat, px, py + size, 0).setColor(32, 32, 32, 255);
-            BufferUploader.drawWithShader(wr.buildOrThrow());
+            GuiVertexRenderState.submit(graphics, wr -> wr
+                    .line(px - size, py, px + size, py, thick, 0xFF202020)
+                    .line(px, py - size, px, py + size, thick, 0xFF202020)
+                    // speed line
+                    .line(px, py, SELECTOR_BOUNDS.getWidth() / 2f, 0, thin, 0x80202020)
+                    // turn speed line
+                    .line(px, py, 0, SELECTOR_BOUNDS.getHeight(), thin, 0x80202020)
+                    // damage line
+                    .line(px, py, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), thin, 0x80202020)
+            );
 
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.lineWidth(1);
-            wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-            // speed line
-            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
-            wr.addVertex(posMat, SELECTOR_BOUNDS.getWidth() / 2f, 0, 0).setColor(32, 32, 32, 128);
-            // turn speed line
-            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
-            wr.addVertex(posMat, 0, SELECTOR_BOUNDS.getHeight(), 0).setColor(32, 32, 32, 128);
-            // damage line
-            wr.addVertex(posMat, px, py, 0).setColor(32, 32, 32, 128);
-            wr.addVertex(posMat, SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).setColor(32, 32, 32, 128);
-            BufferUploader.drawWithShader(wr.buildOrThrow());
-            RenderSystem.disableBlend();
-
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(guiLeft, guiTop, 0);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(guiLeft, guiTop);
         graphics.fill(125, 48, 125 + (int) (49 * topSpeed), 54, 0xFF00C000);
         graphics.fill(125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
         graphics.fill(125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     @Override
@@ -232,34 +220,38 @@ public class MicromissileScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (trySetPoint((int) mouseX, (int) mouseY)) {
             dragging = true;
             return true;
         } else {
-            return super.mouseClicked(mouseX, mouseY, mouseButton);
+            return super.mouseClicked(event, doubleClick);
         }
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (dragging) {
             // send updated values to server
             sendSettingsToServer(false);
             dragging = false;
             return true;
         } else {
-            return super.mouseReleased(mouseX, mouseY, mouseButton);
+            return super.mouseReleased(event);
         }
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (dragging) {
             trySetPoint((int) mouseX, (int) mouseY);
             return true;
         } else {
-            return super.mouseDragged(mouseX, mouseY, mouseButton, dx, dy);
+            return super.mouseDragged(event, dx, dy);
         }
     }
 

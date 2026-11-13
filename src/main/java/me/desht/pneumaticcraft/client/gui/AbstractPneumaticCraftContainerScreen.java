@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRendere
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.block.entity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
@@ -49,14 +48,15 @@ import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.texture.Tickable;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.texture.TickableTexture;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -78,6 +78,9 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPneumaticCraftMenu<T>, T extends AbstractPneumaticCraftBlockEntity> extends AbstractContainerScreen<C> {
+    protected static final int DEFAULT_IMAGE_WIDTH = 176;
+    protected static final int DEFAULT_IMAGE_HEIGHT = 166;
+
     public final T te;
     private IGuiAnimatedStat lastLeftStat, lastRightStat;
     private WidgetAnimatedStat pressureStat;
@@ -89,7 +92,11 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     private int sendDelay = -1;
 
     public AbstractPneumaticCraftContainerScreen(C container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+        this(container, inv, displayString, DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT);
+    }
+
+    public AbstractPneumaticCraftContainerScreen(C container, Inventory inv, Component displayString, int imageWidth, int imageHeight) {
+        super(container, inv, displayString, imageWidth, imageHeight);
         this.te = container.blockEntity;
     }
 
@@ -259,7 +266,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     private SideConfiguratorButton makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
         SideConfiguratorButton button = (SideConfiguratorButton) new SideConfiguratorButton(x, y, relativeFace, b -> {
             SideConfiguratorButton gbs = (SideConfiguratorButton) b;
-            if (sideConfigurator.handleButtonPress(gbs.getTag(), Screen.hasShiftDown())) {
+            if (sideConfigurator.handleButtonPress(gbs.getTag(), Minecraft.getInstance().hasShiftDown())) {
                 setupSideConfiguratorButton(sideConfigurator, gbs);
             }
         }).withTag(sideConfigurator.getButtonTag(relativeFace));
@@ -319,25 +326,22 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     protected OptionalInt getBackgroundTint() { return OptionalInt.empty(); }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int i, int j) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int i, int j, float partialTicks) {
+        super.extractBackground(graphics, i, j, partialTicks);
         if (getGuiTexture() != null) {
-            getBackgroundTint().ifPresent(tint -> {
-                float[] c = RenderUtils.decomposeColorF(tint);
-                graphics.setColor(c[1], c[2], c[3], c[0]);
-            });
-            graphics.blit(getGuiTexture(), getGuiLeft(), getGuiTop(), 0, 0, getXSize(), getYSize());
-            getBackgroundTint().ifPresent(tint -> graphics.setColor(1f, 1f, 1f, 1f));
+            int tint = getBackgroundTint().orElse(0xFFFFFFFF);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), getGuiLeft(), getGuiTop(), 0, 0, getXSize(), getYSize(), 256, 256, tint);
         }
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
         if (getInvNameOffset() != null) {
-            graphics.drawString(font, title, imageWidth / 2 - font.width(title) / 2 + getInvNameOffset().x(), 5 + getInvNameOffset().y(), getTitleColor(), false);
+            graphics.text(font, title, imageWidth / 2 - font.width(title) / 2 + getInvNameOffset().x(), 5 + getInvNameOffset().y(), GuiUtils.textColor(getTitleColor()), false);
         }
 
         if (getInvTextOffset() != null) {
-            graphics.drawString(font, xlate("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0x404040, false);
+            graphics.text(font, xlate("container.inventory"), 8 + getInvTextOffset().x(), imageHeight - 94 + getInvTextOffset().y(), 0xFF404040, false);
         }
 
         if (pressureStat != null) {
@@ -354,19 +358,13 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     protected abstract Identifier getGuiTexture();
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         for (IGuiAnimatedStat w : statWidgets) {
-            if (w.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
+            if (w.mouseDragged(event, dragX, dragY)) {
                 return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
-    }
-
-    @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTick) {
-        super.render(graphics, x, y, partialTick);
-        renderTooltip(graphics, x, y);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     protected PointXY getGaugeLocation() {
@@ -527,8 +525,8 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         Window mw = Minecraft.getInstance().getWindow();
         int i = mw.getGuiScaledWidth();
         int j = mw.getGuiScaledHeight();
-        init(Minecraft.getInstance(), i, j);
-        renderables.stream().filter(widget -> widget instanceof Tickable).forEach(w -> ((Tickable) w).tick());
+        init(i, j);
+        renderables.stream().filter(widget -> widget instanceof TickableTexture).forEach(w -> ((TickableTexture) w).tick());
     }
 
     /**

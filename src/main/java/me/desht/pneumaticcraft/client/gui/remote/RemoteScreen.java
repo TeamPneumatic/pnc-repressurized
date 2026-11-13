@@ -24,17 +24,14 @@ import me.desht.pneumaticcraft.common.inventory.RemoteMenu;
 import me.desht.pneumaticcraft.common.remote.SavedRemoteLayout;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 public class RemoteScreen extends AbstractRemoteScreen {
     public RemoteScreen(RemoteMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageWidth = 183;
-        imageHeight = 202;
+        super(container, inv, displayString, 183, 202);
     }
 
     @Override
@@ -48,8 +45,8 @@ public class RemoteScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
 
         GuiUtils.drawScreenWithTitleArea(graphics, leftPos, topPos, imageWidth, imageHeight, 0xFFDDD7BA);
     }

@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -173,7 +173,7 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
         if (state == EnumState.LOGOUT) {
             state = EnumState.NONE;
-            init(minecraft, this.width, this.height);
+            init(this.width, this.height);
         }
         if (state != EnumState.NONE && PastebinHandler.isDone()) {
             statusMessage = Component.empty();
@@ -244,15 +244,13 @@ public class PastebinScreen extends AbstractPneumaticCraftScreen {
 
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        renderBackground(graphics, x, y, partialTicks);
-
-        super.render(graphics, x, y, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractRenderState(graphics, x, y, partialTicks);
 
         if (!statusMessage.getString().isEmpty()) {
-            graphics.drawString(font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00, false);
+            graphics.text(font, statusMessage, guiLeft + 5, guiTop + 5, 0xFFFFFF00, false);
         } else if (!lastMessage.getString().isEmpty()) {
-            graphics.drawString(font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00, false);
+            graphics.text(font, lastMessage, guiLeft + 5, guiTop + 5, 0xFF00FF00, false);
         }
     }
 

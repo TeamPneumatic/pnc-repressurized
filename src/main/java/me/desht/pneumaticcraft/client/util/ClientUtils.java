@@ -163,7 +163,7 @@ public class ClientUtils {
     }
 
     public static boolean hasShiftDown() {
-        return Screen.hasShiftDown();
+        return Minecraft.getInstance().hasShiftDown();
     }
 
     /**

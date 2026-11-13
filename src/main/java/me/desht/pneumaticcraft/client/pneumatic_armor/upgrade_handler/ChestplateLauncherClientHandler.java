@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -33,7 +32,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ChestplateLauncherHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.HumanoidArm;
 
 import java.util.Optional;
@@ -84,22 +83,22 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
         if (launcherProgress == 0) return;
 
         Window mw = Minecraft.getInstance().getWindow();
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         if (ClientUtils.getClientPlayer().getMainArm() == HumanoidArm.LEFT) {
-            graphics.pose().translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
-            graphics.pose().scale(-1, 1, 1);
+            graphics.pose().translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30);
+            graphics.pose().scale(-1, 1);
         } else {
-            graphics.pose().translate(30, mw.getGuiScaledHeight() - 30, -90);
+            graphics.pose().translate(30, mw.getGuiScaledHeight() - 30);
         }
-        graphics.pose().mulPose(Axis.ZP.rotationDegrees(-60));
+        graphics.pose().rotate((float) Math.toRadians(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
         ProgressBarRenderer.render2d(graphics, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 }

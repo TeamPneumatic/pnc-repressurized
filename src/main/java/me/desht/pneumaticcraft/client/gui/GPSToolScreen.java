@@ -25,10 +25,11 @@ import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.network.PacketTeleportCommand;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -116,7 +117,7 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addRenderableWidget(varTypeButton);
 
-        if (ClientUtils.getClientPlayer().hasPermissions(2)) {
+        if (PneumaticCraftUtils.isPlayerOp(ClientUtils.getClientPlayer())) {
             BlockPos pos = getBlockPos();
             teleportButton = new WidgetButtonExtended(xMiddle - 50, variableField.getY() + variableField.getHeight() + 5, 100, 20, xlate("pneumaticcraft.gui.gps_tool.teleport"), p -> {
                 NetworkHandler.sendToServer(new PacketTeleportCommand(getBlockPos()));
@@ -142,17 +143,16 @@ public class GPSToolScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics, mouseX, mouseY, partialTicks);
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         int stringX = xMiddle - 60 - TEXTFIELD_WIDTH / 2;
-        graphics.drawCenteredString(font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
-        graphics.drawString(font, "X:", stringX, yMiddle - 10 - font.lineHeight / 2, 0xFFFFFFFF, false);
-        graphics.drawString(font, "Y:", stringX, yMiddle + 4 + font.lineHeight / 2, 0xFFFFFFFF, false);
-        graphics.drawString(font, "Z:", stringX, yMiddle + 34 - font.lineHeight / 2, 0xFFFFFFFF, false);
+        graphics.centeredText(font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
+        graphics.text(font, "X:", stringX, yMiddle - 10 - font.lineHeight / 2, 0xFFFFFFFF, false);
+        graphics.text(font, "Y:", stringX, yMiddle + 4 + font.lineHeight / 2, 0xFFFFFFFF, false);
+        graphics.text(font, "Z:", stringX, yMiddle + 34 - font.lineHeight / 2, 0xFFFFFFFF, false);
     }
 
     @Override

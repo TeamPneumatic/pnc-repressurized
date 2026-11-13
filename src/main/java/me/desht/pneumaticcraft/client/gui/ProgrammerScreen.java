@@ -18,10 +18,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.gson.JsonElement;
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.IProgWidget.WidgetDifficulty;
@@ -56,9 +53,10 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -69,6 +67,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -115,11 +114,11 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private WidgetDifficulty programmerDifficulty;
 
     public ProgrammerScreen(ProgrammerMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+        this(container, inv, displayString, calculateScreenSize());
+    }
 
-        IntIntPair size = calculateScreenSize();
-        imageWidth = size.firstInt();
-        imageHeight = size.secondInt();
+    private ProgrammerScreen(ProgrammerMenu container, Inventory inv, Component displayString, IntIntPair size) {
+        super(container, inv, displayString, size.firstInt(), size.secondInt());
 
         ProgrammerMenu.AreaGeometry geometry = calculateAreaBounds();
         programmerBounds = new Rect2i(geometry.x(), geometry.y(), geometry.width(), geometry.height());
@@ -444,14 +443,14 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
 
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        graphics.drawString(font, str, xRight + 15 - font.width(str) / 2f, yBottom + 4, 0x404040, false);
+        graphics.text(font, str, (int) (xRight + 15 - font.width(str) / 2f), yBottom + 4, 0xFF404040, false);
 
         if (showingWidgetProgress == 0) {
             programmerUnit.renderForeground(graphics, mouseX, mouseY, draggingWidget, font);
@@ -472,14 +471,15 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 }
                 if (!tooltip.isEmpty()) {
                     int tw = tooltip.stream().map(l -> font.width(l)).max(Comparator.naturalOrder()).orElse(0) + 16;
-                    graphics.renderComponentTooltip(font, tooltip, Math.min(mouseX, minecraft.getWindow().getGuiScaledWidth() - tw) - leftPos, mouseY - topPos);
+                    graphics.setComponentTooltipForNextFrame(font, tooltip, Math.min(mouseX, minecraft.getWindow().getGuiScaledWidth() - tw) - leftPos, mouseY - topPos);
                 }
             }
         }
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTicks);
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
@@ -510,15 +510,13 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         }
 
         // draw widgets in the widget tray
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        PoseStack poseStack = graphics.pose();
+        Matrix3x2fStack poseStack = graphics.pose();
         int maxProgress = maxPage * WIDGET_X_SPACING;
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            poseStack.pushPose();
-            poseStack.translate(widget.getX() + leftPos, widget.getY() + topPos, 0);
-            poseStack.scale(0.5f, 0.5f, 1f);
+            poseStack.pushMatrix();
+            poseStack.translate(widget.getX() + leftPos, widget.getY() + topPos);
+            poseStack.scale(0.5f, 0.5f);
             int alpha = 255;
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
                 alpha = 48;
@@ -527,24 +525,22 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 alpha = 32 + (int) (223 * (1 - p));
             }
             ProgWidgetRenderer.renderProgWidget2d(graphics, widget, alpha);
-            poseStack.popPose();
+            poseStack.popMatrix();
         }
 
         // draw the widget currently being dragged, if any
         if (draggingWidget != null) {
             float scale = programmerUnit.getScale();
-            poseStack.pushPose();
-            poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-            poseStack.scale(scale, scale, 1f);
-            poseStack.pushPose();
-            poseStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos, 0);
-            poseStack.scale(0.5f, 0.5f, 1f);
+            poseStack.pushMatrix();
+            poseStack.translate((float) programmerUnit.getTranslatedX(), (float) programmerUnit.getTranslatedY());
+            poseStack.scale(scale, scale);
+            poseStack.pushMatrix();
+            poseStack.translate(draggingWidget.getX() + leftPos, draggingWidget.getY() + topPos);
+            poseStack.scale(0.5f, 0.5f);
             ProgWidgetRenderer.renderProgWidget2d(graphics, draggingWidget);
-            poseStack.popPose();
-            poseStack.popPose();
+            poseStack.popMatrix();
+            poseStack.popMatrix();
         }
-
-        RenderSystem.disableBlend();
 
         if (!removingWidgets.isEmpty()) {
             drawRemovingWidgets(graphics);
@@ -554,44 +550,42 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     /**
      * This doesn't achieve much other than look really cool.
      */
-    private void drawRemovingWidgets(GuiGraphics graphics) {
+    private void drawRemovingWidgets(GuiGraphicsExtractor graphics) {
         Iterator<RemovingWidget> iter = removingWidgets.iterator();
         int h = minecraft.getWindow().getGuiScaledHeight();
         float scale = programmerUnit.getScale();
 
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        poseStack.scale(scale, scale, 1f);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        Matrix3x2fStack poseStack = graphics.pose();
+        poseStack.pushMatrix();
+        poseStack.translate((float) programmerUnit.getTranslatedX(), (float) programmerUnit.getTranslatedY());
+        poseStack.scale(scale, scale);
         while (iter.hasNext()) {
             RemovingWidget rw = iter.next();
             IProgWidget w = rw.widget;
             if (w.getY() + rw.ty > h) {
                 iter.remove();
             } else {
-                poseStack.pushPose();
-                poseStack.translate(w.getX() + rw.tx + leftPos, w.getY() + rw.ty + topPos, 0);
-                poseStack.scale(0.5f, 0.5f, 1f);
+                poseStack.pushMatrix();
+                poseStack.translate((float) (w.getX() + rw.tx + leftPos), (float) (w.getY() + rw.ty + topPos));
+                poseStack.scale(0.5f, 0.5f);
                 ProgWidgetRenderer.renderProgWidget2d(graphics, w);
-                poseStack.popPose();
+                poseStack.popMatrix();
                 rw.tick();
 
             }
         }
-        RenderSystem.disableBlend();
-        poseStack.popPose();
+        poseStack.popMatrix();
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(event);
 
         if (nameField.isFocused()) {
-            return nameField.keyPressed(keyCode, scanCode, modifiers);
+            return nameField.keyPressed(event);
         } else if (filterField.isFocused() && keyCode != GLFW.GLFW_KEY_TAB) {
-            return filterField.keyPressed(keyCode, scanCode, modifiers);
+            return filterField.keyPressed(event);
         }
 
         return switch (keyCode) {
@@ -639,7 +633,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 pastebin();
                 yield true;
             }
-            default -> super.keyPressed(keyCode, scanCode, modifiers);
+            default -> super.keyPressed(event);
         };
     }
 
@@ -1004,7 +998,10 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         final float scale = programmerUnit.getScale();
         final double trMouseX = (mouseX - programmerUnit.getTranslatedX()) / scale;
         final double trMouseY = (mouseY - programmerUnit.getTranslatedY()) / scale;
@@ -1032,7 +1029,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     dragMouseStartY = trMouseY - topPos;
                     dragWidgetStartX = widget.getX();
                     dragWidgetStartY = widget.getY();
-                    if (Screen.hasShiftDown()) copyWidgetRecursively(widget, draggingWidget);
+                    if (Minecraft.getInstance().hasShiftDown()) copyWidgetRecursively(widget, draggingWidget);
                     return true;
                 }
             } else {
@@ -1049,7 +1046,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private boolean mouseClickedWithPosProvider(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
@@ -1080,14 +1077,14 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             // clicked on an empty area: create a new area or coordinate widget(s)
             List<IProgWidget> toCreate = new ArrayList<>();
             if (areaToolWidget != null) {
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     toCreate.add(ProgWidgetCoordinate.fromPos(areaToolWidget.getPos(0).orElse(BlockPos.ZERO)));
                     areaToolWidget.getPos(1).ifPresent(pos -> toCreate.add(ProgWidgetCoordinate.fromPos(pos)));
                 } else {
                     toCreate.add(areaToolWidget);
                 }
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(GPSToolItem.getGPSLocation(heldItem).orElse(BlockPos.ZERO));
                     String var = GPSToolItem.getVariable(heldItem);
                     if (!var.isEmpty()) areaWidget.setVarName(0, var);
@@ -1165,7 +1162,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         draggingBG = false;
         if (draggingWidget != null) {
             if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
@@ -1182,7 +1179,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
             ProgWidgetUtils.updatePuzzleConnections(te.progWidgets);
             draggingWidget = null;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
@@ -1191,7 +1188,9 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (draggingWidget != null) {
             mouseX = (mouseX - programmerUnit.getTranslatedX()) / programmerUnit.getScale();
             mouseY = (mouseY - programmerUnit.getTranslatedY()) / programmerUnit.getScale();
@@ -1200,7 +1199,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                     (int)(mouseY - dragMouseStartY + dragWidgetStartY - topPos));
             return true;
         } else if (draggingBG) {
-            return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+            return programmerUnit.mouseDragged(event.x(), event.y(), event.button(), dragX, dragY);
         } else {
             return false;
         }
@@ -1236,16 +1235,6 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
     private static class FilterTextField extends WidgetTextField {
         FilterTextField(Font font, int x, int y, int width) {
             super(font, x, y, width, font.lineHeight + 3);
-        }
-
-        @Override
-        public void renderWidget(GuiGraphics graphics, int x, int y, float partialTicks) {
-            // this is needed to force the textfield to draw on top of any
-            // widgets in the programming area
-            graphics.pose().pushPose();
-            graphics.pose().translate(0, 0, 300);
-            super.renderWidget(graphics, x, y, partialTicks);
-            graphics.pose().popPose();
         }
     }
 

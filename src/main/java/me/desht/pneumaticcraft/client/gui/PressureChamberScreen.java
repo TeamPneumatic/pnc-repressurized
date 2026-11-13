@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -57,11 +57,11 @@ public class PressureChamberScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
         Component title = xlate("pneumaticcraft.gui.pressureChamberTitle", volStr(te.multiBlockSize));
-        graphics.drawString(font, title, (imageWidth - font.width(title)) / 2, 6, 0x404040, false);
+        graphics.text(font, title, (imageWidth - font.width(title)) / 2, 6, 0xFF404040, false);
     }
 
     private static String volStr(int n) {

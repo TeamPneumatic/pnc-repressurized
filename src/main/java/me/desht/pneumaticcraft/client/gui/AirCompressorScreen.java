@@ -23,11 +23,12 @@ import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.block.entity.FurnaceBlockEntity;
+import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.List;
 
@@ -45,12 +46,13 @@ public class AirCompressorScreen extends AbstractPneumaticCraftContainerScreen<A
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         int yOff = te.getBurnTimeRemainingScaled(12);
         if (te.burnTime >= te.curFuelUsage) {
-            graphics.blit(getGuiTexture(), leftPos + getFuelSlotXOffset(), topPos + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), leftPos + getFuelSlotXOffset(), topPos + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2, 256, 256);
         }
     }
 
@@ -69,7 +71,7 @@ public class AirCompressorScreen extends AbstractPneumaticCraftContainerScreen<A
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        if (te.burnTime <= te.curFuelUsage && !FurnaceBlockEntity.isFuel(te.getItemHandler().getStackInSlot(0))) {
+        if (te.burnTime <= te.curFuelUsage && te.getItemHandler().getStackInSlot(0).getBurnTime(RecipeType.SMELTING, te.nonNullLevel().fuelValues()) <= 0) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airCompressor.noFuel"));
         }
 

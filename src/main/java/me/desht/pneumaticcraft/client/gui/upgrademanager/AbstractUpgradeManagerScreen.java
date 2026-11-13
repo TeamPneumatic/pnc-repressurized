@@ -39,8 +39,9 @@ import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -63,10 +64,8 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     private final Map<PNCUpgrade, IGuiAnimatedStat> cycleTabs = new Object2ObjectOpenHashMap<>();
 
     AbstractUpgradeManagerScreen(ChargingStationUpgradeManagerMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 182);
         itemStack = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
-
-        imageHeight = 182;
     }
 
     @Override
@@ -120,8 +119,8 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     protected abstract int getDefaultVolume();
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        graphics.drawString(font, itemStack.getHoverName(), (imageWidth - font.width(itemStack.getHoverName())) / 2, 5, 0x404040, false);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        graphics.text(font, itemStack.getHoverName(), (imageWidth - font.width(itemStack.getHoverName())) / 2, 5, 0xFF404040, false);
 
         int gaugeX = imageWidth * 3 / 4 + 10;
         int gaugeY = imageHeight / 4 + 10;
@@ -130,10 +129,10 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
                 PressureGaugeRenderer2D.drawPressureGauge(graphics, font, 0, h.maxPressure(), h.maxPressure(),
                         0, te.chargingItemPressure, gaugeX, gaugeY));
 
-        graphics.pose().pushPose();
-        graphics.pose().scale(2f, 2f, 2f);
-        graphics.renderItem(itemStack, 3, 22);
-        graphics.pose().popPose();
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(2f, 2f);
+        graphics.item(itemStack, 3, 22);
+        graphics.pose().popMatrix();
     }
 
     @Override
@@ -142,12 +141,13 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            guiBackButton.onPress();
+            guiBackButton.onPress(event);
             return true;
         } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
     }
 

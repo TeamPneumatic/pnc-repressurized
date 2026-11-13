@@ -34,7 +34,8 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -135,7 +136,10 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int mouseButton = event.button();
         if (movedStat.getBounds().contains((int)mouseX, (int)mouseY)) {
             if (mouseButton == 2) {
                 movedStat.setLeftSided(!movedStat.isLeftSided());
@@ -152,11 +156,14 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
             }
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int mouseButton = event.button();
         if (clicked) {
             if (mouseButton == 0 || mouseButton == 1) {
                 reposition(movedStat, mouseX, mouseY);
@@ -165,16 +172,18 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
             clicked = false;
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, mouseButton);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (clicked) {
             reposition(movedStat, mouseX, mouseY);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, mouseButton, dx, dy);
+        return super.mouseDragged(event, dx, dy);
     }
 
     private void reposition(IGuiAnimatedStat stat, double x, double y) {
@@ -192,12 +201,12 @@ public class ArmorStatMoveScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         Rect2i bounds = GuiUtils.showPopupHelpScreen(graphics,this, font, helpText);
         snapToGrid.setY(bounds.getY() + bounds.getHeight() + 15);
         gridSlider.setY(snapToGrid.getY() + 12);
 
-        super.render(graphics, x, y, partialTicks);
+        super.extractRenderState(graphics, x, y, partialTicks);
 
         movedStat.renderStat(graphics,-1, -1, partialTicks);
 

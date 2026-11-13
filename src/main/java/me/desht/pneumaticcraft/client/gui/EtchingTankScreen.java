@@ -40,9 +40,7 @@ public class EtchingTankScreen extends AbstractPneumaticCraftContainerScreen<Etc
     private WidgetTemperature tempWidget;
 
     public EtchingTankScreen(EtchingTankMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 206;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 206);
     }
 
     @Override

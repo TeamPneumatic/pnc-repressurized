@@ -77,10 +77,10 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
             int minY = 26 + (lockedSlot / 2) * 18;
 
             event.getGuiGraphics().fill(minX, minY, minX + 16, minY + 16, 0x3200D000);
-            event.getGuiGraphics().hLine(minX, minX + 16, minY, 0xFF00D000);
-            event.getGuiGraphics().hLine(minX, minX + 16, minY + 16, 0xFF00D000);
-            event.getGuiGraphics().vLine(minX, minY, minY + 16, 0xFF00D000);
-            event.getGuiGraphics().vLine(minX + 16, minY, minY + 16, 0xFF00D000);
+            event.getGuiGraphics().horizontalLine(minX, minX + 16, minY, 0xFF00D000);
+            event.getGuiGraphics().horizontalLine(minX, minX + 16, minY + 16, 0xFF00D000);
+            event.getGuiGraphics().verticalLine(minX, minY, minY + 16, 0xFF00D000);
+            event.getGuiGraphics().verticalLine(minX + 16, minY, minY + 16, 0xFF00D000);
         }
     }
 }

@@ -58,7 +58,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class RenderEntityTarget {
     private static final float STAT_SCALE = 0.02f;

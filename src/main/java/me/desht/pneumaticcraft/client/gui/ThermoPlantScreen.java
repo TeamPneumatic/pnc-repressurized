@@ -32,7 +32,9 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,8 +51,7 @@ public class ThermoPlantScreen extends AbstractPneumaticCraftContainerScreen<The
     private int nExposedFaces;
 
     public ThermoPlantScreen(ThermoPlantMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-        imageHeight = 212;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 212);
     }
 
     @Override
@@ -88,35 +89,36 @@ public class ThermoPlantScreen extends AbstractPneumaticCraftContainerScreen<The
         tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
 
-        dumpButton.setMessage(hasShiftDown() ?
+        dumpButton.setMessage(Minecraft.getInstance().hasShiftDown() ?
                 Component.literal("X").withStyle(ChatFormatting.RED) :
                 Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA)
         );
     }
 
     private List<Component> makeDumpButtonTooltip() {
-        return hasShiftDown() ?
+        return Minecraft.getInstance().hasShiftDown() ?
                 List.of(PneumaticCraftUtils.xlate("pneumaticcraft.gui.thermopneumatic.dumpInput")) :
                 List.of(PneumaticCraftUtils.xlate("pneumaticcraft.gui.thermopneumatic.moveInput"));
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         // animated progress bar
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
-        graphics.blit(getGuiTexture(), leftPos + 30, topPos + 36, imageWidth, 0, progressWidth, 30);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), leftPos + 30, topPos + 36, imageWidth, 0, progressWidth, 30, 256, 256);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        graphics.pose().pushPose();
-        graphics.pose().scale(0.95f, 1f, 1f);
-        graphics.drawString(font, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2.1f , 5, 0x404040, false);
-        graphics.pose().popPose();
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(0.95f, 1f);
+        graphics.text(font, title.getVisualOrderText(), (int) (imageWidth / 2f - font.width(title) / 2.1f), 5, 0xFF404040, false);
+        graphics.pose().popMatrix();
+        super.extractLabels(graphics, x, y);
 
     }
 

@@ -21,11 +21,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.Validate;
@@ -66,19 +68,21 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void onClick(double x, double y, int button) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        double y = event.y();
         currentScroll = (float) (y - 7 - this.getY()) / (height - 17);
         currentScroll = Mth.clamp(currentScroll, 0, 1);
         dragging = true;
     }
 
     @Override
-    public void onRelease(double x, double y) {
+    public void onRelease(MouseButtonEvent event) {
         dragging = false;
     }
 
     @Override
-    protected void onDrag(double x, double y, double dx, double dy) {
+    protected void onDrag(MouseButtonEvent event, double dx, double dy) {
+        double y = event.y();
         dragging = true;
         currentScroll = (float) (y - 7 - this.getY()) / (height - 17);
         currentScroll = Mth.clamp(currentScroll, 0, 1);
@@ -96,18 +100,17 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX(), y = getY();
-            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y, 12, 0, width, 1, 26, 15);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_VERTICAL_SCROLLBAR, x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++) {
-                graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + 1 + i, 12, 1, width, 1, 26, 15);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + 1 + i, 12, 1, width, 1, 26, 15);
             }
-            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + height - 1, 12, 14, width, 1, 26, 15);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_VERTICAL_SCROLLBAR, x, y + height - 1, 12, 14, width, 1, 26, 15);
 
-            if (!active) graphics.setColor(0.6F, 0.6F, 0.6F, 1);
-            graphics.blit(Textures.WIDGET_VERTICAL_SCROLLBAR, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
-            graphics.setColor(1, 1, 1, 1);
+            int color = active ? 0xFFFFFFFF : 0xFF999999;
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_VERTICAL_SCROLLBAR, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15, color);
         }
     }
 
@@ -139,19 +142,19 @@ public class WidgetVerticalScrollbar extends AbstractWidget implements ICanRende
         posF(builder, posMat, x, y + height, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(u1, v2)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         posF(builder, posMat, x + width, y + height, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(u2, v2)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         posF(builder, posMat, x + width, y, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(u2, v1)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         posF(builder, posMat, x, y, 0)
                 .setColor(255, 255, 255, 255)
                 .setUv(u1, v1)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
     }
 
     @Override

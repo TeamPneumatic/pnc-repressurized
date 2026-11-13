@@ -36,7 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     private static final float LASER_SIZE = 0.4f;

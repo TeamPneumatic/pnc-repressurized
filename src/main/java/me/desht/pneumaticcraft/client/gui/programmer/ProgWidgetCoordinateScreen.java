@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -116,11 +116,11 @@ public class ProgWidgetCoordinateScreen extends ProgWidgetAreaShowScreen<ProgWid
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        graphics.drawString(font, "x:", guiLeft + 90, guiTop + 51, 0xFF404040, false);
-        graphics.drawString(font, "y:", guiLeft + 90, guiTop + 64, 0xFF404040, false);
-        graphics.drawString(font, "z:", guiLeft + 90, guiTop + 77, 0xFF404040, false);
-        graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060, false);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        graphics.text(font, "x:", guiLeft + 90, guiTop + 51, 0xFF404040, false);
+        graphics.text(font, "y:", guiLeft + 90, guiTop + 64, 0xFF404040, false);
+        graphics.text(font, "z:", guiLeft + 90, guiTop + 77, 0xFF404040, false);
+        graphics.text(font, xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060, false);
     }
 }

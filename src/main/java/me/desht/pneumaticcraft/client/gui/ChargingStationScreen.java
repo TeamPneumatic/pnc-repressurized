@@ -17,13 +17,11 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
@@ -32,14 +30,14 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
 import java.util.List;
 
@@ -56,9 +54,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     private static final Component UPGRADE_ONLY_OFF = Component.literal(Symbols.ARROW_UP_SHORT).withStyle(ChatFormatting.GRAY);
 
     public ChargingStationScreen(ChargingStationMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 182;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 182);
     }
 
     @Override
@@ -85,11 +81,12 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         if (te.upgradeOnly) {
-            graphics.blit(getGuiTexture(), leftPos + 102, topPos + 76, 177, 0, 13, 16);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), leftPos + 102, topPos + 76, 177, 0, 13, 16, 256, 256);
         } else {
             renderAir(graphics, partialTicks);
         }
@@ -168,28 +165,21 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
         }
     }
 
-    private void renderAir(GuiGraphics graphics, float partialTicks) {
-        RenderSystem.lineWidth(2.0F);
+    private void renderAir(GuiGraphicsExtractor graphics, float partialTicks) {
         for (int i = 0; i < PARTICLE_COUNT; i++) {
             renderAirParticle(graphics, renderAirProgress % (1F / PARTICLE_COUNT) + (float) i / PARTICLE_COUNT);
         }
     }
 
-    private void renderAirParticle(GuiGraphics graphics, float particleProgress) {
+    private void renderAirParticle(GuiGraphicsExtractor graphics, float particleProgress) {
         XY result = getXy(particleProgress, (width - imageWidth) / 2, (height - imageHeight) / 2);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        Matrix4f posMat = graphics.pose().last().pose();
-        GuiUtils.drawWithTesselator(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, b -> {
-            b.addVertex(posMat, result.x() - 1f, result.y() + 1f, 0.0F)
-                    .setColor(0.7f, 0.8f, 0.9f, 1f);
-            b.addVertex(posMat, result.x() + 1f, result.y() + 1f, 0.0F)
-                    .setColor(0.6f, 0.7f, 0.7f, 1f);
-            b.addVertex(posMat, result.x() + 1f, result.y() - 1f, 0.0F)
-                    .setColor(0.7f, 0.8f, 0.9f, 1f);
-            b.addVertex(posMat, result.x() - 1f, result.y() - 1f, 0.0F)
-                    .setColor(0.8f, 0.9f, 0.9f, 1f);
-        });
+        GuiVertexRenderState.submit(graphics, b -> b
+                .vertex(result.x() - 1f, result.y() + 1f, ARGB.colorFromFloat(1f, 0.7f, 0.8f, 0.9f))
+                .vertex(result.x() + 1f, result.y() + 1f, ARGB.colorFromFloat(1f, 0.6f, 0.7f, 0.7f))
+                .vertex(result.x() + 1f, result.y() - 1f, ARGB.colorFromFloat(1f, 0.7f, 0.8f, 0.9f))
+                .vertex(result.x() - 1f, result.y() - 1f, ARGB.colorFromFloat(1f, 0.8f, 0.9f, 0.9f))
+        );
     }
 
     private static @NotNull XY getXy(float particleProgress, int xStart, int yStart) {

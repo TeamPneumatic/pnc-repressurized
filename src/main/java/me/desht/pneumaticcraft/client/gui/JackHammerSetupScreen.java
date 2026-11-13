@@ -48,9 +48,7 @@ public class JackHammerSetupScreen extends AbstractPneumaticCraftContainerScreen
     private WidgetButtonExtended speedCapButton;
 
     public JackHammerSetupScreen(JackhammerSetupMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 182;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 182);
     }
 
     @Override

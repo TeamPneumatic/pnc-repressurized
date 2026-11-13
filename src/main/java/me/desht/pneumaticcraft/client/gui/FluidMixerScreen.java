@@ -28,7 +28,9 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -45,8 +47,7 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
     private final WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
 
     public FluidMixerScreen(FluidMixerMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-        imageHeight = 212;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 212);
     }
 
     @Override
@@ -71,12 +72,13 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         // animated progress bar
         int progressWidth = (int) (te.getCraftingPercentage() * 48);
-        graphics.blit(getGuiTexture(), leftPos + 50, topPos + 36, imageWidth, 0, progressWidth, 30);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), leftPos + 50, topPos + 36, imageWidth, 0, progressWidth, 30, 256, 256);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
         super.containerTick();
 
         for (int i = 0; i < 2; i++) {
-            dumpButtons[i].setMessage(hasShiftDown() ?
+            dumpButtons[i].setMessage(Minecraft.getInstance().hasShiftDown() ?
                     Component.literal("X").withStyle(ChatFormatting.RED) :
                     Component.literal(Symbols.TRIANGLE_RIGHT).withStyle(ChatFormatting.DARK_AQUA)
             );
@@ -131,6 +133,6 @@ public class FluidMixerScreen extends AbstractPneumaticCraftContainerScreen<Flui
     }
 
     private List<Component> makeDumpButtonTooltip() {
-        return List.of(xlate("pneumaticcraft.gui.thermopneumatic." + (hasShiftDown() ? "dumpInput" : "moveInput")));
+        return List.of(xlate("pneumaticcraft.gui.thermopneumatic." + (Minecraft.getInstance().hasShiftDown() ? "dumpInput" : "moveInput")));
     }
 }

@@ -39,9 +39,11 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -85,7 +87,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
         if (instance == null) {
             instance = new ArmorMainScreen();
             Window mw = Minecraft.getInstance().getWindow();
-            instance.init(Minecraft.getInstance(), mw.getGuiScaledWidth(), mw.getGuiScaledHeight());  // causes init() to be called
+            instance.init(mw.getGuiScaledWidth(), mw.getGuiScaledHeight());  // causes init() to be called
 
             for (int i = 1; i < instance.upgradeOptions.size(); i++) {
                 pageNumber = i;
@@ -199,17 +201,17 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderTransparentBackground(graphics);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        extractTransparentBackground(graphics);
     }
 
     @Override
-    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(graphics, x, y, partialTicks);
-        graphics.drawCenteredString(font, optionPage.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
+        graphics.centeredText(font, optionPage.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            graphics.drawCenteredString(font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA),
+            graphics.centeredText(font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(ChatFormatting.DARK_AQUA),
                     100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
         optionPage.renderPost(graphics, x, y, partialTicks);
@@ -224,21 +226,21 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return getCurrentOptionsPage().page.keyPressed(keyCode, scanCode, modifiers)
-                || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return getCurrentOptionsPage().page.keyPressed(event.key(), event.scancode(), event.modifiers())
+                || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return getCurrentOptionsPage().page.keyReleased(keyCode, scanCode, modifiers)
-                || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return getCurrentOptionsPage().page.keyReleased(event.key(), event.scancode(), event.modifiers())
+                || super.keyReleased(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        return getCurrentOptionsPage().page.mouseClicked(mouseX, mouseY, mouseButton)
-                || super.mouseClicked(mouseX, mouseY, mouseButton);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        return getCurrentOptionsPage().page.mouseClicked(event.x(), event.y(), event.button())
+                || super.mouseClicked(event, doubleClick);
     }
 
     @Override
@@ -248,9 +250,9 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return getCurrentOptionsPage().page.mouseDragged(mouseX, mouseY, button, dragX, dragY)
-                || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        return getCurrentOptionsPage().page.mouseDragged(event.x(), event.y(), event.button(), dragX, dragY)
+                || super.mouseDragged(event, dragX, dragY);
     }
 
     @Override

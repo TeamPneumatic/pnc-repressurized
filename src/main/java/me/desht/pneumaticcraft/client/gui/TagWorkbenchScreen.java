@@ -61,10 +61,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
     private WidgetButtonExtended writeButton;
 
     public TagWorkbenchScreen(TagWorkbenchMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageWidth = 234;
-        imageHeight = 256;
+        super(container, inv, displayString, 234, 256);
     }
 
     @Override

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
@@ -35,14 +34,18 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
@@ -56,9 +59,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.joml.Matrix3f;
-import org.joml.Matrix4fStack;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedStat {
     private static final int MIN_WIDTH_HEIGHT = 17;
@@ -426,15 +427,15 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public void renderStat(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderStat(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         // just delegate to the renderButton() method
         // a separately-named interface method is used to avoid AbstractMethodError problems arising
         // from having a renderButton() method in IGuiAnimatedStat
-        renderWidget(graphics, x, y, partialTicks);
+        extractWidgetRenderState(graphics, x, y, partialTicks);
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         if (leftSided) {
             return this.active && this.visible
                     && mouseX >= (double)this.getX() - this.width
@@ -442,12 +443,12 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                     && mouseY >= (double)this.getY()
                     && mouseY < (double)(this.getY() + this.height);
         } else {
-            return super.clicked(mouseX, mouseY);
+            return super.isMouseOver(mouseX, mouseY);
         }
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) {
             return;
         }
@@ -484,31 +485,26 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             String title = getMessage().getString();
             int titleYoffset = title.isEmpty() ? 3 : 12;
             if (!title.isEmpty()) {
-                graphics.drawString(fontRenderer, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, titleColor);
+                graphics.text(fontRenderer, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, GuiUtils.textColor(titleColor));
             }
             for (int i = curScroll; i < reorderingProcessors.size() && i < curScroll + getVisibleLines(); i++) {
                 FormattedCharSequence line = reorderingProcessors.get(i);
                 int renderX = renderBaseX + (leftSided ? -renderWidth + 2 : 18);
                 int renderY = renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset + reservedLines * fontRenderer.lineHeight;
-                graphics.drawString(fontRenderer, line,renderX, renderY, foregroundColor, dropShadows.get(i));
+                graphics.text(fontRenderer, line, renderX, renderY, GuiUtils.textColor(foregroundColor), dropShadows.get(i));
             }
 
             // Set up necessary translations so subwidgets render in the right place
-            // While our own matrix stack is passed to widget.render, we also need to modify the model view stack so
-            //  widgets which render itemstacks do it in the right place
-            Matrix4fStack poseStack = RenderSystem.getModelViewStack();
-            poseStack.pushMatrix();
-            poseStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
-            RenderSystem.applyModelViewMatrix();
-            subWidgets.forEach(widget -> widget.render(graphics, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
-            poseStack.popMatrix();
-            RenderSystem.applyModelViewMatrix();
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10));
+            subWidgets.forEach(widget -> widget.extractRenderState(graphics, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
+            graphics.pose().popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
             statIcon.render(graphics, renderBaseX, renderAffectedY, leftSided);
         }
 
-        graphics.renderTooltip(fontRenderer, makeTooltip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
+        graphics.setTooltipForNextFrame(fontRenderer, makeTooltip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
     }
 
     private List<Component> makeTooltip(int mouseX, int mouseY) {
@@ -621,19 +617,15 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         }
     }
 
-    @Override
-    public boolean isMouseOver(double mouseX, double mouseY) {
-        return this.active && this.visible && getBounds().contains((int)mouseX, (int)mouseY);
-    }
-
     /*
      * button: 0 = left 1 = right 2 = middle
      */
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (isHovered()) {
+            MouseButtonEvent subEvent = new MouseButtonEvent(event.x() - this.getX(), event.y() - this.effectiveY, event.buttonInfo());
             for (AbstractWidget widget : subWidgets) {
-                if (widget.mouseClicked(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
+                if (widget.mouseClicked(subEvent, doubleClick)) {
                     gui.setFocused(widget);
                     return false;
                 } else {
@@ -645,28 +637,30 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (isHovered()) {
+            MouseButtonEvent subEvent = new MouseButtonEvent(event.x() - this.getX(), event.y() - this.effectiveY, event.buttonInfo());
             for (AbstractWidget widget : subWidgets) {
-                if (widget.mouseReleased(mouseX - this.getX(), mouseY - this.effectiveY, button)) {
+                if (widget.mouseReleased(subEvent)) {
                     return true;
                 }
             }
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (isHovered()) {
             Rect2i bounds = getBounds();
+            MouseButtonEvent subEvent = new MouseButtonEvent(event.x() - bounds.getX(), event.y() - bounds.getY(), event.buttonInfo());
             for (AbstractWidget widget : subWidgets) {
-                if (widget.mouseDragged(mouseX - bounds.getX(), mouseY - bounds.getY(), button, dragX, dragY)) {
+                if (widget.mouseDragged(subEvent, dragX, dragY)) {
                     return true;
                 }
             }
@@ -687,9 +681,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         for (AbstractWidget widget : subWidgets) {
-            if (widget.keyPressed(keyCode, scanCode, modifiers) || (widget instanceof EditBox && widget.isFocused()) && keyCode != GLFW.GLFW_KEY_ESCAPE) {
+            if (widget.keyPressed(event) || (widget instanceof EditBox && widget.isFocused()) && keyCode != GLFW.GLFW_KEY_ESCAPE) {
                 return true;
             }
         }
@@ -697,9 +692,9 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     @Override
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         for (AbstractWidget widget : subWidgets) {
-            if (widget.charTyped(codePoint, modifiers)) {
+            if (widget.charTyped(event)) {
                 return true;
             }
         }
@@ -827,12 +822,9 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
             return new StatIcon(Either.right(texture));
         }
 
-        void render(GuiGraphics graphics, int x, int y, boolean leftSided) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            texture.ifLeft(stack -> graphics.renderItem(stack, x - (leftSided ? 16 : 0), y))
-                    .ifRight(resLoc -> graphics.blit(resLoc, x - (leftSided ? 16 : 0), y, 0, 0, 16, 16, 16, 16));
-            RenderSystem.disableBlend();
+        void render(GuiGraphicsExtractor graphics, int x, int y, boolean leftSided) {
+            texture.ifLeft(stack -> graphics.item(stack, x - (leftSided ? 16 : 0), y))
+                    .ifRight(resLoc -> graphics.blit(RenderPipelines.GUI_TEXTURED, resLoc, x - (leftSided ? 16 : 0), y, 0, 0, 16, 16, 16, 16));
         }
 
         public void render3d(PoseStack matrixStack, MultiBufferSource buffer, int x, int y) {

@@ -5,7 +5,8 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AbstractPneumaticCraftMenu;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -83,11 +84,11 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
-        graphics.drawCenteredString(font, formatStringDesc(), width / 2 - leftPos, height / 2 - topPos, 0xFFFFFF);
-        graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0x808080);
+        graphics.centeredText(font, formatStringDesc(), width / 2 - leftPos, height / 2 - topPos, 0xFFFFFFFF);
+        graphics.centeredText(font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0xFF808080);
     }
 
     @Override
@@ -115,7 +116,7 @@ public abstract class AbstractCreativeAdjusterScreen<C extends AbstractPneumatic
     }
 
     private String makeTag(float f) {
-        return formatAdjustment(hasShiftDown() ? f * getShiftMultiplier() : f);
+        return formatAdjustment(Minecraft.getInstance().hasShiftDown() ? f * getShiftMultiplier() : f);
     }
 
     protected record Adjustments(float small, float big) {

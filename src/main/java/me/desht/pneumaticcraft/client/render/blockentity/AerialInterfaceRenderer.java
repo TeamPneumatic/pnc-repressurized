@@ -16,7 +16,7 @@ import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.core.Direction;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
     private final SkullModel headModel;

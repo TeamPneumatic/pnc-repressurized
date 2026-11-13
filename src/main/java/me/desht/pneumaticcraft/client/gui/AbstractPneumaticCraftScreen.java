@@ -19,8 +19,9 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -58,17 +59,17 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTicks) {
-        super.render(graphics, x, y, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractRenderState(graphics, x, y, partialTicks);
 
         drawForeground(graphics, x, y, partialTicks);
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderTransparentBackground(graphics);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        extractTransparentBackground(graphics);
         if (getGuiTexture() != null) {
-            graphics.blit(getGuiTexture(), guiLeft, guiTop, 0, 0, xSize, ySize);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), guiLeft, guiTop, 0, 0, xSize, ySize, 256, 256);
         }
     }
 
@@ -81,6 +82,6 @@ public abstract class AbstractPneumaticCraftScreen extends Screen {
      * @param y            mouse Y
      * @param partialTicks partial ticks
      */
-    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
     }
 }

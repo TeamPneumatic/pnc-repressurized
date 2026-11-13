@@ -18,8 +18,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -38,8 +36,9 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -47,7 +46,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -68,10 +67,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     private WidgetButtonExtended showRangeButton;
 
     public SmartChestScreen(SmartChestMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        this.imageWidth = 234;
-        this.imageHeight = 216;
+        super(container, inv, displayString, 234, 216);
         this.filter = te.getFilter();
     }
 
@@ -152,7 +148,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
     private WidgetButtonExtended makePushPullButton(RelativeFace face, int x, int y) {
         WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, Component.empty(), b -> {
-            te.cycleMode(face, Screen.hasShiftDown());
+            te.cycleMode(face, Minecraft.getInstance().hasShiftDown());
             setupPushPullButton((WidgetButtonExtended) b, face);
         }).withTag("push_pull:" + face.toString());
         setupPushPullButton(button, face);
@@ -183,8 +179,8 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     @Override
-    public void render(GuiGraphics graphics, int x, int y, float partialTick) {
-        super.render(graphics, x, y, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int x, int y, float partialTick) {
+        super.extractRenderState(graphics, x, y, partialTick);
 
         if (menu.getCarried().isEmpty()
                 && hoveredSlot != null
@@ -196,16 +192,14 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             List<FormattedCharSequence> l = GuiUtils.wrapTextComponentList(
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.smart_chest.filter", stack.getHoverName().getString(), stack.getCount()),
                     imageWidth, font);
-            graphics.renderTooltip(font, l, x, y);
+            graphics.setTooltipForNextFrame(font, l, x, y);
         }
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         // the filtered slots
         for (FilterSlot p : filter) {
@@ -223,42 +217,34 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             int sy = topPos + 18 + (slot / N_COLS) * 18;
             graphics.fill(sx, sy, sx + 16, sy + 16, 0x40FF6060);
         }
-
-        RenderSystem.disableBlend();
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
         for (FilterSlot p : filter) {
             int slot = p.slot();
             if (slot < te.getLastSlot()) {
                 int sx = 8 + (slot % N_COLS) * 18;
                 int sy = 18 + (slot / N_COLS) * 18;
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 ItemStack stack = p.stack();
-                graphics.renderItem(stack, sx, sy);
+                graphics.item(stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
-                graphics.pose().translate(0, 0, 300);
                 if (!menu.slots.get(slot).hasItem()) {
                     graphics.fill(sx, sy, sx + 16, sy + 16, 0x6080D080);
                 }
-                graphics.pose().scale(0.5f, 0.5f, 0.5f);
-                graphics.drawString(font, label, 2 * (sx + 16 - font.width(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0, false);
-                graphics.pose().scale(2.0f, 2.0f, 2.0f);
-                graphics.pose().popPose();
+                graphics.pose().scale(0.5f, 0.5f);
+                graphics.text(font, label, (int) (2 * (sx + 16 - font.width(label) / 2f)), 2 * (sy + 1), 0xFFFFFFA0, false);
+                graphics.pose().scale(2.0f, 2.0f);
+                graphics.pose().popMatrix();
             }
         }
-
-        RenderSystem.disableBlend();
     }
 
     @Override
-    protected void slotClicked(Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        if (slotIn != null && slotId < CHEST_SIZE && mouseButton == 0 && Screen.hasAltDown()) {
+    protected void slotClicked(Slot slotIn, int slotId, int mouseButton, ContainerInput type) {
+        if (slotIn != null && slotId < CHEST_SIZE && mouseButton == 0 && Minecraft.getInstance().hasAltDown()) {
             ItemStack stack = slotIn.getItem();
             if (stack.isEmpty() && slotId > 0 && te.getFilter(slotId).isEmpty()) {
                 if (menu.getCarried().isEmpty()) {
@@ -277,7 +263,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                 } else {
                     // alt-click an empty slot with item on cursor: try to set it as a filter
                     ItemStack inHand = menu.getCarried().copy();
-                    if (hasShiftDown()) inHand.setCount(inHand.getMaxStackSize());
+                    if (Minecraft.getInstance().hasShiftDown()) inHand.setCount(inHand.getMaxStackSize());
                     te.setFilter(slotId, inHand);
                     if (te.getLastSlot() <= slotId) {
                         te.setLastSlot(slotId + 1);
@@ -288,7 +274,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
-                    te.setFilter(slotId, hasShiftDown() ? stack.copyWithCount(stack.getMaxStackSize()) : stack);
+                    te.setFilter(slotId, Minecraft.getInstance().hasShiftDown() ? stack.copyWithCount(stack.getMaxStackSize()) : stack);
                 } else {
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
@@ -303,10 +289,10 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
         Slot s = getSlotUnderMouse();
-        if (Screen.hasAltDown() && s != null && s.index < CHEST_SIZE) {
+        if (Minecraft.getInstance().hasAltDown() && s != null && s.index < CHEST_SIZE) {
             ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
-                int newSize = hasShiftDown() ?
+                int newSize = Minecraft.getInstance().hasShiftDown() ?
                         (dirY > 0 ? stack.getCount() * 2 : stack.getCount() / 2) :
                         stack.getCount() + (int) dirY;
                 newSize = Mth.clamp(newSize, 1, stack.getMaxStackSize());
@@ -322,14 +308,15 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         Slot s = getSlotUnderMouse();
-        if (Screen.hasAltDown() && s != null && s.index < CHEST_SIZE) {
+        if (Minecraft.getInstance().hasAltDown() && s != null && s.index < CHEST_SIZE) {
             ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
                 int newCount = switch (keyCode) {
-                    case GLFW.GLFW_KEY_UP -> Screen.hasShiftDown() ? stack.getCount() * 2 : stack.getCount() + 1;
-                    case GLFW.GLFW_KEY_DOWN -> Screen.hasShiftDown() ? stack.getCount() / 2 : stack.getCount() - 1;
+                    case GLFW.GLFW_KEY_UP -> Minecraft.getInstance().hasShiftDown() ? stack.getCount() * 2 : stack.getCount() + 1;
+                    case GLFW.GLFW_KEY_DOWN -> Minecraft.getInstance().hasShiftDown() ? stack.getCount() / 2 : stack.getCount() - 1;
                     default -> stack.getCount();
                 };
                 newCount = Mth.clamp(newCount, 1, stack.getMaxStackSize());
@@ -341,7 +328,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override

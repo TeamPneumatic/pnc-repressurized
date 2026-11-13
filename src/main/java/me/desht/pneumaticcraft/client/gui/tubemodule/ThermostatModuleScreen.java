@@ -17,10 +17,9 @@
 
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncThermostatModuleToServer;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
@@ -28,17 +27,18 @@ import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
-import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -137,12 +137,12 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     }
 
     @Override
-    public void drawForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int scrollbarLowerBoundX = temperatureToX((int)module.lowerBound);
         int scrollbarHigherBoundX = temperatureToX((int)module.higherBound);
 
-        graphics.blit(getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        graphics.blit(getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12, 256, 256);
 
         renderGraph(graphics);
 
@@ -151,39 +151,37 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         // Update channel
         NetworkHandler.sendToServer(PacketSyncThermostatModuleToServer.create(module));
 
-        graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - module.getInputLevel()) / 15, 0xFFFF0000);
+        graphics.horizontalLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - module.getInputLevel()) / 15, 0xFFFF0000);
         String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.temperature")
             + " " + PneumaticCraftUtils.roundNumberTo(module.getTemperature(), 0) + " °C";
-        graphics.drawString(font, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040, false);
+        graphics.text(font, status, (int) (guiLeft + xSize / 2f - font.width(status) / 2f), guiTop + 175, 0xFF404040, false);
 
         // the actual graph data
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        Matrix4f posMat = graphics.pose().last().pose();
         float temperatureRange = ThermostatModule.MAX_VALUE - ThermostatModule.MIN_VALUE;
-        for (int i = 0; i < 16; i++) {
-            float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
-            float x = graphLeft + (graphRight - graphLeft) * (module.getTemperatureForLevel(i) - ThermostatModule.MIN_VALUE) / temperatureRange;
-            bufferBuilder.addVertex(posMat, x, y, 90f).setColor(0.25f + i * 0.05f, 0f, 0f, 1.0f);
-        }
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-        RenderSystem.disableBlend();
+        float lineWidth = GuiVertexRenderState.pixels(1f);
+        GuiVertexRenderState.submit(graphics, wr -> {
+            for (int i = 0; i < 15; i++) {
+                float y1 = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
+                float x1 = graphLeft + (graphRight - graphLeft) * (module.getTemperatureForLevel(i) - ThermostatModule.MIN_VALUE) / temperatureRange;
+                float y2 = graphHighY + (graphLowY - graphHighY) * (15 - (i + 1)) / 15f;
+                float x2 = graphLeft + (graphRight - graphLeft) * (module.getTemperatureForLevel(i + 1) - ThermostatModule.MIN_VALUE) / temperatureRange;
+                wr.line(x1, y1, x2, y2, lineWidth, ARGB.colorFromFloat(1f, 0.25f + i * 0.05f, 0f, 0f), ARGB.colorFromFloat(1f, 0.25f + (i + 1) * 0.05f, 0f, 0f));
+            }
+        });
 
     }
 
-    private void renderGraph(GuiGraphics graphics) {
-        graphics.vLine(graphLeft, graphHighY, graphLowY, 0xFF303030);
+    private void renderGraph(GuiGraphicsExtractor graphics) {
+        graphics.verticalLine(graphLeft, graphHighY, graphLowY, 0xFF303030);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
                 String txt = String.valueOf(i);
-                graphics.drawString(font, txt, graphLeft - 5 - font.width(txt), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030, false);
-                graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
+                graphics.text(font, txt, graphLeft - 5 - font.width(txt), (int) (graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3), 0xFF303030, false);
+                graphics.horizontalLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
 
             }
-            graphics.hLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
+            graphics.horizontalLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
         }
 
         int[] temps = { ThermostatModule.MIN_VALUE, 0, 1000, ThermostatModule.MAX_VALUE };
@@ -191,10 +189,10 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
         for (int i = 0; i < 4; i++) {
             int offset = (int)((temps[i] - ThermostatModule.MIN_VALUE) * (100f / (ThermostatModule.MAX_VALUE - ThermostatModule.MIN_VALUE)));
             String txt = String.valueOf(temps[i]);
-            graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f + adjusts[i],
+            graphics.text(font, txt, (int) (graphLeft + (graphRight - graphLeft) * offset / 100f - font.width(txt) / 2f + adjusts[i]),
                 graphLowY + 6, 0xFF303030, false);
-            graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
-            graphics.vLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
+            graphics.verticalLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphHighY, graphLowY - 2, 0x33000000);
+            graphics.verticalLine(graphLeft + (graphRight - graphLeft) * offset / 100, graphLowY - 5, graphLowY + 3, 0xFF303030);
         }
     }
 
@@ -242,7 +240,9 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (!colorSelector.isExpanded() && lowerBoundArea.contains((int)mouseX, (int)mouseY)) {
             module.lowerBound = xToTemperature(mouseX - 7);
             grabLower = true;
@@ -252,11 +252,12 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
             grabHigher = true;
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dx, double dy) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        double mouseX = event.x();
         if (grabLower) {
             module.lowerBound = xToTemperature(mouseX - 7);
             return true;
@@ -264,12 +265,12 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
             module.higherBound = xToTemperature(mouseX - 7);
             return true;
         } else {
-            return super.mouseDragged(mouseX, mouseY, clickedMouseButton, dx, dy);
+            return super.mouseDragged(event, dx, dy);
         }
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (grabLower) {
             NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
             grabLower = false;
@@ -279,7 +280,7 @@ public class ThermostatModuleScreen extends AbstractTubeModuleScreen<ThermostatM
             grabHigher = false;
             return true;
         } else {
-            return super.mouseReleased(mouseX, mouseY, state);
+            return super.mouseReleased(event);
         }
     }
 

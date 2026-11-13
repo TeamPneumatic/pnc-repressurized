@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.common.inventory.PressureChamberInterfaceMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -77,8 +77,8 @@ public class PressureChamberInterfaceScreen extends AbstractPneumaticCraftContai
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
         int inputShift = (int) ((1F - Mth.cos(te.inputProgress / (float) (MAX_PROGRESS * Math.PI))) * 11);
         int outputShift = (int) ((1F - Mth.cos(te.outputProgress / (float) (MAX_PROGRESS * Math.PI))) * 11);

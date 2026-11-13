@@ -26,9 +26,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class ReinforcedChestScreen extends AbstractPneumaticCraftContainerScreen<ReinforcedChestMenu, ReinforcedChestBlockEntity> {
     public ReinforcedChestScreen(ReinforcedChestMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 186;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 186);
     }
 
     @Override

@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponentPatch;
@@ -76,9 +76,9 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPost(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         Font font = getGuiScreen().getFontRenderer();
-        graphics.drawString(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, textField.getY() - font.lineHeight - 2, 0xFFFFFFFF, false);
+        graphics.text(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, textField.getY() - font.lineHeight - 2, 0xFFFFFFFF, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, getGuiScreen().getScreen(), font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));

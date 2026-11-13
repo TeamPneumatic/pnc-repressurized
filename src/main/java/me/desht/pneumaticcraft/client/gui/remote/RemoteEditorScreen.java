@@ -37,8 +37,10 @@ import me.desht.pneumaticcraft.common.remote.*;
 import me.desht.pneumaticcraft.common.util.legacyconv.ConversionType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.Util;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
@@ -73,10 +75,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     private AbstractWidget configuringMCWidget;
 
     public RemoteEditorScreen(RemoteMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageWidth = 283;
-        imageHeight = 202;
+        super(container, inv, displayString, 283, 202);
     }
 
     @Override
@@ -165,8 +164,9 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        graphics.blit(getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 320, 256);
     }
 
     @Override
@@ -183,7 +183,8 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        int mouseButton = event.button();
         switch (mouseButton) {
             case 0 -> {
                 // left click - drag widget (with copy if it's a tray widget)
@@ -228,7 +229,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
                 }
             }
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     private void startDrag(IRemoteWidget remoteWidget, AbstractWidget mcWidget, boolean copying) {
@@ -241,7 +242,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (draggingRemoteWidget != null && draggingMCWidget != null) {
             if (!isInProgrammingArea(draggingMCWidget)) {
                 // dragged off the screen - delete it
@@ -256,11 +257,13 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
             return true;
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (draggingMCWidget != null) {
             int x1 = (int) mouseX;
             int y1 = (int) mouseY;
@@ -271,7 +274,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
             draggingMCWidget.setPosition(x1, y1);
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+        return super.mouseDragged(event, dragX, dragY);
     }
 
     @Override

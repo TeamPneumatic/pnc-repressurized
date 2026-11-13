@@ -39,8 +39,9 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -68,9 +69,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
     private boolean reInitBG;
 
     public SecurityStationInventoryScreen(SecurityStationMainMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 239;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 239);
     }
 
     @Override
@@ -129,8 +128,9 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float opacity, int x, int y) {
-        super.renderBg(graphics, opacity, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float opacity) {
+        super.extractBackground(graphics, x, y, opacity);
+        super.extractBackground(graphics, x, y, opacity);
         hackRenderer.render(graphics, hackSimulation, 0xFF2222FF);
     }
 
@@ -169,13 +169,14 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ENTER && sharedUserTextField.isFocused() && !sharedUserTextField.getValue().isEmpty()) {
             NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getValue()));
             sharedUserTextField.setValue("");
             return true;
         } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
     }
 
@@ -225,7 +226,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         textList.add(Component.empty());
         textList.add(Component.empty());
         boolean first = true;
-        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().toList();
+        List<String> names = te.sharedUsers.stream().map(GameProfile::name).sorted().toList();
         for (String name : names) {
             String str = first ? name + " ♔" : name;
             textList.add(Symbols.bullet().append(str).withStyle(first ? ChatFormatting.YELLOW : ChatFormatting.WHITE));
@@ -242,7 +243,7 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         }
         sharedUserList = new ArrayList<>();
         int n = 0;
-        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().toList();
+        List<String> names = te.sharedUsers.stream().map(GameProfile::name).sorted().toList();
         for (String name : names) {
             WidgetButtonExtended button = new WidgetButtonExtended(24, 30 + n * (font.lineHeight + 1), font.width(name), 8, Component.empty(), b -> {})
                     .setVisible(false)

@@ -45,7 +45,7 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -325,7 +325,7 @@ public enum HUDHandler implements IKeyListener {
         ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
     }
 
-    public void renderMessages(GuiGraphics poseStack, float partialTicks) {
+    public void renderMessages(GuiGraphicsExtractor poseStack, float partialTicks) {
         pendingMessages.forEach(message -> message.renderMessage(poseStack, partialTicks));
     }
 }

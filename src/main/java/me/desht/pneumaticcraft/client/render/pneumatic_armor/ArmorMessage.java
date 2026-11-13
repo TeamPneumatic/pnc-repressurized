@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -60,7 +60,7 @@ public class ArmorMessage {
         return stat;
     }
 
-    void renderMessage(GuiGraphics graphics, float partialTicks) {
+    void renderMessage(GuiGraphicsExtractor graphics, float partialTicks) {
         if (lifeSpan > 10) {
             stat.openStat();
         } else {

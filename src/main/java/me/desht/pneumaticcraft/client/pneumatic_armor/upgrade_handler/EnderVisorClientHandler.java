@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EnderVisorHandler;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.Identifier;
@@ -22,7 +22,7 @@ public class EnderVisorClientHandler extends IArmorUpgradeClientHandler.SimpleTo
         private static final Identifier PUMPKIN_OVERLAY = Identifier.parse("textures/misc/pumpkinblur.png");
 
         @Override
-        public void render(GuiGraphics graphics, DeltaTracker pDeltaTracker) {
+        public void render(GuiGraphicsExtractor graphics, DeltaTracker pDeltaTracker) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (!handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true)) {
                return;

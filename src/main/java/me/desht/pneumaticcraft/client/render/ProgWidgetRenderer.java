@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -42,11 +42,11 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class ProgWidgetRenderer {
-    private static final Map<ProgWidgetType<?>, BiConsumer<GuiGraphics, IProgWidget>> ITEM_RENDERERS = new HashMap<>();
-    private static final Map<ProgWidgetType<?>, BiConsumer<GuiGraphics, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
+    private static final Map<ProgWidgetType<?>, BiConsumer<GuiGraphicsExtractor, IProgWidget>> ITEM_RENDERERS = new HashMap<>();
+    private static final Map<ProgWidgetType<?>, BiConsumer<GuiGraphicsExtractor, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
 
     /**
      * Render a progwidget into a GUI.  Do not use for in-world rendering
@@ -56,7 +56,7 @@ public class ProgWidgetRenderer {
      * @param progWidget the progwidget
      * @param alpha transparerncy
      */
-    public static void renderProgWidget2d(GuiGraphics graphics, IProgWidget progWidget, int alpha) {
+    public static void renderProgWidget2d(GuiGraphicsExtractor graphics, IProgWidget progWidget, int alpha) {
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, progWidget.getTexture());
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
@@ -81,7 +81,7 @@ public class ProgWidgetRenderer {
         BufferUploader.drawWithShader(wr.buildOrThrow());
     }
 
-    public static void renderProgWidget2d(GuiGraphics graphics, IProgWidget progWidget) {
+    public static void renderProgWidget2d(GuiGraphicsExtractor graphics, IProgWidget progWidget) {
         renderProgWidget2d(graphics, progWidget, 255);
     }
 
@@ -117,20 +117,20 @@ public class ProgWidgetRenderer {
         });
     }
 
-    public static void doExtraRendering2d(GuiGraphics graphics, IProgWidget widget) {
+    public static void doExtraRendering2d(GuiGraphicsExtractor graphics, IProgWidget widget) {
         EXTRA_RENDERERS.getOrDefault(widget.getType(), ProgWidgetRenderer::renderGenericExtras).accept(graphics, widget);
     }
 
-    public static void doItemRendering2d(GuiGraphics graphics, IProgWidget widget) {
+    public static void doItemRendering2d(GuiGraphicsExtractor graphics, IProgWidget widget) {
         ITEM_RENDERERS.getOrDefault(widget.getType(), (p,w) -> {}).accept(graphics, widget);
     }
 
-    public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<GuiGraphics, P> consumer) {
-        EXTRA_RENDERERS.put(type, (BiConsumer<GuiGraphics, IProgWidget>) consumer);
+    public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<GuiGraphicsExtractor, P> consumer) {
+        EXTRA_RENDERERS.put(type, (BiConsumer<GuiGraphicsExtractor, IProgWidget>) consumer);
     }
 
-    public static <P extends IProgWidget> void registerItemRenderer(ProgWidgetType<P> type, BiConsumer<GuiGraphics, P> consumer) {
-        ITEM_RENDERERS.put(type, (BiConsumer<GuiGraphics, IProgWidget>) consumer);
+    public static <P extends IProgWidget> void registerItemRenderer(ProgWidgetType<P> type, BiConsumer<GuiGraphicsExtractor, P> consumer) {
+        ITEM_RENDERERS.put(type, (BiConsumer<GuiGraphicsExtractor, IProgWidget>) consumer);
     }
 
     /**
@@ -138,11 +138,11 @@ public class ProgWidgetRenderer {
      * @param graphics the matrix stack
      * @param progWidget the widget to draw for
      */
-    public static void renderGenericExtras(GuiGraphics graphics, IProgWidget progWidget) {
+    public static void renderGenericExtras(GuiGraphicsExtractor graphics, IProgWidget progWidget) {
         List<Component> info = progWidget.getExtraStringInfo();
         if (!info.isEmpty()) {
-            graphics.pose().pushPose();
-            graphics.pose().scale(0.5f, 0.5f, 0.5f);
+            graphics.pose().pushMatrix();
+            graphics.pose().scale(0.5f, 0.5f);
             Font fr = Minecraft.getInstance().font;
             List<FormattedCharSequence> splittedInfo = GuiUtils.wrapTextComponentList(info, 150, fr);
             for (int i = 0; i < splittedInfo.size(); i++) {
@@ -150,25 +150,25 @@ public class ProgWidgetRenderer {
                 int startX = progWidget.getWidth() / 2 - stringWidth / 4;
                 int startY = progWidget.getHeight() / 2 - (fr.lineHeight + 1) * (splittedInfo.size() - 1) / 4 + (fr.lineHeight + 1) * i / 2 - fr.lineHeight / 4;
                 graphics.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringWidth + 1, startY * 2 + fr.lineHeight + 1, 0xC0FFFFFF);
-                graphics.renderOutline(startX * 2 - 1, startY * 2 - 1, stringWidth + 2, fr.lineHeight + 2, 0xFFC0C0C0);
-                graphics.drawString(fr, splittedInfo.get(i),startX * 2, startY * 2, 0xFF000000, false);
+                graphics.outline(startX * 2 - 1, startY * 2 - 1, stringWidth + 2, fr.lineHeight + 2, 0xFFC0C0C0);
+                graphics.text(fr, splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000, false);
             }
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
         }
     }
 
-    public static void renderCraftingItem(GuiGraphics graphics, ProgWidgetCrafting progWidget) {
+    public static void renderCraftingItem(GuiGraphicsExtractor graphics, ProgWidgetCrafting progWidget) {
         ItemStack recipe = progWidget.getRecipeResult(ClientUtils.getClientLevel());
         if (recipe != null) {
-            graphics.renderItem(recipe, 8 , progWidget.getHeight() / 2 - 8);
-            graphics.renderItemDecorations(Minecraft.getInstance().font,  recipe,8 , progWidget.getHeight() / 2 - 8, Integer.toString(recipe.getCount()));
+            graphics.item(recipe, 8, progWidget.getHeight() / 2 - 8);
+            graphics.itemDecorations(Minecraft.getInstance().font, recipe, 8, progWidget.getHeight() / 2 - 8, Integer.toString(recipe.getCount()));
         }
     }
 
-    public static void renderItemFilterItem(GuiGraphics graphics, ProgWidgetItemFilter progWidget) {
+    public static void renderItemFilterItem(GuiGraphicsExtractor graphics, ProgWidgetItemFilter progWidget) {
         if (progWidget.getVariable().isEmpty() && !progWidget.getFilter().isEmpty()) {
-            graphics.renderItem(progWidget.getFilter(), 10, 2);
-            graphics.renderItemDecorations(Minecraft.getInstance().font, progWidget.getFilter(), 10, 2, "");
+            graphics.item(progWidget.getFilter(), 10, 2);
+            graphics.itemDecorations(Minecraft.getInstance().font, progWidget.getFilter(), 10, 2, "");
         }
     }
 }

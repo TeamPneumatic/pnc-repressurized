@@ -40,9 +40,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     private PNCForgeSlider slider;
 
     public UVLightBoxScreen(UVLightBoxMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 196;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 196);
     }
 
     @Override

@@ -42,8 +42,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -130,8 +132,11 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        if (this.clicked(x, y)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
+        int button = event.button();
+        if (this.isMouseOver(x, y)) {
             this.playDownSound(Minecraft.getInstance().getSoundManager());
             if (handleClick(x, y, button)) {
                 return true;
@@ -173,7 +178,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             }
 
             // left click - usual toggle action
-            super.onClick(mouseX, mouseY, button);
+            super.onClick(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(button, 0)), false);
 
             ArmorFeatureStatus.INSTANCE.setUpgradeEnabled(upgradeID, checked);
             ArmorFeatureStatus.INSTANCE.saveIfChanged();
@@ -191,7 +196,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
             return true;
         } else if (button == 1) {
             // right click - update or clear key binding
-            if (Screen.hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 updateBinding(InputConstants.UNKNOWN);
             } else {
                 isListeningForBinding = !isListeningForBinding;
@@ -236,7 +241,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (isListeningForBinding) {
             InputConstants.Key input = InputConstants.Type.KEYSYM.getOrCreate(keyCode);
             if (!KeyModifier.isKeyCodeModifier(input)) {
@@ -283,7 +289,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox {
         if (mapping != null) {
             KeyModifier mod = input == InputConstants.UNKNOWN ? KeyModifier.NONE : KeyModifierUtil.oneModifierAtMost();
             mapping.setKeyModifierAndCode(mod, input);
-            Minecraft.getInstance().options.setKey(mapping, input);
+            mapping.setKey(input);
+            Minecraft.getInstance().options.save();
             KeyMapping.resetMapping();
             KeyDispatcher.updateBinding(mapping, this);
             ClientUtils.getClientPlayer().playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f, input == InputConstants.UNKNOWN ? 0.5f :1.0f);

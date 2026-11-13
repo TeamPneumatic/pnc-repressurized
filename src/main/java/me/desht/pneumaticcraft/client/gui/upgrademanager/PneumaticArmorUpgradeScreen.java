@@ -30,7 +30,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ArmorItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,7 @@ public class PneumaticArmorUpgradeScreen extends AbstractUpgradeManagerScreen {
         super(container, inv, displayString);
 
         registryName = PneumaticCraftUtils.getRegistryName(itemStack.getItem()).orElseThrow().getPath();
-        equipmentSlot = ((ArmorItem) itemStack.getItem()).getEquipmentSlot();
+        equipmentSlot = ((PneumaticArmorItem) itemStack.getItem()).getEquipmentSlot(itemStack);
     }
 
     @Override

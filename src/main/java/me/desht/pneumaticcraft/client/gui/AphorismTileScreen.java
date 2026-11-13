@@ -32,9 +32,11 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
@@ -140,11 +142,11 @@ public class AphorismTileScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         GuiUtils.drawPanel(graphics, -5, (height - PANEL_HEIGHT) / 2, PANEL_HEIGHT, panelWidth);
 
         for (Renderable renderable : this.renderables) {
-            renderable.render(graphics, mouseX, mouseY, partialTicks);
+            renderable.extractRenderState(graphics, mouseX, mouseY, partialTicks);
         }
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, this, font,
@@ -153,7 +155,8 @@ public class AphorismTileScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         boolean updateTE = false;
 
         String curLine = textLines[cursorY];
@@ -221,12 +224,12 @@ public class AphorismTileScreen extends Screen {
                 updateTE = true;
             }
             case GLFW.GLFW_KEY_DELETE -> {
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     // clear all
                     textLines = new String[1];
                     textLines[0] = "";
                     cursorX = cursorY = 0;
-                } else if (Screen.hasAltDown()) {
+                } else if (Minecraft.getInstance().hasAltDown()) {
                     // delete this line
                     if (textLines.length > 1) {
                         textLines = ArrayUtils.remove(textLines, cursorY);
@@ -251,7 +254,7 @@ public class AphorismTileScreen extends Screen {
                 updateTE = true;
             }
             case GLFW.GLFW_KEY_D -> {
-                if (Screen.hasControlDown()) {
+                if (Minecraft.getInstance().hasControlDown()) {
                     generateDrama();
                     cursorY = textLines.length - 1;
                     cursorX = textLines[cursorY].length();
@@ -259,14 +262,14 @@ public class AphorismTileScreen extends Screen {
             }
         }
 
-        if (Screen.isPaste(keyCode)) {
+        if (event.isPaste()) {
             pasteClipboard();
             updateTE = true;
         }
 
         blockEntity.setCursorPos(cursorX, cursorY);
         if (updateTE) blockEntity.setTextLines(textLines);
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     private void pasteClipboard() {
@@ -285,9 +288,10 @@ public class AphorismTileScreen extends Screen {
     }
 
     @Override
-    public boolean charTyped(char ch, int keyCode) {
+    public boolean charTyped(CharacterEvent event) {
+        char ch = (char) event.codepoint();
         if (StringUtil.isAllowedChatCharacter(ch)) {
-            if (Screen.hasAltDown()) {
+            if (Minecraft.getInstance().hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
                     textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "§" + ch + textLines[cursorY].substring(cursorX);
                     cursorX += 2;
@@ -298,7 +302,7 @@ public class AphorismTileScreen extends Screen {
             }
             blockEntity.setTextLines(textLines);
         }
-        return super.charTyped(ch, keyCode);
+        return super.charTyped(event);
     }
 
     @Override
