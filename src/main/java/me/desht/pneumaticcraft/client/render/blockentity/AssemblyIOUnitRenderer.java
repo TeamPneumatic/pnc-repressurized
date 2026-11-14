@@ -18,30 +18,33 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyIOUnitBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOUnitBlockEntity> {
+public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOUnitBlockEntity, AssemblyIOUnitRenderer.State> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -135,68 +138,78 @@ public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOU
     }
 
     @Override
-    void renderModel(AssemblyIOUnitBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        float[] angles = new float[5];
-        for (int i = 0; i < 5; i++) {
-            angles[i] = te.oldAngles[i] + (te.angles[i] - te.oldAngles[i]) * partialTicks;
-        }
+    public State createRenderState() {
+        return new State();
+    }
 
-        ItemStack heldStack = te.getItemHandler(null).getStackInSlot(0);
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTexture(te)));
-        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
+    @Override
+    public void extractRenderState(AssemblyIOUnitBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(angles[0]));
+        ItemStack heldStack = blockEntity.getItemHandler(null).getStackInSlot(0);
+        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, blockEntity.oldClawProgress, blockEntity.clawProgress), heldStack);
+        state.texture = getTexture(blockEntity);
+        state.heldStack = heldStack.copy();
+        state.renderOverride = clawTranslation.getLeft();
+        state.clawTranslation = clawTranslation.getRight();
+        itemModelResolver.updateForTopItem(state.item, heldStack, ItemDisplayContext.FIXED, blockEntity.getLevel(), null, (int) blockEntity.getBlockPos().asLong());
+    }
 
-        baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        float[] angles = state.angles;
+        RenderType renderType = RenderTypes.entityCutout(state.texture);
 
-        matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[1]));
-        matrixStackIn.translate(0, -18 / 16F, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(angles[0]));
 
-        armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, baseTurn, poseStack, renderType, state);
+        submitPart(submitNodeCollector, baseTurn2, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[2]));
-        matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
+        poseStack.translate(0, 18 / 16F, 0);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[1]));
+        poseStack.translate(0, -18 / 16F, 0);
 
-        armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, armBase, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[3]));
-        matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
+        poseStack.translate(0, 18 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[2]));
+        poseStack.translate(0, -18 / 16F, -6 / 16F);
 
-        clawBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, armMiddle, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 3 / 16F, 0);
-        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(angles[4]));
-        matrixStackIn.translate(0, -3 / 16F, 0);
+        poseStack.translate(0, 3 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[3]));
+        poseStack.translate(0, -3 / 16F, -6 / 16F);
 
-        clawAxle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        clawTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, clawBase, poseStack, renderType, state);
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(clawTranslation.getRight(), 0, 0);
+        poseStack.translate(0, 3 / 16F, 0);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(angles[4]));
+        poseStack.translate(0, -3 / 16F, 0);
 
-        claw1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, clawAxle, poseStack, renderType, state);
+        submitPart(submitNodeCollector, clawTurn, poseStack, renderType, state);
 
-        matrixStackIn.translate(-2 * clawTranslation.getRight(), 0, 0);
+        poseStack.pushPose();
+        poseStack.translate(state.clawTranslation, 0, 0);
 
-        claw2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, claw1, poseStack, renderType, state);
 
-        matrixStackIn.popPose();
+        poseStack.translate(-2 * state.clawTranslation, 0, 0);
 
-        if (!heldStack.isEmpty()) {
-            IAssemblyRenderOverriding renderOverride = clawTranslation.getLeft();
-            if (renderOverride == null || renderOverride.applyRenderChangeIOUnit(matrixStackIn, heldStack)) {
-                matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
-                double yOffset = heldStack.getItem() instanceof BlockItem ? 1.5 / 16D : 0.5 / 16D;
-                matrixStackIn.translate(0, yOffset, -3 / 16D);
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-90));
-                matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
-                ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);
-                itemRenderer.render(heldStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        submitPart(submitNodeCollector, claw2, poseStack, renderType, state);
+
+        poseStack.popPose();
+
+        if (!state.heldStack.isEmpty()) {
+            IAssemblyRenderOverriding renderOverride = state.renderOverride;
+            if (renderOverride == null || renderOverride.applyRenderChangeIOUnit(poseStack, state.heldStack)) {
+                poseStack.mulPose(Axis.XP.rotationDegrees(90));
+                double yOffset = state.heldStack.getItem() instanceof BlockItem ? 1.5 / 16D : 0.5 / 16D;
+                poseStack.translate(0, yOffset, -3 / 16D);
+                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+                poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
+                state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             }
         }
     }
@@ -222,5 +235,13 @@ public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOU
 
     private Identifier getTexture(AssemblyIOUnitBlockEntity te) {
         return te != null && te.isImportUnit() ? Textures.MODEL_ASSEMBLY_IO_IMPORT : Textures.MODEL_ASSEMBLY_IO_EXPORT;
+    }
+
+    public static class State extends AssemblyRobotState {
+        Identifier texture = Textures.MODEL_ASSEMBLY_IO_EXPORT;
+        ItemStack heldStack = ItemStack.EMPTY;
+        @Nullable IAssemblyRenderOverriding renderOverride;
+        float clawTranslation;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 }
