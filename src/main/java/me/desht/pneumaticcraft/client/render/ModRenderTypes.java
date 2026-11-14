@@ -50,8 +50,8 @@ public class ModRenderTypes {
             .buildSnippet();
 
     private static final RenderPipeline.Snippet UNTEXTURED_LIGHTMAP_SNIPPET = RenderPipeline.builder(RenderPipelines.TEXT_SNIPPET, RenderPipelines.FOG_SNIPPET)
-            .withVertexShader("core/rendertype_text_background")
-            .withFragmentShader("core/rendertype_text_background")
+            .withVertexShader(RL("core/position_color_lightmap"))
+            .withFragmentShader(RL("core/position_color_lightmap"))
             .withSampler("Sampler2")
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS)
             .withCull(false)
