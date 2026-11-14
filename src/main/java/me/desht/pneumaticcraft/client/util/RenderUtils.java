@@ -235,7 +235,14 @@ public class RenderUtils {
     }
 
     public static void drawTexture(PoseStack matrixStack, VertexConsumer builder, int x, int y, float u1, float v1, float u2, float v2, int packedLightIn) {
-        Matrix4f posMat = matrixStack.last().pose();
+        drawTexture(matrixStack.last().pose(), builder, x, y, u1, v1, u2, v2, packedLightIn);
+    }
+
+    public static void drawTexture(Matrix4f posMat, VertexConsumer builder, int x, int y, int packedLightIn) {
+        drawTexture(posMat, builder, x, y, 0f, 0f, 1f, 1f, packedLightIn);
+    }
+
+    public static void drawTexture(Matrix4f posMat, VertexConsumer builder, int x, int y, float u1, float v1, float u2, float v2, int packedLightIn) {
         builder.addVertex(posMat, x, y + 16, 0)
                 .setColor(1f, 1f, 1f, 1f)
                 .setUv(u1, v2)
