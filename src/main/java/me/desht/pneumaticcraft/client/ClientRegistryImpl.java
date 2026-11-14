@@ -41,7 +41,7 @@ public class ClientRegistryImpl implements IClientRegistry {
     private static final ClientRegistryImpl INSTANCE = new ClientRegistryImpl();
     private static final Map<Item, IAssemblyRenderOverriding> renderOverrides = new ConcurrentHashMap<>();
     private static final Map<Item, IChargingStationRenderOverride> chargingRenderOverrides = new ConcurrentHashMap<>();
-    private static final IChargingStationRenderOverride DEFAULT_CHARGING_RENDERER = (poseStack, renderedStack, partialTicks, bufferIn, combinedLightIn, combinedOverlayIn) -> true;
+    private static final IChargingStationRenderOverride DEFAULT_CHARGING_RENDERER = (poseStack, renderedStack, partialTicks, submitNodeCollector, lightCoords, overlayCoords) -> true;
 
     private ClientRegistryImpl() {}
 
