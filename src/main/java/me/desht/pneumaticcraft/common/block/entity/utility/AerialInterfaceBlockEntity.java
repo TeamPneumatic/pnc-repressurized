@@ -246,7 +246,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (playerName.isEmpty()) {
             gameProfileClient = null;
         } else {
-            // resolved (skin etc.) by the renderer when needed; TODO 26.1 render: AerialInterfaceRenderer
+            // resolved (skin etc.) by the renderer when needed (PlayerSkinRenderCache in AerialInterfaceRenderer)
             gameProfileClient = ResolvableProfile.createUnresolved(playerName);
         }
     }
