@@ -26,7 +26,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix3f;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.normalLine;
 import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
@@ -48,12 +47,11 @@ public class ProgressBarRenderer {
         });
 
         // draw the outline
-        final Matrix3f normal = poseStack.last().normal();
-        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.getLineLoops(1.5), (posMat, builder) -> {
-            normalLine(builder, poseStack, minX, minY, zLevel, minX, maxY, zLevel, 255,0, 0, 0, true);
-            normalLine(builder, poseStack, minX, maxY, zLevel, maxX, maxY, zLevel, 255,0, 0, 0, true);
-            normalLine(builder, poseStack, maxX, maxY, zLevel, maxX, minY, zLevel, 255,0, 0, 0, true);
-            normalLine(builder, poseStack, maxX, minY, zLevel, minX, minY, zLevel, 255,0, 0, 0, true);
+        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.LINES_NO_DEPTH, (posMat, builder) -> {
+            normalLine(builder, poseStack, minX, minY, zLevel, minX, maxY, zLevel, 1f, 0f, 0f, 0f, 1.5f);
+            normalLine(builder, poseStack, minX, maxY, zLevel, maxX, maxY, zLevel, 1f, 0f, 0f, 0f, 1.5f);
+            normalLine(builder, poseStack, maxX, maxY, zLevel, maxX, minY, zLevel, 1f, 0f, 0f, 0f, 1.5f);
+            normalLine(builder, poseStack, maxX, minY, zLevel, minX, minY, zLevel, 1f, 0f, 0f, 0f, 1.5f);
         });
     }
 

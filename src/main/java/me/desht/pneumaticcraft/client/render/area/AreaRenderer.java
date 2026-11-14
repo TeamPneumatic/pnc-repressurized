@@ -24,16 +24,19 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class AreaRenderer {
     private final Set<BlockPos> showingPositions;
@@ -57,108 +60,81 @@ public class AreaRenderer {
     public void render(PoseStack matrixStack, MultiBufferSource buffer) {
         if (drawFaces) {
             RenderType type = ModRenderTypes.getBlockHilightFace(disableDepthTest, disableWriteMask);
-            render(matrixStack, buffer.getBuffer(type));
+            VertexConsumer builder = buffer.getBuffer(type);
+            forEachShape(matrixStack, shape -> addFaceVertices(builder, matrixStack.last().pose(), shape));
             RenderUtils.finishBuffer(buffer, type);
         }
 
         RenderType type = ModRenderTypes.getBlockHilightLine(disableDepthTest, disableWriteMask);
-        render(matrixStack, buffer.getBuffer(type));
+        VertexConsumer builder = buffer.getBuffer(type);
+        float lineWidth = RenderUtils.defaultLineWidth();
+        forEachShape(matrixStack, shape -> ShapeRenderer.renderShape(matrixStack, builder, shape, 0, 0, 0, color, lineWidth));
         RenderUtils.finishBuffer(buffer, type);
     }
 
-    private void render(PoseStack matrixStack, VertexConsumer builder) {
-        int[] cols = RenderUtils.decomposeColor(color);
+    private void forEachShape(PoseStack matrixStack, Consumer<VoxelShape> consumer) {
+        Level level = ClientUtils.getClientLevel();
+        boolean xray = disableDepthTest || disableWriteMask;
+        VoxelShape cube = Shapes.box(0, 0, 0, size, size, size);
         for (BlockPos pos : showingPositions) {
+            BlockState state = level.getBlockState(pos);
+            if (!xray && !state.canBeReplaced()) continue;
             matrixStack.pushPose();
+            VoxelShape shape;
             if (drawShapes) {
                 matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
+                shape = state.getBlock() instanceof AbstractCamouflageBlock c ?
+                        c.getUncamouflagedShape(state, level, pos, CollisionContext.empty()) :
+                        state.getShape(level, pos, CollisionContext.empty());
             } else {
                 double start = (1 - size) / 2.0;
                 matrixStack.translate(pos.getX() + start, pos.getY() + start, pos.getZ() + start);
+                shape = cube;
             }
-            Matrix4f posMat = matrixStack.last().pose();
-            addVertices(builder, posMat, pos, cols);
+            consumer.accept(shape);
             matrixStack.popPose();
         }
     }
 
-    private void addVertices(VertexConsumer wr, Matrix4f posMat, BlockPos pos, int[] cols) {
-        Level level = ClientUtils.getClientLevel();
-        BlockState state = level.getBlockState(pos);
-        boolean xray = disableDepthTest || disableWriteMask;
-        if (!xray && !state.canBeReplaced()) return;
-        if (drawShapes) {
-            VoxelShape shape = state.getBlock() instanceof AbstractCamouflageBlock c ?
-                    c.getUncamouflagedShape(state, level, pos, CollisionContext.empty()) :
-                    state.getShape(level, pos, CollisionContext.empty());
-            shape.forAllBoxes((x1d, y1d, z1d, x2d, y2d, z2d) -> {
-                float x1 = (float) x1d;
-                float x2 = (float) x2d;
-                float y1 = (float) y1d;
-                float y2 = (float) y2d;
-                float z1 = (float) z1d;
-                float z2 = (float) z2d;
-                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+    private void addFaceVertices(VertexConsumer wr, Matrix4f posMat, VoxelShape shape) {
+        int[] cols = RenderUtils.decomposeColor(color);
+        shape.forAllBoxes((x1d, y1d, z1d, x2d, y2d, z2d) -> {
+            float x1 = (float) x1d;
+            float x2 = (float) x2d;
+            float y1 = (float) y1d;
+            float y2 = (float) y2d;
+            float z1 = (float) z1d;
+            float z2 = (float) z2d;
+            wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y1, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
 
-                wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-                wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
-            });
-        } else {
-            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-
-            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-
-            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-
-            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-
-            wr.addVertex(posMat, 0, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, 0, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, 0, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-
-            wr.addVertex(posMat, 0, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, size, size).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, size, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-            wr.addVertex(posMat, 0, size, 0).setColor(cols[1], cols[2], cols[3], cols[0]);
-        }
+            wr.addVertex(posMat, x1, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z2).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x2, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+            wr.addVertex(posMat, x1, y2, z1).setColor(cols[1], cols[2], cols[3], cols[0]);
+        });
     }
 
     static Builder builder() {

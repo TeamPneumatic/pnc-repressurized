@@ -21,9 +21,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.ShapeRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.shapes.Shapes;
 
 public class RenderCoordWireframe {
     public final BlockPos pos;
@@ -46,37 +49,10 @@ public class RenderCoordWireframe {
         matrixStack.pushPose();
         matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
         float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
-        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.BLOCK_TRACKER, (posMat, builder) -> {
-            builder.addVertex(posMat, minX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, minY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, maxY, maxZ).setColor(0, g, 1, 1);
-
-            builder.addVertex(posMat, maxX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, minY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, maxZ).setColor(0, g, 1, 1);
-
-            builder.addVertex(posMat, minX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, minY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, minY, maxZ).setColor(0, g, 1, 1);
-
-            builder.addVertex(posMat, minX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, maxY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, maxZ).setColor(0, g, 1, 1);
-
-            builder.addVertex(posMat, minX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, minY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, minY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, minY, maxZ).setColor(0, g, 1, 1);
-
-            builder.addVertex(posMat, minX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, minX, maxY, maxZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, minZ).setColor(0, g, 1, 1);
-            builder.addVertex(posMat, maxX, maxY, maxZ).setColor(0, g, 1, 1);
-        });
+        int color = ARGB.colorFromFloat(1f, 0f, g, 1f);
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.BLOCK_TRACKER, (posMat, builder) ->
+                ShapeRenderer.renderShape(matrixStack, builder, Shapes.box(minX, minY, minZ, maxX, maxY, maxZ), 0, 0, 0, color, RenderUtils.defaultLineWidth())
+        );
 
         matrixStack.popPose();
     }

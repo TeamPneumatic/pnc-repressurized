@@ -58,7 +58,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import org.joml.Matrix3f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -546,23 +545,20 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
         });
 
         // line loops border
-        final Matrix3f normal = poseStack.last().normal();
-        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.getLineLoops(5.0f), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.LINES_NO_DEPTH, (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
             float[] c2 = bgColorHi.getComponents(null);
             float[] c3 = leftSided ? bgColorHi.getComponents(null) : bgColorLo.getComponents(null);
             float[] c4 = bgColorLo.getComponents(null);
             RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
-                    0, c1[0], c1[1], c1[2], c1[3], true);
+                    0, c1[0], c1[1], c1[2], c1[3], 5f);
             RenderUtils.normalLine(builder, poseStack, renderBaseX + rw, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY + height,
-                    0, c2[0], c2[1], c2[2], c2[3], true);
+                    0, c2[0], c2[1], c2[2], c2[3], 5f);
             RenderUtils.normalLine(builder, poseStack, renderBaseX + rw, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY + height,
-                    0, c3[0], c3[1], c3[2], c3[3], true);
+                    0, c3[0], c3[1], c3[2], c3[3], 5f);
             RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY + height, 0, renderBaseX, renderEffectiveY,
-                    0, c4[0], c4[1], c4[2], c4[3], true);
-            RenderUtils.normalLine(builder, poseStack, renderBaseX, renderEffectiveY, 0, renderBaseX + rw, renderEffectiveY,
-                    0, c1[0], c1[1], c1[2], c1[3], true);
+                    0, c4[0], c4[1], c4[2], c4[3], 5f);
         });
 
         if (doneExpanding) {

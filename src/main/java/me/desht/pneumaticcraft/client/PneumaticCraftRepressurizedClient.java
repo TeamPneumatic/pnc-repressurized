@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.*;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.blockentity.*;
@@ -86,6 +87,7 @@ public class PneumaticCraftRepressurizedClient {
         modBus.addListener(this::registerParticleFactories);
         modBus.addListener(this::registerRenderers);
         modBus.addListener(this::registerRenderLayers);
+        modBus.addListener(ModRenderTypes::registerPipelines);
         modBus.addListener(this::registerLayerDefinitions);
         modBus.addListener(this::registerKeyMappings);
         modBus.addListener(this::registerScreens);

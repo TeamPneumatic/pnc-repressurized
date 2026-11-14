@@ -21,6 +21,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -67,7 +68,7 @@ public class RenderNavigator {
         if (wirePath) {
             // Draws just wires
             // TODO line stippling would be nice here
-            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.getLineLoops(5.0));
+            VertexConsumer builder = buffer.getBuffer(ModRenderTypes.LINES_NO_DEPTH);
             for (int i = 1; i < path.getNodeCount(); i++) {
                 float red = 1;
                 if (path.getNodeCount() - i < 200) {
@@ -75,15 +76,13 @@ public class RenderNavigator {
                 }
                 Node lastPoint = path.getNode(i - 1);
                 Node pathPoint = path.getNode(i);
-                builder.addVertex(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F)
-                        .setColor(red, 1 - red, 0, 0.5f)
-                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
-                builder.addVertex(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F)
-                        .setColor(red, 1 - red, 0, 0.5f)
-                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
-                builder.addVertex(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F)
-                        .setColor(red, 1 - red, 0, 0.5f)
-                        .setNormal(matrixStack.last(), pathPoint.x - lastPoint.x, pathPoint.y - lastPoint.y, pathPoint.z - lastPoint.z);
+                float midX = (lastPoint.x + pathPoint.x) / 2F + 0.5F;
+                float midY = Math.max(lastPoint.y, pathPoint.y);
+                float midZ = (lastPoint.z + pathPoint.z) / 2F + 0.5F;
+                RenderUtils.normalLine(builder, matrixStack, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F, midX, midY, midZ,
+                        0.5f, red, 1 - red, 0, 5f);
+                RenderUtils.normalLine(builder, matrixStack, midX, midY, midZ, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F,
+                        0.5f, red, 1 - red, 0, 5f);
             }
         } else {
             VertexConsumer builder = buffer.getBuffer(xRayEnabled ? ModRenderTypes.UNTEXTURED_QUAD_NO_DEPTH : ModRenderTypes.UNTEXTURED_QUAD);

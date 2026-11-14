@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -32,7 +31,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.util.BitSet;
@@ -192,7 +190,7 @@ public class RenderUtils {
         float lx2 = lerp(progress, lx1, lerp(partialTick, line.endX, prev.endX));
         float ly2 = lerp(progress, ly1, lerp(partialTick, line.endY, prev.endY));
         float lz2 = lerp(progress, lz1, lerp(partialTick, line.endZ, prev.endZ));
-        normalLine(builder, matrixStack, lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], false);
+        normalLine(builder, matrixStack, lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], defaultLineWidth());
     }
 
     public static void renderRing(ProgressingLine line, ProgressingLine lastLine, PoseStack poseStack, MultiBufferSource bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
@@ -207,17 +205,16 @@ public class RenderUtils {
         poseStack.mulPose(Axis.YP.rotationDegrees(rotationYaw - 90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(rotationPitch));
 
-        VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getLineLoops(1.0));
+        VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.LINES_NO_DEPTH);
 
-        int[] cols = RenderUtils.decomposeColor(0xFF000000 | color);
-        double size = (1 + 4 * renderProgress) / 16;
-        Matrix4f posMat = poseStack.last().pose();
+        float[] cols = RenderUtils.decomposeColorF(0xFF000000 | color);
+        float lineWidth = defaultLineWidth();
+        float size = (float) ((1 + 4 * renderProgress) / 16);
         for (float i = 0; i < FULL_CIRCLE; i += STEP) {
-            Vec3 v1 = new Vec3(0, Mth.sin(i) * size, Mth.cos(i) * size);
-            Vec3 v2 = new Vec3(0, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size);
-            RenderUtils.posF(builder, posMat, 0f, v1.y(), v1.z())
-                    .setColor(cols[1], cols[2], cols[3], cols[0])
-                    .setNormal(poseStack.last(), 0f, (float) (v2.y() - v1.y()), (float) (v2.z() - v1.z()));
+            normalLine(builder, poseStack,
+                    0f, Mth.sin(i) * size, Mth.cos(i) * size,
+                    0f, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size,
+                    cols[0], cols[1], cols[2], cols[3], lineWidth);
         }
         poseStack.popPose();
     }
@@ -229,8 +226,8 @@ public class RenderUtils {
      * @param matrixStack the matrix stack
      */
     public static void rotateToPlayerFacing(PoseStack matrixStack) {
-        matrixStack.mulPose(Axis.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
-        matrixStack.mulPose(Axis.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().getXRot()));
+        matrixStack.mulPose(Axis.YP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().yRot()));
+        matrixStack.mulPose(Axis.XP.rotationDegrees(180F - Minecraft.getInstance().gameRenderer.getMainCamera().xRot()));
     }
 
     public static void drawTexture(PoseStack matrixStack, VertexConsumer builder, int x, int y, int packedLightIn) {
@@ -272,7 +269,6 @@ public class RenderUtils {
 
     public static void finishBuffer(MultiBufferSource buffer, RenderType type) {
         if (buffer instanceof MultiBufferSource.BufferSource mbs) {
-            RenderSystem.disableDepthTest();
             mbs.endBatch(type);
         }
     }
@@ -298,20 +294,26 @@ public class RenderUtils {
         fr.drawInBatch(str, x, y, color, dropShadow, matrixStack.last().pose(), buffer, disableDepthTest ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, 0, LightCoordsUtil.FULL_BRIGHT);
     }
 
-    public static void normalLine(VertexConsumer builder, PoseStack poseStack, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, boolean isStrip) {
+    /**
+     * Line width used by vanilla for lines which don't specify a width (e.g. block outlines).
+     */
+    public static float defaultLineWidth() {
+        return Minecraft.getInstance().getWindow().getAppropriateLineWidth();
+    }
+
+    public static void normalLine(VertexConsumer builder, PoseStack poseStack, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, float lineWidth) {
         float nx = x2 - x1;
         float ny = y2 - y1;
         float nz = z2 - z1;
         float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
         builder.addVertex(poseStack.last().pose(), x1, y1, z1)
                 .setColor(r, g, b, a)
-                .setNormal(poseStack.last(), nx / d , ny / d, nz / d);
-        if (!isStrip) {
-            // when drawing line strips, second set of x/y/z coords are just for normal calculation
-            builder.addVertex(poseStack.last(), x2, y2, z2)
-                    .setColor(r, g, b, a)
-                    .setNormal(poseStack.last(), nx / d , ny / d, nz / d);
-        }
+                .setNormal(poseStack.last(), nx / d , ny / d, nz / d)
+                .setLineWidth(lineWidth);
+        builder.addVertex(poseStack.last(), x2, y2, z2)
+                .setColor(r, g, b, a)
+                .setNormal(poseStack.last(), nx / d , ny / d, nz / d)
+                .setLineWidth(lineWidth);
     }
 
 }

@@ -23,10 +23,9 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.TextScaler;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 import java.util.ArrayList;
@@ -64,17 +63,17 @@ public class PressureGaugeRenderer3D {
                 drawGaugeBackground(posMat, builder, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos));
 
         // Draw the surrounding circle in the foreground colour
-        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINES, (posMat, builder) ->
+        RenderUtils.renderWithType(poseStack, buffer, RenderTypes.lines(), (posMat, builder) ->
                 drawGaugeSurround(poseStack, builder, xPos, yPos, fgColor));
 
         // Draw the scale
         int currentScale = (int) maxPressure;
         List<TextScaler> textScalers = new ArrayList<>();
-        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINES, (posMat, builder) ->
+        RenderUtils.renderWithType(poseStack, buffer, RenderTypes.lines(), (posMat, builder) ->
                 drawScale(poseStack, builder, minPressure, maxPressure, xPos, yPos, currentScale, textScalers));
 
         // Draw the needle.
-        RenderUtils.renderWithType(poseStack, buffer, RenderType.LINES, (posMat, builder) -> {
+        RenderUtils.renderWithType(poseStack, buffer, RenderTypes.lines(), (posMat, builder) -> {
                     float angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
                     angleIndicator = -angleIndicator / CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
                     drawNeedle(poseStack, builder, xPos, yPos, angleIndicator, fgColor);
@@ -131,7 +130,7 @@ public class PressureGaugeRenderer3D {
                     GAUGE_SURROUND[i][0] + xPos, GAUGE_SURROUND[i][1] + yPos, 0f,
                     GAUGE_SURROUND[i + 1][0] + xPos, GAUGE_SURROUND[i + 1][1] + yPos, 0f,
                     cols[0], cols[1], cols[2], cols[3],
-                    false);
+                    RenderUtils.defaultLineWidth());
         }
     }
 
@@ -150,7 +149,7 @@ public class PressureGaugeRenderer3D {
                 float y1 = y * RADIUS * r1 + yPos;
                 float x2 = x * RADIUS * r2 + xPos;
                 float y2 = y * RADIUS * r2 + yPos;
-                RenderUtils.normalLine(builder, poseStack, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, false);
+                RenderUtils.normalLine(builder, poseStack, x1, y1, 0f, x2, y2, 0f, 1f, 0f, 0f, 0f, RenderUtils.defaultLineWidth());
             }
         }
     }
@@ -172,21 +171,21 @@ public class PressureGaugeRenderer3D {
                 x1, y1, 0f,
                 x2, y2, 0f,
                 cols[0], cols[1], cols[2], cols[3],
-                false);
+                RenderUtils.defaultLineWidth());
 
         // Edge 2: x2 -> x3
         RenderUtils.normalLine(builder, poseStack,
                 x2, y2, 0f,
                 x3, y3, 0f,
                 cols[0], cols[1], cols[2], cols[3],
-                false);
+                RenderUtils.defaultLineWidth());
 
         // Edge 3: x3 -> x1
         RenderUtils.normalLine(builder, poseStack,
                 x3, y3, 0f,
                 x1, y1, 0f,
                 cols[0], cols[1], cols[2], cols[3],
-                false);
+                RenderUtils.defaultLineWidth());
     }
 
     private static void drawText(PoseStack matrixStack, MultiBufferSource buffer, int xPos, int yPos, int fgColor, List<TextScaler> textScalers) {
