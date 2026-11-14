@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -31,12 +30,17 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBaseBlockEntity> {
+public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBaseBlockEntity, PneumaticDoorBaseRenderer.State> {
     private final ModelPart cylinder1;
     private final ModelPart cylinder2;
     private final ModelPart cylinder3;
@@ -71,29 +75,48 @@ public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
+    @Override
+    public State createRenderState() {
+        return new State();
+    }
 
     @Override
-    public void renderModel(PneumaticDoorBaseBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE));
+    public void extractRenderState(PneumaticDoorBaseBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        float progress = Mth.lerp(partialTicks, te.oldProgress, te.progress);
+        state.progress = Mth.lerp(partialTicks, blockEntity.oldProgress, blockEntity.progress);
+        state.rightGoing = blockEntity.rightGoing;
+        // avoid cylinders rendering unlit
+        state.cylinderLight = ClientUtils.getLightAt(blockEntity.getBlockPos().relative(blockEntity.getRotation()));
+    }
+
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE);
+
+        float progress = state.progress;
 
         float cosinus = (float) Math.sin(Math.toRadians((1 - progress) * 90)) * 12 / 16F;
         float sinus = 9 / 16F - (float) Math.cos(Math.toRadians((1 - progress) * 90)) * 9 / 16F;
         double extension = Math.sqrt(Math.pow(sinus, 2) + Math.pow(cosinus + 4 / 16F, 2));
 
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+        RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
 
-        matrixStackIn.translate(((te.rightGoing ? -4 : 0) + 2.5) / 16F, 0, -6 / 16F);
+        poseStack.translate(((state.rightGoing ? -4 : 0) + 2.5) / 16F, 0, -6 / 16F);
         float cylinderAngle = (float) Math.toDegrees(Math.atan(sinus / (cosinus + 14 / 16F)));
-        matrixStackIn.mulPose(te.rightGoing ? Axis.YP.rotationDegrees(cylinderAngle) : Axis.YN.rotationDegrees(cylinderAngle));
-        matrixStackIn.translate(((te.rightGoing ? -3 : 0) - 2.5) / 16F, 0, 6 / 16F);
+        poseStack.mulPose(state.rightGoing ? Axis.YP.rotationDegrees(cylinderAngle) : Axis.YN.rotationDegrees(cylinderAngle));
+        poseStack.translate(((state.rightGoing ? -3 : 0) - 2.5) / 16F, 0, 6 / 16F);
         double extensionPart = extension * 0.5D;
-        int l = ClientUtils.getLightAt(te.getBlockPos().relative(te.getRotation()));  // avoid cylinders rendering unlit
-        cylinder1.render(matrixStackIn, builder, l, combinedOverlayIn);
-        matrixStackIn.translate(0, 0, extensionPart);
-        cylinder2.render(matrixStackIn, builder, l, combinedOverlayIn, 0xFFCCCCCC);
-        matrixStackIn.translate(0, 0, extensionPart);
-        cylinder3.render(matrixStackIn, builder, l, combinedOverlayIn, 0xFF989898);
+        submitPart(submitNodeCollector, cylinder1, poseStack, renderType, state.cylinderLight, -1, state);
+        poseStack.translate(0, 0, extensionPart);
+        submitPart(submitNodeCollector, cylinder2, poseStack, renderType, state.cylinderLight, 0xFFCCCCCC, state);
+        poseStack.translate(0, 0, extensionPart);
+        submitPart(submitNodeCollector, cylinder3, poseStack, renderType, state.cylinderLight, 0xFF989898, state);
+    }
+
+    public static class State extends ModelRenderState {
+        float progress;
+        boolean rightGoing;
+        int cylinderLight;
     }
 }
