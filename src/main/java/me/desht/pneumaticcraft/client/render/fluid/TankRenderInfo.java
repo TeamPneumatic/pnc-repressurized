@@ -32,7 +32,7 @@ public class TankRenderInfo {
 
     public TankRenderInfo(FluidStack stack, int capacity, AABB bounds, Direction... renderFaces) {
         FluidTank tank = new FluidTank(capacity);
-        tank.setFluid(stack);
+        tank.setFluid(stack.copy());
         this.tank = tank;
         this.bounds = bounds;
         if (renderFaces.length == 0) {

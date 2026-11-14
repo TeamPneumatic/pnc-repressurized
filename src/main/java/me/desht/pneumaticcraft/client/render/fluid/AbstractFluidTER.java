@@ -19,38 +19,57 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import org.joml.Matrix4f;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.List;
 
-public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
+public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T, AbstractFluidTER.FluidRenderState> {
     AbstractFluidTER(@SuppressWarnings("unused") BlockEntityRendererProvider.Context ctx) {
     }
 
     @Override
-    public void render(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.nonNullLevel().isLoaded(te.getBlockPos())) {
-            VertexConsumer builder = buffer.getBuffer(RenderType.entityTranslucentCull(InventoryMenu.BLOCK_ATLAS));
+    public FluidRenderState createRenderState() {
+        return new FluidRenderState();
+    }
 
-            Matrix4f posMat = matrixStack.last().pose();
-            for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-                renderFluid(builder, tankRenderInfo, posMat, combinedLightIn, combinedOverlayIn);
-            }
+    @Override
+    public void extractRenderState(T blockEntity, FluidRenderState state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.tanks = blockEntity.nonNullLevel().isLoaded(blockEntity.getBlockPos()) ?
+                List.copyOf(getTanksToRender(blockEntity)) :
+                List.of();
+    }
+
+    @Override
+    public void submit(FluidRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (!state.tanks.isEmpty()) {
+            submitNodeCollector.submitCustomGeometry(poseStack, ModRenderTypes.getEntityTranslucentCull(TextureAtlas.LOCATION_BLOCKS), (pose, builder) -> {
+                for (TankRenderInfo tankRenderInfo : state.tanks) {
+                    renderFluid(builder, tankRenderInfo, pose.pose(), state.lightCoords, OverlayTexture.NO_OVERLAY);
+                }
+            });
         }
     }
 
@@ -59,10 +78,11 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         if (tank.getFluidAmount() == 0) return;
 
         Fluid fluid = tank.getFluid().getFluid();
-        IClientFluidTypeExtensions renderProps = IClientFluidTypeExtensions.of(fluid);
-        Identifier texture = renderProps.getStillTexture(tank.getFluid());
-        TextureAtlasSprite still = Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(texture);
-        int[] cols = RenderUtils.decomposeColor(renderProps.getTintColor(tank.getFluid()));
+        FluidModel fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.defaultFluidState());
+        TextureAtlasSprite still = fluidModel.stillMaterial().sprite();
+        int tint = fluidModel.fluidTintSource() == null ? 0xFFFFFFFF : fluidModel.fluidTintSource().colorAsStack(tank.getFluid());
+        if ((tint >>> 24) == 0) tint |= 0xFF000000;
+        int[] cols = RenderUtils.decomposeColor(tint);
 
         AABB bounds = getRenderBounds(tank, tankRenderInfo.getBounds());
         float x1 = (float) bounds.minX;
@@ -162,4 +182,8 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
     }
 
     abstract Collection<TankRenderInfo> getTanksToRender(T te);
+
+    public static class FluidRenderState extends BlockEntityRenderState {
+        List<TankRenderInfo> tanks = List.of();
+    }
 }

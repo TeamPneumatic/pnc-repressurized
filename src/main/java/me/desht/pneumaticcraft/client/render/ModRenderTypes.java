@@ -29,6 +29,7 @@ import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
+import net.neoforged.neoforge.client.NeoForgeRenderPipelines;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 import java.util.List;
@@ -199,6 +200,22 @@ public class ModRenderTypes {
                     disableWriteMask ? LINES_NO_DEPTH_WRITE_PIPELINE : LINES_PIPELINE));
     public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
         return BLOCK_HILIGHT_LINE.apply(disableDepthTest, disableWriteMask);
+    }
+
+    private static final Function<Identifier, RenderType> ENTITY_TRANSLUCENT_CULL = Util.memoize(texture ->
+            RenderType.create("pnc_entity_translucent_cull", RenderSetup.builder(NeoForgeRenderPipelines.ENTITY_TRANSLUCENT_CULL)
+                    .withTexture("Sampler0", texture)
+                    .useLightmap()
+                    .useOverlay()
+                    .affectsCrumbling()
+                    .sortOnUpload()
+                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
+                    .createRenderSetup()));
+    /**
+     * Same as the 1.21 vanilla entityTranslucentCull render type, which 26.1 no longer has.
+     */
+    public static RenderType getEntityTranslucentCull(Identifier texture) {
+        return ENTITY_TRANSLUCENT_CULL.apply(texture);
     }
 
     public static final RenderType TRIANGLE_FAN = simple("triangle_fan", TRIANGLE_FAN_PIPELINE);
