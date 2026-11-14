@@ -29,9 +29,9 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
@@ -45,16 +45,16 @@ public class VacuumPumpScreen extends AbstractPneumaticCraftContainerScreen<Vacu
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_VACUUM_PUMP;
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
-        graphics.drawString(font, "+", 32, 47, 0xFF00AA00, false);
-        graphics.drawString(font, "-", 138, 47, 0xFFFF0000, false);
+        graphics.text(font, "+", 32, 47, 0xFF00AA00, false);
+        graphics.text(font, "-", 138, 47, 0xFFFF0000, false);
 
         float pressure = PNCCapabilities.getAirHandler(te, te.getInputSide()).orElseThrow().getPressure();
         PressureGaugeRenderer2D.drawPressureGauge(graphics, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,

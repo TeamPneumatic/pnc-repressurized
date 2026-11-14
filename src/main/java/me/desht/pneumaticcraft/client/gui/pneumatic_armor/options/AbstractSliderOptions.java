@@ -83,7 +83,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
     }
 
     @Override
-    public void tick() {
+    public void tick(IGuiScreen gui) {
         if (pendingVal != null && !getGuiScreen().getScreen().isDragging()) {
             // avoid sending a stream of update packets if player is dragging slider
             IArmorUpgradeHandler<?> upgradeHandler = getClientUpgradeHandler().getCommonHandler();

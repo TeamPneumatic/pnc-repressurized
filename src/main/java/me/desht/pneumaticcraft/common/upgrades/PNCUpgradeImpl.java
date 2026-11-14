@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.upgrades;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PNCUpgradeImpl implements PNCUpgrade {
     private static final AtomicInteger ids = new AtomicInteger();
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final int maxTier;
     private final List<String> depModIds;
     private final int cacheId;  // for caching efficiency; may change between game restarts, don't use
@@ -26,7 +26,7 @@ public class PNCUpgradeImpl implements PNCUpgrade {
      * @param maxTier maximum tier for this upgrade
      * @param depModIds zero or more mod IDs, at least one of which must be present for this upgrade to be relevant
      */
-    PNCUpgradeImpl(ResourceLocation id, int maxTier, String... depModIds) {
+    PNCUpgradeImpl(Identifier id, int maxTier, String... depModIds) {
         this.id = id;
         this.maxTier = maxTier;
         this.depModIds = ImmutableList.copyOf(depModIds);
@@ -34,7 +34,7 @@ public class PNCUpgradeImpl implements PNCUpgrade {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 
@@ -54,15 +54,15 @@ public class PNCUpgradeImpl implements PNCUpgrade {
     }
 
     @Override
-    public final ResourceLocation getItemRegistryName(int tier) {
+    public final Identifier getItemRegistryName(int tier) {
         Validate.isTrue(tier > 0 && tier <= maxTier, "tier must be in range 1 .. " + maxTier + "!");
         String path = id.getPath() + "_upgrade" + (maxTier > 1 ? "_" + tier : "");
-        return ResourceLocation.fromNamespaceAndPath(id.getNamespace(), path);
+        return Identifier.fromNamespaceAndPath(id.getNamespace(), path);
     }
 
     @Override
     public final Item getItem(int tier) {
-        return BuiltInRegistries.ITEM.get(getItemRegistryName(tier));
+        return BuiltInRegistries.ITEM.getValue(getItemRegistryName(tier));
     }
 
     @Override

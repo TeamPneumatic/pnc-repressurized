@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.tubemodules.IInfluenceDispersing;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
@@ -42,7 +43,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -51,8 +53,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelProperty;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -87,7 +89,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        sidesClosed = tag.getInt("sidesClosed");
+        sidesClosed = tag.getIntOr("sidesClosed", 0);
     }
 
     @Override
@@ -128,11 +130,11 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         super.readFromPacket(tag, provider);
 
         EnumSet<Direction> dirs = EnumSet.allOf(Direction.class);
-        ListTag moduleList = tag.getList("modules", Tag.TAG_COMPOUND);
+        ListTag moduleList = tag.getListOrEmpty("modules");
         for (int i = 0; i < moduleList.size(); i++) {
-            CompoundTag moduleTag = moduleList.getCompound(i);
-            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(moduleTag.getString("type")));
-            Direction dir = Direction.from3DDataValue(moduleTag.getInt("dir"));
+            CompoundTag moduleTag = moduleList.getCompoundOrEmpty(i);
+            Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(moduleTag.getStringOr("type", "")));
+            Direction dir = Direction.from3DDataValue(moduleTag.getIntOr("dir", 0));
             if (item instanceof TubeModuleItem) {
                 AbstractTubeModule module = ((TubeModuleItem) item).createModule(dir, this);
                 module.readFromNBT(moduleTag);
@@ -156,7 +158,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         }
 
         updateRenderBoundingBox();
-        if (hasLevel() && nonNullLevel().isClientSide) {
+        if (hasLevel() && nonNullLevel().isClientSide()) {
             forceBlockEntityRerender();
         }
         camoState = CamouflageableBlockEntity.readCamo(tag);
@@ -227,7 +229,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void onLoad() {
         super.onLoad();
 
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             discoverConnectedNeighbors();
         }
 
@@ -264,7 +266,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
             initializeHullAirHandlers();
             discoverConnectedNeighbors();
             setChanged();
-            level.blockUpdated(getBlockPos(), getBlockState().getBlock());
+            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock(), null);
             purgeShapeCacheKey();
         }
     }
@@ -276,6 +278,13 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     public void setSideConnected(Direction dir, boolean connected) {
         sidesActuallyConnected = DirectionUtil.setDirectionBit(sidesActuallyConnected, dir, connected);
         sidesVisuallyConnected = calculateVisuallyConnected();
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        tubeModules().map(AbstractTubeModule::getDrops).forEach(drops -> drops.forEach(drop ->
+                nonNullLevel().addFreshEntity(new ItemEntity(nonNullLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, drop))));
+        super.preRemoveSideEffects(pos, state);
     }
 
     public Stream<AbstractTubeModule> tubeModules() {
@@ -308,11 +317,12 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
         } else {
             modules.remove(side);
         }
-        if (getLevel() != null && !getLevel().isClientSide) {
+        if (getLevel() != null && !getLevel().isClientSide()) {
             discoverConnectedNeighbors();
             sendDescriptionPacket();
             setChanged();
             purgeShapeCacheKey();
+            ModuleNetworkManager.getInstance(level).invalidateCache();
         }
     }
 
@@ -333,8 +343,8 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
-        super.onNeighborBlockUpdate(fromPos);
+    public void onNeighborBlockUpdate() {
+        super.onNeighborBlockUpdate();
 
         tubeModules().forEach(AbstractTubeModule::onNeighborBlockUpdate);
 
@@ -352,6 +362,7 @@ public class PressureTubeBlockEntity extends AbstractAirHandlingBlockEntity impl
 
         if (sidesActuallyConnected != prevSidesConnected) {
             purgeShapeCacheKey();
+            ModuleNetworkManager.getInstance(level).invalidateCache();
         }
     }
 

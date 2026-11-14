@@ -30,7 +30,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
@@ -152,6 +152,6 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
 
     @Override
     public AABB getRenderBoundingBox(ElevatorBaseBlockEntity blockEntity) {
-        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.extension);
+        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.getRenderExtension() + 1);
     }
 }

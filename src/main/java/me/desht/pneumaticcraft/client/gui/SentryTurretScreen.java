@@ -28,9 +28,11 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import org.lwjgl.glfw.GLFW;
 
@@ -44,13 +46,11 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     private WidgetButtonExtended errorButton;
 
     public SentryTurretScreen(SentryTurretMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 184;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 184);
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_SENTRY_TURRET;
     }
 
@@ -98,37 +98,38 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
-        graphics.drawString(font, xlate("pneumaticcraft.gui.sentryTurret.ammo"), 80, 28, 0x404040, false);
+        graphics.text(font, xlate("pneumaticcraft.gui.sentryTurret.ammo"), 80, 28, 0xFF404040, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         } else if (y >= topPos + 72 && y <= topPos + 84) {
             // cursor inside the entity filter area
             Component str = xlate("pneumaticcraft.gui.entityFilter.holdF1");
-            graphics.drawString(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0x808080, false);
+            graphics.text(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0xFF808080, false);
         }
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             minecraft.player.closeContainer();
         }
 
-        return entityFilter.keyPressed(keyCode, scanCode, modifiers)
+        return entityFilter.keyPressed(event)
                 || entityFilter.canConsumeInput()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double pMouseX, double pMouseY, int pButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (!entityFilter.isHovered()) {
             setFocused(null);
         }
-        return super.mouseClicked(pMouseX, pMouseY, pButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

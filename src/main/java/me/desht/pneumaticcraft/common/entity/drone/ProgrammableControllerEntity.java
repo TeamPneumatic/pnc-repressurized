@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.entity.drone;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
@@ -55,7 +56,7 @@ public class ProgrammableControllerEntity extends AbstractDroneEntity {
 
     @Override
     public void tick() {
-        if (level().isClientSide && controller != null) {
+        if (level().isClientSide() && controller != null) {
             BlockEntity te = level().getBlockEntity(controller.getBlockPos());
             if (te != controller) {
                 // expire stale minidrones
@@ -78,7 +79,7 @@ public class ProgrammableControllerEntity extends AbstractDroneEntity {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
 

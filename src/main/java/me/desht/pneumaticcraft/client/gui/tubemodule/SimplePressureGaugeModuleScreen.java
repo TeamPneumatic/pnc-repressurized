@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -110,12 +111,13 @@ public class SimplePressureGaugeModuleScreen extends AbstractTubeModuleScreen<Ab
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ENTER && thresholdField.isFocused()) {
             removed();
             return true;
         } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
     }
 

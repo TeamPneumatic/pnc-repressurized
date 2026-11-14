@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -99,13 +100,12 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
         if (rsController.shouldRun() && burnTime < curFuelUsage) {
             ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
-            int itemBurnTime = fuelStack.getBurnTime(RecipeType.SMELTING);
-//            int itemBurnTime = CommonHooks.getBurnTime(fuelStack, RecipeType.SMELTING);
+            int itemBurnTime = fuelStack.getBurnTime(RecipeType.SMELTING, nonNullLevel().fuelValues());
             if (itemBurnTime > 0) {
                 burnTime += itemBurnTime;
                 maxBurnTime = burnTime;
-                if (fuelStack.hasCraftingRemainingItem()) {
-                    itemHandler.setStackInSlot(FUEL_SLOT, fuelStack.getCraftingRemainingItem());
+                if (fuelStack.getCraftingRemainder() != null) {
+                    itemHandler.setStackInSlot(FUEL_SLOT, PneumaticCraftUtils.getCraftingRemainder(fuelStack));
                 } else {
                     itemHandler.extractItem(FUEL_SLOT, 1, false);
                 }
@@ -147,12 +147,12 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
 
     private void spawnBurningParticle() {
         Level level = nonNullLevel();
-        if (level.random.nextInt(3) != 0) return;
+        if (level.getRandom().nextInt(3) != 0) return;
         float px = getBlockPos().getX() + 0.5F;
-        float py = getBlockPos().getY() + level.random.nextFloat() * 6.0F / 16.0F;
+        float py = getBlockPos().getY() + level.getRandom().nextFloat() * 6.0F / 16.0F;
         float pz = getBlockPos().getZ() + 0.5F;
         float f3 = 0.5F;
-        float f4 = level.random.nextFloat() * 0.4F - 0.2F;
+        float f4 = level.getRandom().nextFloat() * 0.4F - 0.2F;
         switch (getRotation()) {
             case EAST -> {
                 level.addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
@@ -197,9 +197,9 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        burnTime = tag.getInt("burnTime");
-        maxBurnTime = tag.getInt("maxBurn");
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        burnTime = tag.getIntOr("burnTime", 0);
+        maxBurnTime = tag.getIntOr("maxBurn", 0);
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -223,7 +223,12 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || itemStack.getBurnTime(RecipeType.SMELTING) > 0 && FluidUtil.getFluidContained(itemStack).isEmpty());
+                    (itemStack.isEmpty() || isFuel(itemStack) && FluidUtil.getFluidContained(itemStack).isEmpty());
+        }
+
+        private boolean isFuel(ItemStack itemStack) {
+            Level level = getLevel();
+            return level != null && itemStack.getBurnTime(RecipeType.SMELTING, level.fuelValues()) > 0;
         }
     }
 

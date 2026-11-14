@@ -28,11 +28,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.api.misc.Symbols.bullet;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -62,12 +64,12 @@ public class AssemblyProgramItem extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
-        infoList.add(Component.translatable("item.pneumaticcraft.assembly_program.required"));
-        infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
+        infoList.accept(Component.translatable("item.pneumaticcraft.assembly_program.required"));
+        infoList.accept(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
         Arrays.stream(getProgram().getRequiredMachines())
                 .map(machine -> bullet().append(xlate(machine.getMachineBlock().getDescriptionId())))
-                .forEach(infoList::add);
+                .forEach(infoList);
     }
 
     public static AssemblyProgramItem fromProgramType(AssemblyProgramType program) {

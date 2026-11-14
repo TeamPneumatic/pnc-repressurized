@@ -43,7 +43,7 @@ public class DroneFakePlayer extends FakePlayer {
         drone.getDroneLevel().addFreshEntity(orb);
     }
 
-    @Override
+    // TODO 26.1: Player#playNotifySound() is gone; nothing calls this any more
     public void playNotifySound(SoundEvent soundEvent, SoundSource category, float volume, float pitch) {
         drone.playSound(soundEvent, category, volume, pitch);
     }
@@ -71,7 +71,8 @@ public class DroneFakePlayer extends FakePlayer {
 
     @Override
     public Vec3 position() {
-        return drone.getFakePlayerPos();
+        // shouldn't ever be null, but https://github.com/TeamPneumatic/pnc-repressurized/issues/1535
+        return drone == null ? Vec3.ZERO : drone.getFakePlayerPos();
     }
 
     @Override

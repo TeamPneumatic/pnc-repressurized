@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -21,9 +21,9 @@ import java.util.function.ToIntFunction;
 
 public class SavedUpgrades {
     private static final Codec<PNCUpgrade> UPGRADE_CODEC
-            = ResourceLocation.CODEC.xmap(id -> ApplicableUpgradesDB.getInstance().getUpgradeById(id), PNCUpgrade::getId);
+            = Identifier.CODEC.xmap(id -> ApplicableUpgradesDB.getInstance().getUpgradeById(id), PNCUpgrade::getId);
     private static final StreamCodec<ByteBuf,PNCUpgrade> UPGRADE_STREAM_CODEC
-            = ResourceLocation.STREAM_CODEC.map(id -> ApplicableUpgradesDB.getInstance().getUpgradeById(id), PNCUpgrade::getId);
+            = Identifier.STREAM_CODEC.map(id -> ApplicableUpgradesDB.getInstance().getUpgradeById(id), PNCUpgrade::getId);
 
     public static final Codec<SavedUpgrades> CODEC = RecordCodecBuilder.create(builder -> builder.group(
             ItemContainerContents.CODEC.fieldOf("upgrades").forGetter(s -> s.contents),

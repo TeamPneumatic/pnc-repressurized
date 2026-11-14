@@ -48,7 +48,7 @@ public enum MiscAPIHandler implements IMiscHelpers {
 
     @Override
     public int getProtectingSecurityStations(Player player, BlockPos pos) {
-        Validate.isTrue(!player.getCommandSenderWorld().isClientSide, "This method can only be called from the server side!");
+        Validate.isTrue(!player.level().isClientSide(), "This method can only be called from the server side!");
         return SecurityStationBlockEntity.getProtectingSecurityStations(player, pos, false);
     }
 
@@ -72,7 +72,7 @@ public enum MiscAPIHandler implements IMiscHelpers {
 
     @Override
     public void forceClientShapeRecalculation(Level world, BlockPos pos) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
         }
     }

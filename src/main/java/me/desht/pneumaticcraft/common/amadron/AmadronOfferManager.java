@@ -34,19 +34,17 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.npc.VillagerProfession;
-import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
@@ -54,7 +52,7 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -70,9 +68,9 @@ public enum AmadronOfferManager {
     // villager professions which actually have some trades
     private final List<VillagerProfession> validProfessions = new ArrayList<>();
     // A complete collection of all known offers
-    private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
+    private final Map<Identifier, AmadronOffer> allOffers = new HashMap<>();
     // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time
-    private final Map<ResourceLocation, AmadronOffer> activeOffers = new LinkedHashMap<>();
+    private final Map<Identifier, AmadronOffer> activeOffers = new LinkedHashMap<>();
     // rebuild offers?  true initially and after a /reload
     private boolean rebuildRequired = true;
 
@@ -80,7 +78,7 @@ public enum AmadronOfferManager {
         return INSTANCE;
     }
 
-    public AmadronOffer getOffer(ResourceLocation offerId) {
+    public AmadronOffer getOffer(Identifier offerId) {
         return allOffers.get(offerId);
     }
 
@@ -97,6 +95,7 @@ public enum AmadronOfferManager {
     public boolean addPlayerOffer(AmadronPlayerOffer offer) {
         if (hasSimilarPlayerOffer(offer)) return false;
         if (offer.getInput().isEmpty() || offer.getOutput().isEmpty()) return false;
+        if (getPlayerOffers(offer.getPlayerId()).count() >= ConfigHelper.common().amadron.maxTradesPerPlayer.get()) return false;
 
         getPlayerOffers().put(offer.getOfferId(), offer);
         addOffer(activeOffers, offer);
@@ -124,8 +123,12 @@ public enum AmadronOfferManager {
         return getPlayerOffers().values().stream().anyMatch(existing -> existing.equivalentTo(offer));
     }
 
-    private Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {
+    private Map<Identifier, AmadronPlayerOffer> getPlayerOffers() {
         return AmadronPlayerOffers.INSTANCE.getPlayerOffers();
+    }
+
+    private Stream<AmadronPlayerOffer> getPlayerOffers(UUID playerId) {
+        return getPlayerOffers().values().stream().filter(o -> o.getPlayerId().equals(playerId));
     }
 
     /**
@@ -147,7 +150,7 @@ public enum AmadronOfferManager {
         CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.getInventory()), new PlayerOffhandInvWrapper(player.getInventory()));
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).getItem() instanceof AmadronTabletItem) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
+                player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"));
                 break;
             }
         }
@@ -157,7 +160,7 @@ public enum AmadronOfferManager {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null && !server.isDedicatedServer()) {
             for (Player player : server.getPlayerList().getPlayers()) {
-                if (server.isSingleplayerOwner(player.getGameProfile())) {
+                if (server.isSingleplayerOwner(player.nameAndId())) {
                     maybeNotifyPlayerOfUpdates(player);
                     break;
                 }
@@ -170,7 +173,7 @@ public enum AmadronOfferManager {
      * @param id offer ID, must be in the active offers list
      * @param stock new stock level
      */
-    public void updateStock(ResourceLocation id, int stock) {
+    public void updateStock(Identifier id, int stock) {
         AmadronRecipe offer = activeOffers.get(id);
         if (offer != null) {
             offer.setStock(stock);
@@ -218,7 +221,7 @@ public enum AmadronOfferManager {
         AmadronPlayerOffers.save();
     }
 
-    private <T extends AmadronOffer> void addOffer(Map<ResourceLocation, T> map, T offer) {
+    private <T extends AmadronOffer> void addOffer(Map<Identifier, T> map, T offer) {
         map.put(offer.getOfferId(), offer);
     }
 
@@ -326,35 +329,8 @@ public enum AmadronOfferManager {
     }
 
     private void setupVillagerTrades() {
-        // this only needs to be done once, on first load
-        if (villagerTrades.isEmpty()) {
-            Set<VillagerProfession> validSet = new HashSet<>();
-            RandomSource rand = RandomSource.createNewThreadLocalInstance();
-            VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
-                IntStream.range(0, trades.length).forEach(i -> {
-                    MerchantOffer offer = getOfferForNullVillager(trades[i], rand);
-                    if (offer != null && !offer.getBaseCostA().isEmpty() && !offer.getResult().isEmpty()) {
-                        ResourceLocation offerId = ResourceLocation.parse(profession + "_" + level + "_" + i);
-                        String key = profession.toString() + "_" + level;
-                        villagerTrades.computeIfAbsent(key, k ->
-                                new ArrayList<>()).add(AmadronOffer.villagerTrade(offerId, offer, level));
-                        validSet.add(profession);
-                    }
-                });
-            }));
-            validProfessions.addAll(validSet);
-        }
-    }
-
-    private MerchantOffer getOfferForNullVillager(VillagerTrades.ItemListing trade, RandomSource rand) {
-        try {
-            // shouldn't really pass null here, but creating a fake villager can cause worldgen-related server lockups
-            // https://github.com/TeamPneumatic/pnc-repressurized/issues/899
-            //noinspection ConstantConditions
-            return trade.getOffer(null, rand);
-        }catch (NullPointerException ignored) {
-            return null;
-        }
+        // TODO 26.1 trades: VillagerTrades.TRADES is gone; villager trades are data-driven trade sets now, so this
+        //  needs to build offers from the TradeSet registry instead. No villager trades are offered until then.
     }
 
     public void rebuildRequired() {
@@ -385,14 +361,14 @@ public enum AmadronOfferManager {
         }
     }
 
-    public boolean isActive(ResourceLocation offerId) {
+    public boolean isActive(Identifier offerId) {
         return activeOffers.containsKey(offerId);
     }
 
-    @EventBusSubscriber(modid = Names.MOD_ID)
+    @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class EventListener {
         @SubscribeEvent
-        public static void onRecipesAvailable(RecipesUpdatedEvent event) {
+        public static void onRecipesAvailable(RecipesReceivedEvent event) {
             NetworkHandler.sendToServer(PacketSyncAmadronOffers.createRequest());
         }
     }

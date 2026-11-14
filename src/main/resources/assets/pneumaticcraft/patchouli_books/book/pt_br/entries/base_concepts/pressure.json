@@ -17,7 +17,7 @@
     },
     {
       "type": "text",
-      "text": "$(li)A pressão aplica força nas paredes internas de uma máquina ou $(l:tubes/pressure_tubes)tubo de pressão/$. Aplicar muita pressão resulta em um $(thing)Evento de Liberação Rápida de Ar Não Controlada/$, também conhecido como uma $(thing)explosão/$. A pressão na qual as máquinas podem explodir é mostrada como a área vermelha no manômetro na GUI de qualquer máquina, mas o ponto exato em que uma máquina explodirá não é previsível."
+      "text": "$(li)A pressão aplica força nas paredes internas de uma máquina ou $(l:tubes/pressure_tubes)tubo de pressão/$. Aplicar muita pressão resulta em um $(thing)Evento de Liberação Rápida de Ar Não Controlada/$, também conhecido como uma $(thing)explosão/$. A pressão na qual as máquinas podem explodir é mostrada como a área vermelha na GUI do Medidor de Pressão de qualquer máquina, mas o ponto exato em que uma máquina explodirá não é previsível."
     },
     {
       "type": "text",

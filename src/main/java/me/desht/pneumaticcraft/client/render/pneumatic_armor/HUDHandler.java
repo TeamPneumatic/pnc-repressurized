@@ -45,7 +45,7 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -132,7 +132,7 @@ public enum HUDHandler implements IKeyListener {
     public void playerTick(PlayerTickEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = event.getEntity();
-        if (player == mc.player && player.level().isClientSide) {
+        if (player == mc.player && player.level().isClientSide()) {
             boolean anyArmorEquipped = false;
             CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -200,7 +200,7 @@ public enum HUDHandler implements IKeyListener {
             // full init: display "init complete" message
             playArmorInitCompleteSound(player);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, DEFAULT_MESSAGE_BGCOLOR));
-            player.displayClientMessage(Component.translatable("pneumaticcraft.armor.message.configureHint", ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions)).withStyle(ChatFormatting.YELLOW), true);
+            player.sendOverlayMessage(Component.translatable("pneumaticcraft.armor.message.configureHint", ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions)).withStyle(ChatFormatting.YELLOW));
         } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
             // tick 0: inform the server which upgrades are enabled
             for (IArmorUpgradeClientHandler<?> handler : ClientArmorRegistry.getInstance().getHandlersForSlot(slot)) {
@@ -325,7 +325,7 @@ public enum HUDHandler implements IKeyListener {
         ClientArmorRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
     }
 
-    public void renderMessages(GuiGraphics poseStack, float partialTicks) {
+    public void renderMessages(GuiGraphicsExtractor poseStack, float partialTicks) {
         pendingMessages.forEach(message -> message.renderMessage(poseStack, partialTicks));
     }
 }

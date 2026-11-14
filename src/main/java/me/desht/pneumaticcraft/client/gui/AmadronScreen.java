@@ -35,10 +35,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -68,9 +69,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     private int problemTimer = 0;
 
     public AmadronScreen(AmadronMenu container, Inventory inv, @SuppressWarnings("unused") Component displayString) {
-        super(container, inv, Component.literal(""));
-        imageWidth = 176;
-        imageHeight = 202;
+        super(container, inv, Component.literal(""), 176, 202);
     }
 
     @Override
@@ -137,7 +136,7 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_AMADRON;
     }
 
@@ -199,24 +198,27 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (!searchBar.isMouseOver(mouseX, mouseY)) {
             searchBar.setFocused(false);
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
             return true;
 //            ClientUtils.getClientPlayer().closeContainer();
         }
 
-        return searchBar.keyPressed(keyCode, scanCode, modifiers)
+        return searchBar.keyPressed(event)
                 || searchBar.canConsumeInput()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyPressed(event);
     }
 
     public void setPage(int page) {
@@ -289,12 +291,15 @@ public class AmadronScreen extends AbstractPneumaticCraftContainerScreen<Amadron
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-            if (super.mouseClicked(mouseX, mouseY, mouseButton)) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            double mouseX = event.x();
+            double mouseY = event.y();
+            int mouseButton = event.button();
+            if (super.mouseClicked(event, doubleClick)) {
                 return true;
             }
-            if (clicked(mouseX, mouseY) && getOffer().isUsableByPlayer(ClientUtils.getClientPlayer())) {
-                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getOfferId(), mouseButton, Screen.hasShiftDown()));
+            if (isMouseOver(mouseX, mouseY) && getOffer().isUsableByPlayer(ClientUtils.getClientPlayer())) {
+                NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(getOffer().getOfferId(), mouseButton, Minecraft.getInstance().hasShiftDown()));
                 return true;
             } else {
                 return false;

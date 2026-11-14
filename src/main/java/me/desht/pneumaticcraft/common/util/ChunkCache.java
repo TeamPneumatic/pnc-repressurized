@@ -88,9 +88,9 @@ public class ChunkCache implements CollisionGetter {
         int z = chunkZ - this.chunkZ;
         if (x >= 0 && x < this.chunks.length && z >= 0 && z < this.chunks[x].length) {
             ChunkAccess ichunk = this.chunks[x][z];
-            return (ichunk != null ? ichunk : new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS)));
+            return (ichunk != null ? ichunk : new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS)));
         } else {
-            return new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(Biomes.PLAINS));
+            return new EmptyLevelChunk(this.world, new ChunkPos(chunkX, chunkZ), world.registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(Biomes.PLAINS));
         }
     }
 
@@ -142,7 +142,7 @@ public class ChunkCache implements CollisionGetter {
     }
 
     @Override
-    public int getMinBuildHeight() {
-        return world.getMinBuildHeight();
+    public int getMinY() {
+        return world.getMinY();
     }
 }

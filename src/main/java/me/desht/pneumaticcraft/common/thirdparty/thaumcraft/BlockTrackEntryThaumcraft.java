@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,7 +32,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryThaumcraft implements IBlockTrackEntry {
-    public static final ResourceLocation ID = RL("block_tracker_module_thaumcraft");
+    public static final Identifier ID = RL("block_tracker_module_thaumcraft");
 
     @Override
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
@@ -56,7 +56,7 @@ public class BlockTrackEntryThaumcraft implements IBlockTrackEntry {
     }
 
     @Override
-    public ResourceLocation getEntryID() {
+    public Identifier getEntryID() {
         return ID;
     }
 }

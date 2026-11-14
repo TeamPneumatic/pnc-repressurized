@@ -58,7 +58,7 @@ public class SmartSyncTank extends PNCFluidTank {
     public void tick() {
         BlockEntity te = owner.get();
         if (te != null) {
-            if (te.getLevel().isClientSide) {
+            if (te.getLevel().isClientSide()) {
                 if (ClientUtils.isGuiOpen(te)) {
                     super.setFluid(syncedFluidStackGui);
                 } else {

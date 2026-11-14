@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
@@ -37,7 +37,7 @@ public class ExplosionCraftingRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, Identifier id) {
         recipeOutput.accept(id, new ExplosionCraftingRecipeImpl(input, lossRate, outputs), null);
     }
 }

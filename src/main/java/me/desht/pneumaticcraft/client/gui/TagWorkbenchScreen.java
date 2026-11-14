@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -56,15 +56,12 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
 
     private WidgetButtonExtended addButton;
     private WidgetButtonExtended removeButton;
-    private WidgetList<ResourceLocation> availableList;
-    private WidgetList<ResourceLocation> selectedList;
+    private WidgetList<Identifier> availableList;
+    private WidgetList<Identifier> selectedList;
     private WidgetButtonExtended writeButton;
 
     public TagWorkbenchScreen(TagWorkbenchMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageWidth = 234;
-        imageHeight = 256;
+        super(container, inv, displayString, 234, 256);
     }
 
     @Override
@@ -84,12 +81,12 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
     }
 
     private void writeTags() {
-        List<String> l = selectedList.getLines().stream().map(ResourceLocation::toString).collect(Collectors.toList());
+        List<String> l = selectedList.getLines().stream().map(Identifier::toString).collect(Collectors.toList());
         NetworkHandler.sendToServer(new PacketGuiButton("write:" + String.join("," , l)));
         selectedList.clear();
     }
 
-    private void onSelected(WidgetList<ResourceLocation> w) {
+    private void onSelected(WidgetList<Identifier> w) {
         if (w == availableList) {
             selectedList.unselectAll();
             if (w.isDoubleClicked()) addAvailable();
@@ -100,14 +97,14 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
     }
 
     private void addAvailable() {
-        ResourceLocation rl = availableList.getSelectedLine();
+        Identifier rl = availableList.getSelectedLine();
         if (rl != null && !selectedList.contains(rl)) {
             selectedList.add(rl);
         }
     }
 
     private void removeSelected() {
-        ResourceLocation rl = selectedList.getSelectedLine();
+        Identifier rl = selectedList.getSelectedLine();
         if (rl != null) {
             selectedList.removeSelected();
         }
@@ -154,7 +151,7 @@ public class TagWorkbenchScreen extends AbstractPneumaticCraftContainerScreen<Ta
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_TAG_WORKBENCH;
     }
 }

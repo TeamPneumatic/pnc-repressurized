@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICraftingWidget;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -66,7 +67,7 @@ public class DroneAICrafting extends Goal {
                     stacks.set(i, stack);
                 }
                 CraftingInput input = CraftingInput.of(craftingGrid.width(), craftingGrid.height(), stacks);
-                if (recipe.matches(input, drone.getDroneLevel()) && doCrafting(recipe.assemble(input, drone.getDroneLevel().registryAccess()), input)) {
+                if (recipe.matches(input, drone.getDroneLevel()) && doCrafting(recipe.assemble(input), input)) {
                     actionCount++;
                     return true;
                 }
@@ -138,8 +139,8 @@ public class DroneAICrafting extends Goal {
             ItemStack stack = craftMatrix.getItem(i);
 
             if (!stack.isEmpty()) {
-                if (stack.getItem().hasCraftingRemainingItem(stack)) {
-                    ItemStack containerItem = stack.getItem().getCraftingRemainingItem(stack);
+                if (stack.getCraftingRemainder() != null) {
+                    ItemStack containerItem = PneumaticCraftUtils.getCraftingRemainder(stack);
                     if (!containerItem.isEmpty() && containerItem.isDamageableItem() && containerItem.getDamageValue() > containerItem.getMaxDamage()) {
                         NeoForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, InteractionHand.MAIN_HAND));
                         continue;

@@ -45,12 +45,14 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
@@ -132,14 +134,14 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        super.handleUpdateTag(tag, provider);
-        droneId = tag.getInt("drone");
+    public void handleUpdateTag(ValueInput input) {
+        super.handleUpdateTag(input);
+        droneId = input.getIntOr("drone", 0);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        droneId = pkt.getTag().getInt("drone");
+    public void onDataPacket(Connection net, ValueInput input) {
+        droneId = input.getIntOr("drone", 0);
     }
 
     private DroneEntity validateAndGetDrone() {
@@ -183,11 +185,11 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
-                DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel());
+                DroneEntity drone = ModEntityTypes.DRONE.get().create(nonNullLevel(), EntitySpawnReason.TRIGGERED);
                 PNCRegistries.PROG_WIDGETS_REGISTRY.entrySet().forEach(entry -> {
                     IProgWidget widget = IProgWidget.create(entry.getValue());
                     if (widget.canBeRunByComputers(drone, getWidget())) {
-                        actions.add(entry.getKey().location().toString());
+                        actions.add(entry.getKey().identifier().toString());
                     }
                 });
                 return new Object[]{getStringTable(actions)};
@@ -603,8 +605,8 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 requireArgs(args, 1, "<string> action_name");
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
-                ResourceLocation id = widgetName.contains(":") ? ResourceLocation.parse(widgetName) : RL(widgetName);
-                ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.get(id);
+                Identifier id = widgetName.contains(":") ? Identifier.parse(widgetName) : RL(widgetName);
+                ProgWidgetType<?> type = PNCRegistries.PROG_WIDGETS_REGISTRY.getValue(id);
 
                 Validate.notNull(type,
                         "No action with the name '" + widgetName + "'!");
@@ -631,7 +633,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
                 if (curAction != null) {
                     return new Object[] {
                             PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, curAction.getType())
-                                    .map(ResourceLocation::toString)
+                                    .map(Identifier::toString)
                                     .orElse("?")
                     };
                 }
@@ -858,7 +860,7 @@ public class DroneInterfaceBlockEntity extends AbstractTickingBlockEntity
     }
 
     private void messageToDrone(DyeColor color) {
-        messageToDrone(FastColor.ARGB32.color(255, color.getTextureDiffuseColor()));
+        messageToDrone(ARGB.color(255, color.getTextureDiffuseColor()));
     }
 
     private void messageToDrone(int color) {

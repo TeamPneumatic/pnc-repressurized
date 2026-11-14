@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public enum HeatBehaviourManager {
     INSTANCE;
 
-    private final Map<ResourceLocation, Supplier<? extends HeatBehaviour>> behaviourRegistry = new ConcurrentHashMap<>();
+    private final Map<Identifier, Supplier<? extends HeatBehaviour>> behaviourRegistry = new ConcurrentHashMap<>();
 
     public static HeatBehaviourManager getInstance() {
         return INSTANCE;
@@ -50,14 +50,14 @@ public enum HeatBehaviourManager {
         registerBehaviour(HeatBehaviourCustomTransition.ID, HeatBehaviourCustomTransition::new);
     }
 
-    public void registerBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> behaviour) {
+    public void registerBehaviour(Identifier id, Supplier<? extends HeatBehaviour> behaviour) {
         Objects.requireNonNull(behaviour);
 
         Supplier<? extends HeatBehaviour> existing = behaviourRegistry.put(id, behaviour);
         if (existing != null) Log.warning("Overriding heat behaviour " + id);
     }
 
-    public <T extends HeatBehaviour> T createBehaviour(ResourceLocation id) {
+    public <T extends HeatBehaviour> T createBehaviour(Identifier id) {
         Supplier<? extends HeatBehaviour> behaviour = behaviourRegistry.get(id);
         if (behaviour != null) {
             //noinspection unchecked

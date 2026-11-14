@@ -8,13 +8,13 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class RenderDrone extends MobRenderer<AbstractDroneEntity, ModelDrone> {
-    private final ResourceLocation texture;
+    private final Identifier texture;
     private final float scale;
 
-    private RenderDrone(EntityRendererProvider.Context ctx, float scale, ResourceLocation texture) {
+    private RenderDrone(EntityRendererProvider.Context ctx, float scale, Identifier texture) {
         super(ctx, new ModelDrone(ctx.bakeLayer(PNCModelLayers.DRONE)), 0.25f);
 
         this.scale = scale;
@@ -66,7 +66,7 @@ public class RenderDrone extends MobRenderer<AbstractDroneEntity, ModelDrone> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(AbstractDroneEntity entity) {
+    public Identifier getTextureLocation(AbstractDroneEntity entity) {
         return texture;
     }
 }

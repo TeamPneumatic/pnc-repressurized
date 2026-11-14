@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.TextScaler;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.joml.Matrix3f;

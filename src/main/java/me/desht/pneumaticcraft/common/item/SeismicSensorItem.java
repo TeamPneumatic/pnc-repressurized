@@ -45,21 +45,20 @@ public class SeismicSensorItem extends Item {
     public InteractionResult useOn(UseOnContext ctx) {
         Level level = ctx.getLevel();
         Player player = ctx.getPlayer();
-        if (level.isClientSide && player != null) {
+        if (level.isClientSide() && player != null) {
             BlockPos.MutableBlockPos searchPos = ctx.getClickedPos().mutable();
             findFluid(level, searchPos).ifPresentOrElse(result -> {
                 int topOff = ctx.getClickedPos().getY() - result.top().getY();
                 int bottomOff = ctx.getClickedPos().getY() - result.bottom().getY();
                 String depthStr = topOff == bottomOff ? Integer.toString(topOff) : topOff + "-" + bottomOff;
-                player.displayClientMessage(Component.translatable(
+                player.sendSystemMessage(Component.translatable(
                                 "pneumaticcraft.message.seismicSensor.foundOilDetails",
                                 Component.translatable(result.fluid().getFluidType().getDescriptionId()),
                                 ChatFormatting.GREEN + depthStr,
-                                ChatFormatting.GREEN.toString() + result.lakeSize()),
-                        false);
+                                ChatFormatting.GREEN.toString() + result.lakeSize()));
                 player.playSound(SoundEvents.NOTE_BLOCK_CHIME.value(), 1f, 1f);
             }, () -> {
-                player.displayClientMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"), false);
+                player.sendSystemMessage(Component.translatable("pneumaticcraft.message.seismicSensor.noOilFound"));
             });
         }
         return InteractionResult.SUCCESS; // we don't want to use the item.
@@ -67,14 +66,14 @@ public class SeismicSensorItem extends Item {
 
     private Optional<FluidSearchResult> findFluid(Level level, BlockPos origin) {
         BlockPos.MutableBlockPos searchPos = origin.mutable();
-        while (searchPos.getY() > level.getMinBuildHeight()) {
+        while (searchPos.getY() > level.getMinY()) {
             searchPos.move(Direction.DOWN);
             Fluid fluid = getFluidOfInterest(level, searchPos);
             if (fluid != null) {
                 BlockPos top = searchPos.immutable();
                 do {
                     searchPos.move(Direction.DOWN);
-                } while (searchPos.getY() > level.getMinBuildHeight() && getFluidOfInterest(level, searchPos) == fluid);
+                } while (searchPos.getY() > level.getMinY() && getFluidOfInterest(level, searchPos) == fluid);
                 BlockPos bottom = searchPos.above().immutable();
                 Set<BlockPos> fluidPositions = findLake(level, top, fluid);
                 int lakeSize = Math.max(1, fluidPositions.size() / 10 * 10);

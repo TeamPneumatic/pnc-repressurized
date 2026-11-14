@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "Para aumentar a chance de isso acontecer, você pode conectar seus compressores a uma $(ttcolor)$(t:Blocos de grade podem ser personalizados via a tag de bloco 'pneumaticraft:electrostatic_grid')grade/$ de $(item)Barras de Ferro/$ ou $(item)Pára-raios/$ a esta máquina, que agem como condutores para o raio.$(p)Grades maiores são melhores: blocos de grade podem estar a até 5 espaços de distância horizontalmente (raio circular), e até 5 blocos acima ou abaixo, mas todos devem estar conectados ao $(item)Compressor Eletrostático/$ através uns dos outros."
+      "text": "Para aumentar a chance de isso acontecer, você pode conectar seus compressores a uma $(ttcolor)$(t:Blocos de grade podem ser personalizados via a marcação de bloco 'pneumaticraft:electrostatic_grid')grade/$ de $(item)Barras de Ferro/$ ou $(item)Pára-raios/$ a esta máquina, que agem como condutores para o raio.$(p)Grades maiores são melhores: blocos de grade podem estar a até 5 espaços de distância horizontalmente (raio circular), e até 5 blocos acima ou abaixo, mas todos devem estar conectados ao $(item)Compressor Eletrostático/$ através uns dos outros."
     },
     {
       "type": "image",

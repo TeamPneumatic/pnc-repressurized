@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(item)Tubos de Perfuração/$ são necessários para o $(l:machines/gas_lift)Elevador de Gás/$ perfurar até os fluidos.$(p)Eles também são adequados para uso em construção geral, se você gostar."
+      "text": "$(item)Tubos de Perfuração/$ são necessários para o $(l:machines/gas_lift)Elevador a Gás/$ perfurar até os fluidos.$(p)Eles também são adequados para uso em construção geral, se você gostar."
     },
     {
       "type": "crafting",

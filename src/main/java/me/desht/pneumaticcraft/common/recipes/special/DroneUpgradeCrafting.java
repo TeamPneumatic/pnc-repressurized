@@ -22,27 +22,25 @@ import me.desht.pneumaticcraft.common.item.DroneItem;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
-import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class DroneUpgradeCrafting extends ShapelessRecipe {
+public class DroneUpgradeCrafting extends PNCSpecialCraftingRecipe {
     public static final List<Predicate<ItemStack>> ITEM_PREDICATES = List.of(
             DroneItem::isBasicDrone,
             stack -> stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()
     );
 
     public DroneUpgradeCrafting(CraftingBookCategory category) {
-        super("", category, new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
-                Ingredient.of(ModItems.PRINTED_CIRCUIT_BOARD.get()), Ingredient.of(PneumaticCraftTags.Items.BASIC_DRONES))
-        );
+        super(category);
     }
 
     @Override
@@ -51,7 +49,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput inv) {
         List<ItemStack> items = ModCraftingHelper.findItems(inv, ITEM_PREDICATES);
         if (items.isEmpty()) {
             return ItemStack.EMPTY;
@@ -62,13 +60,20 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int w, int h) {
-        return w * h >= 2;
+    protected List<SlotDisplay> displayIngredients() {
+        return List.of(
+                new SlotDisplay.ItemSlotDisplay(ModItems.PRINTED_CIRCUIT_BOARD.get()),
+                new SlotDisplay.TagSlotDisplay(PneumaticCraftTags.Items.BASIC_DRONES)
+        );
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return ModRecipeSerializers.DRONE_UPGRADE_CRAFTING.get();
+    protected SlotDisplay displayResult() {
+        return new SlotDisplay.ItemSlotDisplay(ModItems.DRONE.get());
     }
 
+    @Override
+    public RecipeSerializer<DroneUpgradeCrafting> getSerializer() {
+        return ModRecipeSerializers.DRONE_UPGRADE_CRAFTING.get();
+    }
 }

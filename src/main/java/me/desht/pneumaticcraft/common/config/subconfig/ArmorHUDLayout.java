@@ -21,8 +21,8 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.IdentifierException;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class ArmorHUDLayout extends AuxConfigJson {
     public static final ArmorHUDLayout INSTANCE = new ArmorHUDLayout();
     private static final String HUD_LAYOUT = "hud_layout";
 
-    private final Map<ResourceLocation, StatPanelLayout> layouts = new HashMap<>();
+    private final Map<Identifier, StatPanelLayout> layouts = new HashMap<>();
 
     private ArmorHUDLayout() {
         super(true);
@@ -55,9 +55,9 @@ public class ArmorHUDLayout extends AuxConfigJson {
             JsonObject sub = json.getAsJsonObject(HUD_LAYOUT);
             sub.entrySet().forEach(entry -> {
                 try {
-                    ResourceLocation id = ResourceLocation.parse(entry.getKey());
+                    Identifier id = Identifier.parse(entry.getKey());
                     layouts.put(id, StatPanelLayout.CODEC.parse(JsonOps.INSTANCE, entry.getValue().getAsJsonObject()).result().orElseThrow());
-                } catch (ResourceLocationException e) {
+                } catch (IdentifierException e) {
                     Log.error("invalid stat panel key (not a resource location) {} in {}}!", entry.getKey(), getConfigFilename());
                 } catch (NoSuchElementException e) {
                     Log.error("invalid json for key {} in {}!", entry.getKey(), getConfigFilename());
@@ -76,12 +76,12 @@ public class ArmorHUDLayout extends AuxConfigJson {
         return Sidedness.CLIENT;
     }
 
-    public void updateLayout(ResourceLocation id, float x, float y, boolean leftSided, boolean hidden) {
+    public void updateLayout(Identifier id, float x, float y, boolean leftSided, boolean hidden) {
         layouts.put(id, new StatPanelLayout(x, y, leftSided, hidden));
         tryWriteToFile();
     }
 
-    public StatPanelLayout getLayoutFor(ResourceLocation upgradeID, StatPanelLayout defaultStatLayout) {
+    public StatPanelLayout getLayoutFor(Identifier upgradeID, StatPanelLayout defaultStatLayout) {
         return layouts.computeIfAbsent(upgradeID, k -> defaultStatLayout);
     }
 }

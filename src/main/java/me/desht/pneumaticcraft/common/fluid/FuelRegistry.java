@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import net.minecraft.core.Holder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,8 +59,8 @@ public enum FuelRegistry implements IFuelRegistry {
         Set<Fluid> res = new HashSet<>(hotFluids.keySet());
 
         for (FuelQualityRecipe recipe : ModRecipeTypes.FUEL_QUALITY.get().allRecipes(level)) {
-            res.addAll(Arrays.stream(recipe.getFuel().getStacks())
-                    .map(FluidStack::getFluid)
+            res.addAll(recipe.getFuel().fluids().stream()
+                    .map(Holder::value)
                     .filter(f -> f.isSource(f.defaultFluidState()))
                     .toList());
         }

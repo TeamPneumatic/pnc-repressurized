@@ -34,6 +34,8 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,6 +54,8 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
@@ -88,7 +92,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     private final UVInputHandler inputHandler = new UVInputHandler();
     private final ItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
     private final UVInvWrapper inventoryExt = new UVInvWrapper();
-    private BlockCapabilityCache<IItemHandler,Direction> ejectionCache;
+    private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> ejectionCache;
 
     public int ticksExisted;
 
@@ -164,7 +168,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     private void tryEject() {
         getUpgradeCache().getEjectDirection().ifPresent(dir -> {
-            IItemHandler dstHandler = getEjectionCache(dir).getCapability();
+            IItemHandler dstHandler = IOHelper.legacy(getEjectionCache(dir));
             if (dstHandler != null) {
                 ItemStack stack = outputHandler.extractItem(0, 1, true);
                 if (!stack.isEmpty() && ItemHandlerHelper.insertItem(dstHandler, stack, false).isEmpty()) {
@@ -174,7 +178,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
         });
     }
 
-    private BlockCapabilityCache<IItemHandler,Direction> getEjectionCache(@NotNull Direction dir) {
+    private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> getEjectionCache(@NotNull Direction dir) {
         if (ejectionCache == null || ejectionCache.context() != dir) {
             ejectionCache = createItemHandlerCache(dir);
         }
@@ -185,9 +189,9 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        threshold = tag.getInt("threshold");
-        inputHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        outputHandler.deserializeNBT(provider, tag.getCompound("Output"));
+        threshold = tag.getIntOr("threshold", 0);
+        inputHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(outputHandler, provider, tag.getCompoundOrEmpty("Output"));
     }
 
     @Override
@@ -196,7 +200,7 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
         tag.putInt("threshold", threshold);
         tag.put("Items", inputHandler.serializeNBT(provider));
-        tag.put("Output", outputHandler.serializeNBT(provider));
+        tag.put("Output", ValueIOBridge.serialize(outputHandler, provider));
     }
 
     public static int getExposureProgress(ItemStack stack) {

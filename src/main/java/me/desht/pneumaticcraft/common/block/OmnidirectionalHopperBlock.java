@@ -20,22 +20,23 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.hopper.AbstractHopperBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.hopper.OmnidirectionalHopperBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,11 +172,11 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
-        if (world != null && pos != null) {
+    public int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex) {
+        if (world instanceof LevelReader reader && pos != null) {
             switch (tintIndex) {
                 case 0:
-                    return PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractHopperBlockEntity.class)
+                    return PneumaticCraftUtils.getBlockEntityAt(reader, pos, AbstractHopperBlockEntity.class)
                             .filter(te -> te.isCreative)
                             .map(te -> 0xFFDB46CF).orElse(0xFF2b2727);
                 case 1:
@@ -190,7 +191,7 @@ public class OmnidirectionalHopperBlock extends AbstractPneumaticCraftBlock
         return new OmnidirectionalHopperBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockOmnidirectionalHopper extends BlockItem implements ColorHandlers.ITintableItem {
+    public static class ItemBlockOmnidirectionalHopper extends PNCBlockItem implements ColorHandlers.ITintableItem {
         public ItemBlockOmnidirectionalHopper(Block block) {
             super(block, ModItems.defaultProps());
         }

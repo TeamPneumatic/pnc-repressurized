@@ -22,7 +22,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -39,7 +39,7 @@ public record PacketPlayerTemperatureDelta(int deltaTemp) implements CustomPacke
             PacketPlayerTemperatureDelta::new
     );
 
-    private static final ResourceLocation ID = RL("player_temperature_delta");
+    private static final Identifier ID = RL("player_temperature_delta");
 
     public static PacketPlayerTemperatureDelta fromNetwork(FriendlyByteBuf buffer) {
         return new PacketPlayerTemperatureDelta(buffer.readByte());

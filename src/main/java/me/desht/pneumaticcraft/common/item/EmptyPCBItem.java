@@ -31,12 +31,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -50,21 +52,21 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
-        super.appendHoverText(stack, context, infoList, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, flag);
 
         int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
         if (etchProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
         }
-        infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
+        infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(ChatFormatting.GRAY));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(ChatFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(ChatFormatting.GRAY));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -103,19 +105,19 @@ public class EmptyPCBItem extends NonDespawningItem implements ICustomDurability
                 if (entityItem.tickCount % (BlockEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     setEtchProgress(stack, etchProgress + 1);
                 }
-                Level level = entityItem.getCommandSenderWorld();
-                if (level.random.nextInt(15) == 0) {
-                    double x = entityItem.getX() + level.random.nextDouble() * 0.3 - 0.15;
+                Level level = entityItem.level();
+                if (level.getRandom().nextInt(15) == 0) {
+                    double x = entityItem.getX() + level.getRandom().nextDouble() * 0.3 - 0.15;
                     double y = entityItem.getY() - 0.15;
-                    double z = entityItem.getZ() + level.random.nextDouble() * 0.3 - 0.15;
+                    double z = entityItem.getZ() + level.getRandom().nextDouble() * 0.3 - 0.15;
                     level.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
-            } else if (!entityItem.level().isClientSide) {
+            } else if (!entityItem.level().isClientSide()) {
                 int successCount = 0;
                 int failedCount = 0;
                 int uvProgress = UVLightBoxBlockEntity.getExposureProgress(stack);
                 for (int i = 0; i < stack.getCount(); i++) {
-                    if (entityItem.level().random.nextInt(100) <= uvProgress) {
+                    if (entityItem.level().getRandom().nextInt(100) <= uvProgress) {
                         successCount++;
                     } else {
                         failedCount++;

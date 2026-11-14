@@ -21,6 +21,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
@@ -106,55 +107,38 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.EXPLOSION_CRAFTING.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.EXPLOSION_CRAFTING.get();
     }
 
     @Override
-    public String getGroup() {
+    public String group() {
         return PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING;
     }
 
-    @Override
-    public ItemStack getToastSymbol() {
-        return new ItemStack(Blocks.TNT);
-    }
 
     public interface IFactory<T extends ExplosionCraftingRecipe> {
         T create(SizedIngredient input, int lossRate, List<ItemStack> result);
     }
 
-    public static class Serializer<T extends ExplosionCraftingRecipe> implements RecipeSerializer<T> {
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    SizedIngredient.FLAT_CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
-                    ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
-                    ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
-            ).apply(builder, factory::create));
-            this.streamCodec = StreamCodec.composite(
-                    SizedIngredient.STREAM_CODEC, ExplosionCraftingRecipe::getInput,
-                    ByteBufCodecs.VAR_INT, ExplosionCraftingRecipe::getLossRate,
-                    ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), ExplosionCraftingRecipe::getOutputs,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
+    public static <T extends ExplosionCraftingRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                SizedIngredient.NESTED_CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
+                ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
+                ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
+        ).apply(builder, factory::create));
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                SizedIngredient.STREAM_CODEC, ExplosionCraftingRecipe::getInput,
+                ByteBufCodecs.VAR_INT, ExplosionCraftingRecipe::getLossRate,
+                ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), ExplosionCraftingRecipe::getOutputs,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
+
 }

@@ -22,10 +22,12 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.AbstractFurnaceBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
@@ -83,11 +85,11 @@ public class HeatPipeBlock extends AbstractCamouflageBlock implements SimpleWate
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         return recalculateState(worldIn, currentPos, stateIn);
     }
 
-    private static BlockState recalculateState(LevelAccessor worldIn, BlockPos currentPos, BlockState stateIn) {
+    private static BlockState recalculateState(LevelReader worldIn, BlockPos currentPos, BlockState stateIn) {
         if (stateIn == null) return null;
 
         if (worldIn instanceof Level level) {

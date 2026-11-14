@@ -33,12 +33,12 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
-import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.registry.ModGameEvents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
@@ -59,7 +59,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     public static final int STABILIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.JET_BOOTS;
     }
 
@@ -100,11 +100,15 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
 
         if (commonArmorHandler.hasMinPressure(EquipmentSlot.FEET)) {
+            boolean vibration = !player.level().isClientSide() && player.tickCount % 10 == 0;
             if (jbState.isActive()) {
                 if (jbState.isBuilderMode() && jetbootsCount >= BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isShiftKeyDown() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * jetbootsCount / 2.5F);
+                    if (vibration) {
+                        player.gameEvent(ModGameEvents.JET_BOOTS_FLY_BUILDER);
+                    }
                 } else {
                     // jetboots firing - move in direction of looking
                     Vec3 lookVec = player.getLookAngle().scale(0.3 * jetbootsCount);
@@ -112,6 +116,9 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                     lookVec = jbLocal.getEffectiveMotion(lookVec, player.isFallFlying());
                     player.setDeltaMovement(lookVec.x, player.onGround() ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = jbLocal.calcAirUsage(jetbootsCount);
+                    if (vibration) {
+                        player.gameEvent(ModGameEvents.JET_BOOTS_FLY);
+                    }
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jbLocal.tickActive();
@@ -127,6 +134,9 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 double yMotion = reallyHovering ? (player.isShiftKeyDown() ? -0.45 : -0.1 + 0.02 * jetbootsCount) : player.getDeltaMovement().y;
                 double zMotion = stopped ? 0 : player.getDeltaMovement().z;
                 player.setDeltaMovement(new Vec3(xMotion, yMotion, zMotion));
+                if (vibration && player.getKnownMovement().lengthSqr() > 0.03) {
+                    player.gameEvent(jbState.isBuilderMode() ? ModGameEvents.JET_BOOTS_FLY_BUILDER : ModGameEvents.JET_BOOTS_FLY);
+                }
                 if (reallyHovering) player.fallDistance = 0;
                 jetbootsAirUsage = reallyHovering ? (int) (ConfigHelper.common().armor.jetBootsAirUsage.get() * (player.isShiftKeyDown() ? 0.25F : 0.5F)) : 0;
                 jbLocal.resetAccel();
@@ -145,7 +155,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             setJetBootsActive(commonArmorHandler,false);
         }
 
-        if (jetbootsAirUsage != 0 && !player.level().isClientSide) {
+        if (jetbootsAirUsage != 0 && !player.level().isClientSide()) {
             if (jbLocal.getPrevJetBootsAirUsage() == 0) {
                 // jet boots starting up
                 NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, MovingSoundFocus.of(player)), player.level(), player.blockPosition());
@@ -166,8 +176,8 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             }
             commonArmorHandler.addAir(EquipmentSlot.FEET, -jetbootsAirUsage);
 
-            if (player.position().y > player.level().getMaxBuildHeight() + ConfigHelper.common().armor.jetBootsHeightLimit.get()) {
-                player.getCooldowns().addCooldown(ModItems.PNEUMATIC_BOOTS.get(), 20);
+            if (player.position().y > player.level().getMaxY() + 1 + ConfigHelper.common().armor.jetBootsHeightLimit.get()) {
+                player.getCooldowns().addCooldown(player.getItemBySlot(EquipmentSlot.FEET), 20);
             }
         }
         jbLocal.setPrevJetBootsAirUsage(jetbootsAirUsage);
@@ -176,7 +186,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
     private boolean isOnGround(Player player) {
         if (player.onGround()) return true;
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             // isOnGround() on server can be unreliable, especially if player flew into the ground
             // this little kludge makes sure jetboots properly switch off on both client and server
             BlockPos pos = player.getOnPos();
@@ -241,7 +251,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         if (!newActive) {
             jbLocal.resetActive();
             if (jbLocal.isFlightStabilizers() && jbs.isActive() && !jbs.isBuilderMode()) {
-                if (!player.level().isClientSide) {
+                if (!player.level().isClientSide()) {
                     double l = Math.pow(player.getDeltaMovement().length(), 1.65);
                     commonArmorHandler.addAir(EquipmentSlot.FEET, (int) (l * -50));
                     NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE,

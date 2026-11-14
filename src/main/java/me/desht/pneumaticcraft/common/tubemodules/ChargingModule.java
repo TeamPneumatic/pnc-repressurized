@@ -47,7 +47,7 @@ public class ChargingModule extends AbstractTubeModule {
     public void tickServer() {
         super.tickServer();
 
-        if (pressureTube.nonNullLevel().isClientSide || (pressureTube.nonNullLevel().getGameTime() & 0x7) != 0) return;
+        if (pressureTube.nonNullLevel().isClientSide() || (pressureTube.nonNullLevel().getGameTime() & 0x7) != 0) return;
 
         getConnectedInventory().ifPresent(itemHandler -> {
             // times 8 because we only run every 8 ticks

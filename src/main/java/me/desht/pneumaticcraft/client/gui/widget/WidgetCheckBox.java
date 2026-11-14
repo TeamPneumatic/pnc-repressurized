@@ -19,12 +19,14 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
@@ -59,7 +61,7 @@ public class WidgetCheckBox extends PNCWidget<WidgetCheckBox> implements ICheckb
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int x = getX();
             int y = getY();
@@ -67,14 +69,14 @@ public class WidgetCheckBox extends PNCWidget<WidgetCheckBox> implements ICheckb
             graphics.fill(x + 1, y + 1, x + CHECKBOX_WIDTH - 1, y + CHECKBOX_HEIGHT - 1, active ? 0xFF202020 : 0xFFAAAAAA);
             Font fr = Minecraft.getInstance().font;
             if (checked) {
-                graphics.drawString(fr, Symbols.TICK_MARK,  x + 2, y + 2, 0xFF00C000, false);
+                graphics.text(fr, Symbols.TICK_MARK, x + 2, y + 2, 0xFF00C000, false);
             }
-            graphics.drawString(fr, getMessage(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - fr.lineHeight / 2, active ? color : 0xFF888888, false);
+            graphics.text(fr, getMessage(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2 - fr.lineHeight / 2, GuiUtils.textColor(active ? color : 0xFF888888), false);
         }
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         if (active) {
             checked = !checked;
             if (pressable != null) pressable.accept(this);

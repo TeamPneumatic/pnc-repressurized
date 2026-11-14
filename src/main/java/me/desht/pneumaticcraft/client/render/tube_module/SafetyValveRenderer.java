@@ -12,7 +12,7 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FastColor;
 
 public class SafetyValveRenderer extends AbstractTubeModuleRenderer<SafetyValveModule> {
@@ -65,7 +65,7 @@ public class SafetyValveRenderer extends AbstractTubeModuleRenderer<SafetyValveM
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_SAFETY_VALVE_UPGRADED : Textures.MODEL_SAFETY_VALVE;
     }
 }

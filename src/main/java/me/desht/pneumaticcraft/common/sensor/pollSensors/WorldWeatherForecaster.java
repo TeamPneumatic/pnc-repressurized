@@ -22,10 +22,9 @@ import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.storage.LevelData;
-import net.minecraft.world.level.storage.ServerLevelData;
 
 import java.util.Set;
 
@@ -53,9 +52,8 @@ public class WorldWeatherForecaster implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(Level level, BlockPos pos, int sensorRange, String textBoxText) {
-        LevelData info = level.getLevelData();
-        if (info instanceof ServerLevelData) {
-            return Math.max(0, 15 - ((ServerLevelData) info).getRainTime() / 1200);
+        if (level instanceof ServerLevel serverLevel) {
+            return Math.max(0, 15 - serverLevel.getWeatherData().getRainTime() / 1200);
         } else {
             return 0;
         }

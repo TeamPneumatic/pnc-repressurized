@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
@@ -58,7 +58,7 @@ public class ProgWidgetTeleport extends ProgWidgetGoToLocation {
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_TELEPORT;
     }
 

@@ -17,7 +17,10 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -37,17 +40,21 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.upgrades.*;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -61,16 +68,21 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,7 +123,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     private String getBlockTranslationKey() {
         String key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
-                .map(rk -> rk.location().getPath())
+                .map(rk -> rk.identifier().getPath())
                 .orElse("unknown");
         return "block.pneumaticcraft." + key;
     }
@@ -146,20 +158,23 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider provider) {
-        PacketDescription.fromNBT(tag, getLevel().registryAccess())
+    public void handleUpdateTag(ValueInput input) {
+        // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+        PacketDescription.fromNBT(ValueIOBridge.readAll(input), getLevel().registryAccess())
                 .processPacket(this, getLevel().registryAccess());
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-        super.onDataPacket(net, pkt, lookupProvider);
+    public void onDataPacket(Connection net, ValueInput input) {
+        super.onDataPacket(net, input);
 
         // handle any extra data serialized by PacketDescription
-        if (pkt.getTag().contains(Names.MOD_ID, Tag.TAG_COMPOUND)) {
-            CompoundTag tag = pkt.getTag().getCompound(Names.MOD_ID).getCompound(PacketDescription.NBT_EXTRA);
+        // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+        CompoundTag pktTag = ValueIOBridge.readAll(input);
+        if (pktTag.contains(Names.MOD_ID)) {
+            CompoundTag tag = pktTag.getCompoundOrEmpty(Names.MOD_ID).getCompoundOrEmpty(PacketDescription.NBT_EXTRA);
             if (!tag.isEmpty()) {
-                readFromPacket(tag, lookupProvider);
+                readFromPacket(tag, input.lookup());
             }
         }
     }
@@ -196,7 +211,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * Force a sync of this BE to the client right now.
      */
     public final void sendDescriptionPacket() {
-        if (level == null || level.isClientSide) return;
+        if (level == null || level.isClientSide()) return;
 
         PacketDescription descPacket = PacketDescription.create(this, forceFullSync, level.registryAccess());
         if (descPacket.hasData() || forceFullSync) {
@@ -218,7 +233,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
      * which extend non-tickable subclasses might need it (e.g. PressureChamberInterfaceBlockEntity)
      */
     void defaultServerTick() {
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             if (this instanceof IHeatExchangingTE he) {
                 // tick default heat exchanger; if the BE has other exchangers, they are handled in the subclass
                 IHeatExchangerLogic logic = he.getHeatExchanger();
@@ -246,7 +261,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         // overridden to only update neighbours if this BE actually has a useful comparator output
         if (level != null) {
             if (level.isLoaded(worldPosition)) {
-                level.getChunkAt(worldPosition).setUnsaved(true);
+                level.getChunkAt(worldPosition).markUnsaved();
             }
             if (this instanceof IComparatorSupport && !this.getBlockState().isAir()) {
                 this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
@@ -318,16 +333,36 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         if (this instanceof ISideConfigurable sc) {
-            SideConfigurator.readFromNBT(tag.getCompound(NBTKeys.NBT_SIDE_CONFIG), sc, provider);
+            SideConfigurator.readFromNBT(tag.getCompoundOrEmpty(NBTKeys.NBT_SIDE_CONFIG), sc, provider);
         }
     }
 
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based saveAdditional() below,
+    //  see ValueIOBridge. The saved data format is unchanged.
     @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+
+        CompoundTag tag = new CompoundTag();
+        saveAdditional(tag, level != null ? level.registryAccess() : RegistryAccess.EMPTY);
+        output.store(tag);
+    }
+
+    // TODO 26.1 ValueInput/ValueOutput: temporary bridge to the CompoundTag-based loadAdditional() below,
+    //  see ValueIOBridge
+    @SuppressWarnings("deprecation")
+    @Override
+    protected void loadAdditional(ValueInput input) {
+        super.loadAdditional(input);
+
+        loadAdditional(ValueIOBridge.readAll(input), input.lookup());
+    }
+
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
 
         if (customName != null) {
-            tag.putString("CustomName", Component.Serializer.toJson(customName, provider));
+            // saved as a JSON string, as in 1.21.1
+            tag.putString("CustomName", ComponentSerialization.CODEC.encodeStart(provider.createSerializationContext(JsonOps.INSTANCE), customName).getOrThrow().toString());
         }
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT(provider));
@@ -345,25 +380,23 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         writeToPacket(tag, provider);
     }
 
-    @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
 
-        if (tag.contains("CustomName", Tag.TAG_STRING)) {
-            customName = Component.Serializer.fromJson(tag.getString("CustomName"), provider);
+        if (tag.contains("CustomName")) {
+            customName = ComponentSerialization.CODEC.parse(provider.createSerializationContext(JsonOps.INSTANCE), JsonParser.parseString(tag.getStringOr("CustomName", ""))).result().orElse(null);
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
-            getUpgradeHandler().deserializeNBT(provider, tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
+            getUpgradeHandler().deserializeNBT(provider, tag.getCompoundOrEmpty(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
         if (this instanceof IHeatExchangingTE he) {
             IHeatExchangerLogic logic = he.getHeatExchanger();
-            if (logic != null) logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
+            if (logic != null) logic.deserializeNBT(tag.getCompoundOrEmpty(NBTKeys.NBT_HEAT_EXCHANGER));
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            rc.getRedstoneController().restore(RedstoneController.Saved.fromNBT(provider, tag.getCompound(NBTKeys.NBT_REDSTONE_MODE)));
+            rc.getRedstoneController().restore(RedstoneController.Saved.fromNBT(provider, tag.getCompoundOrEmpty(NBTKeys.NBT_REDSTONE_MODE)));
         }
         if (this instanceof ISerializableTanks st) {
-            st.deserializeTanks(provider, tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
+            st.deserializeTanks(provider, tag.getCompoundOrEmpty(NBTKeys.NBT_SAVED_TANKS));
         }
         readFromPacket(tag, provider);
     }
@@ -433,7 +466,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
         if (level == null) return null;
 
-        return level.isClientSide ?
+        return level.isClientSide() ?
                 level.getBlockEntity(worldPosition.relative(dir)) :
                 neighbourCache.getCachedNeighbour(dir);
     }
@@ -448,9 +481,8 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
 
     /**
      * Called when a neighboring block changes state (i.e. blockstate update)
-     * @param fromPos the blockpos of the block that caused this update
      */
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
+    public void onNeighborBlockUpdate() {
         if (this instanceof IHeatExchangingTE he) {
             he.initializeHullHeatExchangers(level, worldPosition);
         }
@@ -476,7 +508,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
                 FluidStack itemContents = fluidHandlerItem.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE);
 
                 IOHelper.getFluidHandlerForBlock(this).ifPresent(fluidHandler -> {
-                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemStack.isSameItemSameComponents(inputStack.getItem().getCraftingRemainingItem(inputStack), outputStack))) {
+                    if (!itemContents.isEmpty() && (outputStack.isEmpty() || ItemStack.isSameItemSameComponents(PneumaticCraftUtils.getCraftingRemainder(inputStack), outputStack))) {
                         // input item contains fluid: drain from input item into tank, move to output if empty
                         // there must be only a single filled container in the input slot!
                         if (inputStack.getCount() != 1) {
@@ -540,7 +572,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     @Override
     public String getPeripheralType() {
         return BuiltInRegistries.BLOCK_ENTITY_TYPE.getResourceKey(getType())
-                .map(rk -> rk.location().toString())
+                .map(rk -> rk.identifier().toString())
                 .orElse("unknown");
     }
 
@@ -581,16 +613,28 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         return upgradeHandler;
     }
 
-    protected BlockCapabilityCache<IItemHandler,Direction> createItemHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> createItemHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.ItemHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                BlockCapabilityCache.create(Capabilities.Item.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
     }
 
-    protected BlockCapabilityCache<IFluidHandler,Direction> createFluidHandlerCache(Direction dir) {
+    protected BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> createFluidHandlerCache(Direction dir) {
         return getLevel() instanceof ServerLevel serverLevel ?
-                BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
+                BlockCapabilityCache.create(Capabilities.Fluid.BLOCK, serverLevel, getBlockPos().relative(dir), dir.getOpposite(), () -> !isRemoved(), () -> {}) :
                 null;
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        super.preRemoveSideEffects(pos, state);
+
+        NonNullList<ItemStack> drops = NonNullList.create();
+        getContentsToDrop(drops);
+        drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, nonNullLevel(), pos));
+        if (!shouldPreserveStateOnBreak()) {
+            PneumaticRegistry.getInstance().getMiscHelpers().playMachineBreakEffect(this);
+        }
     }
 
     /**
@@ -657,7 +701,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         if (this instanceof ISerializableTanks st) {
@@ -693,7 +737,10 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
             });
         }
         if (this instanceof IRedstoneControl<?> rc) {
-            builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, rc.getRedstoneController().save());
+            RedstoneController.Saved saved = rc.getRedstoneController().save();
+            if (!saved.equals(RedstoneController.Saved.DEFAULT)) {
+                builder.set(ModDataComponents.SAVED_REDSTONE_CONTROLLER, saved);
+            }
         }
         if (this instanceof ISideConfigurable sc) {
             builder.set(ModDataComponents.SAVED_SIDE_CONFIG, SideConfigurator.buildSavedMap(sc));
@@ -728,7 +775,7 @@ public abstract class AbstractPneumaticCraftBlockEntity extends BlockEntity
         // it is possible for the BE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
         // TODO: 1.19 client refactor may make this workaround unnecessary - confirm
-        if (level != null && level.isClientSide && level == ClientUtils.getClientLevel()) {
+        if (level != null && level.isClientSide() && level == ClientUtils.getClientLevel()) {
             level.getModelDataManager().requestRefresh(this);
         }
     }

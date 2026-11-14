@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.material.Fluid;
 
@@ -46,7 +46,7 @@ public class FluidSetup {
                     FuelRegistry.getInstance().registerHotFluid(fluid, (temperature - 300) * 40, 0.25f);
                 }
             } catch (RuntimeException e) {
-                ResourceLocation fluidId = BuiltInRegistries.FLUID.getKey(fluid);
+                Identifier fluidId = BuiltInRegistries.FLUID.getKey(fluid);
                 Log.error("Caught exception while checking the fluid type of {}: {}", fluidId, e.getMessage());
                 Log.error("Looks like {} isn't setting a fluid type for this fluid, please report to the mod author", fluidId.getNamespace());
             }

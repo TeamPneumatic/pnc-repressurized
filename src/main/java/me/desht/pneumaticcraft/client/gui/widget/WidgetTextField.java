@@ -18,8 +18,9 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,14 +41,14 @@ public class WidgetTextField extends EditBox {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         String oldText = getValue();
         int oldCursorPos = getCursorPosition();
         if (passwordBox) {
             setValue(StringUtils.repeat('*', oldText.length()));
             moveCursorTo(oldCursorPos, false);
         }
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
         if (passwordBox) {
             setValue(oldText);
             moveCursorTo(oldCursorPos, false);
@@ -55,11 +56,12 @@ public class WidgetTextField extends EditBox {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        int button = event.button();
         if (isHovered() && button == 1) {
             setValue("");
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 }

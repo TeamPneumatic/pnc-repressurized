@@ -16,14 +16,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -34,6 +40,7 @@ import org.apache.commons.lang3.Validate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.getOptionalComponent;
@@ -46,12 +53,12 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+    public InteractionResult use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-        if (pLevel.isClientSide) {
+        if (pLevel.isClientSide()) {
             ClassifyFilterScreen.openGui(stack.getHoverName(), pUsedHand);
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -62,23 +69,28 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext context, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        super.appendHoverText(pStack, context, pTooltipComponents, pIsAdvanced);
+    public void appendHoverText(ItemStack pStack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, context, tooltipDisplay, pTooltipComponents, pIsAdvanced);
 
         FilterSettings settings = FilterSettings.fromStack(pStack);
-        pTooltipComponents.add(xlateMatch(settings.matchAll()).withStyle(ChatFormatting.YELLOW));
+        pTooltipComponents.accept(xlateMatch(settings.matchAll()).withStyle(ChatFormatting.YELLOW));
         for (FilterCondition c : settings.filterConditions()) {
-            pTooltipComponents.add(Symbols.bullet().append(xlate(c.getTranslationKey())).withStyle(ChatFormatting.GOLD));
+            pTooltipComponents.accept(Symbols.bullet().append(xlate(c.getTranslationKey())).withStyle(ChatFormatting.GOLD));
         }
     }
 
     private static boolean isCookable(RecipeType<? extends AbstractCookingRecipe> type, ItemStack stack) {
-        Level level = ServerLifecycleHooks.getCurrentServer().overworld();
-        //noinspection ConstantConditions
-        if (level == null) return false;
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return false;
+        ServerLevel level = server.overworld();
         SingleRecipeInput input = new SingleRecipeInput(stack);
         // TODO cache this
-        return level.getRecipeManager().getRecipeFor(type, input, level).isPresent();
+        return level.recipeAccess().getRecipeFor(type, input, level).isPresent();
+    }
+
+    private static boolean isFuel(ItemStack stack) {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        return server != null && stack.getBurnTime(RecipeType.SMELTING, server.fuelValues()) > 0;
     }
 
     public static MutableComponent xlateMatch(boolean matchAll) {
@@ -116,14 +128,14 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
     }
 
     public enum FilterCondition implements ITranslatableEnum, Predicate<ItemStack>, StringRepresentable {
-        FUEL_ITEM(Items.COAL, s -> s.getBurnTime(RecipeType.SMELTING) > 0),
+        FUEL_ITEM(Items.COAL, ClassifyFilterItem::isFuel),
         EDIBLE(Items.BREAD, s -> getOptionalComponent(s, DataComponents.FOOD).map(f -> f.nutrition() > 0).orElse(false)),
         PLACEABLE(Items.STONE, s -> s.getItem() instanceof BlockItem),
         FLUID_CONTAINER(Items.BUCKET, s -> IOHelper.getFluidHandlerForItem(s).isPresent()),
         UNSTACKABLE(Items.WRITABLE_BOOK, s -> s.getMaxStackSize() == 1),
-        WEARABLE(Items.LEATHER_HELMET, s -> s.getItem() instanceof ArmorItem),
-        TOOL(Items.IRON_PICKAXE, s -> s.getItem() instanceof TieredItem),
-        WEAPON(Items.IRON_SWORD, s -> s.getItem() instanceof SwordItem || s.getItem() instanceof AxeItem || s.getItem() instanceof ProjectileWeaponItem),
+        WEARABLE(Items.LEATHER_HELMET, ClassifyFilterItem::isHumanoidArmor),
+        TOOL(Items.IRON_PICKAXE, s -> s.has(DataComponents.TOOL)),
+        WEAPON(Items.IRON_SWORD, s -> s.is(ItemTags.SWORDS) || s.is(ItemTags.AXES) || s.getItem() instanceof ProjectileWeaponItem),
         ENCHANTABLE(Items.BOOK, s -> s.isEnchantable() && !s.isEnchanted()),
         ENCHANTED(Items.ENCHANTED_BOOK, ItemStack::isEnchanted),
         SMELTABLE(Blocks.FURNACE, s -> isCookable(RecipeType.SMELTING, s)),
@@ -157,5 +169,10 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         public String getSerializedName() {
             return name().toLowerCase(Locale.ROOT);
         }
+    }
+
+    private static boolean isHumanoidArmor(ItemStack stack) {
+        Equippable equippable = stack.get(DataComponents.EQUIPPABLE);
+        return equippable != null && equippable.slot().getType() == EquipmentSlot.Type.HUMANOID_ARMOR;
     }
 }

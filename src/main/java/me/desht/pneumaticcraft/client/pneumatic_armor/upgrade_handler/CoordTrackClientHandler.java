@@ -43,7 +43,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -128,7 +128,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
 
     @Override
     public void render3D(PoseStack matrixStack, MultiBufferSource buffer, float partialTicks) {
-        if (trackedPos != null && ClientUtils.getClientLevel().dimension().location().equals(worldKey.location())) {
+        if (trackedPos != null && ClientUtils.getClientLevel().dimension().identifier().equals(worldKey.identifier())) {
             if (ConfigHelper.client().armor.pathEnabled.get() && navigator != null) {
                 navigator.render(matrixStack, buffer, ConfigHelper.client().armor.wirePath.get(), ConfigHelper.client().armor.xRayEnabled.get(), partialTicks);
             }
@@ -136,7 +136,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -197,7 +197,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
         @SubscribeEvent
         public static void onPlayerInteract(PlayerInteractEvent.RightClickBlock event) {
             ItemStack helmetStack = event.getEntity().getItemBySlot(EquipmentSlot.HEAD);
-            if (!event.getLevel().isClientSide || event.getEntity().getItemBySlot(EquipmentSlot.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
+            if (!event.getLevel().isClientSide() || event.getEntity().getItemBySlot(EquipmentSlot.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
                 return;
             }
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();

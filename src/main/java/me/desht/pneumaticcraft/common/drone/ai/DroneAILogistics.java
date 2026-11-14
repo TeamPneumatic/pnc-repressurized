@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -230,7 +230,7 @@ public class DroneAILogistics extends Goal {
         }
 
         @Override
-        public ResourceLocation getTexture() {
+        public Identifier getTexture() {
             return null;
         }
 

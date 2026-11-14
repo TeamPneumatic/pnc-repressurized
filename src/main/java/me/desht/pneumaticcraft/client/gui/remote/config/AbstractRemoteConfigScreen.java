@@ -27,12 +27,12 @@ import me.desht.pneumaticcraft.client.gui.remote.RemoteEditorScreen;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -57,14 +57,14 @@ public abstract class AbstractRemoteConfigScreen<R extends IRemoteWidget> extend
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
 
         GuiUtils.drawScreenWithTitleArea(graphics, guiLeft, guiTop, xSize, ySize, 0xFFDDD7BA);
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 

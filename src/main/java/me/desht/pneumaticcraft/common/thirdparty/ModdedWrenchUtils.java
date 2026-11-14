@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import me.desht.pneumaticcraft.api.wrench.IWrenchRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticWrenchItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -39,7 +39,7 @@ import java.util.function.BiFunction;
 public enum ModdedWrenchUtils implements IWrenchRegistry {
     INSTANCE;
 
-    private final Set<ResourceLocation> wrenches = new HashSet<>();
+    private final Set<Identifier> wrenches = new HashSet<>();
 
     private static final BiFunction<UseOnContext,BlockState,InteractionResult> NO_OP_PRE = (ctx, state) -> InteractionResult.PASS;
     private static final BiConsumer<UseOnContext,BlockState> NO_OP_POST = (ctx, state) -> {};
@@ -67,7 +67,7 @@ public enum ModdedWrenchUtils implements IWrenchRegistry {
     }
 
     private void registerWrench(String wrenchId) {
-        wrenches.add(ResourceLocation.parse(wrenchId));
+        wrenches.add(Identifier.parse(wrenchId));
     }
 
     @Override

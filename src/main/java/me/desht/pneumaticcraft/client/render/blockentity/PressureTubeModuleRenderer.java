@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -41,7 +41,7 @@ import java.util.Map;
 
 public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureTubeBlockEntity> {
 
-    private final Map<ResourceLocation, AbstractTubeModuleRenderer<?>> models = new HashMap<>();
+    private final Map<Identifier, AbstractTubeModuleRenderer<?>> models = new HashMap<>();
     private final BlockEntityRendererProvider.Context ctx;
 
     public PressureTubeModuleRenderer(BlockEntityRendererProvider.Context ctx) {

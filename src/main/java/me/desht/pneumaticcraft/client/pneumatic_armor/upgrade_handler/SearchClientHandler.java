@@ -41,7 +41,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -124,7 +124,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     private int trackInventoryCounts(int rangeUpgrades) {

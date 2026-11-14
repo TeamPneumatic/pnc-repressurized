@@ -39,6 +39,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -114,7 +115,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void tickClient() {
         super.tickClient();
 
-        if (isOpen() && isCoreLoaded && nonNullLevel().random.nextBoolean()) {
+        if (isOpen() && isCoreLoaded && nonNullLevel().getRandom().nextBoolean()) {
             ClientUtils.emitParticles(level, worldPosition, ParticleTypes.PORTAL);
         }
     }
@@ -132,7 +133,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
             Vec3 trapVec = Vec3.atCenterOf(worldPosition);
             double min = nonNullLevel().getFluidState(worldPosition).getType() == Fluids.WATER ? 2.5 : 1.75;
             for (Mob e : targetEntities) {
-                if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
+                if (!e.isAlive() || e.entityTags().contains(DEFENDER_TAG)) continue;
                 // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
                 if (e.distanceToSqr(trapVec) <= min) {
                     absorbEntity(e);
@@ -155,7 +156,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     private void absorbEntity(Mob e) {
         int toAdd = 1;
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
-            toAdd += e.level().random.nextInt(3) + 1;
+            toAdd += e.level().getRandom().nextInt(3) + 1;
         }
         ISpawnerCoreStats newStats = inv.getStats().addAmount(e.getType(), toAdd);
         if (newStats != inv.getStats()) {
@@ -179,12 +180,12 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     private boolean isApplicable(LivingEntity e) {
-        return e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED) ||
-                !e.getType().is(Tags.EntityTypes.BOSSES)
+        return e.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_WHITELISTED) ||
+                !e.is(Tags.EntityTypes.BOSSES)
                 && !(e instanceof DroneEntity)
                 && !(e instanceof Warden)
                 && !(e instanceof TamableAnimal t && t.isTame())
-                && !e.getType().is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
+                && !e.is(PneumaticCraftTags.EntityTypes.VACUUM_TRAP_BLACKLISTED);
     }
 
     @Override
@@ -227,7 +228,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inv.deserializeNBT(provider, tag.getCompound("Items"));
+        inv.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -246,7 +247,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         inv.loadContainerContents(componentInput.get(ModDataComponents.BLOCK_ENTITY_SAVED_INV));

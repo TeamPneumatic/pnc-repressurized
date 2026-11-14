@@ -38,8 +38,8 @@ public record BiomeMatcher(List<TagKey<Biome>> tags) implements IPlayerMatcher {
             TagKey.codec(Registries.BIOME).listOf().fieldOf("biomes").forGetter(BiomeMatcher::tags)
     ).apply(builder, BiomeMatcher::new));
     private static final StreamCodec<RegistryFriendlyByteBuf, BiomeMatcher> STREAM_CODEC = StreamCodec.of(
-            (buf, matcher) -> buf.writeCollection(matcher.tags, (b, key) -> b.writeResourceLocation(key.location())),
-            buf -> new BiomeMatcher(buf.readList(b -> TagKey.create(Registries.BIOME, b.readResourceLocation())))
+            (buf, matcher) -> buf.writeCollection(matcher.tags, (b, key) -> b.writeIdentifier(key.location())),
+            buf -> new BiomeMatcher(buf.readList(b -> TagKey.create(Registries.BIOME, b.readIdentifier())))
     );
 
     public static final MatcherType<BiomeMatcher> TYPE = new MatcherType<>(CODEC, STREAM_CODEC);

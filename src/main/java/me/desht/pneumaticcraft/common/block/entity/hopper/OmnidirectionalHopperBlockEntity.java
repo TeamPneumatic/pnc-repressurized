@@ -50,6 +50,8 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,8 +65,8 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int rrSlot;
     @GuiSynced
     private final RedstoneController<OmnidirectionalHopperBlockEntity> rsController = new RedstoneController<>(this);
-    private final Lazy<BlockCapabilityCache<IItemHandler,Direction>> inputCache = Lazy.of(() -> createItemHandlerCache(inputDir));
-    private final Lazy<BlockCapabilityCache<IItemHandler,Direction>> outputCache = Lazy.of(() -> createItemHandlerCache(getRotation()));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<ItemResource>,Direction>> inputCache = Lazy.of(() -> createItemHandlerCache(inputDir));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<ItemResource>,Direction>> outputCache = Lazy.of(() -> createItemHandlerCache(getRotation()));
 
     public OmnidirectionalHopperBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.OMNIDIRECTIONAL_HOPPER.get(), pos, state);
@@ -74,11 +76,11 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         return INVENTORY_SIZE;
     }
 
-    private BlockCapabilityCache<IItemHandler,Direction> getInputCache() {
+    private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> getInputCache() {
         return inputCache.get();
     }
 
-    private BlockCapabilityCache<IItemHandler,Direction> getOutputCache() {
+    private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> getOutputCache() {
         return outputCache.get();
     }
 
@@ -89,7 +91,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     protected boolean doExport(final int maxItems) {
         Direction outputDir = getRotation();
 
-        IItemHandler destInv = getOutputCache().getCapability();
+        IItemHandler destInv = IOHelper.legacy(getOutputCache());
 
         int notExported = maxItems;
         if (destInv != null) {
@@ -155,7 +157,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             return false;
         }
 
-        IItemHandler srcInv = getInputCache().getCapability();
+        IItemHandler srcInv = IOHelper.legacy(getInputCache());
 
         // Suck from input inventory
         if (srcInv != null) {
@@ -189,7 +191,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         Direction dir = inputDir.getOpposite();
         int remaining = maxItems;
         for (Entity e : cachedInputEntities) {
-            if (e.isAlive() && !e.getType().is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
+            if (e.isAlive() && !e.is(PneumaticCraftTags.EntityTypes.OMNIHOPPER_BLACKLISTED)) {
                 final int r = remaining;
                 boolean playerArmor = e instanceof Player && dir.getAxis().isHorizontal();
                 int imported = IOHelper.getSidedInventoryForEntity(e, dir)
@@ -274,9 +276,9 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        roundRobin = tag.getBoolean("RoundRobin");
-        rrSlot = tag.getInt("RRSlot");
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        roundRobin = tag.getBooleanOr("RoundRobin", false);
+        rrSlot = tag.getIntOr("RRSlot", 0);
     }
 
     @Override

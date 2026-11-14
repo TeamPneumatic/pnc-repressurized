@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.util.playerfilter.PlayerFilter;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class AmadronRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final AmadronTradeResource inputResource;
@@ -50,7 +50,7 @@ public class AmadronRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, Identifier id) {
         output.accept(id, new AmadronOffer(id, inputResource, outputResource, isStatic, isVillagerTrade, level, maxStock, maxStock, whitelist, blacklist), null);
     }
 }

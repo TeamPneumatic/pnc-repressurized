@@ -29,7 +29,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import org.joml.Matrix4f;
@@ -44,7 +44,7 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(VortexEntity entity) {
+    public Identifier getTextureLocation(VortexEntity entity) {
         return Textures.VORTEX_ENTITY;
     }
 

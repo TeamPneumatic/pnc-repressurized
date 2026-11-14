@@ -46,11 +46,10 @@ public record PacketAmadronTradeRemoved(AmadronPlayerOffer offer) implements Cus
 
     public static void handle(PacketAmadronTradeRemoved message, IPayloadContext ctx) {
         if (ConfigHelper.common().amadron.notifyOfTradeRemoval.get())
-            ctx.player().displayClientMessage(
-                    xlate("pneumaticcraft.message.amadron.playerRemovedTrade",
+            ctx.player().sendSystemMessage(xlate("pneumaticcraft.message.amadron.playerRemovedTrade",
                             message.offer().getVendorName(),
                             message.offer().getOutput().toString(),
                             message.offer().getInput().toString()
-                    ), false);
+                    ));
     }
 }

@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.inventory.KeroseneLampMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.gui.widget.ExtendedSlider;
@@ -101,7 +101,7 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_KEROSENE_LAMP;
     }
 

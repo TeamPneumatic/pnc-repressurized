@@ -33,7 +33,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponentPatch;
@@ -42,10 +42,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import org.lwjgl.glfw.GLFW;
 
 public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrackerClientHandler> {
-
     private EditBox textField;
     private WidgetButtonExtended warningButton;
     private int sendTimer = 0;
+    private int ticks = 0;
 
     public EntityTrackOptions(IGuiScreen screen, EntityTrackerClientHandler renderHandler) {
         super(screen, renderHandler);
@@ -65,7 +65,6 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
             }
         });
         gui.addWidget(textField);
-        gui.setFocusedWidget(textField);
 
         warningButton = new WidgetButtonExtended(175, 57, 20, 20, Component.empty());
         warningButton.setVisible(false);
@@ -77,9 +76,9 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPost(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         Font font = getGuiScreen().getFontRenderer();
-        graphics.drawString(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, textField.getY() - font.lineHeight - 2, 0xFFFFFFFF, false);
+        graphics.text(font, I18n.get("pneumaticcraft.gui.entityFilter"), 35, textField.getY() - font.lineHeight - 2, 0xFFFFFFFF, false);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(graphics, getGuiScreen().getScreen(), font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
@@ -100,7 +99,14 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     }
 
     @Override
-    public void tick() {
+    public void tick(IGuiScreen gui) {
+        ticks++;
+
+        // deferred a couple of ticks so keypress doesn't pass through into the textfield
+        if (ticks == 2) {
+            gui.setFocusedWidget(textField);
+        }
+
         if (sendTimer > 0 && --sendTimer == 0) {
             DataComponentPatch patch = DataComponentPatch.builder()
                     .set(ModDataComponents.ENTITY_FILTER.get(), textField.getValue())

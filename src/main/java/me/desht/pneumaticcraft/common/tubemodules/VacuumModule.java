@@ -118,7 +118,7 @@ public class VacuumModule extends AbstractRedstoneReceivingModule implements IIn
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        lastAmount = tag.getInt("lastAmount");
+        lastAmount = tag.getIntOr("lastAmount", 0);
     }
 
     @Override

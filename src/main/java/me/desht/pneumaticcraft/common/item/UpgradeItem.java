@@ -34,12 +34,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -48,7 +48,9 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.Validate;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -81,23 +83,25 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
-            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, infoList);
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn").withStyle(ChatFormatting.AQUA));
+            List<Component> upgradeInfo = new ArrayList<>();
+            PneumaticRegistry.getInstance().getUpgradeRegistry().addUpgradeTooltip(upgrade, upgradeInfo);
+            upgradeInfo.forEach(infoList);
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(ChatFormatting.AQUA));
         }
         // FIXME code smell
         if (getUpgradeType() == ModUpgrades.DISPENSER.get()) {
             Direction dir = stack.get(ModDataComponents.EJECT_DIR);
-            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ?
+            infoList.accept(xlate("pneumaticcraft.message.dispenser.direction", dir == null ?
                     xlate("pneumaticcraft.gui.misc.any") :
                     xlate("pneumaticcraft.gui.tooltip.direction." + dir.getSerializedName()))
             );
-            infoList.add(xlate("pneumaticcraft.message.dispenser.clickToSet"));
+            infoList.accept(xlate("pneumaticcraft.message.dispenser.clickToSet"));
         }
-        super.appendHoverText(stack, context, infoList, par4);
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
     }
 
     @Override
@@ -121,12 +125,12 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (getUpgradeType() == ModUpgrades.DISPENSER.get()) {
             if (playerIn instanceof ServerPlayer sp) {
                 setDirection(sp, handIn, null);
             }
-            return InteractionResultHolder.success(playerIn.getItemInHand(handIn));
+            return InteractionResult.SUCCESS;
         }
         return super.use(worldIn, playerIn, handIn);
     }
@@ -135,10 +139,10 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
         ItemStack stack = player.getItemInHand(hand);
         if (facing == null) {
             stack.remove(ModDataComponents.EJECT_DIR);
-            player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", "*"), true);
+            player.sendOverlayMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", "*"));
         } else {
             stack.set(ModDataComponents.EJECT_DIR, facing);
-            player.displayClientMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
+            player.sendOverlayMessage(Component.translatable("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()));
         }
     }
 

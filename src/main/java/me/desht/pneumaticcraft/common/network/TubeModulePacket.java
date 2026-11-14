@@ -14,11 +14,11 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public interface TubeModulePacket<T extends AbstractTubeModule> extends CustomPacketPayload {
     static <T extends AbstractTubeModule> void handle(TubeModulePacket<T> message, IPayloadContext ctx) {
         Player player = ctx.player();
-        PneumaticCraftUtils.getBlockEntityAt(player.getCommandSenderWorld(), message.locator().pos(), PressureTubeBlockEntity.class).ifPresent(te -> {
+        PneumaticCraftUtils.getBlockEntityAt(player.level(), message.locator().pos(), PressureTubeBlockEntity.class).ifPresent(te -> {
             try {
                 // should be safe normally, but we'll catch the exception anyway
                 @SuppressWarnings("unchecked") T tm = (T) te.getModule(message.locator().side());
-                if (tm != null && PneumaticCraftUtils.canPlayerReach(player, te.getBlockPos())) {
+                if (tm != null && (te.nonNullLevel().isClientSide() || PneumaticCraftUtils.canPlayerReach(player, te.getBlockPos()))) {
                     message.onModuleUpdate(tm, player);
                 }
             } catch (ClassCastException ignored) {

@@ -39,8 +39,8 @@ public class ShapedPressurizableRecipe extends WrappedShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
-        ItemStack newOutput = this.getResultItem(registryAccess).copy();
+    public ItemStack assemble(CraftingInput inv) {
+        ItemStack newOutput = super.assemble(inv);
 
         IOHelper.getCap(newOutput, PNCCapabilities.AIR_HANDLER_ITEM).ifPresent(outputHandler -> {
             int totalAir = 0;
@@ -56,24 +56,11 @@ public class ShapedPressurizableRecipe extends WrappedShapedRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    protected RecipeSerializer<ShapedPressurizableRecipe> wrappedSerializer() {
         return ModRecipeSerializers.CRAFTING_SHAPED_PRESSURIZABLE.get();
     }
 
-    public static class Serializer implements RecipeSerializer<ShapedPressurizableRecipe> {
-        public static final MapCodec<ShapedPressurizableRecipe> CODEC
-                = ShapedRecipe.Serializer.CODEC.xmap(ShapedPressurizableRecipe::new, ShapedPressurizableRecipe::wrapped);
-        public static final StreamCodec<RegistryFriendlyByteBuf, ShapedPressurizableRecipe> STREAM_CODEC
-                = ShapedRecipe.Serializer.STREAM_CODEC.map(ShapedPressurizableRecipe::new, ShapedPressurizableRecipe::wrapped);
-
-        @Override
-        public MapCodec<ShapedPressurizableRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, ShapedPressurizableRecipe> streamCodec() {
-            return STREAM_CODEC;
-        }
+    public static RecipeSerializer<ShapedPressurizableRecipe> serializer() {
+        return serializer(ShapedPressurizableRecipe::new);
     }
 }

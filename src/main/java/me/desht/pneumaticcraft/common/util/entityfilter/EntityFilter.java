@@ -24,18 +24,18 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.decoration.Painting;
+import net.minecraft.world.entity.decoration.painting.Painting;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.DyeColor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -243,7 +243,7 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean matchByName(Entity entity, Pattern regex) {
             return entity instanceof Player player ?
-                    player.getGameProfile().getName() != null && regex.matcher(player.getGameProfile().getName()).matches() :
+                    player.getGameProfile().name() != null && regex.matcher(player.getGameProfile().name()).matches() :
                     entity.getCustomName() != null && regex.matcher(entity.getCustomName().getString()).matches();
         }
     }

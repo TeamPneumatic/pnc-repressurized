@@ -20,7 +20,10 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
@@ -100,29 +103,32 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
 
-        graphics.drawString(fontRenderer, expanded ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, getX() + width - 7, getY() + 1, 0xC0C0C0, false);
+        graphics.text(fontRenderer, expanded ? Symbols.TRIANGLE_UP : Symbols.TRIANGLE_DOWN, getX() + width - 7, getY() + 1, 0xFFC0C0C0, false);
     }
 
     @Override
-    public void renderAfterEverythingElse(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (enabled && active && expanded) {
             int x = getX(), y = getY();
             List<String> applicableElements = getApplicableElements();
             graphics.fill(x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.lineHeight, 0xFFA0A0A0);
-            graphics.fill(x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.lineHeight, 0xFF000000);
+            graphics.fill(x, y + height + 1, x + width, y + height + 2 + applicableElements.size() * fontRenderer.lineHeight, 0xFF000000);
             int hovered = (mouseY - y - height) / fontRenderer.lineHeight;
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
-                graphics.drawString(fontRenderer, fontRenderer.plainSubstrByWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.lineHeight, i == hovered ? 0xFFE080 : 0xE0E0E0);
+                graphics.text(fontRenderer, fontRenderer.plainSubstrByWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.lineHeight, i == hovered ? 0xFFFFE080 : 0xFFE0E0E0);
             }
         }
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (isVisible() && active && button == 0) {
             int x = getX(), y = getY();
             int h = baseHeight + (expanded ? getApplicableElements().size() * fontRenderer.lineHeight : 0);
@@ -145,11 +151,12 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (fixedOptions) return false;
 
         if (enabled && expanded && keyCode == GLFW.GLFW_KEY_TAB) { // Tab completion
@@ -159,12 +166,12 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
                 return true;
             }
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char key, int keyCode) {
-        return !fixedOptions && super.charTyped(key, keyCode);
+    public boolean charTyped(CharacterEvent event) {
+        return !fixedOptions && super.charTyped(event);
     }
 
     @Override

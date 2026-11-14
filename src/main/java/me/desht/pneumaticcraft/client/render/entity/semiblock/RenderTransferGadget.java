@@ -7,11 +7,11 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelTransferGadget;
 import me.desht.pneumaticcraft.common.entity.semiblock.TransferGadgetEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -73,7 +73,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<TransferGadgetEnti
     }
 
     @Override
-    public ResourceLocation getTextureLocation(TransferGadgetEntity entityTransferGadget) {
+    public Identifier getTextureLocation(TransferGadgetEntity entityTransferGadget) {
         return entityTransferGadget.getIOMode().getTexture();
     }
 }

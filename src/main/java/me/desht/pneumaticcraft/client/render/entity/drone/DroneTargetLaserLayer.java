@@ -26,7 +26,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 
 public class DroneTargetLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {

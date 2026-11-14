@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -43,11 +43,11 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
 
     /**
      * Get a unique ID for this upgrade handler. You can use this ID to retrieve the handler object with
-     * {@link ICommonArmorRegistry#getArmorUpgradeHandler(ResourceLocation)}.
+     * {@link ICommonArmorRegistry#getArmorUpgradeHandler(Identifier)}.
      *
      * @return a unique resource location
      */
-    ResourceLocation getID();
+    Identifier getID();
 
     /**
      * Used internally for quick lookup. Don't use this directly; use {@link #getID()} for a unique identifier.
@@ -186,7 +186,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      * @param id the upgrade ID, as returned by {@link #getID()}
      * @return a dot-separated string key, suitable for a translation key or keybind name
      */
-    static String getStringKey(ResourceLocation id) {
+    static String getStringKey(Identifier id) {
         return UPGRADE_PREFIX +
                 (id.getNamespace().equals(PneumaticRegistry.MOD_ID) ? id.getPath() : id.toLanguageKey());
     }

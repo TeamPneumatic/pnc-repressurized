@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.common.advancements;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.advancements.critereon.ContextAwarePredicate;
-import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.advancements.criterion.ContextAwarePredicate;
+import net.minecraft.advancements.criterion.SimpleCriterionTrigger;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
@@ -29,13 +29,13 @@ import java.util.Optional;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance> {
-    private final ResourceLocation triggerID;
+    private final Identifier triggerID;
 
     public CustomTrigger(String parString) {
         this(RL(parString));
     }
 
-    public CustomTrigger(ResourceLocation parRL) {
+    public CustomTrigger(Identifier parRL) {
         super();
         triggerID = parRL;
     }
@@ -53,9 +53,9 @@ public class CustomTrigger extends SimpleCriterionTrigger<CustomTrigger.Instance
         return Instance.CODEC;
     }
 
-    public record Instance(ResourceLocation id) implements SimpleCriterionTrigger.SimpleInstance {
+    public record Instance(Identifier id) implements SimpleCriterionTrigger.SimpleInstance {
         public static final Codec<Instance> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(Instance::id)
+                Identifier.CODEC.fieldOf("id").forGetter(Instance::id)
         ).apply(inst, Instance::new));
 
         public boolean test() {

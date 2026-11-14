@@ -36,13 +36,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -54,6 +55,7 @@ import net.neoforged.neoforge.fluids.SimpleFluidContent;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class DroneItem extends PressurizableItem
         implements IChargeableContainerProvider, IProgrammable, ColorHandlers.ITintableItem {
@@ -90,21 +92,21 @@ public class DroneItem extends PressurizableItem
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
-        if (!entity.getCommandSenderWorld().isClientSide && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
+        if (!entity.level().isClientSide() && stack.has(ModDataComponents.SAVED_DRONE_PROGRAM)) {
             entity.setExtendedLifetime();
         }
         return false;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         SimpleFluidContent storedFluid = stack.get(ModDataComponents.STORED_FLUID);
         if (storedFluid != null && !storedFluid.isEmpty()) {
             FluidStack fluidStack = storedFluid.copy();
             if (!fluidStack.isEmpty()) {
-                tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
+                tooltip.accept(Component.translatable("pneumaticcraft.gui.tooltip.fluid")
                         .append(fluidStack.getAmount() + "mB ")
                         .append(fluidStack.getHoverName()).withStyle(ChatFormatting.GRAY)
                 );
@@ -132,7 +134,7 @@ public class DroneItem extends PressurizableItem
 
             if (level instanceof ServerLevelAccessor serverLevel) {
                 EventHooks.finalizeMobSpawn(drone, serverLevel, serverLevel.getCurrentDifficultyAt(placePos),
-                        MobSpawnType.TRIGGERED, null);
+                        EntitySpawnReason.TRIGGERED, null);
             }
 
             return true;

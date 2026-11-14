@@ -31,14 +31,18 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownPotion;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.AbstractThrownPotion;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownLingeringPotion;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownSplashPotion;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,21 +91,21 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
-        super.appendHoverText(stack, context, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag extraInfo) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, extraInfo);
         ItemStack potion = getPotionStack(stack);
         if (!potion.isEmpty()) {
             List<Component> potionInfo = new ArrayList<>();
-            potion.getItem().appendHoverText(potion, context, potionInfo, extraInfo);
+            potion.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).addToTooltip(context, potionInfo::add, extraInfo, potion);
             String extra = "";
             if (potion.getItem() instanceof SplashPotionItem) {
                 extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.splash");
             } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.get("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.getFirst()).append(extra));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.gunAmmo").append(" ").append(potionInfo.getFirst()).append(extra));
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }
     }
 
@@ -113,11 +117,10 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
             if (minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.potionProcChance.get(), 0.25f)) {
                 if (potion.getItem() == Items.POTION) {
                     potion.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
-                            .forEachEffect(effect -> entity.addEffect(new MobEffectInstance(effect)));
+                            .forEachEffect(effect -> entity.addEffect(new MobEffectInstance(effect)), 1f);
                     entity.level().playSound(null, entity.blockPosition(), SoundEvents.SPLASH_POTION_BREAK, SoundSource.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
-                    ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
-                    entityPotion.setItem(potion);
+                    AbstractThrownPotion entityPotion = createThrownPotion(shooter, potion);
                     entityPotion.setPos(entity.getX(), entity.getY(), entity.getZ());
                     shooter.level().addFreshEntity(entityPotion);
                 }
@@ -128,15 +131,20 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
         }
     }
 
+    private static AbstractThrownPotion createThrownPotion(Player shooter, ItemStack potion) {
+        return potion.getItem() == Items.LINGERING_POTION ?
+                new ThrownLingeringPotion(shooter.level(), shooter, potion) :
+                new ThrownSplashPotion(shooter.level(), shooter, potion);
+    }
+
     @Override
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         ItemStack potion = getPotionStack(ammo);
         if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
             Player shooter = minigun.getPlayer();
             int chance = ConfigHelper.common().minigun.potionProcChance.get() + minigun.getUpgrades(ModUpgrades.DISPENSER.get()) * 2;
-            if (shooter.level().random.nextInt(100) < chance) {
-                ThrownPotion entityPotion = new ThrownPotion(shooter.level(), shooter);
-                entityPotion.setItem(potion);
+            if (shooter.level().getRandom().nextInt(100) < chance) {
+                AbstractThrownPotion entityPotion = createThrownPotion(shooter, potion);
                 BlockPos pos2 = brtr.getBlockPos().relative(brtr.getDirection());
                 entityPotion.setPos(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
                 shooter.level().addFreshEntity(entityPotion);

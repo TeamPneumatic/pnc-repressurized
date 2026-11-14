@@ -138,7 +138,7 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     public record Inputs(Optional<SizedFluidIngredient> inputFluid, Optional<Ingredient> inputItem) {
         public static final Codec<Inputs> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                SizedFluidIngredient.FLAT_CODEC.optionalFieldOf("fluid")
+                SizedFluidIngredient.CODEC.optionalFieldOf("fluid")
                         .forGetter(Inputs::inputFluid),
                 Ingredient.CODEC.optionalFieldOf("item")
                         .forGetter(Inputs::inputItem)

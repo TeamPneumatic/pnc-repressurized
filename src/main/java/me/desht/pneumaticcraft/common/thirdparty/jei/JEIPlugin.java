@@ -53,7 +53,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
@@ -209,7 +209,7 @@ public class JEIPlugin implements IModPlugin {
     }
 
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return RL("default");
     }
 

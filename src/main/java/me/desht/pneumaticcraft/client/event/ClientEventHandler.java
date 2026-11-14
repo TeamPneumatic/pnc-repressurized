@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.event;
 
 import com.mojang.blaze3d.shaders.FogShape;
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.List;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -55,7 +56,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.List;
 
 @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -154,9 +154,6 @@ public class ClientEventHandler {
 
         // custom durability bars
         AbstractContainerScreen<?> container = event.getContainerScreen();
-        PoseStack poseStack = event.getGuiGraphics().pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 300);
         for (Slot s : container.getMenu().slots) {
             if (s.getItem().getItem() instanceof ICustomDurabilityBar custom) {
                 if (custom.shouldShowCustomDurabilityBar(s.getItem())) {
@@ -173,7 +170,6 @@ public class ClientEventHandler {
                 }
             }
         }
-        poseStack.popPose();
     }
 
     @SubscribeEvent
@@ -184,11 +180,8 @@ public class ClientEventHandler {
                     .map(l -> (IDrawAfterRender) l)
                     .toList();
             if (!toDraw.isEmpty()) {
-                PoseStack poseStack = event.getGuiGraphics().pose();
-                poseStack.pushPose();
-                poseStack.translate(0, 0, 500);
+                event.getGuiGraphics().nextStratum();
                 toDraw.forEach(d -> d.renderAfterEverythingElse(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick()));
-                poseStack.popPose();
             }
         }
     }
@@ -196,7 +189,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollingEvent event) {
         Player player = ClientUtils.getClientPlayer();
-        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().selected == crouchSelected) {
+        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().getSelectedSlot() == crouchSelected) {
             if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
@@ -216,10 +209,20 @@ public class ClientEventHandler {
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         if (event.getEntity().level().isClientSide()) {
             if (event.getEntity().isShiftKeyDown()) {
-                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().selected;
+                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().getSelectedSlot();
             } else {
                 crouchSelected = -1;
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        // Item#inventoryTick() is server-side only in 26.1; the local player's held minigun still needs a client tick
+        Player player = event.getEntity();
+        if (player.level().isClientSide() && player == Minecraft.getInstance().player
+                && player.getMainHandItem().getItem() instanceof MinigunItem minigunItem) {
+            minigunItem.clientTick(player.getMainHandItem(), player);
         }
     }
 

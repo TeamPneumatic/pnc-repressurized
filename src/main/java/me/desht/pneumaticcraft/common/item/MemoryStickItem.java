@@ -26,8 +26,6 @@ import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
-import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -37,12 +35,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -54,6 +53,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem, IFluidCapProvider {
     public static final int XP_FLUID_CAPACITY = 512000;
@@ -74,11 +74,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (stack.getCount() != 1) return InteractionResultHolder.pass(stack);
+        if (stack.getCount() != 1) return InteractionResult.PASS;
 
-        if (!worldIn.isClientSide) {
+        if (!worldIn.isClientSide()) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
@@ -116,16 +116,16 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                 if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
                         || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
                     playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
-                            (worldIn.random.nextFloat() - worldIn.random.nextFloat()) * 0.35F + 0.9F);
+                            (worldIn.getRandom().nextFloat() - worldIn.getRandom().nextFloat()) * 0.35F + 0.9F);
                 }
             });
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         if (context.registries() != null) {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
@@ -134,11 +134,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                     FluidStack fluidStack = handler.getFluidInTank(0);
                     int amount = fluidStack.getAmount();
                     int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
-                    tooltip.add(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
+                    tooltip.accept(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
                 }
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + absorb).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -184,13 +184,6 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         toggleXPAbsorption(sender, sender.getMainHandItem());
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (shouldAbsorbXPOrbs(stack) && entityIn instanceof Player && itemSlot >= 0) {
-            cacheMemoryStickLocation((Player) entityIn, MemoryStickLocator.playerInv(itemSlot));
-        }
-    }
-
     public static boolean isRoomInStick(ItemStack stick) {
         return stick.getItem() instanceof MemoryStickItem && IOHelper.getFluidHandlerForItem(stick)
                 .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
@@ -201,8 +194,8 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getItem() instanceof MemoryStickItem) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
             setAbsorbXPOrbs(stack, !absorb);
-            player.displayClientMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW), true);
-            player.getCommandSenderWorld().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
+            player.sendOverlayMessage(Component.translatable("pneumaticcraft.message.memory_stick.absorb." + !absorb).withStyle(ChatFormatting.YELLOW));
+            player.level().playSound(null, player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(), SoundSource.PLAYERS, 1f, absorb ? 1.5f : 2f);
         }
     }
 
@@ -223,7 +216,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() instanceof MemoryStickItem) {
-                if (!event.getLevel().isClientSide) {
+                if (!event.getLevel().isClientSide()) {
                     long now = event.getLevel().getGameTime();
                     long last = lastEvent.getOrDefault(event.getEntity().getUUID(), 0L);
                     if (now - last > 5) {
@@ -238,7 +231,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         @SubscribeEvent
         public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
             // client only event, but let's be paranoid...
-            if (event.getLevel().isClientSide && event.getItemStack().getItem() instanceof MemoryStickItem) {
+            if (event.getLevel().isClientSide() && event.getItemStack().getItem() instanceof MemoryStickItem) {
                 NetworkHandler.sendToServer(PacketLeftClickEmpty.INSTANCE);
             }
         }
@@ -258,6 +251,17 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         }
 
         private static ItemStack findMemoryStick(Player player) {
+            // player inventory: scanned when an orb is picked up, rather than tracked every tick
+            // (Item#inventoryTick() no longer gets the inventory slot in 26.1)
+            Inventory inv = player.getInventory();
+            for (int i = 0; i < inv.getContainerSize(); i++) {
+                ItemStack stack = inv.getItem(i);
+                if (stack.getItem() instanceof MemoryStickItem && shouldAbsorbXPOrbs(stack) && isRoomInStick(stack)) {
+                    return stack;
+                }
+            }
+
+            // other inventories (e.g. Curios) register their memory sticks in the cache
             Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUUID());
             if (locators == null || locators.isEmpty()) return ItemStack.EMPTY;
 
@@ -284,9 +288,11 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         public ItemStack getMemoryStick(Player player) {
             if (invName.isEmpty()) {
                 return player.getInventory().getItem(slot);
-            } else if (Curios.available) {
-                return CuriosUtils.getStack(player, invName, slot);
             }
+            // TODO 26.1 integration: Curios
+//            } else if (Curios.available) {
+//                return CuriosUtils.getStack(player, invName, slot);
+//            }
             return ItemStack.EMPTY;
         }
     }

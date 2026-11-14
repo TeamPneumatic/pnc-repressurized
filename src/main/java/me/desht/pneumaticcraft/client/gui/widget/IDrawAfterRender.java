@@ -17,7 +17,7 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * For widgets that need to do some drawing after everything else, to ensure it's on top.
@@ -25,5 +25,5 @@ import net.minecraft.client.gui.GuiGraphics;
  */
 @FunctionalInterface
 public interface IDrawAfterRender {
-    void renderAfterEverythingElse(GuiGraphics graphics, int mouseX, int mouseY, float partialTick);
+    void renderAfterEverythingElse(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick);
 }

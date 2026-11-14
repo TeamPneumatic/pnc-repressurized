@@ -8,10 +8,10 @@ import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
 import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.AABB;
 
 public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
@@ -42,7 +42,7 @@ public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
     }
 
     @Override
-    public ResourceLocation getTextureLocation(CropSupportEntity entity) {
+    public Identifier getTextureLocation(CropSupportEntity entity) {
         return Textures.MODEL_CROP_SUPPORT;
     }
 }

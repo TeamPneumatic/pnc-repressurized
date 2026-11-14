@@ -32,12 +32,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -118,7 +117,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         saveButton = addRenderableWidget(new WidgetButtonExtended(43, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.save"),
                 b -> saveChanges()));
         addRenderableWidget(new WidgetButtonExtended(88, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.reset"),
-                b -> resetColors(Screen.hasShiftDown())).setTooltipKey("pneumaticcraft.armor.gui.misc.colors.resetTooltip"));
+                b -> resetColors(Minecraft.getInstance().hasShiftDown())).setTooltipKey("pneumaticcraft.armor.gui.misc.colors.resetTooltip"));
         addRenderableWidget(new WidgetButtonExtended(133, height - 30, 40, 20, xlate("pneumaticcraft.armor.gui.misc.cancel"),
                 b -> onClose()));
 
@@ -198,17 +197,17 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
         int scale = (int) (Minecraft.getInstance().getWindow().getScreenHeight() / (scaleFactor * 3));
-        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
+        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics,
                 width / 2, 0,
                 width, height,
                 scale, 0.0625F,
@@ -221,7 +220,7 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         for (RGBSlider slider : rgbSliders.values()) {
             if (slider.isHoveredOrFocused()) {
                 double val = Math.signum(deltaY);
-                if (Screen.hasShiftDown()) val *= 10;
+                if (Minecraft.getInstance().hasShiftDown()) val *= 10;
                 int newVal = Mth.clamp((int) (slider.getValueInt() + val), 0, 255);
                 if (slider.getValueInt() != newVal) {
                     updateSlider(slider, newVal);
@@ -337,13 +336,13 @@ public class ArmorColoringScreen extends AbstractPneumaticCraftScreen {
         }
 
         @Override
-        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+        public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            super.extractContents(graphics, mouseX, mouseY, partialTicks);
 
             int x = getX(), y = getY();
             graphics.fill(x + 3, y + 3, x + 14, y + 14, gui.colors[slot.getIndex()][selectorType.ordinal()]);
-            graphics.hLine(x + 4, x + 14, y + 14, 0xFF202020);
-            graphics.vLine(x + 14, y + 3, y + 14, 0xFF202020);
+            graphics.horizontalLine(x + 4, x + 14, y + 14, 0xFF202020);
+            graphics.verticalLine(x + 14, y + 3, y + 14, 0xFF202020);
         }
     }
 }

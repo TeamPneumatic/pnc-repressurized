@@ -35,16 +35,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.projectile.*;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.entity.vehicle.Minecart;
+import net.minecraft.world.entity.projectile.arrow.*;
+import net.minecraft.world.entity.projectile.hurtingprojectile.*;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.*;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -62,7 +64,7 @@ public class ItemLaunching {
     private static final List<ILaunchBehaviour> behaviours = new CopyOnWriteArrayList<>();
 
     public static void launchEntity(Entity launchedEntity, Vec3 initialPos, Vec3 velocity, boolean doSpawn) {
-        Level world = launchedEntity.getCommandSenderWorld();
+        Level world = launchedEntity.level();
 
         if (launchedEntity.getVehicle() != null) {
             launchedEntity.stopRiding();
@@ -90,20 +92,20 @@ public class ItemLaunching {
         launchedEntity.horizontalCollision = false;
         launchedEntity.verticalCollision = false;
 
-        if (doSpawn && !world.isClientSide) {
+        if (doSpawn && !world.isClientSide()) {
             world.addFreshEntity(launchedEntity);
         }
 
         for (int i = 0; i < 5; i++) {
-            double velX = velocity.x * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
-            double velY = velocity.y * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
-            double velZ = velocity.z * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
+            double velX = velocity.x * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
+            double velY = velocity.y * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
+            double velZ = velocity.z * 0.4D + (world.getRandom().nextGaussian() - 0.5D) * 0.05D;
             NetworkHandler.sendToAllTracking(PacketSpawnParticle.oneParticle(AirParticleData.DENSE,
                     initialPos.toVector3f(),
                     new Vec3(velX, velY, velZ).toVector3f()
             ), world, trackPos);
         }
-        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
+        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundSource.BLOCKS, 1f,world.getRandom().nextFloat() / 4f + 0.75f);
     }
 
     /**
@@ -166,12 +168,12 @@ public class ItemLaunching {
                 return boat;
 
             } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new ThrownExperienceBottle(level, player);
+                return new ThrownExperienceBottle(level, player, stack);
 
             } else if (item instanceof PotionItem) {
-                ThrownPotion potionEntity = new ThrownPotion(level, player);
-                potionEntity.setItem(stack);
-                return potionEntity;
+                return item == Items.LINGERING_POTION ?
+                        new ThrownLingeringPotion(level, player, stack) :
+                        new ThrownSplashPotion(level, player, stack);
 
             } else if (item == Blocks.TNT.asItem()) {
                 PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, player);
@@ -179,7 +181,7 @@ public class ItemLaunching {
                 return tnt;
 
             } else if (item == Items.EGG) {
-                return new ThrownEgg(level, player);
+                return new ThrownEgg(level, player, stack);
 
             } else if (item == Items.FIRE_CHARGE) {
                 SmallFireball e = new SmallFireball(level, player, Vec3.ZERO);
@@ -187,11 +189,11 @@ public class ItemLaunching {
                 return e;
 
             } else if (item == Items.SNOWBALL) {
-                return new Snowball(level, player);
+                return new Snowball(level, player, stack);
 
             } else if (item instanceof SpawnEggItem egg) {
                 EntityType<?> type = egg.getType(stack);
-                Entity e = type.spawn(level, stack, player, player.blockPosition(), MobSpawnType.SPAWN_EGG, false, false);
+                Entity e = type.spawn(level, stack, player, player.blockPosition(), EntitySpawnReason.SPAWN_ITEM_USE, false, false);
 
                 if (e instanceof LivingEntity && stack.has(DataComponents.CUSTOM_NAME)) {
                     e.setCustomName(stack.getHoverName());
@@ -200,8 +202,8 @@ public class ItemLaunching {
                 return e;
 
             } else if (item instanceof MinecartItem mi) {
-                AbstractMinecart minecart = Minecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType(), stack, player);
-                minecart.setYRot(playerYaw);
+                AbstractMinecart minecart = AbstractMinecart.createMinecart(level, 0, 0, 0, ((MinecartItemAccess) mi).getType(), EntitySpawnReason.DISPENSER, stack, player);
+                if (minecart != null) minecart.setYRot(playerYaw);
                 return minecart;
 
             } else if (item == Items.FIREWORK_ROCKET) {
@@ -219,7 +221,7 @@ public class ItemLaunching {
                 micromissile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1/3f, 0.0F);
 
                 // Puts micromissile on cooldown which is 1/3 of normal cooldown to reward launching
-                player.getCooldowns().addCooldown(stack.getItem(), ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
+                player.getCooldowns().addCooldown(stack, ConfigHelper.common().micromissiles.launchCooldown.get() / 3);
 
                 return micromissile;
             }

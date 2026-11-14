@@ -44,7 +44,7 @@ public class PacketUtil {
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, BlockPos pos, Class<T> cls) {
-        if (player == null || player.level().isClientSide) {
+        if (player == null || player.level().isClientSide()) {
             // client-side: we trust the blockpos the server sends
             return ClientUtils.getOptionalClientLevel().flatMap(level -> PneumaticCraftUtils.getBlockEntityAt(level, pos, cls));
         } else {
@@ -70,7 +70,7 @@ public class PacketUtil {
      */
     @Nonnull
     public static <T extends BlockEntity> Optional<T> getBlockEntity(Player player, Class<T> cls) {
-        if (player.level().isClientSide) throw new RuntimeException("don't call this method client side!");
+        if (player.level().isClientSide()) throw new RuntimeException("don't call this method client side!");
         return getBlockEntity(player, null, cls);
     }
 }

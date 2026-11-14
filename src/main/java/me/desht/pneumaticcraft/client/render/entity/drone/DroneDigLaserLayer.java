@@ -36,7 +36,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Matrix4f;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
     private static final float LASER_SIZE = 0.4f;
@@ -52,8 +52,8 @@ public class DroneDigLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDr
             matrixStackIn.pushPose();
             matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1, 0);
-            BlockState state = entityIn.getCommandSenderWorld().getBlockState(diggingPos);
-            VoxelShape shape = state.getShape(entityIn.getCommandSenderWorld(), diggingPos);
+            BlockState state = entityIn.level().getBlockState(diggingPos);
+            VoxelShape shape = state.getShape(entityIn.level(), diggingPos);
             if (shape.isEmpty()) {
                 renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
                         0, -entityIn.getLaserOffsetY(), 0,

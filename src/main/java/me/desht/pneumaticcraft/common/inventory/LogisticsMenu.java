@@ -115,7 +115,7 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
      */
     @Override
     public void removed(Player player) {
-        if (itemContainer && logistics != null && !player.getCommandSenderWorld().isClientSide) {
+        if (itemContainer && logistics != null && !player.level().isClientSide()) {
             syncSemiblockItemFromClient(player, null);
         }
     }
@@ -164,5 +164,9 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
                 stack.set(ModDataComponents.SEMIBLOCK_DATA, CustomData.of(subtag));
             }
         }
+    }
+
+    public boolean isForEntity(int entityID) {
+        return logistics != null && logistics.getId() == entityID;
     }
 }

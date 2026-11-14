@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.item.AssemblyProgramItem;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import vazkii.patchouli.api.IComponentProcessor;
@@ -39,7 +39,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
+        Identifier recipeId = Identifier.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
         title = iVariableProvider.has("title") ?
                 iVariableProvider.get("title", level.registryAccess()).asString() :
                 null;

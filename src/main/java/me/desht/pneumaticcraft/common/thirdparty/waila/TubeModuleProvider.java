@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
 import snownee.jade.api.IServerDataProvider;
@@ -36,7 +36,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class TubeModuleProvider {
-    public static final ResourceLocation ID = RL("tube_module");
+    public static final Identifier ID = RL("tube_module");
 
     public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
@@ -51,7 +51,7 @@ public class TubeModuleProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }
@@ -74,7 +74,7 @@ public class TubeModuleProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

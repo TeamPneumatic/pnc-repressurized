@@ -19,10 +19,10 @@ package me.desht.pneumaticcraft.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 
 import java.util.OptionalDouble;
 import java.util.function.BiFunction;
@@ -33,7 +33,7 @@ public class ModRenderTypes extends RenderType {
         super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
     }
 
-    private static final Function<ResourceLocation,RenderType> TEXTURE_RENDER = Util.memoize((rl) -> {
+    private static final Function<Identifier,RenderType> TEXTURE_RENDER = Util.memoize((rl) -> {
         RenderStateShard.TextureStateShard textureState = new TextureStateShard(rl, false, false);
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setTextureState(textureState)
@@ -43,11 +43,11 @@ public class ModRenderTypes extends RenderType {
         return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
                 256, false, false, state);
     });
-    public static RenderType getTextureRender(ResourceLocation texture) {
+    public static RenderType getTextureRender(Identifier texture) {
         return TEXTURE_RENDER.apply(texture);
     }
 
-    private static final BiFunction<ResourceLocation, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((rl, disableDepthTest) -> {
+    private static final BiFunction<Identifier, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((rl, disableDepthTest) -> {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
@@ -59,10 +59,10 @@ public class ModRenderTypes extends RenderType {
         return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
                 256, false, false, state);
     });
-    public static RenderType getTextureRenderColored(ResourceLocation texture) {
+    public static RenderType getTextureRenderColored(Identifier texture) {
         return getTextureRenderColored(texture, false);
     }
-    public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
+    public static RenderType getTextureRenderColored(Identifier texture, boolean disableDepthTest) {
         return TEXTURE_RENDER_COLORED.apply(texture, disableDepthTest);
     }
 
@@ -209,7 +209,7 @@ public class ModRenderTypes extends RenderType {
                         .createCompositeState(false)
     );
 
-    private static final Function<ResourceLocation, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
+    private static final Function<Identifier, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
         RenderType.CompositeState state = RenderType.CompositeState.builder()
                 .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
                 .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
@@ -223,7 +223,7 @@ public class ModRenderTypes extends RenderType {
                 256, true, false,
                 state);
     });
-    public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
+    public static RenderType getArmorTranslucentNoCull(Identifier rl) {
         return ARMOR_TRANSLUCENT_NO_CULL.apply(rl);
     }
 }

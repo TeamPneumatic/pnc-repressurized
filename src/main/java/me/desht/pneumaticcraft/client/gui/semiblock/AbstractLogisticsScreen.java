@@ -37,11 +37,12 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -69,10 +70,9 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     private LimitFields minFields, stockFields;
 
     public AbstractLogisticsScreen(LogisticsMenu menu, Inventory inv, Component displayString) {
-        super(menu, inv, displayString);
+        super(menu, inv, displayString, DEFAULT_IMAGE_WIDTH, 216);
 
         this.logistics = (L) menu.logistics;
-        imageHeight = 216;
     }
 
     @Override
@@ -113,14 +113,14 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
         addRenderableWidget(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, Component.empty()) {
             @Override
-            public void onClick(double mouseX, double mouseY, int button) {
-                if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY, button);
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                if (itemWhitelist.visible) itemWhitelist.onClick(event, doubleClick);
             }
         });
         addRenderableWidget(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, Component.empty()) {
             @Override
-            public void onClick(double mouseX, double mouseY, int button) {
-                if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY, button);
+            public void onClick(MouseButtonEvent event, boolean doubleClick) {
+                if (fluidWhitelist.visible) fluidWhitelist.onClick(event, doubleClick);
             }
         });
         updateLabels();
@@ -282,7 +282,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_LOGISTICS_REQUESTER;
     }
 
@@ -292,7 +292,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int clickedButton, ClickType clickType) {
+    protected void slotClicked(Slot slot, int slotId, int clickedButton, ContainerInput clickType) {
         if (slot instanceof PhantomSlot
                 && menu.getCarried().isEmpty()
                 && !slot.hasItem()
@@ -312,16 +312,16 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
         Slot slot = findSlot(pMouseX, pMouseY);
         if (slot != null) {
             if (pScrollY > 0) {
-                if (Screen.hasShiftDown()) {
-                    slotClicked(slot, slot.index, 1, ClickType.QUICK_MOVE);
+                if (Minecraft.getInstance().hasShiftDown()) {
+                    slotClicked(slot, slot.index, 1, ContainerInput.QUICK_MOVE);
                 } else {
-                    slotClicked(slot, slot.index, 1, ClickType.PICKUP);
+                    slotClicked(slot, slot.index, 1, ContainerInput.PICKUP);
                 }
             } else if (pScrollY < 0) {
-                if (Screen.hasShiftDown()) {
-                    slotClicked(slot, slot.index, 0, ClickType.QUICK_MOVE);
+                if (Minecraft.getInstance().hasShiftDown()) {
+                    slotClicked(slot, slot.index, 0, ContainerInput.QUICK_MOVE);
                 } else {
-                    slotClicked(slot, slot.index, 0, ClickType.PICKUP);
+                    slotClicked(slot, slot.index, 0, ContainerInput.PICKUP);
                 }
             }
             return true;

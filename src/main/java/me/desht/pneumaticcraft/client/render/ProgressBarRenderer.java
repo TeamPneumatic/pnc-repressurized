@@ -17,20 +17,19 @@
 
 package me.desht.pneumaticcraft.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.normalLine;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class ProgressBarRenderer {
     public static void render3d(PoseStack poseStack, MultiBufferSource buffer, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
@@ -58,31 +57,25 @@ public class ProgressBarRenderer {
         });
     }
 
-    public static void render2d(GuiGraphics graphics, float minX, float minY, float maxX, float maxY, float zLevel, float progress, int color1, int color2) {
+    public static void render2d(GuiGraphicsExtractor graphics, float minX, float minY, float maxX, float maxY, float progress, int color1, int color2) {
         Pair<float[], float[]> cols = calcColors(color1, color2, progress);
-        float[] f1 = cols.getLeft();
-        float[] f2 = cols.getRight();
+        int c1 = ARGB.colorFromFloat(cols.getLeft()[3], cols.getLeft()[0], cols.getLeft()[1], cols.getLeft()[2]);
+        int c2 = ARGB.colorFromFloat(cols.getRight()[3], cols.getRight()[0], cols.getRight()[1], cols.getRight()[2]);
 
         float x = Mth.lerp(progress / 100F, minX, maxX);
+        float lineWidth = GuiVertexRenderState.pixels(2f);
 
-        Matrix4f posMat = graphics.pose().last().pose();
-
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        BufferBuilder builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        builder.addVertex(posMat, minX, minY, zLevel).setColor(f1[0], f1[1], f1[2], f1[3]);
-        builder.addVertex(posMat, minX, minY + (maxY - minY), zLevel).setColor(f1[0], f1[1], f1[2], f1[3]);
-        builder.addVertex(posMat, x, minY + (maxY - minY), zLevel).setColor(f2[0], f2[1], f2[2], f2[3]);
-        builder.addVertex(posMat, x, minY, zLevel).setColor(f2[0], f2[1], f2[2], f2[3]);
-        BufferUploader.drawWithShader(builder.buildOrThrow());
-
-        RenderSystem.lineWidth(2.0f);
-        builder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        builder.addVertex(posMat, minX, minY, zLevel).setColor(0, 0, 0, 1f);
-        builder.addVertex(posMat, minX, maxY, zLevel).setColor(0, 0, 0, 1f);
-        builder.addVertex(posMat, maxX, maxY, zLevel).setColor(0, 0, 0, 1f);
-        builder.addVertex(posMat, maxX, minY, zLevel).setColor(0, 0, 0, 1f);
-        BufferUploader.drawWithShader(builder.buildOrThrow());
+        GuiVertexRenderState.submit(graphics, builder -> builder
+                // the bar
+                .vertex(minX, minY, c1)
+                .vertex(minX, minY + (maxY - minY), c1)
+                .vertex(x, minY + (maxY - minY), c2)
+                .vertex(x, minY, c2)
+                // the outline
+                .line(minX, minY, minX, maxY, lineWidth, 0xFF000000)
+                .line(minX, maxY, maxX, maxY, lineWidth, 0xFF000000)
+                .line(maxX, maxY, maxX, minY, lineWidth, 0xFF000000)
+        );
     }
 
     private static Pair<float[], float[]> calcColors(int color1, int color2, float progress) {

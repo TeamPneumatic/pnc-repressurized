@@ -58,7 +58,7 @@ public record PacketUpdateMicromissileSettings(MicromissilesItem.Settings settin
     public static void handle(PacketUpdateMicromissileSettings message, IPayloadContext ctx) {
         Player player = ctx.player();
         ItemStack stack = player.getItemInHand(message.hand());
-        if (!stack.isEmpty()) {
+        if (stack.getItem() instanceof MicromissilesItem) {
             message.applySettings(player, stack);
         } else {
             Log.warning("Received PacketUpdateMicromissileSettings but player does not hold a Micromissile? " + player.getName());
@@ -66,10 +66,12 @@ public record PacketUpdateMicromissileSettings(MicromissilesItem.Settings settin
     }
 
     private void applySettings(Player player, ItemStack stack) {
-        stack.set(ModDataComponents.MICROMISSILE_SETTINGS, settings);
+        MicromissilesItem.Settings safeSettings = settings.sanitize();
+
+        stack.set(ModDataComponents.MICROMISSILE_SETTINGS, safeSettings);
 
         if (saveDefault) {
-            MicromissileDefaults.INSTANCE.setDefaults(player, settings);
+            MicromissileDefaults.INSTANCE.setDefaults(player, safeSettings);
             MicromissileDefaults.INSTANCE.tryWriteToFile();
             player.level().playSound(null, player.blockPosition(), ModSounds.CHIRP.get(), SoundSource.PLAYERS, 1f, 1f);
         }

@@ -55,7 +55,7 @@ public class ElevatorFrameBlockEntity extends AbstractPneumaticCraftBlockEntity 
             pos1.move(Direction.DOWN);
             if (level.getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
                 return (ElevatorBaseBlockEntity) level.getBlockEntity(pos1);
-            } else if (level.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= level.getMinBuildHeight()) {
+            } else if (level.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= level.getMinY()) {
                 return null;
             }
         }

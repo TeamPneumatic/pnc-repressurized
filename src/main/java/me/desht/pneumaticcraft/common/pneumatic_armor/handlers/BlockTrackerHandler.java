@@ -22,16 +22,29 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final int BLOCK_TRACKING_RANGE = 30;
 
+    public static int getBlockTrackRange(ICommonArmorHandler armorHandler) {
+        return BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
+    }
+
+    public static boolean isPlayerInRange(Player player, BlockPos pos) {
+        int range = getBlockTrackRange(CommonArmorHandler.getHandlerForPlayer(player));
+        return player.distanceToSqr(Vec3.atCenterOf(pos)) <= range * range;
+    }
+
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.BLOCK_TRACKER;
     }
 

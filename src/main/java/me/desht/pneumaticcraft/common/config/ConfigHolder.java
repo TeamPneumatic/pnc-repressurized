@@ -67,6 +67,7 @@ public class ConfigHolder {
         OilLakeFilter.DimensionFilter.clearMatcherCaches();
         AerialInterfaceBlockEntity.clearDimensionBlacklist();
         PressureDisenchantingRecipe.clearCachedBlacklist();
+        AerialInterfaceBlockEntity.onConfigRefresh();
     }
 
     static void saveClient() {

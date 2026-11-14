@@ -24,9 +24,9 @@ import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverri
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -60,13 +60,13 @@ public class ClientRegistryImpl implements IClientRegistry {
     }
 
     @Override
-    public IGuiAnimatedStat getAnimatedStat(Screen gui, ResourceLocation iconTexture, int backgroundColor) {
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, Identifier iconTexture, int backgroundColor) {
         return new WidgetAnimatedStat(gui, backgroundColor, iconTexture);
     }
 
     @Override
-    public void drawPressureGauge(GuiGraphics graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
-        PressureGaugeRenderer2D.drawPressureGauge(graphics, fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0x00000000);
+    public void drawPressureGauge(GuiGraphicsExtractor graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
+        PressureGaugeRenderer2D.drawPressureGauge(graphics, fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos);
     }
 
     @Override

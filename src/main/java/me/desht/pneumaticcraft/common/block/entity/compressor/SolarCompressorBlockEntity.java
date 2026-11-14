@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.api.pressure.PressureTier;
+import me.desht.pneumaticcraft.common.block.AbstractPNCBlockWithBoundingBlocks;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHasBoundingBlocks;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
@@ -18,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -72,6 +74,14 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         else {
             heatExchanger.setThermalCapacity(100);
         }
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (state.getBlock() instanceof AbstractPNCBlockWithBoundingBlocks bb) {
+            bb.onBlockEntityRemoved(state, nonNullLevel(), pos);
+        }
+        super.preRemoveSideEffects(pos, state);
     }
 
     @Override
@@ -140,7 +150,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
 
             // Plays sounds for the compressor breaking
             level.playSound(null, mainPos, SoundEvents.GENERIC_BURN, SoundSource.BLOCKS, 1 ,1);
-            level.playSound(null, mainPos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1 ,1);
+            level.playSound(null, mainPos, SoundEvents.ITEM_BREAK.value(), SoundSource.BLOCKS, 1 ,1);
         }
     }
 
@@ -186,7 +196,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
         final Level level = nonNullLevel();
 
         // Sets false for bounding blocks, during the night, and during rain
-        if (isBounding(this) || level.isNight() || level.isRaining())
+        if (isBounding(this) || level.isDarkOutside() || level.isRaining())
         {
             canSeeSunlight = false;
         }
@@ -318,7 +328,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        isBroken = tag.getBoolean(NBTKeys.NBT_BROKEN);
+        isBroken = tag.getBooleanOr(NBTKeys.NBT_BROKEN, false);
     }
 
     @Override
@@ -330,7 +340,7 @@ public class SolarCompressorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         isBroken = componentInput.getOrDefault(ModDataComponents.SOLAR_BROKEN, false);

@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -30,13 +29,12 @@ import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,9 +47,7 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
     private int nExposedFaces;
 
     public RefineryControllerScreen(RefineryMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 189;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 189);
     }
 
     @Override
@@ -102,12 +98,11 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float f, int x, int y) {
-        super.renderBg(graphics, f, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float f) {
+        super.extractBackground(graphics, x, y, f);
+        super.extractBackground(graphics, x, y, f);
 
         if (nOutputs < 4) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             graphics.fill(leftPos + 155, topPos + 17, leftPos + 171, topPos + 81, 0x40FF0000);
             if (nOutputs < 3) {
                 graphics.fill(leftPos + 135, topPos + 21, leftPos + 151, topPos + 85, 0x40FF0000);
@@ -118,12 +113,11 @@ public class RefineryControllerScreen extends AbstractPneumaticCraftContainerScr
             if (nOutputs < 1) {
                 graphics.fill(leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
             }
-            RenderSystem.disableBlend();
         }
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_REFINERY;
     }
 

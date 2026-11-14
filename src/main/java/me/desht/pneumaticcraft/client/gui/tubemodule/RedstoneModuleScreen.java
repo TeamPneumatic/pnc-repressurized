@@ -28,7 +28,8 @@ import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule.Operation;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.DyeColor;
@@ -128,9 +129,10 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
 
             invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.invert")) {
                 @Override
-                public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+                    int button = event.button();
                     if (comboBox.isFocused()) return true;  // it hangs over the button
-                    return super.mouseClicked(mouseX, mouseY, button);
+                    return super.mouseClicked(event, doubleClick);
                 }
             };
             invertCheckBox.setChecked(module.isInverted());
@@ -183,12 +185,12 @@ public class RedstoneModuleScreen extends AbstractTubeModuleScreen<RedstoneModul
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         int yBase = guiTop + ySize - lowerText.size() * font.lineHeight - 10;
         for (int i = 0; i < lowerText.size(); i++) {
-            graphics.drawString(font, lowerText.get(i), guiLeft + 10, yBase + i * font.lineHeight, 0xFF404040, false);
+            graphics.text(font, lowerText.get(i), guiLeft + 10, yBase + i * font.lineHeight, 0xFF404040, false);
         }
     }
 

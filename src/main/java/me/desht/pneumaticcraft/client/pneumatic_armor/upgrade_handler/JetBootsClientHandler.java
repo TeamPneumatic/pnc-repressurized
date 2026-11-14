@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.JetBootsOptions;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
@@ -41,9 +42,9 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -64,10 +65,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
-    public static final ResourceLocation MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
-    public static final ResourceLocation MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
-    public static final ResourceLocation MODULE_HOVER = RL("jet_boots.module.hover");
-    public static final ResourceLocation MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
+    public static final Identifier MODULE_BUILDER_MODE = RL("jet_boots.module.builder_mode");
+    public static final Identifier MODULE_FLIGHT_STABILIZERS = RL("jet_boots.module.flight_stabilizers");
+    public static final Identifier MODULE_HOVER = RL("jet_boots.module.hover");
+    public static final Identifier MODULE_SMART_HOVER = RL("jet_boots.module.smart_hover");
 
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsRight(0.5f, 0.005f);
 
@@ -150,7 +151,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
         if (armorPieceHasPressure && jbStat.isStatOpen() && !ArmorHUDLayout.INSTANCE.getLayoutFor(getID(), getDefaultStatLayout()).hidden()) {
             Font fr = Minecraft.getInstance().font;
 
@@ -167,28 +168,28 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
             int color = suppressed ? 0x202020 : 0x404040;
             if (!suppressed || (Minecraft.getInstance().level.getGameTime() & 0xf) > 2) {
-                graphics.drawString(fr, l1, xl, y, color);
-                graphics.drawString(fr, l2, xl, y + fr.lineHeight, color);
-                graphics.drawString(fr, l3, xl, y + fr.lineHeight * 2, color);
-                graphics.drawString(fr, r1, xr - widestR, y, color);
-                graphics.drawString(fr, r2, xr - widestR, y + fr.lineHeight, color);
-                graphics.drawString(fr, r3, xr - widestR, y + fr.lineHeight * 2, color);
+                graphics.text(fr, l1, xl, y, GuiUtils.textColor(color));
+                graphics.text(fr, l2, xl, y + fr.lineHeight, GuiUtils.textColor(color));
+                graphics.text(fr, l3, xl, y + fr.lineHeight * 2, GuiUtils.textColor(color));
+                graphics.text(fr, r1, xr - widestR, y, GuiUtils.textColor(color));
+                graphics.text(fr, r2, xr - widestR, y + fr.lineHeight, GuiUtils.textColor(color));
+                graphics.text(fr, r3, xr - widestR, y + fr.lineHeight * 2, GuiUtils.textColor(color));
             }
             int iconX = xr - 30;
             if (builderMode) {
-                graphics.renderItem(PICK, iconX, jbStat.getBaseY());
+                graphics.item(PICK, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                graphics.renderItem(ROTOR, iconX, jbStat.getBaseY());
+                graphics.item(ROTOR, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                graphics.renderItem(ELYTRA, iconX, jbStat.getBaseY());
+                graphics.item(ELYTRA, iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                graphics.renderItem(FEATHER, iconX, jbStat.getBaseY());
+                graphics.item(FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }
@@ -224,7 +225,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     }
 
     @Override
-    public Collection<ResourceLocation> getSubKeybinds() {
+    public Collection<Identifier> getSubKeybinds() {
         return ImmutableList.of(
                 MODULE_BUILDER_MODE,
                 MODULE_FLIGHT_STABILIZERS,

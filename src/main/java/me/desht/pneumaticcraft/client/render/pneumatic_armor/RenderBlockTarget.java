@@ -35,7 +35,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -56,7 +56,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class RenderBlockTarget {
     private static final int SERVER_REQUEST_INTERVAL = 30; // ticks

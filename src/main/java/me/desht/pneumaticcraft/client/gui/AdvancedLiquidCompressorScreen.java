@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.block.entity.compressor.AdvancedLiquidComp
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
@@ -72,7 +72,7 @@ public class AdvancedLiquidCompressorScreen extends LiquidCompressorScreen {
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_ADVANCED_LIQUID_COMPRESSOR;
     }
 

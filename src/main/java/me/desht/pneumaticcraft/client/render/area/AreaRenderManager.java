@@ -198,7 +198,7 @@ public enum AreaRenderManager {
                     posList = posList.stream()
                             .sorted(Comparator.comparingDouble(blockPos -> blockPos.distSqr(player.blockPosition())))
                             .toList();
-                    player.displayClientMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD), false);
+                    player.sendSystemMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).withStyle(ChatFormatting.GOLD));
                 }
                 Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
                 int n = Math.min(posList.size(), MAX_DISPLAYED_POS);
@@ -244,7 +244,7 @@ public enum AreaRenderManager {
         for (int x = pos.getX() - 16; x <= pos.getX() + 16; x += 16) {
             for (int z = pos.getZ() - 16; z <= pos.getZ() + 16; z += 16) {
                 ChunkPos cp = new ChunkPos(pos);
-                res.addAll(ClientUtils.getClientLevel().getChunk(cp.x, cp.z).getBlockEntities().values());
+                res.addAll(ClientUtils.getClientLevel().getChunk(cp.x(), cp.z()).getBlockEntities().values());
             }
         }
         return res;

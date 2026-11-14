@@ -5,18 +5,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.SkullModel;
+import net.minecraft.client.model.object.skull.SkullModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.client.resources.SkinManager;
 import net.minecraft.core.Direction;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class AerialInterfaceRenderer implements BlockEntityRenderer<AerialInterfaceBlockEntity> {
     private final SkullModel headModel;

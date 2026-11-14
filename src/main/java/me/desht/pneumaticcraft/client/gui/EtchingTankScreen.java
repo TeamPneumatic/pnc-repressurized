@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,9 +40,7 @@ public class EtchingTankScreen extends AbstractPneumaticCraftContainerScreen<Etc
     private WidgetTemperature tempWidget;
 
     public EtchingTankScreen(EtchingTankMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 206;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 206);
     }
 
     @Override
@@ -78,7 +76,7 @@ public class EtchingTankScreen extends AbstractPneumaticCraftContainerScreen<Etc
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_ETCHING_TANK;
     }
 

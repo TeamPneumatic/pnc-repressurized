@@ -10,7 +10,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.StructureManager;
@@ -42,7 +42,7 @@ public class OilLakeFilter extends PlacementFilter {
             SectionPos sectionPos = SectionPos.of(origin);
             ChunkAccess chunkAccess = region.getChunk(origin);
 
-            Registry<Structure> reg = region.registryAccess().registryOrThrow(Registries.STRUCTURE);
+            Registry<Structure> reg = region.registryAccess().lookupOrThrow(Registries.STRUCTURE);
             StructureManager manager = region.getLevel().structureManager().forWorldGenRegion(region);
 
             if (ConfigHelper.common().worldgen.noOilLakesInStructures.get() && manager.hasAnyStructureAt(origin)) {
@@ -50,7 +50,7 @@ public class OilLakeFilter extends PlacementFilter {
             }
 
             // don't allow oil lakes to generate within any structure in pneumaticcraft:no_oil_lakes tag
-            for (Holder<Structure> structureHolder : reg.getOrCreateTag(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
+            for (Holder<Structure> structureHolder : reg.getTagOrEmpty(PneumaticCraftTags.Structures.NO_OIL_LAKES)) {
                 StructureStart start = manager.getStartForStructure(sectionPos, structureHolder.value(), chunkAccess);
                 if (start != null && start.isValid()) {
                     return false;
@@ -75,7 +75,7 @@ public class OilLakeFilter extends PlacementFilter {
 
         private static boolean isDimensionOK(WorldGenLevel level) {
             // non-empty whitelist match OR no blacklist match
-            ResourceLocation name = level.getLevel().dimension().location();
+            Identifier name = level.getLevel().dimension().identifier();
             return dimensionMatcherW.get().isEmpty() ? !dimensionMatcherB.get().test(name) : dimensionMatcherW.get().test(name);
         }
 

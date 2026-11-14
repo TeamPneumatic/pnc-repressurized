@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -48,13 +49,13 @@ public interface IHackableBlock {
      * Get a unique id to represent this hackable. Used in NBT saving to be able to trigger the afterHackTime
      * after a server restart.
      * <p>
-     * The returned ResourceLocation should be in the namespace of the mod which adds the hack (which is not necessarily
+     * The returned Identifier should be in the namespace of the mod which adds the hack (which is not necessarily
      * the mod that adds the hackable block).
      *
      * @return a unique ID for this hack type
      */
     @Nonnull
-    ResourceLocation getHackableId();
+    Identifier getHackableId();
 
     /**
      * Can this block actually be hacked? This will normally return true, since the object is registered with the
@@ -139,7 +140,11 @@ public interface IHackableBlock {
      */
     default Optional<BlockHitResult> fakeRayTrace(Player player, BlockPos targetPos) {
         BlockState state = player.level().getBlockState(targetPos);
-        AABB aabb = state.getShape(player.level(), targetPos).bounds().move(targetPos);
+        VoxelShape shape = state.getShape(player.level(), targetPos);
+        if (shape.isEmpty()) {
+            return Optional.empty();
+        }
+        AABB aabb = shape.bounds().move(targetPos);
         Optional<Vec3> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
         Direction dir = Direction.orderedByNearest(player)[0];
         return hit.map(v -> new BlockHitResult(v, dir.getOpposite(), targetPos, false));

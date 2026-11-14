@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -124,7 +125,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void tickClient() {
         super.tickClient();
 
-        if (isActive() && nonNullLevel().random.nextInt(5) == 0) {
+        if (isActive() && nonNullLevel().getRandom().nextInt(5) == 0) {
             ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
         }
     }
@@ -194,7 +195,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", itemHandler.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(itemHandler, provider));
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
         tag.putFloat("burnMultiplier", burnMultiplier);
     }
@@ -203,9 +204,9 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        internalFuelBuffer = tag.getDouble("internalFuelBuffer");
-        burnMultiplier = tag.getFloat("burnMultiplier");
+        ValueIOBridge.deserialize(itemHandler, provider, tag.getCompoundOrEmpty("Items"));
+        internalFuelBuffer = tag.getDoubleOr("internalFuelBuffer", 0.0);
+        burnMultiplier = tag.getFloatOr("burnMultiplier", 0f);
     }
 
     @Override

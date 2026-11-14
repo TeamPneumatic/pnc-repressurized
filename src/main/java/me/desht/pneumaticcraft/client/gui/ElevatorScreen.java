@@ -30,9 +30,10 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -80,14 +81,15 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             minecraft.player.closeContainer();
         }
 
-        return floorNameField.keyPressed(keyCode, scanCode, modifiers)
+        return floorNameField.keyPressed(event)
                 || floorNameField.canConsumeInput()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyPressed(event);
     }
 
     private void cycleFloor(int dir) {
@@ -112,13 +114,14 @@ public class ElevatorScreen extends AbstractPneumaticCraftContainerScreen<Elevat
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_ELEVATOR;
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float opacity, int x, int y) {
-        super.renderBg(graphics, opacity, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float opacity) {
+        super.extractBackground(graphics, x, y, opacity);
+        super.extractBackground(graphics, x, y, opacity);
     }
 
     @Override

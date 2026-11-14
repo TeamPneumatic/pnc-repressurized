@@ -17,14 +17,19 @@
 
 package me.desht.pneumaticcraft.common.fluid;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
+/**
+ * TODO 26.1 render: fluid textures and tint are no longer part of {@link IClientFluidTypeExtensions}; they come from
+ *  a {@code FluidModel}, registered in {@code RegisterFluidModelsEvent} (client). The client port should register a
+ *  {@code FluidModel.Unbaked} for each PNC fluid from these properties.
+ */
 public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
-    private final ResourceLocation still;
-    private final ResourceLocation flowing;
+    private final Identifier still;
+    private final Identifier flowing;
     private final int colorTint;
 
     public PNCFluidRenderProps(String still, String flowing) {
@@ -32,8 +37,8 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
     }
 
     public PNCFluidRenderProps(String still, String flowing, int colorTint) {
-        this.still = still.indexOf(':') > 0 ? ResourceLocation.parse(still) : RL("block/fluid/" + still);
-        this.flowing = flowing.indexOf(':') > 0 ? ResourceLocation.parse(flowing) : RL("block/fluid/" + flowing);
+        this.still = still.indexOf(':') > 0 ? Identifier.parse(still) : RL("block/fluid/" + still);
+        this.flowing = flowing.indexOf(':') > 0 ? Identifier.parse(flowing) : RL("block/fluid/" + flowing);
         this.colorTint = colorTint;
     }
 
@@ -53,17 +58,14 @@ public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
         return new PNCFluidRenderProps(textureBase + "_still", textureBase + "_flow", colorTint);
     }
 
-    @Override
-    public ResourceLocation getStillTexture() {
+    public Identifier getStillTexture() {
         return still;
     }
 
-    @Override
-    public ResourceLocation getFlowingTexture() {
+    public Identifier getFlowingTexture() {
         return flowing;
     }
 
-    @Override
     public int getTintColor() {
         return colorTint;
     }

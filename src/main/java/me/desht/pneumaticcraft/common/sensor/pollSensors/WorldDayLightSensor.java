@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -59,7 +60,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     private int updatePower(Level worldIn, BlockPos pos) {
         if (worldIn.dimensionType().hasSkyLight()) {
             int i = worldIn.getBrightness(LightLayer.SKY, pos) - worldIn.getSkyDarken();
-            float f = worldIn.getSunAngle(1.0F);
+            float f = worldIn.environmentAttributes().getValue(EnvironmentAttributes.SUN_ANGLE, pos) * Mth.DEG_TO_RAD;
             float f1 = f < (float) Math.PI ? 0.0F : (float) Math.PI * 2F;
             f = f + (f1 - f) * 0.2F;
             i = Math.round(i * Mth.cos(f));

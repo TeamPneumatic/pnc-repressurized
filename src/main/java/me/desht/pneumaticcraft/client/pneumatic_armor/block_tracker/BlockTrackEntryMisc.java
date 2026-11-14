@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.data.PneumaticCraftTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +33,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryMisc implements IBlockTrackEntry {
-    public static final ResourceLocation ID = RL("block_tracker.module.misc");
+    public static final Identifier ID = RL("block_tracker.module.misc");
 
     @Override
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
@@ -55,7 +55,7 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
     }
 
     @Override
-    public ResourceLocation getEntryID() {
+    public Identifier getEntryID() {
         return ID;
     }
 }

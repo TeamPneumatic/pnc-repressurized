@@ -28,6 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -36,6 +37,11 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -81,7 +87,7 @@ public class IOHelper {
     }
 
     public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te, Direction facing) {
-        return getCap(te, Capabilities.ItemHandler.BLOCK, facing);
+        return getCap(te, Capabilities.Item.BLOCK, facing).map(IItemHandler::of);
     }
 
     public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te) {
@@ -91,20 +97,21 @@ public class IOHelper {
     public static Optional<IItemHandler> getSidedInventoryForEntity(Entity entity, Direction dir) {
         IItemHandler handler = entity.getCapability(PNCCapabilities.ENTITY_AUTOMATION, dir);
         if (handler == null) {
-            handler = entity.getCapability(Capabilities.ItemHandler.ENTITY_AUTOMATION, dir);
-            if (handler == null) {
-                handler = entity.getCapability(Capabilities.ItemHandler.ENTITY);
+            ResourceHandler<ItemResource> resourceHandler = entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, dir);
+            if (resourceHandler == null) {
+                resourceHandler = entity.getCapability(Capabilities.Item.ENTITY, null);
             }
+            handler = resourceHandler == null ? null : IItemHandler.of(resourceHandler);
         }
         return Optional.ofNullable(handler);
     }
 
     public static Optional<IItemHandler> getInventoryForEntity(Entity entity) {
-        return Optional.ofNullable(entity.getCapability(Capabilities.ItemHandler.ENTITY));
+        return Optional.ofNullable(entity.getCapability(Capabilities.Item.ENTITY, null)).map(IItemHandler::of);
     }
 
     public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te, Direction facing) {
-        return getCap(te, Capabilities.FluidHandler.BLOCK, facing);
+        return getCap(te, Capabilities.Fluid.BLOCK, facing).map(IFluidHandler::of);
     }
 
     public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te) {
@@ -112,23 +119,23 @@ public class IOHelper {
     }
 
     public static Optional<IFluidHandlerItem> getFluidHandlerForItem(ItemStack stack) {
-        return Optional.ofNullable(stack.getCapability(Capabilities.FluidHandler.ITEM));
+        return Optional.ofNullable(LegacyFluidHandlerItem.of(stack));
     }
 
     public static Optional<IFluidHandler> getFluidHandlerForEntity(Entity entity, Direction dir) {
-        return Optional.ofNullable(entity.getCapability(Capabilities.FluidHandler.ENTITY, dir));
+        return Optional.ofNullable(entity.getCapability(Capabilities.Fluid.ENTITY, dir)).map(IFluidHandler::of);
     }
 
     public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te, Direction side) {
-        return getCap(te, Capabilities.EnergyStorage.BLOCK, side);
+        return getCap(te, Capabilities.Energy.BLOCK, side).map(IEnergyStorage::of);
     }
 
     public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te) {
-        return getCap(te, Capabilities.EnergyStorage.BLOCK, null);
+        return getCap(te, Capabilities.Energy.BLOCK, null).map(IEnergyStorage::of);
     }
 
     public static Optional<IEnergyStorage> getEnergyStorageForItem(ItemStack item) {
-        return Optional.ofNullable(item.getCapability(Capabilities.EnergyStorage.ITEM));
+        return item.isEmpty() ? Optional.empty() : Optional.ofNullable(ItemAccess.forStack(item).getCapability(Capabilities.Energy.ITEM)).map(IEnergyStorage::of);
     }
 
     /**
@@ -272,5 +279,20 @@ public class IOHelper {
 
     public static <T> Optional<T> getCap(Entity entity, EntityCapability<T, Direction> cap) {
         return Optional.ofNullable(entity.getCapability(cap, null));
+    }
+
+    /**
+     * TODO 26.1 transfer: temporary bridge from the transfer API to the legacy handler interfaces
+     */
+    @Nullable
+    public static IItemHandler legacy(@Nullable BlockCapabilityCache<ResourceHandler<ItemResource>, Direction> cache) {
+        ResourceHandler<ItemResource> handler = cache == null ? null : cache.getCapability();
+        return handler == null ? null : IItemHandler.of(handler);
+    }
+
+    @Nullable
+    public static IFluidHandler legacyFluid(@Nullable BlockCapabilityCache<ResourceHandler<FluidResource>, Direction> cache) {
+        ResourceHandler<FluidResource> handler = cache == null ? null : cache.getCapability();
+        return handler == null ? null : IFluidHandler.of(handler);
     }
 }

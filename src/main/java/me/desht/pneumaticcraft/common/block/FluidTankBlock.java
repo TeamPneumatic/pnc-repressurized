@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.client.render.fluid.RenderFluidTank;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
@@ -29,14 +30,15 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -123,7 +125,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, LevelReader worldIn, ScheduledTickAccess ticks, BlockPos currentPos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
         BlockState up = worldIn.getBlockState(currentPos.above());
         if (stateIn.getValue(UP) && !(up.getBlock() instanceof FluidTankBlock)) {
             stateIn = stateIn.setValue(UP, false);
@@ -188,7 +190,7 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         return size.beFactory.apply(pPos, pState);
     }
 
-    public static class ItemBlockFluidTank extends BlockItem implements IFluidRendered, IFluidCapProvider {
+    public static class ItemBlockFluidTank extends PNCBlockItem implements IFluidRendered, IFluidCapProvider {
         private final int capacity;
 
         private RenderFluidTank.ItemRenderInfoProvider renderInfoProvider;
@@ -198,22 +200,24 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             this.capacity = ((FluidTankBlock) block).size.capacity;
         }
 
-        @Override
-        public boolean hasCraftingRemainingItem(ItemStack stack) {
-            // the tank is a container item if it's being used in fluid crafting
-            // but an empty tank used in crafting is not a container item
-            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
-        }
+        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
+        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
+//        @Override
+//        public boolean hasCraftingRemainingItem(ItemStack stack) {
+//            // the tank is a container item if it's being used in fluid crafting
+//            // but an empty tank used in crafting is not a container item
+//            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
+//        }
 
-        @Override
-        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
-                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-                return handler.getContainer();
-            }).orElseThrow(RuntimeException::new);
-        }
+//        @Override
+//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
+//            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
+//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+//                return handler.getContainer();
+//            }).orElseThrow(RuntimeException::new);
+//        }
 
         @Override
         public IFluidItemRenderInfoProvider getFluidItemRenderer() {

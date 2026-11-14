@@ -27,10 +27,10 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAICustomBlockInteract;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 
@@ -72,14 +72,14 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            customType = PNCRegistries.PROG_WIDGETS_REGISTRY.get(RL(interactor.getID()));
+            customType = PNCRegistries.PROG_WIDGETS_REGISTRY.getValue(RL(interactor.getID()));
             Objects.requireNonNull(customType);
         }
         return customType;
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return interactor.getTexture();
     }
 

@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -44,7 +47,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
-        if (te != null && te.getLevel() != null && !te.getLevel().isClientSide) te.setChanged();
+        if (te != null && te.getLevel() != null && !te.getLevel().isClientSide()) te.setChanged();
     }
 
     @Nonnull
@@ -67,5 +70,15 @@ public class BaseItemStackHandler extends ItemStackHandler {
                 stacks.set(i, ItemStack.EMPTY);
             }
         }
+    }
+
+    // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
+        return ValueIOBridge.serialize(this, provider);
+    }
+
+    // TODO 26.1 ValueInput/ValueOutput: temporary, see ValueIOBridge
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
+        ValueIOBridge.deserialize(this, provider, tag);
     }
 }

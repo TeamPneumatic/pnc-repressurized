@@ -26,7 +26,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import snownee.jade.api.BlockAccessor;
 import snownee.jade.api.IBlockComponentProvider;
@@ -37,7 +37,7 @@ import snownee.jade.api.config.IPluginConfig;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SemiblockProvider {
-    public static final ResourceLocation ID = RL("semiblock");
+    public static final Identifier ID = RL("semiblock");
 
     public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
@@ -54,7 +54,7 @@ public class SemiblockProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }
@@ -82,7 +82,7 @@ public class SemiblockProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

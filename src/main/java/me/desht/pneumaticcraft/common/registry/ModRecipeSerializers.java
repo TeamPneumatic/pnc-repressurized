@@ -27,7 +27,6 @@ import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -38,64 +37,64 @@ public class ModRecipeSerializers {
 
     public static final Supplier<RecipeSerializer<AmadronOffer>> AMADRON_OFFERS
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.AMADRON_OFFERS,
-            () -> new AmadronOffer.Serializer<>(AmadronOffer::new));
+            () -> AmadronOffer.serializer(AmadronOffer::new));
 
     public static final Supplier<RecipeSerializer<AssemblyRecipe>> ASSEMBLY_LASER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.ASSEMBLY_LASER,
-            () -> new AssemblyRecipeImpl.Serializer<>(AssemblyRecipeImpl::new));
+            () -> AssemblyRecipeImpl.serializer(AssemblyRecipeImpl::new));
     public static final Supplier<RecipeSerializer<AssemblyRecipe>> ASSEMBLY_DRILL
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL,
-            () -> new AssemblyRecipeImpl.Serializer<>(AssemblyRecipeImpl::new));
+            () -> AssemblyRecipeImpl.serializer(AssemblyRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<PressureChamberRecipe>> PRESSURE_CHAMBER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER,
-            () -> new PressureChamberRecipeImpl.Serializer<>(PressureChamberRecipeImpl::new));
+            () -> PressureChamberRecipeImpl.serializer(PressureChamberRecipeImpl::new));
 
-    public static final Supplier<SimpleCraftingRecipeSerializer<PressureEnchantingRecipe>> PRESSURE_CHAMBER_ENCHANTING
+    public static final Supplier<RecipeSerializer<PressureEnchantingRecipe>> PRESSURE_CHAMBER_ENCHANTING
             = RECIPE_SERIALIZERS.register(PressureEnchantingRecipe.ID.getPath(),
-            () -> new SimpleCraftingRecipeSerializer<>(PressureEnchantingRecipe::new));
-    public static final Supplier<SimpleCraftingRecipeSerializer<PressureDisenchantingRecipe>> PRESSURE_CHAMBER_DISENCHANTING
+            () -> PressureEnchantingRecipe.SERIALIZER);
+    public static final Supplier<RecipeSerializer<PressureDisenchantingRecipe>> PRESSURE_CHAMBER_DISENCHANTING
             = RECIPE_SERIALIZERS.register(PressureDisenchantingRecipe.ID.getPath(),
-            () -> new SimpleCraftingRecipeSerializer<>(PressureDisenchantingRecipe::new));
+            () -> PressureDisenchantingRecipe.SERIALIZER);
 
     public static final Supplier<RecipeSerializer<ExplosionCraftingRecipe>> EXPLOSION_CRAFTING
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING,
-            () -> new ExplosionCraftingRecipeImpl.Serializer<>(ExplosionCraftingRecipeImpl::new));
+            () -> ExplosionCraftingRecipeImpl.serializer(ExplosionCraftingRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<HeatFrameCoolingRecipe>> HEAT_FRAME_COOLING
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING,
-            () -> new HeatFrameCoolingRecipeImpl.Serializer<>(HeatFrameCoolingRecipeImpl::new));
+            () -> HeatFrameCoolingRecipeImpl.serializer(HeatFrameCoolingRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<RefineryRecipe>> REFINERY
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.REFINERY,
-            () -> new RefineryRecipeImpl.Serializer<>(RefineryRecipeImpl::new));
+            () -> RefineryRecipeImpl.serializer(RefineryRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<ThermoPlantRecipe>> THERMO_PLANT
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.THERMO_PLANT,
-            () -> new ThermoPlantRecipeImpl.Serializer<>(ThermoPlantRecipeImpl::new));
+            () -> ThermoPlantRecipeImpl.serializer(ThermoPlantRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<FluidMixerRecipe>> FLUID_MIXER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.FLUID_MIXER,
-            () -> new FluidMixerRecipeImpl.Serializer<>(FluidMixerRecipeImpl::new));
+            () -> FluidMixerRecipeImpl.serializer(FluidMixerRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<FuelQualityRecipe>> FUEL_QUALITY
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.FUEL_QUALITY,
-            () -> new FuelQualityRecipeImpl.Serializer<>(FuelQualityRecipeImpl::new));
+            () -> FuelQualityRecipeImpl.serializer(FuelQualityRecipeImpl::new));
 
     public static final Supplier<RecipeSerializer<HeatPropertiesRecipe>> HEAT_PROPERTIES
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.HEAT_PROPERTIES,
-            () -> new HeatPropertiesRecipeImpl.Serializer<>(HeatPropertiesRecipeImpl::new));
+            () -> HeatPropertiesRecipeImpl.serializer(HeatPropertiesRecipeImpl::new));
 
-    public static final Supplier<SimpleCraftingRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
-            = RECIPE_SERIALIZERS.register("gun_ammo_potion_crafting", () -> new SimpleCraftingRecipeSerializer<>(GunAmmoPotionCrafting::new));
-    public static final Supplier<SimpleCraftingRecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
-            = RECIPE_SERIALIZERS.register("drone_upgrade_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneUpgradeCrafting::new));
-    public static final Supplier<SimpleCraftingRecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
-            = RECIPE_SERIALIZERS.register("drone_color_crafting", () -> new SimpleCraftingRecipeSerializer<>(DroneColorCrafting::new));
+    public static final Supplier<RecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING
+            = RECIPE_SERIALIZERS.register("gun_ammo_potion_crafting", () -> PNCSpecialCraftingRecipe.serializer(GunAmmoPotionCrafting::new));
+    public static final Supplier<RecipeSerializer<DroneUpgradeCrafting>> DRONE_UPGRADE_CRAFTING
+            = RECIPE_SERIALIZERS.register("drone_upgrade_crafting", () -> PNCSpecialCraftingRecipe.serializer(DroneUpgradeCrafting::new));
+    public static final Supplier<RecipeSerializer<DroneColorCrafting>> DRONE_COLOR_CRAFTING
+            = RECIPE_SERIALIZERS.register("drone_color_crafting", () -> PNCSpecialCraftingRecipe.serializer(DroneColorCrafting::new));
 
-    public static final Supplier<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
-            = RECIPE_SERIALIZERS.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
-    public static final Supplier<CompressorUpgradeCrafting.Serializer> COMPRESSOR_UPGRADE_CRAFTING
-            = RECIPE_SERIALIZERS.register("compressor_upgrade_crafting", CompressorUpgradeCrafting.Serializer::new);
+    public static final Supplier<RecipeSerializer<ShapedPressurizableRecipe>> CRAFTING_SHAPED_PRESSURIZABLE
+            = RECIPE_SERIALIZERS.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe::serializer);
+    public static final Supplier<RecipeSerializer<CompressorUpgradeCrafting>> COMPRESSOR_UPGRADE_CRAFTING
+            = RECIPE_SERIALIZERS.register("compressor_upgrade_crafting", CompressorUpgradeCrafting::serializer);
 
 }

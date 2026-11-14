@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ICondition.Operator;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetCoordinateCondition;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 
@@ -53,10 +53,10 @@ public class ProgWidgetCoordinateConditionScreen extends AbstractProgWidgetScree
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         String condition = progWidget.getCondition();
-        graphics.drawString(font, condition, width / 2 - font.width(condition) / 2, guiTop + 70, 0xFF404060, false);
+        graphics.text(font, condition, width / 2 - font.width(condition) / 2, guiTop + 70, 0xFF404060, false);
     }
 }

@@ -39,6 +39,7 @@ import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager.WrappedGoal;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToChargingStation;
 import me.desht.pneumaticcraft.common.drone.ai.DroneGoToOwner;
+import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetDimensionCondition;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLogistics;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
@@ -62,6 +63,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
 import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -80,7 +82,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -91,7 +92,7 @@ import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -110,8 +111,8 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -128,7 +129,9 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
@@ -225,6 +228,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     private int attackCount; // tracks number of times drone has starting attacking something
     private BlockPos deployPos; // where the drone was deployed, accessible to programs as '$deploy_pos'
     private BlockPos digSourcePos;  // where the drone fake player is digging from, not always same as drone pos
+    private boolean canUsePortal;  // will be true if drone has any Drone Condition: Dimension pieces
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -252,7 +256,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     protected DroneEntity(EntityType<? extends DroneEntity> type, Level world, Player player) {
         this(type, world);
         if (player != null) {
-            ownerUUID = player.getGameProfile().getId();
+            ownerUUID = player.getGameProfile().id();
             ownerName = player.getName();
         } else {
             ownerUUID = getUUID(); // Anonymous drone used for Amadron or spawned with a Dispenser
@@ -283,7 +287,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isClientSide && event.getWorld() == getCommandSenderWorld()
+        if (!event.getWorld().isClientSide() && event.getWorld() == level()
                 && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             // semiblock has been added or removed; clear the cached logistics manager
             // next DroneAILogistics operation will search the area again
@@ -295,7 +299,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     public void onRemovedFromLevel() {
         super.onRemovedFromLevel();
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             unregisterSemiblockEventListener();
         }
     }
@@ -305,7 +309,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         EntityPathNavigateDrone nav = new EntityPathNavigateDrone(this, worldIn);
         nav.setCanOpenDoors(false);
         nav.setCanFloat(true);
-        nav.setCanPassDoors(true);
+        nav.getNodeEvaluator().setCanPassDoors(true);
         return nav;
     }
 
@@ -329,6 +333,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (droneItem.canProgram(droneStack)) {
             progWidgets = SavedDroneProgram.loadProgWidgets(droneStack);
             ProgWidgetUtils.updatePuzzleConnections(progWidgets);
+            canUsePortal = progWidgets.stream().anyMatch(w -> w instanceof ProgWidgetDimensionCondition);
         }
 
         setDroneColor(droneItem.getDroneColor(droneStack).getId());
@@ -414,6 +419,11 @@ public class DroneEntity extends AbstractDroneEntity implements
         securityUpgradeCount = buffer.readVarInt();
     }
 
+    @Override
+    public boolean canUsePortal(boolean allowPassengers) {
+        return canUsePortal && super.canUsePortal(allowPassengers);
+    }
+
     /**
      * Determines if an entity can be despawned, used on idle far away entities
      */
@@ -448,7 +458,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         Level level = level();
 
         boolean enabled = !disabledByHacking && getAirHandler().getPressure() > 0.01F;
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             entityData.set(PRESSURE, ((int) (getAirHandler().getPressure() * 10.0f)) / 10.0f);  // rounded for client
 
             setAccelerating(!standby && enabled);
@@ -503,7 +513,7 @@ public class DroneEntity extends AbstractDroneEntity implements
                 laserExtension = Math.max(0, laserExtension - LASER_EXTEND_SPEED);
             }
 
-            if (isAccelerating() && level.random.nextBoolean()) {
+            if (isAccelerating() && level.getRandom().nextBoolean()) {
                 int x = (int) Math.floor(getX());
                 int y = (int) Math.floor(getY() - 1);
                 int z = (int) Math.floor(getZ());
@@ -525,7 +535,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (isAccelerating()) {
             setDeltaMovement(getDeltaMovement().scale(0.3));
             propSpeed = Math.min(1, propSpeed + 0.04F);
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 getAirHandler().addAir(-1);
             }
         } else {
@@ -540,7 +550,7 @@ public class DroneEntity extends AbstractDroneEntity implements
             getMinigun().setAttackTarget(getTarget()).tick(getX(), getY(), getZ());
         }
 
-        if (!level.isClientSide && isAlive()) {
+        if (!level.isClientSide() && isAlive()) {
             if (enabled) {
                 DroneAIManager prevActive = getActiveAIManager();
                 aiManager.onUpdateTasks();
@@ -614,7 +624,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private static <T extends ParticleOptions> void spawnDebugParticle(Collection<ServerPlayer> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
-        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false,
+        ClientboundLevelParticlesPacket packet = new ClientboundLevelParticlesPacket(type, false, false,
                 posX, posY, posZ,
                 (float)xOffset, (float)yOffset, (float)zOffset,
                 (float)speed, particleCount
@@ -623,7 +633,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void onFirstTick() {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             registerSemiblockEventListener();
 
             double newDroneSpeed = 0.15f + Math.min(10, getUpgrades(ModUpgrades.SPEED.get())) * 0.015f;
@@ -693,7 +703,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     public boolean shouldLoadChunk(ChunkPos cp) {
-        return Math.abs(cp.x - chunkPosition().x) + Math.abs(cp.z - chunkPosition().z) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
+        return Math.abs(cp.x() - chunkPosition().x()) + Math.abs(cp.z() - chunkPosition().z()) < getUpgrades(ModUpgrades.CHUNKLOADER.get());
     }
 
     @Override
@@ -766,8 +776,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         return aiManager.getCoordinate(ownerUUID, varName);
     }
 
-    private ResourceLocation getActiveProgramKey() {
-        return ResourceLocation.parse(entityData.get(PROGRAM_KEY));
+    private Identifier getActiveProgramKey() {
+        return Identifier.parse(entityData.get(PROGRAM_KEY));
     }
 
     @Override
@@ -850,7 +860,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
     @Override
     public void travel(Vec3 travelVec) {
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             LivingEntity targetEntity = getTarget();
             if (targetEntity != null && !targetEntity.isAlive()) {
                 setTarget(null);
@@ -869,10 +879,10 @@ public class DroneEntity extends AbstractDroneEntity implements
 
                 oldTargetLine.setProgress(targetLine.getProgress());
                 targetLine.incProgressByDistance(0.2f);
-                noCulling = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
+                // TODO 26.1 render: Entity#noCulling is gone; the drone renderer should override affectedByCulling() to
+                //  return false while targetLine != null, so the target lines still render when the drone is off-screen
             } else {
                 targetLine = oldTargetLine = null;
-                noCulling = false;
             }
         }
         if (getVehicle() == null && isAccelerating()) {
@@ -902,18 +912,18 @@ public class DroneEntity extends AbstractDroneEntity implements
         Level level = level();
 
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-            if (!level.isClientSide) {
-                return GPSToolItem.getGPSLocation(player.getUUID(), stack).map(gpsPos -> {
+            if (!level.isClientSide()) {
+                return GPSToolItem.getGPSLocation(player.getUUID(), stack).<InteractionResult>map(gpsPos -> {
                     getNavigation().moveTo(gpsPos.getX(), gpsPos.getY(), gpsPos.getZ(), 0.1D);
                     return InteractionResult.SUCCESS;
                 }).orElse(InteractionResult.PASS);
             }
             return InteractionResult.SUCCESS;
         } else if (IOHelper.getFluidHandlerForItem(stack).isPresent()) {
-            if (player.level().isClientSide) return InteractionResult.SUCCESS;
+            if (player.level().isClientSide()) return InteractionResult.SUCCESS;
             return IOHelper.getFluidHandlerForItem(stack).map(handler -> {
                 if (handler.getFluidInTank(0).isEmpty()) {
-                    boolean ok = player.level().isClientSide || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
+                    boolean ok = player.level().isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
                     return ok ? InteractionResult.CONSUME : InteractionResult.PASS;
                 } else {
                     return InteractionResult.PASS;
@@ -922,7 +932,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         } else {
             DyeColor color = DyeColor.getColor(stack);
             if (color != null) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     setDroneColor(color.getId());
                     if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {
                         stack.shrink(1);
@@ -976,8 +986,8 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Nullable
     @Override
-    public Entity changeDimension(DimensionTransition transition) {
-        Entity entity = super.changeDimension(transition);
+    public Entity teleport(TeleportTransition transition) {
+        Entity entity = super.teleport(transition);
         if (entity != null) {
             restoreFluidBlocks(false);
         }
@@ -985,13 +995,13 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    protected void dropEquipment() {
+    protected void dropEquipment(ServerLevel level) {
         boolean wrenchedByOwner = wrenchedBy != null && wrenchedBy.equals(ownerUUID);
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             ItemStack stack = droneItemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (wrenchedByOwner || !EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
-                    spawnAtLocation(stack, 0);
+                    spawnAtLocation(level, stack);
                 }
                 droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
             }
@@ -1024,8 +1034,10 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (shouldDropAsItem()) {
             ItemStack stack = new ItemStack(getDroneItem());
             writeToItemStack(stack);
-            spawnAtLocation(stack, 0);
-            if (!level().isClientSide) {
+            if (level() instanceof ServerLevel serverLevel) {
+                spawnAtLocation(serverLevel, stack);
+            }
+            if (!level().isClientSide()) {
                 reportDroneDeath(getOwner(), damageSource);
             }
         }
@@ -1038,13 +1050,13 @@ public class DroneEntity extends AbstractDroneEntity implements
             int x = (int) Math.floor(getX());
             int y = (int) Math.floor(getY());
             int z = (int) Math.floor(getZ());
-            String dim = level().dimension().location().toString();
+            String dim = level().dimension().identifier().toString();
             MutableComponent msg = hasCustomName() ?
                     Component.translatable("pneumaticcraft.death.drone.named", Objects.requireNonNull(getCustomName()).getString(), dim, x, y, z) :
                     Component.translatable("pneumaticcraft.death.drone", dim, x, y, z);
-            owner.displayClientMessage(msg.withStyle(ChatFormatting.GOLD), false);
+            owner.sendSystemMessage(msg.withStyle(ChatFormatting.GOLD));
             if (!damageSource.is(DamageTypes.GENERIC_KILL)) {
-                owner.displayClientMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY), false);
+                owner.sendSystemMessage(Component.literal(" - ").append(damageSource.getLocalizedDeathMessage(this)).withStyle(ChatFormatting.GRAY));
             }
         }
     }
@@ -1052,17 +1064,17 @@ public class DroneEntity extends AbstractDroneEntity implements
     private Item getDroneItem() {
         // return the item which has the same registry ID as our entity type
         return PneumaticCraftUtils.getRegistryName(BuiltInRegistries.ENTITY_TYPE, getType())
-                .map(BuiltInRegistries.ITEM::get)
+                .map(BuiltInRegistries.ITEM::getValue)
                 .orElseThrow();
     }
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (level().isClientSide) {
+        if (level().isClientSide()) {
             if (TARGET_ID.equals(key)) {
                 int id = entityData.get(TARGET_ID);
                 if (id > 0) {
-                    Entity e = getCommandSenderWorld().getEntity(id);
+                    Entity e = level().getEntity(id);
                     if (e instanceof LivingEntity) {
                         setTarget((LivingEntity) e);
                     }
@@ -1082,14 +1094,14 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     public void setTarget(LivingEntity entity) {
         super.setTarget(entity);
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             entityData.set(TARGET_ID, entity == null ? 0 : entity.getId());
         }
     }
 
     @Override
-    public boolean startRiding(Entity entity, boolean force) {
-        return canDroneBePickedUp() && super.startRiding(entity, force);
+    public boolean startRiding(Entity entity, boolean force, boolean sendEventAndTriggers) {
+        return canDroneBePickedUp() && super.startRiding(entity, force, sendEventAndTriggers);
     }
 
     public BasicAirHandler getAirHandler() {
@@ -1122,9 +1134,11 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
 
+        // TODO 26.1 ValueInput/ValueOutput: temporary bridge, see ValueIOBridge
+        CompoundTag tag = new CompoundTag();
         tag.put(IProgrammable.NBT_WIDGETS, ProgWidgetUtils.putWidgetsToNBT(registryAccess(), progWidgets));
         tag.put("airHandler", getAirHandler().serializeNBT());
         tag.putFloat("propSpeed", propSpeed);
@@ -1135,13 +1149,13 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (carriedEntityAIdisabled) tag.putBoolean("carriedEntityAIdisabled", true);
         tag.putInt("color", getDroneColor());
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
-        if (deployPos != null) tag.put("deployPos", NbtUtils.writeBlockPos(deployPos));
+        if (deployPos != null) tag.store("deployPos", BlockPos.CODEC, deployPos);
 
         ItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new ItemStackHandler(droneItemHandler.getSlots()));
-        tag.put("Inventory", tmpHandler.serializeNBT(registryAccess()));
-        tag.put("upgrades", upgradeInventory.serializeNBT(registryAccess()));
+        tag.put("Inventory", ValueIOBridge.serialize(tmpHandler, registryAccess()));
+        tag.put("upgrades", ValueIOBridge.serialize(upgradeInventory, registryAccess()));
 
-        fluidTank.writeToNBT(registryAccess(), tag);
+        fluidTank.serialize(output);
 
         tag.putString("owner", ownerName.getString());
         if (ownerUUID != null) {
@@ -1157,45 +1171,49 @@ public class DroneEntity extends AbstractDroneEntity implements
         if (!displacedLiquids.isEmpty()) {
             DISPLACED_LIQUIDS_CODEC.encodeStart(NbtOps.INSTANCE, displacedLiquids).ifSuccess(t -> tag.put("displacedLiquids", t));
         }
+        output.store(tag);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
 
-        progWidgets = ProgWidgetUtils.getWidgetsFromNBT(registryAccess(), tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND));
+        // TODO 26.1 ValueInput/ValueOutput: temporary bridge, see ValueIOBridge
+        CompoundTag tag = ValueIOBridge.readAll(input);
+
+        progWidgets = ProgWidgetUtils.getWidgetsFromNBT(registryAccess(), tag.getListOrEmpty(IProgrammable.NBT_WIDGETS));
         ProgWidgetUtils.updatePuzzleConnections(progWidgets);
-        propSpeed = tag.getFloat("propSpeed");
-        disabledByHacking = tag.getBoolean("disabledByHacking");
-        setGoingToOwner(tag.getBoolean("hackedByOwner"));
-        setDroneColor(tag.getInt("color"));
-        aiManager.readFromNBT(tag.getCompound("variables"));
-        standby = tag.getBoolean("standby");
-        allowStandbyPickup = tag.getBoolean("allowStandbyPickup");
-        upgradeInventory.deserializeNBT(registryAccess(), tag.getCompound("upgrades"));
+        propSpeed = tag.getFloatOr("propSpeed", 0f);
+        disabledByHacking = tag.getBooleanOr("disabledByHacking", false);
+        setGoingToOwner(tag.getBooleanOr("hackedByOwner", false));
+        setDroneColor(tag.getIntOr("color", 0));
+        aiManager.readFromNBT(tag.getCompoundOrEmpty("variables"));
+        standby = tag.getBooleanOr("standby", false);
+        allowStandbyPickup = tag.getBooleanOr("allowStandbyPickup", false);
+        ValueIOBridge.deserialize(upgradeInventory, registryAccess(), tag.getCompoundOrEmpty("upgrades"));
         upgradeCache.invalidateCache();
-        getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
-        carriedEntityAIdisabled = tag.getBoolean("carriedEntityAIdisabled");
-        deployPos = NbtUtils.readBlockPos(tag, "deployPos").orElse(null);
+        getAirHandler().deserializeNBT(tag.getCompoundOrEmpty("airHandler"));
+        carriedEntityAIdisabled = tag.getBooleanOr("carriedEntityAIdisabled", false);
+        deployPos = tag.read("deployPos", BlockPos.CODEC).orElse(null);
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(registryAccess(), tag.getCompound("Inventory"));
+        ValueIOBridge.deserialize(tmpInv, registryAccess(), tag.getCompoundOrEmpty("Inventory"));
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
         fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(ModUpgrades.INVENTORY.get())));
-        fluidTank.readFromNBT(registryAccess(), tag);
+        fluidTank.deserialize(input);
 
         energy.setCapacity(100000 + 100000 * getUpgrades(ModUpgrades.VOLUME.get()));
 
-        if (tag.contains("owner")) ownerName = Component.literal(tag.getString("owner"));
-        if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
+        if (tag.contains("owner")) ownerName = Component.literal(tag.getStringOr("owner", ""));
+        if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLongOr("ownerUUID_M", 0L), tag.getLongOr("ownerUUID_L", 0L));
 
-        stackEnchants = ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompound("stackEnchants"))
+        stackEnchants = ItemEnchantments.CODEC.parse(NbtOps.INSTANCE, tag.getCompoundOrEmpty("stackEnchants"))
                 .result().orElse(ItemEnchantments.EMPTY);
 
         displacedLiquids.clear();
-        DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompound("displacedLiquids"))
+        DISPLACED_LIQUIDS_CODEC.parse(NbtOps.INSTANCE, tag.getCompoundOrEmpty("displacedLiquids"))
                 .ifSuccess(displacedLiquids::putAll);
     }
 
@@ -1222,7 +1240,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public FakePlayer getFakePlayer() {
-        if (fakePlayer == null && !level().isClientSide) {
+        if (fakePlayer == null && !level().isClientSide()) {
             // using the owner's UUID for the fake player should be fine in Forge 35.0.12 and up
             // see https://github.com/MinecraftForge/MinecraftForge/pull/7454
             fakePlayer = new DroneFakePlayer((ServerLevel) level(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
@@ -1232,7 +1250,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunDrone(level().isClientSide ? null : getFakePlayer())
+            minigun = new MinigunDrone(level().isClientSide() ? null : getFakePlayer())
                     .setWorld(level())
                     .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_ENTITY), PneumaticValues.DRONE_USAGE_ATTACK)
                     .setInfiniteAmmo(getUpgrades(ModUpgrades.CREATIVE.get()) > 0);
@@ -1241,7 +1259,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean doHurtTarget(Entity entity) {
+    public boolean doHurtTarget(ServerLevel level, Entity entity) {
         getFakePlayer().attack(entity);
         if (entity instanceof LivingEntity livingEntity) {
             if (livingEntity.isAlive() && livingEntity.getLastHurtByMob() == getFakePlayer()) {
@@ -1258,15 +1276,15 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         if (source.is(DamageTypes.IN_WALL)) {
             if (suffocationCounter > 0) suffocationCounter--;
         }
-        return super.hurt(source, damage);
+        return super.hurtServer(level, source, damage);
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
+    public boolean isInvulnerableTo(ServerLevel level, DamageSource source) {
         if (source.is(DamageTypes.IN_WALL)) {
             return suffocationCounter > 0 || !ConfigHelper.common().drones.enableDroneSuffocation.get();
         }
@@ -1274,12 +1292,12 @@ public class DroneEntity extends AbstractDroneEntity implements
             return true;
         }
         Entity e = source.getEntity();
-        if (e != null && !level().isClientSide && e.getId() == getFakePlayer().getId()) {
+        if (e != null && e.getId() == getFakePlayer().getId()) {
             // don't allow the drone's own fake player to damage the drone
             // e.g. if the drone is wielding an infinity hammer
             return true;
         }
-        return super.isInvulnerableTo(source);
+        return super.isInvulnerableTo(level, source);
     }
 
     @Override
@@ -1347,7 +1365,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      */
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return RL("drone");
     }
 
@@ -1399,7 +1417,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void onHackFinished(DroneEntity entity, Player player) {
-        if (!level().isClientSide && player.getUUID().equals(ownerUUID)) {
+        if (!level().isClientSide() && player.getUUID().equals(ownerUUID)) {
             setGoingToOwner(gotoOwnerAI == null); //toggle the state
         } else {
             disabledByHacking = true;
@@ -1407,7 +1425,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     private void setGoingToOwner(boolean state) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             if (state && gotoOwnerAI == null) {
                 gotoOwnerAI = new DroneGoToOwner(this);
                 goalSelector.addGoal(2, gotoOwnerAI);
@@ -1463,7 +1481,9 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void dropItem(ItemStack stack) {
-        spawnAtLocation(stack, 0);
+        if (level() instanceof ServerLevel serverLevel) {
+            spawnAtLocation(serverLevel, stack);
+        }
     }
 
     @Override
@@ -1569,12 +1589,14 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void overload(String msgKey, Object... params) {
-        kill();
+        if (level() instanceof ServerLevel serverLevel) {
+            kill(serverLevel);
+        }
         Player owner = getOwner();
         if (owner != null) {
-            owner.displayClientMessage(Component.literal(" - ")
+            owner.sendSystemMessage(Component.literal(" - ")
                     .append(Component.translatable("pneumaticcraft.death.drone.overload." + msgKey, params))
-                    .withStyle(ChatFormatting.GRAY), false);
+                    .withStyle(ChatFormatting.GRAY));
         }
     }
 
@@ -1605,7 +1627,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     @Override
     public void updateLabel() {
-        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
+        entityData.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : DroneAIManager.LABEL_MAIN);
     }
 
     @Override
@@ -1731,7 +1753,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 // only set server-side; drone sync's the activation state to client
                 DroneEntity.this.setMinigunActivated(activated);
             }
@@ -1739,7 +1761,7 @@ public class DroneEntity extends AbstractDroneEntity implements
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 // only set server-side; drone sync's the activation state to client
                 setAmmoColor(ammo);
             }
@@ -1792,7 +1814,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         public void copyItemToFakePlayer(int slot) {
             super.copyItemToFakePlayer(slot);
 
-            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().selected && ConfigHelper.common().drones.dronesRenderHeldItem.get()) {
+            if (isFakePlayerReady() && slot == getFakePlayer().getInventory().getSelectedSlot() && ConfigHelper.common().drones.dronesRenderHeldItem.get()) {
                 entityData.set(HELD_ITEM, getStackInSlot(slot));
             }
         }

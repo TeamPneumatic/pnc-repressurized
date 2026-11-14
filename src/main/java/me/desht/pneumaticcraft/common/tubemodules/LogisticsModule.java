@@ -121,8 +121,8 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
     @Override
     public void readFromNBT(CompoundTag nbt) {
         super.readFromNBT(nbt);
-        powered = nbt.getBoolean("powered");
-        colorChannel = nbt.getByte("colorChannel");
+        powered = nbt.getBooleanOr("powered", false);
+        colorChannel = nbt.getByteOr("colorChannel", (byte) 0);
     }
 
     public AbstractLogisticsFrameEntity getFrame() {
@@ -141,7 +141,7 @@ public class LogisticsModule extends AbstractTubeModule implements INetworkedMod
         DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
             int colorId = color.getId();
-            if (!player.level().isClientSide) {
+            if (!player.level().isClientSide()) {
                 setColorChannel(colorId);
                 NetworkHandler.sendToAllTracking(PacketUpdateLogisticsModule.create(this, 0), getTube());
                 if (ConfigHelper.common().general.useUpDyesWhenColoring.get() && !player.isCreative()) {

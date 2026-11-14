@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -27,7 +28,7 @@ public record PacketTeleportCommand(BlockPos pos) implements CustomPacketPayload
     }
 
     public static void handle(PacketTeleportCommand message, IPayloadContext ctx) {
-        CommandSourceStack stack = ctx.player().createCommandSourceStack();
+        CommandSourceStack stack = ((ServerPlayer) ctx.player()).createCommandSourceStack();
         String command = String.format("tp %d %d %d", message.pos().getX(), message.pos().getY(), message.pos().getZ());
         stack.getServer().getCommands().performPrefixedCommand(stack, command);
     }

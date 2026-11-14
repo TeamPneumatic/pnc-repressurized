@@ -32,28 +32,25 @@ import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.entity.drone.ProgrammableControllerEntity;
 import me.desht.pneumaticcraft.common.network.DronePacket.DroneTarget;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ElytraHandler;
 import me.desht.pneumaticcraft.common.registry.ModArmorMaterials;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
-import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
@@ -62,30 +59,32 @@ import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.Level;
 
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticArmorItem extends ArmorItem implements
+public class PneumaticArmorItem extends Item implements
         IChargeableContainerProvider, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem,
         ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
-    private static final Map<EquipmentSlotGroup,ResourceLocation> MODIFIER_IDS = Util.make(
+    private static final Map<EquipmentSlotGroup,Identifier> MODIFIER_IDS = Util.make(
             new EnumMap<>(EquipmentSlotGroup.class), map -> {
                 map.put(EquipmentSlotGroup.HEAD, RL("armor_mod_head"));
                 map.put(EquipmentSlotGroup.CHEST, RL("armor_mod_chest"));
@@ -101,13 +100,19 @@ public class PneumaticArmorItem extends ArmorItem implements
     };
 //    private static final int[] VIS_DISCOUNTS = new int[] { 1, 2, 2, 5 };
 
-    public static final DyedItemColor DEFAULT_PRIMARY_COLOR = new DyedItemColor(0xFF969696, false);
-    public static final DyedItemColor DEFAULT_SECONDARY_COLOR = new DyedItemColor(0xFFC0C0C0, false);
-    public static final DyedItemColor DEFAULT_EYEPIECE_COLOR = new DyedItemColor(0xFF00AA00, false);
+    public static final DyedItemColor DEFAULT_PRIMARY_COLOR = new DyedItemColor(0xFF969696);
+    public static final DyedItemColor DEFAULT_SECONDARY_COLOR = new DyedItemColor(0xFFC0C0C0);
+    public static final DyedItemColor DEFAULT_EYEPIECE_COLOR = new DyedItemColor(0xFF00AA00);
 
-    public PneumaticArmorItem(ArmorItem.Type type) {
-        super(ModArmorMaterials.PNEUMATIC.getDelegate(), type,
-                ModItems.pressurizableToolProps().durability(type.getDurability(24)));
+    private final ArmorType type;
+
+    public PneumaticArmorItem(ArmorType type) {
+        super(ModItems.pressurizableToolProps().humanoidArmor(ModArmorMaterials.PNEUMATIC, type));
+        this.type = type;
+    }
+
+    public ArmorType getType() {
+        return type;
     }
 
     /**
@@ -148,28 +153,29 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        if (type == Type.HELMET && context.registries() != null) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        if (type == ArmorType.HELMET && context.registries() != null) {
             ClientUtils.getOptionalClientLevel().ifPresent(level -> addHelmetInformation(stack, level, tooltip));
         }
     }
 
-    private void addHelmetInformation(ItemStack stack, Level level, List<Component> tooltip) {
-        if (TheOneProbe.isProbeEnabled(stack)) {
-            tooltip.add(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").withStyle(ChatFormatting.BLUE));
-        }
+    private void addHelmetInformation(ItemStack stack, Level level, Consumer<Component> tooltip) {
+        // TODO 26.1 integration: TheOneProbe
+//        if (TheOneProbe.isProbeEnabled(stack)) {
+//            tooltip.accept(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").withStyle(ChatFormatting.BLUE));
+//        }
 
         Item searchedItem = getSearchedItem(stack);
         if (searchedItem != null) {
             ItemStack searchStack = new ItemStack(searchedItem);
             if (!searchStack.isEmpty()) {
-                tooltip.add(xlate("pneumaticcraft.armor.upgrade.search").append(": ").append(searchStack.getHoverName()).withStyle(ChatFormatting.YELLOW));
+                tooltip.accept(xlate("pneumaticcraft.armor.upgrade.search").append(": ").append(searchStack.getHoverName()).withStyle(ChatFormatting.YELLOW));
             }
         }
 
         BlockPos pos = getCoordTrackerPos(stack, level);
         if (pos != null) {
-            tooltip.add(xlate("pneumaticcraft.armor.upgrade.coordinate_tracker")
+            tooltip.accept(xlate("pneumaticcraft.armor.upgrade.coordinate_tracker")
                     .append(": ").append(PneumaticCraftUtils.posToString(pos)).withStyle(ChatFormatting.YELLOW));
         }
     }
@@ -338,7 +344,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public boolean isEnderMask(ItemStack stack, Player player, EnderMan endermanEntity) {
+    public boolean isGazeDisguise(ItemStack stack, Player player, @Nullable LivingEntity entity) {
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
         return handler.upgradeUsable(CommonUpgradeHandlers.enderVisorHandler, true);
     }
@@ -358,17 +364,12 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     @Override
-    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-        if (entity instanceof Player player
-                && CommonArmorHandler.getHandlerForPlayer(player).upgradeUsable(CommonUpgradeHandlers.elytraHandler, true)) {
-            return true;
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, @Nullable T entity, Consumer<Item> onBroken) {
+        // the Elytra upgrade glides on air (see ElytraHandler), not on durability
+        if (type == ArmorType.CHESTPLATE && entity != null && ElytraHandler.isGlidingDamage(stack, entity, amount)) {
+            return 0;
         }
-        return super.canElytraFly(stack, entity);
-    }
-
-    @Override
-    public boolean elytraFlightTick(ItemStack stack, LivingEntity entity, int flightTicks) {
-        return ElytraHandler.handleFlightTick(entity, flightTicks) || super.elytraFlightTick(stack, entity, flightTicks);
+        return super.damageItem(stack, amount, entity, onBroken);
     }
 
     public int getPrimaryColor(ItemStack stack) {
@@ -376,7 +377,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     public void setPrimaryColor(ItemStack stack, int color) {
-        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, false));
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
     }
 
     public int getSecondaryColor(ItemStack stack) {
@@ -384,7 +385,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     public void setSecondaryColor(ItemStack stack, int color) {
-        stack.set(ModDataComponents.ARMOR_SECONDARY_COLOR, new DyedItemColor(color, false));
+        stack.set(ModDataComponents.ARMOR_SECONDARY_COLOR, new DyedItemColor(color));
     }
 
     public int getEyepieceColor(ItemStack stack) {
@@ -392,7 +393,7 @@ public class PneumaticArmorItem extends ArmorItem implements
     }
 
     public void setEyepieceColor(ItemStack stack, int color) {
-        stack.set(ModDataComponents.ARMOR_EYEPIECE_COLOR, new DyedItemColor(color, false));
+        stack.set(ModDataComponents.ARMOR_EYEPIECE_COLOR, new DyedItemColor(color));
     }
 
     @Override

@@ -90,8 +90,8 @@ public class RemoteMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticCraf
         variables.forEach(varName -> {
             if (!varName.isEmpty()) {
                 if (!GlobalVariableHelper.getInstance().hasPrefix(varName)) {
-                    if (!player.level().isClientSide) {
-                        player.displayClientMessage(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD), false);
+                    if (!player.level().isClientSide()) {
+                        player.sendSystemMessage(xlate("pneumaticcraft.command.globalVariable.prefixReminder", varName).withStyle(ChatFormatting.GOLD));
                     }
                     varName = "#" + varName;
                 }
