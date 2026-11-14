@@ -21,11 +21,16 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import me.desht.pneumaticcraft.client.model.ModelMinigun;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class SentryTurretRenderer extends AbstractBlockEntityModelRenderer<SentryTurretBlockEntity> {
+public class SentryTurretRenderer extends AbstractBlockEntityModelRenderer<SentryTurretBlockEntity, SentryTurretRenderer.State> {
     private final ModelMinigun model;
 
     public SentryTurretRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -35,9 +40,25 @@ public class SentryTurretRenderer extends AbstractBlockEntityModelRenderer<Sentr
     }
 
     @Override
-    void renderModel(SentryTurretBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        matrixStackIn.translate(0, -13 / 16F, 0);
-        model.renderMinigun(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, te.getMinigun(), partialTicks, false);
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(SentryTurretBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.minigun.extract(blockEntity.getMinigun(), partialTicks);
+    }
+
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        poseStack.translate(0, -13 / 16F, 0);
+        model.submitMinigun(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.minigun, false, state.breakProgress);
+    }
+
+    public static class State extends ModelRenderState {
+        final ModelMinigun.MinigunRenderState minigun = new ModelMinigun.MinigunRenderState();
     }
 
     @Override

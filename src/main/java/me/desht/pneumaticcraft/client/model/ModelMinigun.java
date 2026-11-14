@@ -7,7 +7,6 @@
 package me.desht.pneumaticcraft.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -18,17 +17,23 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Used in three different places:
  * 1. Drone's minigun (in DroneMinigunLayer)
  * 2. ISTER for the minigun item (RenderItemMinigun)
  * 3. Sentry turrent TER model (SentryTurretRenderer)
+ * <p>
+ * Model parts are submitted for deferred rendering, so the spinning barrel is rotated via the pose stack rather
+ * than by changing the parts' rotation.
  */
-public class ModelMinigun extends Model {
+public class ModelMinigun {
     //fields
     private final ModelPart barrel;
     private final ModelPart support1;
@@ -55,7 +60,6 @@ public class ModelMinigun extends Model {
     private static final String MAGAZINECOLOR = "magazineColor";
 
     public ModelMinigun(ModelPart root) {
-        super(RenderType::entityCutoutNoCull);
 
         barrel = root.getChild(BARREL);
         support1 = root.getChild(SUPPORT1);
@@ -137,59 +141,80 @@ public class ModelMinigun extends Model {
     }
 
 
-    public void renderMinigun(PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
-        VertexConsumer builder = buffer.getBuffer(RenderType.entityCutout(Textures.MODEL_DRONE_MINIGUN));
-        matrixStack.pushPose();
+    public void submitMinigun(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, MinigunRenderState state, boolean renderMount, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
+        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_DRONE_MINIGUN);
+        PartSubmitter submitter = (part, color) -> submitNodeCollector.submitModelPart(part, poseStack, renderType, lightCoords, overlayCoords, null, color, crumblingOverlay);
+
+        poseStack.pushPose();
 
         if (renderMount) {
-            matrixStack.pushPose();
-            matrixStack.translate(0, 5 / 16D, -12 / 16D);
-            mount.render(matrixStack, builder, combinedLight, combinedOverlay);
-            matrixStack.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0, 5 / 16D, -12 / 16D);
+            submitter.submit(mount, -1);
+            poseStack.popPose();
         }
 
-        float barrelRotation = 0;
-        if (minigun != null) {
-            barrelRotation = Mth.lerp(partialTick, minigun.getOldMinigunRotation(), minigun.getMinigunRotation());
-            float yaw = minigun.oldMinigunYaw + partialTick * Minigun.clampYaw(minigun.minigunYaw - minigun.oldMinigunYaw);
-            float pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
-
-            matrixStack.translate(0, 23 / 16D, 0);
-            matrixStack.mulPose(Axis.YP.rotationDegrees(yaw));
-            matrixStack.mulPose(Axis.XP.rotationDegrees(pitch));
-            matrixStack.translate(0, -18 / 16D, -12 / 16D);
+        if (state.hasMinigun) {
+            poseStack.translate(0, 23 / 16D, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.yaw));
+            poseStack.mulPose(Axis.XP.rotationDegrees(state.pitch));
+            poseStack.translate(0, -18 / 16D, -12 / 16D);
         }
-        barrel.yRot = 0;
-        barrel.xRot = 0;
         for (int i = 0; i < 6; i++) {
-            barrel.zRot = (float) (Math.PI / 3 * i) + barrelRotation;
-            barrel.render(matrixStack, builder, combinedLight, combinedOverlay);
+            submitSpinning(poseStack, submitter, barrel, (float) (Math.PI / 3 * i) + state.barrelRotation);
         }
-        support1.zRot = barrelRotation;
-        support2.zRot = barrelRotation;
-        support3.zRot = barrelRotation;
-        support4.zRot = barrelRotation;
-        support5.zRot = barrelRotation;
-        support1.render(matrixStack, builder, combinedLight, combinedOverlay);
-        support2.render(matrixStack, builder, combinedLight, combinedOverlay);
-        support3.render(matrixStack, builder, combinedLight, combinedOverlay);
-        support4.render(matrixStack, builder, combinedLight, combinedOverlay);
-        support5.render(matrixStack, builder, combinedLight, combinedOverlay);
-        magazine.render(matrixStack, builder, combinedLight, combinedOverlay);
-        main.render(matrixStack, builder, combinedLight, combinedOverlay);
+        submitSpinning(poseStack, submitter, support1, state.barrelRotation);
+        submitSpinning(poseStack, submitter, support2, state.barrelRotation);
+        submitSpinning(poseStack, submitter, support3, state.barrelRotation);
+        submitSpinning(poseStack, submitter, support4, state.barrelRotation);
+        submitSpinning(poseStack, submitter, support5, state.barrelRotation);
+        submitter.submit(magazine, -1);
+        submitter.submit(main, -1);
 
-        magazineColor.render(matrixStack, builder, combinedLight, combinedOverlay, minigun != null ? 0xFF000000 | minigun.getAmmoColor() : 0xFF313131);
+        submitter.submit(magazineColor, state.ammoColor);
 
-        matrixStack.popPose();
+        poseStack.popPose();
+    }
+
+    private static void submitSpinning(PoseStack poseStack, PartSubmitter submitter, ModelPart part, float zRot) {
+        // equivalent to setting the part's zRot (barrel and supports have no rotation of their own)
+        poseStack.pushPose();
+        poseStack.translate(part.x / 16F, part.y / 16F, part.z / 16F);
+        poseStack.mulPose(Axis.ZP.rotation(zRot));
+        poseStack.translate(-part.x / 16F, -part.y / 16F, -part.z / 16F);
+        submitter.submit(part, -1);
+        poseStack.popPose();
+    }
+
+    @FunctionalInterface
+    private interface PartSubmitter {
+        void submit(ModelPart part, int color);
+    }
+
+    public static class MinigunRenderState {
+        boolean hasMinigun;
+        float barrelRotation;
+        float yaw;
+        float pitch;
+        int ammoColor = 0xFF313131;
+
+        public void extract(@Nullable Minigun minigun, float partialTick) {
+            hasMinigun = minigun != null;
+            if (minigun != null) {
+                barrelRotation = Mth.lerp(partialTick, minigun.getOldMinigunRotation(), minigun.getMinigunRotation());
+                yaw = minigun.oldMinigunYaw + partialTick * Minigun.clampYaw(minigun.minigunYaw - minigun.oldMinigunYaw);
+                pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
+                ammoColor = 0xFF000000 | minigun.getAmmoColor();
+            } else {
+                barrelRotation = yaw = pitch = 0f;
+                ammoColor = 0xFF313131;
+            }
+        }
     }
 
     public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
         modelRenderer.xRot = x;
         modelRenderer.yRot = y;
         modelRenderer.zRot = z;
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack pPoseStack, VertexConsumer pBuffer, int pPackedLight, int pPackedOverlay, int color) {
     }
 }
