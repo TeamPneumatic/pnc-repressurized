@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 
-public abstract class AbstractAssemblyRenderer<T extends AbstractAssemblyRobotBlockEntity> extends AbstractBlockEntityModelRenderer<T> {
+public abstract class AbstractAssemblyRenderer<T extends AbstractAssemblyRobotBlockEntity, S extends AbstractBlockEntityModelRenderer.ModelRenderState> extends AbstractBlockEntityModelRenderer<T, S> {
     AbstractAssemblyRenderer(BlockEntityRendererProvider.Context ctx) {
         super(ctx);
     }
