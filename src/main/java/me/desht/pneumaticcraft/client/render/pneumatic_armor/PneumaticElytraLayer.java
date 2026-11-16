@@ -32,12 +32,12 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     public static final ContextKey<Boolean> SHOW_ELYTRA = new ContextKey<>(RL("show_pneumatic_elytra"));
 
-    // plain elytra stack, so the armor's own layer tint isn't applied to the wings
-    private static final ItemStack ELYTRA_STACK = new ItemStack(Items.ELYTRA);
 
     private final ElytraModel elytraModel;
     private final ElytraModel elytraBabyModel;
     private final EquipmentLayerRenderer equipmentRenderer;
+    // plain elytra stack, so the armor's own layer tint isn't applied to the wings
+    private final ItemStack elytraStack = new ItemStack(Items.ELYTRA);
 
     public PneumaticElytraLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer, EntityModelSet modelSet, EquipmentLayerRenderer equipmentRenderer) {
         super(renderer);
@@ -55,7 +55,7 @@ public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerM
         ElytraModel model = state.isBaby ? elytraBabyModel : elytraModel;
         poseStack.pushPose();
         poseStack.translate(0.0F, 0.0F, 0.125F);
-        equipmentRenderer.renderLayers(EquipmentClientInfo.LayerType.WINGS, EquipmentAssets.ELYTRA, model, state, ELYTRA_STACK,
+        equipmentRenderer.renderLayers(EquipmentClientInfo.LayerType.WINGS, EquipmentAssets.ELYTRA, model, state, elytraStack,
                 poseStack, submitNodeCollector, lightCoords, getPlayerElytraTexture(state), state.outlineColor, 0);
         poseStack.popPose();
     }

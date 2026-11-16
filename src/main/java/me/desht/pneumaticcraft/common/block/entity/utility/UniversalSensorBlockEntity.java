@@ -75,8 +75,8 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
         IRedstoneControl<UniversalSensorBlockEntity>, MenuProvider {
 
     private static final List<RedstoneMode<UniversalSensorBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("universalSensor.normal", new ItemStack(Items.REDSTONE), te -> true),
-            new EmittingRedstoneMode<>("universalSensor.inverted", new ItemStack(Items.REDSTONE_TORCH), te -> true)
+            new EmittingRedstoneMode<>("universalSensor.normal", Items.REDSTONE, te -> true),
+            new EmittingRedstoneMode<>("universalSensor.inverted", Items.REDSTONE_TORCH, te -> true)
     );
     private static final byte RS_MODE_NORMAL = 0;
     private static final byte RS_MODE_INVERTED = 1;

@@ -63,7 +63,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
         implements IRedstoneControl<ElectrostaticCompressorBlockEntity>, MenuProvider
 {
     private static final List<RedstoneMode<ElectrostaticCompressorBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
+            new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER, te -> false),
             new EmittingRedstoneMode<>("electrostaticCompressor.struckByLightning", Textures.JEI_EXPLOSION, te -> te.struckByLightningCooldown > 0)
     );
     public static final int MAX_ELECTROSTATIC_GRID_SIZE = 500;

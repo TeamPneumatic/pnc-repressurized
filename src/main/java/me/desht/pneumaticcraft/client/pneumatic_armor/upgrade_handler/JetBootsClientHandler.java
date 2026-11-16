@@ -51,6 +51,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.Collection;
 
@@ -58,10 +59,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<JetBootsHandler> {
-    private static final ItemStack PICK = new ItemStack(Items.DIAMOND_PICKAXE);
-    private static final ItemStack ROTOR = new ItemStack(ModItems.TURBINE_ROTOR.get());
-    private static final ItemStack ELYTRA = new ItemStack(Items.ELYTRA);
-    private static final ItemStack FEATHER = new ItemStack(Items.FEATHER);
+    private static final Lazy<ItemStack> PICK = Lazy.of(() -> new ItemStack(Items.DIAMOND_PICKAXE));
+    private static final Lazy<ItemStack> ROTOR = Lazy.of(() -> new ItemStack(ModItems.TURBINE_ROTOR.get()));
+    private static final Lazy<ItemStack> ELYTRA = Lazy.of(() -> new ItemStack(Items.ELYTRA));
+    private static final Lazy<ItemStack> FEATHER = Lazy.of(() -> new ItemStack(Items.FEATHER));
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -177,19 +178,19 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             }
             int iconX = xr - 30;
             if (builderMode) {
-                graphics.item(PICK, iconX, jbStat.getBaseY());
+                graphics.item(PICK.get(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                graphics.item(ROTOR, iconX, jbStat.getBaseY());
+                graphics.item(ROTOR.get(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                graphics.item(ELYTRA, iconX, jbStat.getBaseY());
+                graphics.item(ELYTRA.get(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                graphics.item(FEATHER, iconX, jbStat.getBaseY());
+                graphics.item(FEATHER.get(), iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }

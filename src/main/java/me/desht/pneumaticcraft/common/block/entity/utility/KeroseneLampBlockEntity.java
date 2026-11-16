@@ -76,13 +76,13 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         IRedstoneControl<KeroseneLampBlockEntity>, ISerializableTanks, MenuProvider {
 
     private static final List<RedstoneMode<KeroseneLampBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
+            new ReceivingRedstoneMode<>("standard.always", Items.GUNPOWDER,
                     te -> true),
-            new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE),
+            new ReceivingRedstoneMode<>("standard.high_signal", Items.REDSTONE,
                     te -> te.getCurrentRedstonePower() > 0),
-            new ReceivingRedstoneMode<>("standard.low_signal", new ItemStack(Items.REDSTONE_TORCH),
+            new ReceivingRedstoneMode<>("standard.low_signal", Items.REDSTONE_TORCH,
                     te -> te.getCurrentRedstonePower() == 0),
-            new ReceivingRedstoneMode<>("keroseneLamp.interpolate", new ItemStack(Items.COMPARATOR),
+            new ReceivingRedstoneMode<>("keroseneLamp.interpolate", Items.COMPARATOR,
                     te -> te.getCurrentRedstonePower() > 0)
     );
 

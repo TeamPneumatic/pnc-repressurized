@@ -38,6 +38,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,10 +49,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgrammableControllerScreen extends AbstractPneumaticCraftContainerScreen<ProgrammableControllerMenu,ProgrammableControllerBlockEntity>
         implements IGuiDrone
 {
-    private static final ItemStack EYE_OFF = new ItemStack(Items.ENDER_EYE);
-    private static final ItemStack EYE_ON = Util.make(new ItemStack(Items.ENDER_EYE),
+    private static final Lazy<ItemStack> EYE_OFF = Lazy.of(() -> new ItemStack(Items.ENDER_EYE));
+    private static final Lazy<ItemStack> EYE_ON = Lazy.of(() -> Util.make(new ItemStack(Items.ENDER_EYE),
             stack -> stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
-    );
+    ));
 
     private WidgetAnimatedStat chunkTab;
     private WidgetCheckBox shouldCharge;
@@ -110,7 +111,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
         usage += PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER;
         chunkTab.setText(Collections.singletonList(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage")
                 .append(" " + usage + "mL/t")));
-        chunkTab.setTexture(chunkloadSelf.checked || chunkloadWork.checked ? EYE_ON : EYE_OFF);
+        chunkTab.setTexture(chunkloadSelf.checked || chunkloadWork.checked ? EYE_ON.get() : EYE_OFF.get());
     }
 
     @Override

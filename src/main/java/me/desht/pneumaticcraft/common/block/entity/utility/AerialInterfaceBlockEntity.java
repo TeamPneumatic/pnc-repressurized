@@ -94,9 +94,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private static final int PLAYER_AIR_MULTIPLIER = 5;
 
     private static final List<RedstoneMode<AerialInterfaceBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER),
+            new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER,
                     te -> false),
-            new EmittingRedstoneMode<>("aerialInterface.playerConnected", new ItemStack(ModBlocks.AERIAL_INTERFACE.get()),
+            new EmittingRedstoneMode<>("aerialInterface.playerConnected", ModBlocks.AERIAL_INTERFACE.get(),
                     te -> te.isConnectedToPlayer)
     );
     private static final String NO_AERIAL_INTERFACE = "pneumaticcraft:no_aerial_interface";
@@ -734,11 +734,12 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         SMART("smart", Items.GOLDEN_APPLE);
 
         private final String key;
-        private final ItemStack stack;
+        private final Item item;
+        private ItemStack stack;  // created on first use, see RedstoneController.RedstoneMode
 
         FeedMode(String key, Item item) {
             this.key = key;
-            this.stack = new ItemStack(item);
+            this.item = item;
         }
 
         @Override
@@ -751,6 +752,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         public ItemStack getIconStack() {
+            if (stack == null) {
+                stack = new ItemStack(item);
+            }
             return stack;
         }
     }

@@ -91,7 +91,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     private static final List<RedstoneMode<AirCannonBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("airCannon.highSignalAndAngle", Textures.GUI_HIGH_SIGNAL_ANGLE,
                     te -> te.getCurrentRedstonePower() > 0 && te.doneTurning),
-            new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE_TORCH),
+            new ReceivingRedstoneMode<>("standard.high_signal", Items.REDSTONE_TORCH,
                     te -> te.getCurrentRedstonePower() > 0),
             new ReceivingRedstoneMode<>("airCannon.highAndSpace", Textures.GUI_HIGH_SIGNAL_SPACE,
                     te -> te.getCurrentRedstonePower() > 0 && te.inventoryCanCarry())

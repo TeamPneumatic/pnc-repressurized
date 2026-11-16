@@ -69,7 +69,7 @@ import java.util.List;
 
 public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity implements IRedstoneControl<ChargingStationBlockEntity>, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<ChargingStationBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
+            new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER, te -> false),
             new EmittingRedstoneMode<>("chargingStation.idle", Textures.GUI_CHARGE_IDLE, ChargingStationBlockEntity::isIdle),
             new EmittingRedstoneMode<>("chargingStation.charging", Textures.GUI_CHARGING, te -> te.charging),
             new EmittingRedstoneMode<>("chargingStation.discharging", Textures.GUI_DISCHARGING, te -> te.discharging)

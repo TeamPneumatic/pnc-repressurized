@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -36,12 +37,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -161,19 +164,25 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
 
     public static abstract class RedstoneMode<T extends BlockEntity & IRedstoneControl<T>> {
         private final String id;
-        private final Either<ItemStack,Identifier> texture;
+        // icon stacks are created on first use: item components aren't bound yet when the block entity classes
+        //  holding these mode lists are loaded
+        private final Either<Supplier<ItemStack>,Identifier> texture;
         private final Predicate<T> runPredicate;
         private final Predicate<T> emissionPredicate;
 
-        public RedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
-            this(id, Either.left(stackIcon), runPredicate, emissionPredicate);
+        public RedstoneMode(String id, ItemLike icon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this(id, () -> new ItemStack(icon), runPredicate, emissionPredicate);
+        }
+
+        public RedstoneMode(String id, Supplier<ItemStack> icon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this(id, Either.left(Suppliers.memoize(icon::get)), runPredicate, emissionPredicate);
         }
 
         public RedstoneMode(String id, Identifier texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
             this(id, Either.right(texture), runPredicate, emissionPredicate);
         }
 
-        private RedstoneMode(String id, Either<ItemStack,Identifier> texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+        private RedstoneMode(String id, Either<Supplier<ItemStack>,Identifier> texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
             this.id = id;
             this.runPredicate = runPredicate;
             this.emissionPredicate = emissionPredicate;
@@ -185,7 +194,7 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
         }
 
         public Either<ItemStack,Identifier> getTexture() {
-            return texture;
+            return texture.mapLeft(Supplier::get);
         }
 
         public String getTranslationKey() {
@@ -198,8 +207,12 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
             super(id, texture, te -> false, emissionPredicate);
         }
 
-        public EmittingRedstoneMode(String id, ItemStack stackIcon, Predicate<T> emissionPredicate) {
-            super(id, stackIcon, te -> false, emissionPredicate);
+        public EmittingRedstoneMode(String id, ItemLike icon, Predicate<T> emissionPredicate) {
+            super(id, icon, te -> false, emissionPredicate);
+        }
+
+        public EmittingRedstoneMode(String id, Supplier<ItemStack> icon, Predicate<T> emissionPredicate) {
+            super(id, icon, te -> false, emissionPredicate);
         }
     }
 
@@ -208,19 +221,23 @@ public class RedstoneController<T extends BlockEntity & IRedstoneControl<T>> {
             super(id, texture, runPredicate, t -> false);
         }
 
-        public ReceivingRedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate) {
-            super(id, stackIcon, runPredicate, te -> false);
+        public ReceivingRedstoneMode(String id, ItemLike icon, Predicate<T> runPredicate) {
+            super(id, icon, runPredicate, te -> false);
+        }
+
+        public ReceivingRedstoneMode(String id, Supplier<ItemStack> icon, Predicate<T> runPredicate) {
+            super(id, icon, runPredicate, te -> false);
         }
     }
 
     private static class StandardReceivingModes<T extends BlockEntity & IRedstoneControl<T>> {
         public List<RedstoneController.RedstoneMode<T>> modes() {
             return ImmutableList.of(
-                    new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
+                    new ReceivingRedstoneMode<>("standard.always", Items.GUNPOWDER,
                             te -> true),
-                    new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE),
+                    new ReceivingRedstoneMode<>("standard.high_signal", Items.REDSTONE,
                             te -> te.getCurrentRedstonePower() > 0),
-                    new ReceivingRedstoneMode<>("standard.low_signal",  new ItemStack(Items.REDSTONE_TORCH),
+                    new ReceivingRedstoneMode<>("standard.low_signal",  Items.REDSTONE_TORCH,
                             te -> te.getCurrentRedstonePower() == 0));
         }
     }
