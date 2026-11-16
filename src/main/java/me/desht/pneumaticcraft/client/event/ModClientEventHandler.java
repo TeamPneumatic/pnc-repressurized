@@ -22,7 +22,6 @@ import me.desht.pneumaticcraft.client.PneumaticCraftRepressurizedClient;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
-import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModel;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayerColors;
@@ -31,7 +30,6 @@ import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
-import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -42,6 +40,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
+import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
@@ -75,7 +74,11 @@ public class ModClientEventHandler {
     @SubscribeEvent
     public static void onModelRegistry(RegisterGeometryLoaders event) {
         event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
-        event.register(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void registerSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
+        event.register(RL("minigun"), MinigunItemRenderer.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent
@@ -85,8 +88,6 @@ public class ModClientEventHandler {
                 .map(DeferredHolder::get)
                 .toArray(Block[]::new);
         event.registerBlock(PneumaticCraftRepressurizedClient.PARTICLE_HANDLER, toAdd);
-
-        event.registerItem(MinigunItemRenderer.RenderProperties.INSTANCE, ModItems.MINIGUN.get());
 
         for (ItemStack stack :  ArmorMainScreen.ARMOR_STACKS) {
             event.registerItem(PneumaticArmorLayerColors.INSTANCE, stack.getItem());

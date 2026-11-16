@@ -1,0 +1,28 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": ["firstperson_righthand", "firstperson_lefthand"],
+        "model": {
+          "type": "minecraft:special",
+          "base": "pneumaticcraft:item/minigun_special",
+          "model": { "type": "pneumaticcraft:minigun", "third_person": false }
+        }
+      },
+      {
+        "when": ["thirdperson_righthand", "thirdperson_lefthand"],
+        "model": {
+          "type": "minecraft:special",
+          "base": "pneumaticcraft:item/minigun_special",
+          "model": { "type": "pneumaticcraft:minigun", "third_person": true }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "pneumaticcraft:block/minigun"
+    }
+  }
+}
