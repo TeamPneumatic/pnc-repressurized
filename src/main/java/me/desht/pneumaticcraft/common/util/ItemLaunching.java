@@ -46,7 +46,7 @@ import net.minecraft.world.entity.projectile.arrow.*;
 import net.minecraft.world.entity.projectile.hurtingprojectile.*;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.*;
 import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.boat.Boat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -72,7 +72,7 @@ public class ItemLaunching {
 
         BlockPos trackPos = BlockPos.containing(initialPos);
 
-        if (launchedEntity instanceof Boat) {
+        if (launchedEntity instanceof AbstractBoat) {
             // Boats are spawned slightly above the player to not push them down upon launching
             launchedEntity.setPos(initialPos.x, initialPos.y + 1, initialPos.z);
         } else {
@@ -163,8 +163,10 @@ public class ItemLaunching {
 
             } else if (item instanceof BoatItem boatItem) {
                 HitResult dummyHitResult = new EntityHitResult(player, new Vec3(0, 0, 0));
-                Boat boat = ((BoatItemAccess) boatItem).invokeGetBoat(level, dummyHitResult, stack, player);
-                boat.setYRot(playerYaw);
+                AbstractBoat boat = ((BoatItemAccess) boatItem).invokeGetBoat(level, dummyHitResult, stack, player);
+                if (boat != null) {
+                    boat.setYRot(playerYaw);
+                }
                 return boat;
 
             } else if (item == Items.EXPERIENCE_BOTTLE) {
