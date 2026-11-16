@@ -39,8 +39,6 @@ import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
@@ -65,7 +63,6 @@ public class StandardGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public boolean isFoil(ItemStack stack) {
         return stack.isEnchanted() || stack.has(ModDataComponents.POTION_AMMO);
     }
