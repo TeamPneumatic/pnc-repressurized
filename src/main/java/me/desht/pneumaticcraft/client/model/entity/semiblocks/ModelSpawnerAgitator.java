@@ -1,30 +1,15 @@
 package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.HeatFrameEntity;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class ModelSpawnerAgitator extends EntityModel<HeatFrameEntity> {
-    private final ModelPart top1;
-    private final ModelPart top2;
-    private final ModelPart top3;
-    private final ModelPart top4;
-    private final ModelPart side1;
-    private final ModelPart side2;
-    private final ModelPart side3;
-    private final ModelPart side4;
-    private final ModelPart bottom1;
-    private final ModelPart bottom2;
-    private final ModelPart bottom3;
-    private final ModelPart bottom4;
-
+public class ModelSpawnerAgitator extends Model.Simple {
     private static final String TOP1 = "top1";
     private static final String TOP2 = "top2";
     private static final String TOP3 = "top3";
@@ -39,18 +24,7 @@ public class ModelSpawnerAgitator extends EntityModel<HeatFrameEntity> {
     private static final String BOTTOM4 = "bottom4";
 
     public ModelSpawnerAgitator(ModelPart root) {
-        top1 = root.getChild(TOP1);
-        top2 = root.getChild(TOP2);
-        top3 = root.getChild(TOP3);
-        top4 = root.getChild(TOP4);
-        side1 = root.getChild(SIDE1);
-        side2 = root.getChild(SIDE2);
-        side3 = root.getChild(SIDE3);
-        side4 = root.getChild(SIDE4);
-        bottom1 = root.getChild(BOTTOM1);
-        bottom2 = root.getChild(BOTTOM2);
-        bottom3 = root.getChild(BOTTOM3);
-        bottom4 = root.getChild(BOTTOM4);
+        super(root, RenderTypes::entityCutout);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -115,32 +89,5 @@ public class ModelSpawnerAgitator extends EntityModel<HeatFrameEntity> {
                 PartPose.offset(-8.5F, 21.5F, -8.5F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
-    }
-
-
-    @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        top1.render(matrixStack, buffer, packedLight, packedOverlay);
-        top2.render(matrixStack, buffer, packedLight, packedOverlay);
-        top3.render(matrixStack, buffer, packedLight, packedOverlay);
-        top4.render(matrixStack, buffer, packedLight, packedOverlay);
-        side1.render(matrixStack, buffer, packedLight, packedOverlay);
-        side2.render(matrixStack, buffer, packedLight, packedOverlay);
-        side3.render(matrixStack, buffer, packedLight, packedOverlay);
-        side4.render(matrixStack, buffer, packedLight, packedOverlay);
-        bottom1.render(matrixStack, buffer, packedLight, packedOverlay);
-        bottom2.render(matrixStack, buffer, packedLight, packedOverlay);
-        bottom3.render(matrixStack, buffer, packedLight, packedOverlay);
-        bottom4.render(matrixStack, buffer, packedLight, packedOverlay);
-    }
-
-    @Override
-    public void setupAnim(HeatFrameEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
     }
 }

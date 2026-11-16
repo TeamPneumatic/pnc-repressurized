@@ -1,20 +1,19 @@
 package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelCropSupport;
 import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.world.phys.AABB;
 
-public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
+public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity, RenderCropSupport.State> {
     private final ModelCropSupport model;
 
     public RenderCropSupport(EntityRendererProvider.Context ctx) {
@@ -24,25 +23,39 @@ public class RenderCropSupport extends RenderSemiblockBase<CropSupportEntity> {
     }
 
     @Override
-    public void render(CropSupportEntity entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
-        AABB aabb = entityIn.getBoundingBox();
-
-        matrixStackIn.pushPose();
-
-        matrixStackIn.translate(0, 0.8f, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180F));
-        if (entityIn.getTimeSinceHit() > 0) {
-            wobble(entityIn, partialTicks, matrixStackIn);
-        }
-        matrixStackIn.scale((float)(aabb.maxX - aabb.minX), (float)(aabb.maxY - aabb.minY), (float)(aabb.maxZ - aabb.minZ));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0xFF544020);
-
-        matrixStackIn.popPose();
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public Identifier getTextureLocation(CropSupportEntity entity) {
-        return Textures.MODEL_CROP_SUPPORT;
+    public void extractRenderState(CropSupportEntity entity, State state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+
+        AABB aabb = entity.getBoundingBox();
+        state.xSize = (float) (aabb.maxX - aabb.minX);
+        state.ySize = (float) (aabb.maxY - aabb.minY);
+        state.zSize = (float) (aabb.maxZ - aabb.minZ);
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        poseStack.pushPose();
+
+        poseStack.translate(0, 0.8f, 0);
+        poseStack.mulPose(Axis.XP.rotationDegrees(180F));
+        wobble(state, poseStack);
+        poseStack.scale(state.xSize, state.ySize, state.zSize);
+        submitNodeCollector.submitModel(model, Unit.INSTANCE, poseStack, model.renderType(Textures.MODEL_CROP_SUPPORT),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+
+        poseStack.popPose();
+
+        super.submit(state, poseStack, submitNodeCollector, camera);
+    }
+
+    public static class State extends SemiblockRenderState {
+        float xSize;
+        float ySize;
+        float zSize;
     }
 }

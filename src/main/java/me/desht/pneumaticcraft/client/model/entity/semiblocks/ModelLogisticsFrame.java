@@ -1,26 +1,20 @@
 package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class ModelLogisticsFrame extends EntityModel<AbstractLogisticsFrameEntity> {
-	private final ModelPart frame;
-	private final ModelPart face;
-
+public class ModelLogisticsFrame extends Model.Simple {
 	private static final String FRAME = "frame";
 	private static final String FACE = "face";
 
 	public ModelLogisticsFrame(ModelPart root) {
-		frame = root.getChild(FRAME);
-		face = root.getChild(FACE);
+		super(root, RenderTypes::entityTranslucent);
 	}
 
 	public static LayerDefinition createBodyLayer() {
@@ -41,23 +35,5 @@ public class ModelLogisticsFrame extends EntityModel<AbstractLogisticsFrameEntit
 				PartPose.offsetAndRotation(8.0F, 21.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
 
 		return LayerDefinition.create(meshdefinition, 32, 32);
-	}
-
-
-	@Override
-	public void setupAnim(AbstractLogisticsFrameEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		//previously the render function, render code was moved to a method below
-	}
-
-	@Override
-	public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-		frame.render(matrixStack, buffer, packedLight, packedOverlay, color);
-		face.render(matrixStack, buffer, packedLight, packedOverlay, color);
-	}
-
-	public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
-		modelRenderer.xRot = x;
-		modelRenderer.yRot = y;
-		modelRenderer.zRot = z;
 	}
 }

@@ -1,39 +1,15 @@
 package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.HeatFrameEntity;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class ModelHeatFrame extends EntityModel<HeatFrameEntity> {
-    private final ModelPart bottom;
-    private final ModelPart side1;
-    private final ModelPart side2;
-    private final ModelPart side3;
-    private final ModelPart side4;
-    private final ModelPart topCorner1;
-    private final ModelPart topCorner2;
-    private final ModelPart topCorner3;
-    private final ModelPart topCorner4;
-    private final ModelPart top1;
-    private final ModelPart top2;
-    private final ModelPart top3;
-    private final ModelPart top4;
-    private final ModelPart top5;
-    private final ModelPart top6;
-    private final ModelPart top7;
-    private final ModelPart top8;
-    private final ModelPart top9;
-    private final ModelPart top10;
-    private final ModelPart top11;
-    private final ModelPart top12;
-
+public class ModelHeatFrame extends Model.Simple {
     private static final String BOTTOM = "bottom";
     private static final String SIDE1 = "side1";
     private static final String SIDE2 = "side2";
@@ -57,27 +33,7 @@ public class ModelHeatFrame extends EntityModel<HeatFrameEntity> {
     private static final String TOP12 = "top12";
 
     public ModelHeatFrame(ModelPart root) {
-        bottom = root.getChild(BOTTOM);
-        side1 = root.getChild(SIDE1);
-        side2 = root.getChild(SIDE2);
-        side3 = root.getChild(SIDE3);
-        side4 = root.getChild(SIDE4);
-        topCorner1 = root.getChild(TOPCORNER1);
-        topCorner2 = root.getChild(TOPCORNER2);
-        topCorner3 = root.getChild(TOPCORNER3);
-        topCorner4 = root.getChild(TOPCORNER4);
-        top1 = root.getChild(TOP1);
-        top2 = root.getChild(TOP2);
-        top3 = root.getChild(TOP3);
-        top4 = root.getChild(TOP4);
-        top5 = root.getChild(TOP5);
-        top6 = root.getChild(TOP6);
-        top7 = root.getChild(TOP7);
-        top8 = root.getChild(TOP8);
-        top9 = root.getChild(TOP9);
-        top10 = root.getChild(TOP10);
-        top11 = root.getChild(TOP11);
-        top12 = root.getChild(TOP12);
+        super(root, RenderTypes::entityCutout);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -170,41 +126,5 @@ public class ModelHeatFrame extends EntityModel<HeatFrameEntity> {
                 PartPose.offset(-4.5F, 9.5F, -8.5F));
 
         return LayerDefinition.create(meshdefinition, 128, 32);
-    }
-
-
-    @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        bottom.render(matrixStack, buffer, packedLight, packedOverlay);
-        side1.render(matrixStack, buffer, packedLight, packedOverlay);
-        side2.render(matrixStack, buffer, packedLight, packedOverlay);
-        side3.render(matrixStack, buffer, packedLight, packedOverlay);
-        side4.render(matrixStack, buffer, packedLight, packedOverlay);
-        topCorner1.render(matrixStack, buffer, packedLight, packedOverlay);
-        topCorner2.render(matrixStack, buffer, packedLight, packedOverlay);
-        topCorner3.render(matrixStack, buffer, packedLight, packedOverlay);
-        topCorner4.render(matrixStack, buffer, packedLight, packedOverlay);
-        top1.render(matrixStack, buffer, packedLight, packedOverlay);
-        top2.render(matrixStack, buffer, packedLight, packedOverlay);
-        top3.render(matrixStack, buffer, packedLight, packedOverlay);
-        top4.render(matrixStack, buffer, packedLight, packedOverlay);
-        top5.render(matrixStack, buffer, packedLight, packedOverlay);
-        top6.render(matrixStack, buffer, packedLight, packedOverlay);
-        top7.render(matrixStack, buffer, packedLight, packedOverlay);
-        top8.render(matrixStack, buffer, packedLight, packedOverlay);
-        top9.render(matrixStack, buffer, packedLight, packedOverlay);
-        top10.render(matrixStack, buffer, packedLight, packedOverlay);
-        top11.render(matrixStack, buffer, packedLight, packedOverlay);
-        top12.render(matrixStack, buffer, packedLight, packedOverlay);
-    }
-
-    @Override
-    public void setupAnim(HeatFrameEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
     }
 }
