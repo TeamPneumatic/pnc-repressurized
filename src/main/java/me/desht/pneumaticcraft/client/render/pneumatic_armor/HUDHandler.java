@@ -125,6 +125,8 @@ public enum HUDHandler implements IKeyListener {
 
             poseStack.popPose();
             buffer.endBatch();
+            // items in stat icons go through the submit node storage (see WidgetAnimatedStat.StatIcon#render3d)
+            mc.gameRenderer.getFeatureRenderDispatcher().renderAllFeatures();
         }
     }
 

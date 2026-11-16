@@ -46,9 +46,8 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
@@ -798,6 +797,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     }
 
     public static class StatIcon {
+        private static final ItemStackRenderState ITEM_RENDER_STATE = new ItemStackRenderState();
+
         public static final StatIcon NONE = StatIcon.of(ItemStack.EMPTY);
 
         private final Either<ItemStack,Identifier> texture;
@@ -829,9 +830,10 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 matrixStack.translate(x + 8 , y + 8, 0);
                 matrixStack.mulPose(Axis.XP.rotationDegrees(180));
                 matrixStack.scale(15, 15, 1);
-                ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                BakedModel ibakedmodel = itemRenderer.getModel(stack, ClientUtils.getClientLevel(), null, 0);
-                itemRenderer.render(stack, ItemDisplayContext.GUI, true, matrixStack, buffer, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                // submitted to the game renderer's node storage; HUDHandler flushes it after the 3D HUD pass
+                Minecraft mc = Minecraft.getInstance();
+                mc.getItemModelResolver().updateForTopItem(ITEM_RENDER_STATE, stack, ItemDisplayContext.GUI, ClientUtils.getClientLevel(), null, 0);
+                ITEM_RENDER_STATE.submit(matrixStack, mc.gameRenderer.getSubmitNodeStorage(), FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0);
                 matrixStack.popPose();
             }).ifRight(resLoc ->
                     RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),

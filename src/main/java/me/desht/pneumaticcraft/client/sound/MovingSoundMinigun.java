@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.particles.ParticleTypes;
@@ -145,16 +146,16 @@ public class MovingSoundMinigun extends AbstractTickableSoundInstance {
                     muzzlePos.y + r.nextFloat() * 0.1f - 0.05f,
                     muzzlePos.z + r.nextFloat() * 0.1f - 0.05f,
                     velVec.x, velVec.y, velVec.z);
-            if (bullet != null) {
+            if (bullet instanceof SingleQuadParticle quadParticle) {
                 switch (r.nextInt(8)) {
-                    case 0 -> bullet.setColor(0.1f, 0.1f, 0.1f);
-                    case 1,2,3 -> bullet.setColor(1f, 0.25f + r.nextFloat() * 0.75f, 0f);
+                    case 0 -> quadParticle.setColor(0.1f, 0.1f, 0.1f);
+                    case 1,2,3 -> quadParticle.setColor(1f, 0.25f + r.nextFloat() * 0.75f, 0f);
                     default -> {
                         float[] rgb = RenderUtils.decomposeColorF(minigun.getAmmoColor());
-                        bullet.setColor(rgb[1], rgb[2], rgb[3]);
+                        quadParticle.setColor(rgb[1], rgb[2], rgb[3]);
                     }
                 }
-                bullet.scale(minigun.getParticleScale());
+                quadParticle.scale(minigun.getParticleScale());
             }
         }
         if (r.nextInt(10) == 0) {

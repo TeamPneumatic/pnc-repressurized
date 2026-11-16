@@ -43,10 +43,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -65,11 +66,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.model.data.ModelData;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -106,7 +107,7 @@ public class ClientUtils {
     }
 
     public static boolean isKeyDown(int keyCode) {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), keyCode);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), keyCode);
     }
 
     /**
@@ -207,7 +208,7 @@ public class ClientUtils {
     }
 
     public static int getLightAt(BlockPos pos) {
-        return LevelRenderer.getLightColor(getClientLevel(), pos);
+        return LevelRenderer.getLightCoords(getClientLevel(), pos);
     }
 
     public static int getStringWidth(String line) {
@@ -224,14 +225,17 @@ public class ClientUtils {
 
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().getRandom(), ModelData.EMPTY, null);
-        if (!quads.isEmpty()) {
-            TextureAtlasSprite sprite = quads.getFirst().getSprite();
-            return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
-        } else {
-            return null;
+        BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state);
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        model.collectParts(getClientLevel().getRandom(), parts);
+        for (BlockStateModelPart part : parts) {
+            List<BakedQuad> quads = part.getQuads(face);
+            if (!quads.isEmpty()) {
+                TextureAtlasSprite sprite = quads.getFirst().materialInfo().sprite();
+                return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
+            }
         }
+        return null;
     }
 
     public static void spawnEntityClientside(Entity e) {
