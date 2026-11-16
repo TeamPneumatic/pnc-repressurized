@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -31,6 +32,7 @@ import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.util.BitSet;
@@ -193,29 +195,24 @@ public class RenderUtils {
         normalLine(builder, matrixStack, lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], defaultLineWidth());
     }
 
-    public static void renderRing(ProgressingLine line, ProgressingLine lastLine, PoseStack poseStack, MultiBufferSource bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
+    public static void submitRing(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Vec3 offset, double renderProgress, float rotationYaw, float rotationPitch, int color) {
         poseStack.pushPose();
 
-        double renderProgress = lerp(partialTick, lastLine.progress, line.progress);
-        poseStack.translate(
-                (line.endX - line.startX) * renderProgress,
-                (line.endY - line.startY) * renderProgress,
-                (line.endZ - line.startZ) * renderProgress
-        );
+        poseStack.translate(offset);
         poseStack.mulPose(Axis.YP.rotationDegrees(rotationYaw - 90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(rotationPitch));
-
-        VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.LINES_NO_DEPTH);
 
         float[] cols = RenderUtils.decomposeColorF(0xFF000000 | color);
         float lineWidth = defaultLineWidth();
         float size = (float) ((1 + 4 * renderProgress) / 16);
-        for (float i = 0; i < FULL_CIRCLE; i += STEP) {
-            normalLine(builder, poseStack,
-                    0f, Mth.sin(i) * size, Mth.cos(i) * size,
-                    0f, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size,
-                    cols[0], cols[1], cols[2], cols[3], lineWidth);
-        }
+        submitNodeCollector.submitCustomGeometry(poseStack, ModRenderTypes.LINES_NO_DEPTH, (pose, builder) -> {
+            for (float i = 0; i < FULL_CIRCLE; i += STEP) {
+                normalLine(builder, pose,
+                        0f, Mth.sin(i) * size, Mth.cos(i) * size,
+                        0f, Mth.sin(i + STEP) * size, Mth.cos(i + STEP) * size,
+                        cols[0], cols[1], cols[2], cols[3], lineWidth);
+            }
+        });
         poseStack.popPose();
     }
 

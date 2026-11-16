@@ -26,15 +26,16 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import org.joml.Matrix4f;
 
-public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
+public class RenderEntityVortex extends EntityRenderer<VortexEntity, RenderEntityVortex.State> {
     private static final int CIRCLE_POINTS = 20;
     private static final float TEX_SCALE = 0.07F;
     private static final double RADIUS = 0.5D;
@@ -44,31 +45,42 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
     }
 
     @Override
-    public Identifier getTextureLocation(VortexEntity entity) {
-        return Textures.VORTEX_ENTITY;
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void render(VortexEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
+    public void extractRenderState(VortexEntity entity, State state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+
         if (!entity.hasRenderOffsetX()) {
             entity.setRenderOffsetX(calculateXoffset());
         }
+        state.renderOffsetX = entity.getRenderOffsetX();
+        state.yRot = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot());
+        state.xRot = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
+    }
 
-        matrixStackIn.pushPose();
-
-        VertexConsumer builder = bufferIn.getBuffer(ModRenderTypes.getTextureRenderColored(getTextureLocation(entity)));
-
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot())));
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-Mth.lerp(partialTicks, entity.xRotO, entity.getXRot())));
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-state.xRot));
         float incr = (float) (2 * Math.PI / CIRCLE_POINTS);
         for (float angleRads = 0f; angleRads < 2 * Math.PI; angleRads += incr) {
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(RADIUS * Mth.sin(angleRads), RADIUS * Mth.cos(angleRads), 0);
-            renderGust(matrixStackIn, builder, entity.getRenderOffsetX(), packedLightIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate(RADIUS * Mth.sin(angleRads), RADIUS * Mth.cos(angleRads), 0);
+            poseStack.scale(TEX_SCALE, TEX_SCALE, TEX_SCALE);
+            poseStack.translate(state.renderOffsetX, 0, 0);
+            poseStack.mulPose(Axis.YP.rotationDegrees(90));
+            submitNodeCollector.submitCustomGeometry(poseStack, ModRenderTypes.getTextureRenderColored(Textures.VORTEX_ENTITY),
+                    (pose, builder) -> renderGust(pose.pose(), builder, state.lightCoords));
+            poseStack.popPose();
         }
 
-        matrixStackIn.popPose();
+        poseStack.popPose();
+
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
 
     private float calculateXoffset() {
@@ -81,18 +93,11 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
         return hs == HumanoidArm.RIGHT ? -4.0F : 16.0F;
     }
 
-    private void renderGust(PoseStack matrixStackIn, VertexConsumer wr, float xOffset, int packedLightIn) {
+    private static void renderGust(Matrix4f posMat, VertexConsumer wr, int packedLightIn) {
         float u1 = 0F;
         float u2 = 1F;
         float v1 = 0F;
         float v2 = 1F;
-
-        matrixStackIn.scale(TEX_SCALE, TEX_SCALE, TEX_SCALE);
-        matrixStackIn.translate(xOffset, 0, 0);
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(90));
-
-        Matrix4f posMat = matrixStackIn.last().pose();
-
         wr.addVertex(posMat, -7.0F, -2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v1).setLight(packedLightIn);
         wr.addVertex(posMat, -7.0F, -2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v1).setLight(packedLightIn);
         wr.addVertex(posMat, -7.0F, 2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v2).setLight(packedLightIn);
@@ -102,5 +107,11 @@ public class RenderEntityVortex extends EntityRenderer<VortexEntity> {
         wr.addVertex(posMat, -7.0F, 2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v1).setLight(packedLightIn);
         wr.addVertex(posMat, -7.0F, -2.0F, 2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u2, v2).setLight(packedLightIn);
         wr.addVertex(posMat, -7.0F, -2.0F, -2.0F).setColor(1f, 1f, 1f, 0.5f).setUv(u1, v2).setLight(packedLightIn);
+    }
+
+    public static class State extends EntityRenderState {
+        float renderOffsetX;
+        float yRot;
+        float xRot;
     }
 }
