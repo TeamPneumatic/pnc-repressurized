@@ -2,11 +2,13 @@ package me.desht.pneumaticcraft.client.particle;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -14,9 +16,9 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
-public class BulletParticle extends TextureSheetParticle {
-    public BulletParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, SpriteSet spriteSet) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
+public class BulletParticle extends SingleQuadParticle {
+    public BulletParticle(ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, TextureAtlasSprite sprite) {
+        super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprite);
 
         this.gravity = 0;
         this.lifetime = 30;
@@ -26,8 +28,6 @@ public class BulletParticle extends TextureSheetParticle {
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
-
-        this.pickSprite(spriteSet);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class BulletParticle extends TextureSheetParticle {
         BlockPos pos = BlockPos.containing(x, y, z);
         BlockState state = level.getBlockState(pos);
         if (!state.getCollisionShape(level, pos).isEmpty() || onGround) {
-            if (level.random.nextBoolean()) {
+            if (random.nextBoolean()) {
                 ClipContext ctx = new ClipContext(new Vec3(x, y, z), new Vec3(x + xd, y + yd, z + zd),
                         ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty());
                 BlockHitResult res = level.clip(ctx);
@@ -59,8 +59,8 @@ public class BulletParticle extends TextureSheetParticle {
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
+    protected Layer getLayer() {
+        return Layer.OPAQUE;
     }
 
     public static class Factory implements ParticleProvider<SimpleParticleType> {
@@ -72,8 +72,8 @@ public class BulletParticle extends TextureSheetParticle {
 
         @Override
         public Particle createParticle(SimpleParticleType data, ClientLevel level, double x, double y, double z,
-                                       double xSpeed, double ySpeed, double zSpeed) {
-            return new BulletParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet);
+                                       double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+            return new BulletParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, spriteSet.get(random));
         }
     }
 }
