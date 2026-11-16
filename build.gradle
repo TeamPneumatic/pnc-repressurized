@@ -117,9 +117,12 @@ def disabledIntegrations = [
 ]
 sourceSets.main.java {
 	disabledIntegrations.each { exclude "me/desht/pneumaticcraft/common/thirdparty/${it}/**" }
-	// TODO 26.1 datagen: data providers are ported in a later PR; until then the generated resources
-	//  from 1.21.1 stay in src/generated (and need regenerating once datagen works again)
-	exclude "me/desht/pneumaticcraft/datagen/**"
+	// TODO 26.1 datagen: only the item model provider is ported so far; the server data providers follow in a
+	//  later PR, until then the generated data from 1.21.1 stays in src/generated (and needs regenerating)
+	def portedDatagen = ['DataGenerators.java', 'ModModelProvider.java']
+	exclude { FileTreeElement e ->
+		e.path.startsWith('me/desht/pneumaticcraft/datagen/') && !(e.name in portedDatagen)
+	}
 	// TODO 26.1 trades: villager trades are data-driven trade sets now; ported with the trade sets
 	exclude "me/desht/pneumaticcraft/common/util/RandomTradeBuilder.java"
 }
