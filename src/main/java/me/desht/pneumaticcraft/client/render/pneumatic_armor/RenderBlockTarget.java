@@ -33,7 +33,6 @@ import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
@@ -91,7 +90,7 @@ public class RenderBlockTarget {
         this.blockTracker = blockTracker;
 
         BlockState state = world.getBlockState(pos);
-        ItemStack stack = state.getBlock().getCloneItemStack(state, Minecraft.getInstance().hitResult, world, pos, player);
+        ItemStack stack = state.getCloneItemStack(pos, world, false, player);
 
         Component title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);

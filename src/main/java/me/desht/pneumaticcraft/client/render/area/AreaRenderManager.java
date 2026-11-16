@@ -83,8 +83,7 @@ public enum AreaRenderManager {
     }
 
     @SubscribeEvent
-    public void renderLevelStageEvent(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
+    public void renderLevelStageEvent(RenderLevelStageEvent.AfterTranslucentParticles event) {
 
         Player player = ClientUtils.getClientPlayer();
 
@@ -93,7 +92,7 @@ public enum AreaRenderManager {
 
         matrixStack.pushPose();
 
-        Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        Vec3 projectedView = event.getLevelRenderState().cameraRenderState.pos;
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         // block entity controlled renderers
@@ -107,9 +106,10 @@ public enum AreaRenderManager {
         maybeRenderDroneDebug(matrixStack, buffer, player);
         maybeRenderAreaTool(matrixStack, buffer, player);
         maybeRenderJackhammer(matrixStack, buffer, player);
-        maybeRenderCoordinateTracker(matrixStack, buffer, player, event.getPartialTick());
+        maybeRenderCoordinateTracker(matrixStack, buffer, player, Minecraft.getInstance().getDeltaTracker());
 
         matrixStack.popPose();
+        buffer.endBatch();
     }
 
     @SubscribeEvent
@@ -243,7 +243,7 @@ public enum AreaRenderManager {
         BlockPos pos = ClientUtils.getClientPlayer().blockPosition();
         for (int x = pos.getX() - 16; x <= pos.getX() + 16; x += 16) {
             for (int z = pos.getZ() - 16; z <= pos.getZ() + 16; z += 16) {
-                ChunkPos cp = new ChunkPos(pos);
+                ChunkPos cp = ChunkPos.containing(pos);
                 res.addAll(ClientUtils.getClientLevel().getChunk(cp.x(), cp.z()).getBlockEntities().values());
             }
         }

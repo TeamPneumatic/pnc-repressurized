@@ -90,9 +90,7 @@ public enum HUDHandler implements IKeyListener {
      * Handles the 3D drawing for armor components (see {@link PneumaticArmorHUDOverlay} for 2D)
      */
     @SubscribeEvent
-    public void renderHUD3d(RenderLevelStageEvent event) {
-        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
-
+    public void renderHUD3d(RenderLevelStageEvent.AfterTranslucentParticles event) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
@@ -109,22 +107,24 @@ public enum HUDHandler implements IKeyListener {
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();
 
-            Vec3 projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+            Vec3 projectedView = event.getLevelRenderState().cameraRenderState.pos;
             poseStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
+            float partialTick = mc.getDeltaTracker().getGameTimeDeltaPartialTick(true);
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (commonArmorHandler.isArmorReady(slot)) {
                     List<IArmorUpgradeClientHandler<?>> clientHandlers = ClientArmorRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < clientHandlers.size(); i++) {
                         if (commonArmorHandler.isUpgradeInserted(slot, i)
                                 && WidgetKeybindCheckBox.forUpgrade(clientHandlers.get(i)).checked) {
-                            clientHandlers.get(i).render3D(poseStack, buffer, event.getPartialTick().getGameTimeDeltaPartialTick(true));
+                            clientHandlers.get(i).render3D(poseStack, buffer, partialTick);
                         }
                     }
                 }
             }
 
             poseStack.popPose();
+            buffer.endBatch();
         }
     }
 
@@ -240,7 +240,7 @@ public enum HUDHandler implements IKeyListener {
         // avoid playing sounds too often... if many upgrades are installed it could get really noisy
         long when = player.level().getGameTime();
         if (when - lastArmorInitSound >= 30) {
-            player.playNotifySound(ModSounds.HUD_INIT.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), pitch);
+            player.level().playLocalSound(player, ModSounds.HUD_INIT.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), pitch);
         }
         lastArmorInitSound = when;
     }
@@ -248,7 +248,7 @@ public enum HUDHandler implements IKeyListener {
     private void playArmorInitCompleteSound(Player player) {
         long when = player.level().getGameTime();
         if (when - lastArmorInitCompleteSound >= 30) {
-            player.playNotifySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), 1f);
+            player.level().playLocalSound(player, ModSounds.HUD_INIT_COMPLETE.get(), SoundSource.PLAYERS, ConfigHelper.client().sound.armorInitVolume.get().floatValue(), 1f);
         }
         lastArmorInitCompleteSound = when;
     }

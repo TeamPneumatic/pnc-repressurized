@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.shaders.FogShape;
 import java.util.List;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
@@ -43,6 +42,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBo
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -64,7 +64,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void screenTilt(ViewportEvent.ComputeCameraAngles event) {
-        if (event.getCamera().getEntity() instanceof Player player) {
+        if (event.getCamera().entity() instanceof Player player) {
             if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.onGround()) {
                 float targetRoll;
                 float div = 50F;
@@ -89,13 +89,12 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
-        if (!player.isFallFlying()) {
+    public static void playerPreRotateEvent(RenderPlayerEvent.Pre<?> event) {
+        AvatarRenderState renderState = event.getRenderState();
+        if (!renderState.isFallFlying && ClientUtils.getClientLevel().getEntity(renderState.id) instanceof Player player) {
             JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
-                player.walkAnimation.setSpeed(0f);
-//                player.animationPosition = player.animationSpeed = 0F;
+                renderState.walkAnimationSpeed = 0f;
             }
         }
     }
@@ -115,19 +114,15 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void fogDensityEvent(ViewportEvent.RenderFog event) {
-        if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
+        if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().entity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(CommonUpgradeHandlers.scubaHandler, true)) {
                 event.setNearPlaneDistance(20f);
-                event.setNearPlaneDistance(50f);
-                event.setFogShape(FogShape.SPHERE);
-                event.setCanceled(true);
+                event.setFarPlaneDistance(50f);
             }
         } else if (isPlayerHeadInOil()) {
             event.setNearPlaneDistance(0.25F);
             event.setFarPlaneDistance(2.0F);
-            event.setFogShape(FogShape.SPHERE);
-            event.setCanceled(true);
         }
     }
 
