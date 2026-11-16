@@ -143,15 +143,21 @@ public class ClassifyFilterItem extends Item implements IFilteringItem {
         SMOKABLE(Blocks.SMOKER, s -> isCookable(RecipeType.SMOKING, s)),
         CAMPFIRE_COOKABLE(Blocks.CAMPFIRE, s -> isCookable(RecipeType.CAMPFIRE_COOKING, s));
 
-        private final ItemStack icon;
+        // created on first use: item components aren't bound yet when this enum is loaded (during data component
+        //  registration), so an ItemStack can't be created in the constructor
+        private final ItemLike iconItem;
+        private ItemStack icon;
         private final Predicate<ItemStack> predicate;
 
         FilterCondition(ItemLike icon, Predicate<ItemStack> predicate) {
-            this.icon = new ItemStack(icon);
+            this.iconItem = icon;
             this.predicate = predicate;
         }
 
         public ItemStack getIcon() {
+            if (icon == null) {
+                icon = new ItemStack(iconItem);
+            }
             return icon;
         }
 
