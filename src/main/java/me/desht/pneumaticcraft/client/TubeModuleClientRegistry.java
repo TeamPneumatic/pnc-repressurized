@@ -47,11 +47,11 @@ public class TubeModuleClientRegistry {
         return (factory == null) ? null : factory.apply(module);
     }
 
-    public static <T extends AbstractTubeModule> AbstractTubeModuleRenderer<T> createModel(T module, BlockEntityRendererProvider.Context ctx) {
+    public static <T extends AbstractTubeModule> AbstractTubeModuleRenderer<T, ?> createModel(T module, BlockEntityRendererProvider.Context ctx) {
         //noinspection unchecked
-        return (AbstractTubeModuleRenderer<T>) MODEL_FACTORY.get(module.getType()).apply(ctx);
+        return (AbstractTubeModuleRenderer<T, ?>) MODEL_FACTORY.get(module.getType()).apply(ctx);
     }
 
-    public interface ModuleRendererFactory<T extends AbstractTubeModuleRenderer<?>> extends Function<BlockEntityRendererProvider.Context, T> {
+    public interface ModuleRendererFactory<T extends AbstractTubeModuleRenderer<?, ?>> extends Function<BlockEntityRendererProvider.Context, T> {
     }
 }

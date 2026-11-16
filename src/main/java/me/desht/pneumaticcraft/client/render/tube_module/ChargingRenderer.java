@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.ChargingModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -13,9 +12,8 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
 
-public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule> {
+public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule, AbstractTubeModuleRenderer.ModuleRenderState> {
     private final ModelPart tip;
     private final ModelPart body;
     private final ModelPart tubeConnector;
@@ -74,15 +72,19 @@ public class ChargingRenderer extends AbstractTubeModuleRenderer<ChargingModule>
 
 
     @Override
-    protected void render(ChargingModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int color = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        tip.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        body.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        tipBottom.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        tipTop.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        tipRight.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        tipLeft.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+    public ModuleRenderState createRenderState() {
+        return new ModuleRenderState();
+    }
+
+    @Override
+    protected void submitModel(ModuleRenderState state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(tip, poseStack);
+        submitter.submitPart(body, poseStack);
+        submitter.submitPart(tubeConnector, poseStack);
+        submitter.submitPart(tipBottom, poseStack);
+        submitter.submitPart(tipTop, poseStack);
+        submitter.submitPart(tipRight, poseStack);
+        submitter.submitPart(tipLeft, poseStack);
     }
 
     @Override

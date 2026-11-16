@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.ThermostatModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -10,10 +9,10 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.phys.Vec3;
 
-public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatModule> {
+public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatModule, ThermostatRenderer.State> {
     protected static final String CONNECTOR = "connector";
     protected static final String FACEPLATE = "faceplate";
     protected static final String FRAME = "frame";
@@ -55,17 +54,31 @@ public class ThermostatRenderer extends AbstractTubeModuleRenderer<ThermostatMod
     }
 
     @Override
-    protected void render(ThermostatModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        connector.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+    public State createRenderState() {
+        return new State();
+    }
 
-        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
-        frame.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
+    @Override
+    public void extractRenderState(ThermostatModule module, State state, float partialTicks, Vec3 cameraPosition) {
+        super.extractRenderState(module, state, partialTicks, cameraPosition);
+
+        state.frameColor = withModuleAlpha(module.isFake(), DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+    }
+
+    @Override
+    protected void submitModel(State state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(connector, poseStack);
+        submitter.submitPart(faceplate, poseStack);
+
+        submitter.submitPart(frame, poseStack, state.frameColor);
     }
 
     @Override
     protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_THERMOSTAT_MODULE_UPGRADED : Textures.MODEL_THERMOSTAT_MODULE;
+    }
+
+    public static class State extends ModuleRenderState {
+        int frameColor;
     }
 }

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.RedstoneModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -13,11 +12,11 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.phys.Vec3;
 
-public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule> {
+public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule, RedstoneRenderer.State> {
     private final ModelPart redstoneConnector;
     private final ModelPart faceplate;
     private final ModelPart tubeConnector1;
@@ -106,37 +105,56 @@ public class RedstoneRenderer extends AbstractTubeModuleRenderer<RedstoneModule>
 
 
     @Override
-    protected void render(RedstoneModule module, PoseStack poseStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        tubeConnector1.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector2.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector3.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector4.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector5.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector6.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
-        faceplate.render(poseStack, builder, combinedLight, combinedOverlay, baseColor);
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (module.isFake()) {
-            redstoneConnector.render(poseStack, builder, combinedLight, combinedOverlay, 0xFFFFFFFF);
+    @Override
+    public void extractRenderState(RedstoneModule module, State state, float partialTicks, Vec3 cameraPosition) {
+        super.extractRenderState(module, state, partialTicks, cameraPosition);
+
+        if (!module.isFake()) {
+            state.rsLevel = module.getRedstoneDirection() == RedstoneModule.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
+            state.extension = Mth.lerp(partialTicks, module.lastExtension, module.extension);
+        }
+        state.frameColor = withModuleAlpha(module.isFake(), DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+    }
+
+    @Override
+    protected void submitModel(State state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(tubeConnector1, poseStack);
+        submitter.submitPart(tubeConnector2, poseStack);
+        submitter.submitPart(tubeConnector3, poseStack);
+        submitter.submitPart(tubeConnector4, poseStack);
+        submitter.submitPart(tubeConnector5, poseStack);
+        submitter.submitPart(tubeConnector6, poseStack);
+        submitter.submitPart(faceplate, poseStack);
+
+        if (state.fake) {
+            submitter.submitPart(redstoneConnector, poseStack, 0xFFFFFFFF);
         } else {
-            int rsLevel = module.getRedstoneDirection() == RedstoneModule.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
             poseStack.pushPose();
             poseStack.translate(0, 0, 5.2 / 16);
-            poseStack.scale(1, 1, 0.25f + 0.72f * Mth.lerp(partialTicks, module.lastExtension, module.extension));
+            poseStack.scale(1, 1, 0.25f + 0.72f * state.extension);
             poseStack.translate(0, 0, -5.2 / 16);
-            redstoneConnector.render(poseStack, builder, combinedLight, combinedOverlay, 0xFF300000 | (rsLevel * 13 << 16));
+            submitter.submitPart(redstoneConnector, poseStack, 0xFF300000 | (state.rsLevel * 13 << 16));
             poseStack.popPose();
         }
 
-        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
-        frame1.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
-        frame2.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
-        frame3.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
-        frame4.render(poseStack, builder, combinedLight, combinedOverlay, frameColor);
+        submitter.submitPart(frame1, poseStack, state.frameColor);
+        submitter.submitPart(frame2, poseStack, state.frameColor);
+        submitter.submitPart(frame3, poseStack, state.frameColor);
+        submitter.submitPart(frame4, poseStack, state.frameColor);
     }
 
     @Override
     protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_REDSTONE_MODULE_UPGRADED : Textures.MODEL_REDSTONE_MODULE;
+    }
+
+    public static class State extends ModuleRenderState {
+        int rsLevel;
+        float extension;
+        int frameColor;
     }
 }
