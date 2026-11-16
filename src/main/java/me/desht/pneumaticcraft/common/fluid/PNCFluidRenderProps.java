@@ -18,16 +18,14 @@
 package me.desht.pneumaticcraft.common.fluid;
 
 import net.minecraft.resources.Identifier;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
- * TODO 26.1 render: fluid textures and tint are no longer part of {@link IClientFluidTypeExtensions}; they come from
- *  a {@code FluidModel}, registered in {@code RegisterFluidModelsEvent} (client). The client port should register a
- *  {@code FluidModel.Unbaked} for each PNC fluid from these properties.
+ * Textures and tint for a PneumaticCraft fluid; the client turns these into a {@code FluidModel} for the fluid
+ * (see {@code ModClientEventHandler#registerFluidModels}).
  */
-public class PNCFluidRenderProps implements IClientFluidTypeExtensions {
+public class PNCFluidRenderProps {
     private final Identifier still;
     private final Identifier flowing;
     private final int colorTint;
