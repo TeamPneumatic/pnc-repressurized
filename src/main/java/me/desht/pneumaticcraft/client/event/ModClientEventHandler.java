@@ -21,10 +21,9 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.PneumaticCraftRepressurizedClient;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.model.CamoModel;
-import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
-import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModelLoader;
+import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModel;
 import me.desht.pneumaticcraft.client.render.MinigunItemRenderer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayerColors;
 import me.desht.pneumaticcraft.common.block.AbstractCamouflageBlock;
@@ -33,9 +32,7 @@ import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import net.minecraft.client.renderer.block.BlockModelShaper;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -44,8 +41,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
+import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
+
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
@@ -56,11 +56,11 @@ public class ModClientEventHandler {
         // set up camo models for camouflageable blocks
         for (var block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof AbstractCamouflageBlock) {
+                Map<BlockState, BlockStateModel> models = event.getBakingResult().blockStateModels();
                 for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
-                    ModelResourceLocation loc = BlockModelShaper.stateToModelLocation(state);
-                    BakedModel model = event.getModels().get(loc);
+                    BlockStateModel model = models.get(state);
                     if (model != null) {
-                        event.getModels().put(loc, new CamoModel(model));
+                        models.put(state, new CamoModel(model));
                     }
                 }
             }
@@ -68,11 +68,14 @@ public class ModClientEventHandler {
     }
 
     @SubscribeEvent
+    public static void registerBlockStateModels(RegisterBlockStateModels event) {
+        event.registerModel(RL("pressure_tube"), PressureTubeModel.Unbaked.MAP_CODEC);
+    }
+
+    @SubscribeEvent
     public static void onModelRegistry(RegisterGeometryLoaders event) {
-        event.register(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
         event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
         event.register(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
-        event.register(RL("pressure_tube"), PressureTubeModelLoader.INSTANCE);
     }
 
     @SubscribeEvent
