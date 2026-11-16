@@ -13,7 +13,6 @@
     "accessors.EntityAccess",
     "accessors.ItemEntityAccess",
     "accessors.MinecartItemAccess",
-    "accessors.MobAccess",
     "accessors.ServerPlayerAccess",
     "accessors.ServerPlayerGameModeAccess",
     "accessors.ShapedRecipeAccess",

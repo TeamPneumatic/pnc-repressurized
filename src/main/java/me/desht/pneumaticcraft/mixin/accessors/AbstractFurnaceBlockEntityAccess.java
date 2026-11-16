@@ -6,16 +6,16 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(AbstractFurnaceBlockEntity.class)
 public interface AbstractFurnaceBlockEntityAccess {
-    @Accessor
+    @Accessor("litTimeRemaining")
     int getLitTime();
 
-    @Accessor
+    @Accessor("litTimeRemaining")
     void setLitTime(int litTime);
 
-    @Accessor
+    @Accessor("litTotalTime")
     void setLitDuration(int litDuration);
 
-    @Accessor
+    @Accessor("cookingTimer")
     int getCookingProgress();
 
 }
