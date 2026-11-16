@@ -49,6 +49,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,12 +61,17 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGuiScreen {
     private static final ChatFormatting[] TITLE_PREFIX = { ChatFormatting.AQUA, ChatFormatting.UNDERLINE };
 
-    public static final ItemStack[] ARMOR_STACKS = new ItemStack[]{
+    // created on first use: item components aren't bound yet when this class is first loaded
+    private static final Lazy<ItemStack[]> ARMOR_STACKS = Lazy.of(() -> new ItemStack[]{
             new ItemStack(ModItems.PNEUMATIC_BOOTS.get()),
             new ItemStack(ModItems.PNEUMATIC_LEGGINGS.get()),
             new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
             new ItemStack(ModItems.PNEUMATIC_HELMET.get())
-    };
+    });
+
+    public static ItemStack getArmorStack(EquipmentSlot slot) {
+        return ARMOR_STACKS.get()[slot.getIndex()];
+    }
 
     // A static instance which can handle keybinds when the GUI is closed.
     private static ArmorMainScreen instance;
@@ -190,7 +196,7 @@ public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGu
                         IOptionPage optionPage = clientHandler.getGuiOptionsPage(this);
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();
-                            stacks.add(ARMOR_STACKS[handler.getEquipmentSlot().getIndex()]);
+                            stacks.add(getArmorStack(handler.getEquipmentSlot()));
                             Arrays.stream(handler.getRequiredUpgrades()).map(PNCUpgrade::getItemStack).forEach(stacks::add);
                             upgradeOptions.add(new UpgradeOption(optionPage, handler.getID(), stacks.toArray(new ItemStack[0])));
                         }

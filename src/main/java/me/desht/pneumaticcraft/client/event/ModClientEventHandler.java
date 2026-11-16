@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.client.event;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.PneumaticCraftRepressurizedClient;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.model.CamoModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.pressure_tube.PressureTubeModel;
@@ -30,8 +29,8 @@ import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.fluid.*;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
+import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -84,9 +83,8 @@ public class ModClientEventHandler {
                 .toArray(Block[]::new);
         event.registerBlock(PneumaticCraftRepressurizedClient.PARTICLE_HANDLER, toAdd);
 
-        for (ItemStack stack :  ArmorMainScreen.ARMOR_STACKS) {
-            event.registerItem(PneumaticArmorLayerColors.INSTANCE, stack.getItem());
-        }
+        event.registerItem(PneumaticArmorLayerColors.INSTANCE, ModItems.PNEUMATIC_HELMET.get(), ModItems.PNEUMATIC_CHESTPLATE.get(),
+                ModItems.PNEUMATIC_LEGGINGS.get(), ModItems.PNEUMATIC_BOOTS.get());
 
         event.registerFluidType(FluidOil.RENDER_PROPS, ModFluids.OIL_FLUID_TYPE.get());
         event.registerFluidType(FluidBiodiesel.RENDER_PROPS, ModFluids.BIODIESEL_FLUID_TYPE.get());

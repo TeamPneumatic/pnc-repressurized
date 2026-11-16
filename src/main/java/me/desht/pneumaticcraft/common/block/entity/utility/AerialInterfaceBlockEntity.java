@@ -96,7 +96,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private static final List<RedstoneMode<AerialInterfaceBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER,
                     te -> false),
-            new EmittingRedstoneMode<>("aerialInterface.playerConnected", ModBlocks.AERIAL_INTERFACE.get(),
+            new EmittingRedstoneMode<>("aerialInterface.playerConnected", ModBlocks.AERIAL_INTERFACE,
                     te -> te.isConnectedToPlayer)
     );
     private static final String NO_AERIAL_INTERFACE = "pneumaticcraft:no_aerial_interface";

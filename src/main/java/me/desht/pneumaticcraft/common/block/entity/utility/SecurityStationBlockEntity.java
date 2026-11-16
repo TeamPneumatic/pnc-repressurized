@@ -102,7 +102,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
     private static final List<RedstoneMode<SecurityStationBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER, te -> false),
             new EmittingRedstoneMode<>("securityStation.hacked", () -> ModUpgrades.SECURITY.get().getItemStack(), SecurityStationBlockEntity::isHacked),
-            new EmittingRedstoneMode<>("securityStation.doneRebooting", ModBlocks.SECURITY_STATION.get(), te -> te.getRebootTime() <= 0)
+            new EmittingRedstoneMode<>("securityStation.doneRebooting", ModBlocks.SECURITY_STATION, te -> te.getRebootTime() <= 0)
     );
 
     public static final int INV_ROWS = 7;

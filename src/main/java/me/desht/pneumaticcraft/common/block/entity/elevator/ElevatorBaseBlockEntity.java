@@ -88,7 +88,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
 {
     private static final List<RedstoneController.RedstoneMode<ElevatorBaseBlockEntity>> REDSTONE_LABELS = ImmutableList.of(
             new RedstoneController.ReceivingRedstoneMode<>("elevator.redstone", Items.REDSTONE, te -> true),
-            new RedstoneController.ReceivingRedstoneMode<>("elevator.caller", ModBlocks.ELEVATOR_CALLER.get(), te -> true)
+            new RedstoneController.ReceivingRedstoneMode<>("elevator.caller", ModBlocks.ELEVATOR_CALLER, te -> true)
     );
 
     private static final float BUTTON_MARGIN = 0.2F;

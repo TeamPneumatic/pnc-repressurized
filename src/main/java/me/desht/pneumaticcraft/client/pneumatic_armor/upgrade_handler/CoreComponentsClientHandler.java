@@ -195,7 +195,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             pressureButtons.clear();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                ItemStack stack = ArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
+                ItemStack stack = ArmorMainScreen.getArmorStack(slot);
                 WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18,
                         Component.empty())
                         .setVisible(false).setRenderStacks(stack);
