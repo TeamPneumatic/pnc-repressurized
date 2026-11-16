@@ -23,12 +23,12 @@ import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.joml.Matrix4f;
@@ -309,17 +309,21 @@ public class RenderUtils {
     }
 
     public static void normalLine(VertexConsumer builder, PoseStack poseStack, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, float lineWidth) {
+        normalLine(builder, poseStack.last(), x1, y1, z1, x2, y2, z2, a, r, g, b, lineWidth);
+    }
+
+    public static void normalLine(VertexConsumer builder, PoseStack.Pose pose, float x1, float y1, float z1, float x2, float y2, float z2, float a, float r, float g, float b, float lineWidth) {
         float nx = x2 - x1;
         float ny = y2 - y1;
         float nz = z2 - z1;
         float d = Mth.sqrt(nx * nx + ny * ny + nz * nz);
-        builder.addVertex(poseStack.last().pose(), x1, y1, z1)
+        builder.addVertex(pose, x1, y1, z1)
                 .setColor(r, g, b, a)
-                .setNormal(poseStack.last(), nx / d , ny / d, nz / d)
+                .setNormal(pose, nx / d , ny / d, nz / d)
                 .setLineWidth(lineWidth);
-        builder.addVertex(poseStack.last(), x2, y2, z2)
+        builder.addVertex(pose, x2, y2, z2)
                 .setColor(r, g, b, a)
-                .setNormal(poseStack.last(), nx / d , ny / d, nz / d)
+                .setNormal(pose, nx / d , ny / d, nz / d)
                 .setLineWidth(lineWidth);
     }
 
