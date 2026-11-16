@@ -36,8 +36,9 @@ public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerM
     private final ElytraModel elytraModel;
     private final ElytraModel elytraBabyModel;
     private final EquipmentLayerRenderer equipmentRenderer;
-    // plain elytra stack, so the armor's own layer tint isn't applied to the wings
-    private final ItemStack elytraStack = new ItemStack(Items.ELYTRA);
+    // plain elytra stack, so the armor's own layer tint isn't applied to the wings; created on first render,
+    //  since item components aren't bound yet when render layers are created during the initial resource reload
+    private ItemStack elytraStack;
 
     public PneumaticElytraLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer, EntityModelSet modelSet, EquipmentLayerRenderer equipmentRenderer) {
         super(renderer);
@@ -52,6 +53,9 @@ public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerM
             return;
         }
 
+        if (elytraStack == null) {
+            elytraStack = new ItemStack(Items.ELYTRA);
+        }
         ElytraModel model = state.isBaby ? elytraBabyModel : elytraModel;
         poseStack.pushPose();
         poseStack.translate(0.0F, 0.0F, 0.125F);
