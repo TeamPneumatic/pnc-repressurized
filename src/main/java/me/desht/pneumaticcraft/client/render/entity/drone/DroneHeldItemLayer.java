@@ -20,45 +20,30 @@ package me.desht.pneumaticcraft.client.render.entity.drone;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
-import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
-import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.world.item.*;
-import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
-
-public class DroneHeldItemLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
-    DroneHeldItemLayer(RenderDrone renderer) {
+public class DroneHeldItemLayer extends RenderLayer<DroneRenderState, ModelDrone> {
+    DroneHeldItemLayer(RenderLayerParent<DroneRenderState, ModelDrone> renderer) {
         super(renderer);
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        ItemStack held = entityIn.getDroneHeldItem();
-        if (!held.isEmpty() && !(held.getItem() instanceof AbstractGunAmmoItem && entityIn.hasMinigun())) {
-            renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), entityIn.level());
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, DroneRenderState state, float yRot, float xRot) {
+        if (state.heldItem.isEmpty()) {
+            return;
         }
-    }
 
-    private void renderHeldItem(@Nonnull ItemStack stack, PoseStack matrixStack, MultiBufferSource buffer, int packedLight, int packedOverlay, Level level) {
-        matrixStack.pushPose();
-
+        poseStack.pushPose();
         // note: transform is currently set up so items render upside down
-        matrixStack.translate(0.0D, 1.5D, 0.0D);
-        if (!(stack.getItem() instanceof DiggerItem || stack.getItem() instanceof SwordItem || stack.getItem() instanceof HoeItem)) {
-            // since items are rendered suspended under the drone,
-            // holding tools upside down looks more natural - especially if the drone is digging with them
-            matrixStack.mulPose(Axis.XP.rotationDegrees(180));
+        poseStack.translate(0.0D, 1.5D, 0.0D);
+        if (state.heldItemUpsideDown) {
+            poseStack.mulPose(Axis.XP.rotationDegrees(180));
         }
-        float scaleFactor = stack.getItem() instanceof BlockItem ? 0.7F : 0.5F;
-        matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
-        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemDisplayContext.FIXED, packedLight, packedOverlay, matrixStack, buffer, level, 0);
-
-        matrixStack.popPose();
+        poseStack.scale(state.heldItemScale, state.heldItemScale, state.heldItemScale);
+        state.heldItem.submit(poseStack, submitNodeCollector, lightCoords, LivingEntityRenderer.getOverlayCoords(state, 0.0F), state.outlineColor);
+        poseStack.popPose();
     }
-
 }

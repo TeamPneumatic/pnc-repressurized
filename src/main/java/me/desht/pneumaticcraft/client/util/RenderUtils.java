@@ -38,7 +38,6 @@ import org.joml.Matrix4f;
 import java.util.BitSet;
 import java.util.function.BiConsumer;
 
-import static net.minecraft.util.Mth.lerp;
 
 public class RenderUtils {
     private static final float FULL_CIRCLE = (float)(Math.PI * 2);
@@ -181,18 +180,6 @@ public class RenderUtils {
         }
         matrixStack.mulPose(Axis.YP.rotationDegrees(yRotation));
         return yRotation;
-    }
-
-    public static void renderProgressingLine3d(ProgressingLine prev, ProgressingLine line, float partialTick, PoseStack matrixStack, VertexConsumer builder, int color) {
-        float[] cols = decomposeColorF(color);
-        float progress = line.getProgress();
-        float lx1 = lerp(partialTick, line.startX, prev.startX);
-        float ly1 = lerp(partialTick, line.startY, prev.startY);
-        float lz1 = lerp(partialTick, line.startZ, prev.startZ);
-        float lx2 = lerp(progress, lx1, lerp(partialTick, line.endX, prev.endX));
-        float ly2 = lerp(progress, ly1, lerp(partialTick, line.endY, prev.endY));
-        float lz2 = lerp(progress, lz1, lerp(partialTick, line.endZ, prev.endZ));
-        normalLine(builder, matrixStack, lx1, ly1, lz1, lx2, ly2, lz2, cols[0], cols[1], cols[2], cols[3], defaultLineWidth());
     }
 
     public static void submitRing(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, Vec3 offset, double renderProgress, float rotationYaw, float rotationPitch, int color) {
