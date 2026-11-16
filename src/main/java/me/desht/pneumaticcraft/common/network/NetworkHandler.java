@@ -138,13 +138,13 @@ public class NetworkHandler {
 		
 		// misc bi-directional
 		registrar.playBidirectional(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,
-				PacketAphorismTileUpdate::handle);
+				PacketAphorismTileUpdate::handle, PacketAphorismTileUpdate::handle);
 		registrar.playBidirectional(PacketSetGlobalVariable.TYPE, PacketSetGlobalVariable.STREAM_CODEC,
-				PacketSetGlobalVariable::handle);
+				PacketSetGlobalVariable::handle, PacketSetGlobalVariable::handle);
 		registrar.playBidirectional(PacketSyncSemiblock.TYPE, PacketSyncSemiblock.STREAM_CODEC,
-				PacketSyncSemiblock::handle);
+				PacketSyncSemiblock::handle, PacketSyncSemiblock::handle);
 		registrar.playBidirectional(PacketSyncSmartChest.TYPE, PacketSyncSmartChest.STREAM_CODEC,
-				PacketSyncSmartChest::handle);
+				PacketSyncSmartChest::handle, PacketSyncSmartChest::handle);
 
 		// tube modules
 		registrar.playToServer(PacketUpdatePressureModule.TYPE, PacketUpdatePressureModule.STREAM_CODEC,
@@ -166,7 +166,7 @@ public class NetworkHandler {
 
 		// amadron
 		registrar.playBidirectional(PacketSyncAmadronOffers.TYPE, PacketSyncAmadronOffers.STREAM_CODEC,
-				PacketSyncAmadronOffers::handle);
+				PacketSyncAmadronOffers::handle, PacketSyncAmadronOffers::handle);
 		registrar.playToClient(PacketAmadronOrderResponse.TYPE, PacketAmadronOrderResponse.STREAM_CODEC,
 				PacketAmadronOrderResponse::handle);
 		registrar.playToServer(PacketAmadronOrderUpdate.TYPE, PacketAmadronOrderUpdate.STREAM_CODEC,
@@ -178,13 +178,13 @@ public class NetworkHandler {
 		registrar.playToClient(PacketAmadronTradeRemoved.TYPE, PacketAmadronTradeRemoved.STREAM_CODEC,
 				PacketAmadronTradeRemoved::handle);
 		registrar.playBidirectional(PacketAmadronTradeAddCustom.TYPE, PacketAmadronTradeAddCustom.STREAM_CODEC,
-				PacketAmadronTradeAddCustom::handle);
+				PacketAmadronTradeAddCustom::handle, PacketAmadronTradeAddCustom::handle);
 
 		// hacking
 		registrar.playBidirectional(PacketHackingBlockStart.TYPE, PacketHackingBlockStart.STREAM_CODEC,
-				PacketHackingBlockStart::handle);
+				PacketHackingBlockStart::handle, PacketHackingBlockStart::handle);
 		registrar.playBidirectional(PacketHackingEntityStart.TYPE, PacketHackingEntityStart.STREAM_CODEC,
-				PacketHackingEntityStart::handle);
+				PacketHackingEntityStart::handle, PacketHackingEntityStart::handle);
 		registrar.playToClient(PacketHackingBlockFinish.TYPE, PacketHackingBlockFinish.STREAM_CODEC,
 				PacketHackingBlockFinish::handle);
 		registrar.playToClient(PacketHackingEntityFinish.TYPE, PacketHackingEntityFinish.STREAM_CODEC,
@@ -196,7 +196,7 @@ public class NetworkHandler {
 
 		// pneumatic armor
 		registrar.playBidirectional(PacketToggleArmorFeature.TYPE, PacketToggleArmorFeature.STREAM_CODEC,
-				PacketToggleArmorFeature::handle);
+				PacketToggleArmorFeature::handle, PacketToggleArmorFeature::handle);
 		registrar.playToServer(PacketToggleArmorFeatureBulk.TYPE, PacketToggleArmorFeatureBulk.STREAM_CODEC,
 				PacketToggleArmorFeatureBulk::handle);
 		registrar.playToServer(PacketPneumaticKick.TYPE, PacketPneumaticKick.STREAM_CODEC,
@@ -224,7 +224,7 @@ public class NetworkHandler {
 		registrar.playToClient(PacketShowWireframe.TYPE, PacketShowWireframe.STREAM_CODEC,
 				PacketShowWireframe::handle);
 		registrar.playBidirectional(PacketProgrammerSync.TYPE, PacketProgrammerSync.STREAM_CODEC,
-				 PacketProgrammerSync::handle);
+				PacketProgrammerSync::handle, PacketProgrammerSync::handle);
 	}
 
     public static void sendToAll(CustomPacketPayload message) {
