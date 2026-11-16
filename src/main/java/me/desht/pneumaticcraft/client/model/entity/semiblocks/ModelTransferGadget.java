@@ -17,7 +17,7 @@ public class ModelTransferGadget extends Model.Simple {
     private static final String OUTPART2 = "outPart2";
 
     public ModelTransferGadget(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        super(root, RenderTypes::entityCutoutCull);
     }
 
     public static LayerDefinition createBodyLayer() {

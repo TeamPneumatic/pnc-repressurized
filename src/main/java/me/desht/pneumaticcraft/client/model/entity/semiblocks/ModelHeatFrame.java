@@ -33,7 +33,7 @@ public class ModelHeatFrame extends Model.Simple {
     private static final String TOP12 = "top12";
 
     public ModelHeatFrame(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        super(root, RenderTypes::entityCutoutCull);
     }
 
     public static LayerDefinition createBodyLayer() {

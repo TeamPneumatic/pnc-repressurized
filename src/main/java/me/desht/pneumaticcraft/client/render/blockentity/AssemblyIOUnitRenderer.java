@@ -158,7 +158,7 @@ public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOU
     @Override
     void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         float[] angles = state.angles;
-        RenderType renderType = RenderTypes.entityCutout(state.texture);
+        RenderType renderType = RenderTypes.entityCutoutCull(state.texture);
 
         poseStack.mulPose(Axis.YP.rotationDegrees(angles[0]));
 

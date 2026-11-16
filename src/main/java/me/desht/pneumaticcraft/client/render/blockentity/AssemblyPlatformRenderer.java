@@ -97,7 +97,7 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
 
     @Override
     public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_PLATFORM);
 
         poseStack.pushPose();
         poseStack.translate(0, 0, state.clawTranslation);

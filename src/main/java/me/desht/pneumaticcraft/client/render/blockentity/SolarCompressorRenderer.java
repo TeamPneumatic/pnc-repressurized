@@ -85,7 +85,7 @@ public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<So
             // Translates panels back to original position after rotation
             poseStack.translate(0, 6 / 16F, 0);
 
-            submitPart(submitNodeCollector, panels, poseStack, RenderTypes.entityCutout(Textures.MODEL_SOLAR_COMPRESSOR), state);
+            submitPart(submitNodeCollector, panels, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_SOLAR_COMPRESSOR), state);
         }
     }
 

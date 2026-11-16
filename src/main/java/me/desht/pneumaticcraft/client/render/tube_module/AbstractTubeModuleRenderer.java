@@ -39,7 +39,7 @@ public abstract class AbstractTubeModuleRenderer<T extends AbstractTubeModule, S
         RenderUtils.rotateMatrixForDirection(poseStack, state.direction);
 
         Identifier texture = getTexture(state.upgraded);
-        RenderType renderType = state.fake ? RenderTypes.entityTranslucent(texture) : RenderTypes.entityCutout(texture);
+        RenderType renderType = state.fake ? RenderTypes.entityTranslucent(texture) : RenderTypes.entityCutoutCull(texture);
         submitModel(state, poseStack, new ModuleSubmitter(submitNodeCollector, renderType, lightCoords, withModuleAlpha(state.fake, 0xFFFFFF), breakProgress));
 
         poseStack.popPose();

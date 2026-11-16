@@ -188,7 +188,7 @@ public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<Un
 
     @Override
     public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_UNIVERSAL_SENSOR);
 
         poseStack.mulPose(Axis.YP.rotationDegrees(state.dishRotation));
         submitPart(submitNodeCollector, part1, poseStack, renderType, state);

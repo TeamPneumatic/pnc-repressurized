@@ -24,7 +24,7 @@ public class ModelSpawnerAgitator extends Model.Simple {
     private static final String BOTTOM4 = "bottom4";
 
     public ModelSpawnerAgitator(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        super(root, RenderTypes::entityCutoutCull);
     }
 
     public static LayerDefinition createBodyLayer() {

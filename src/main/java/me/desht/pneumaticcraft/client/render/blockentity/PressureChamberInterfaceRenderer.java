@@ -108,7 +108,7 @@ public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRe
 
     @Override
     public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE);
 
         RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
 

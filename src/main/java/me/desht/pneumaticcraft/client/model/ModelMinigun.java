@@ -142,7 +142,7 @@ public class ModelMinigun {
 
 
     public void submitMinigun(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, MinigunRenderState state, boolean renderMount, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_DRONE_MINIGUN);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_DRONE_MINIGUN);
         PartSubmitter submitter = (part, color) -> submitNodeCollector.submitModelPart(part, poseStack, renderType, lightCoords, overlayCoords, null, color, crumblingOverlay);
 
         poseStack.pushPose();

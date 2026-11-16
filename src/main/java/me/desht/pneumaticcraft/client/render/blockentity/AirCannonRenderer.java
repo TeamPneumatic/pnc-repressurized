@@ -89,7 +89,7 @@ public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCanno
 
     @Override
     void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_AIR_CANNON);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_AIR_CANNON);
 
         float angle = RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
         float rotationAngle = state.rotationAngle - angle + 180F;

@@ -61,7 +61,7 @@ public class RenderMicromissile extends EntityRenderer<MicromissileEntity, Rende
         poseStack.translate(-4.0D, 0.0D, 0.0D);
 
         int light = state.lightCoords;
-        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutout(Textures.MICROMISSILE_ENTITY), (pose, builder) -> {
+        submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.entityCutoutCull(Textures.MICROMISSILE_ENTITY), (pose, builder) -> {
             vertex(pose, builder, -7, -2, -2, 0.0F, 0.15625F, -1, 0, 0, light);
             vertex(pose, builder, -7, -2, 2, 0.15625F, 0.15625F, -1, 0, 0, light);
             vertex(pose, builder, -7, 2, 2, 0.15625F, 0.3125F, -1, 0, 0, light);

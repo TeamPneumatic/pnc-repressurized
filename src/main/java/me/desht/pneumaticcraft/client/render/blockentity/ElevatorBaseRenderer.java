@@ -111,7 +111,7 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
     public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         if (state.extension == 0) return;
 
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_ELEVATOR);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ELEVATOR);
 
         submitPole(poseStack, submitNodeCollector, renderType, state, pole4, 0);
         submitPole(poseStack, submitNodeCollector, renderType, state, pole3, 1);

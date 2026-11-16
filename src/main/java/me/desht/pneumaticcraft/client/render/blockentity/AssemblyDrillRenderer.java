@@ -119,7 +119,7 @@ public class AssemblyDrillRenderer extends AbstractAssemblyRenderer<AssemblyDril
     @Override
     void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         float[] angles = state.angles;
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL);
 
         poseStack.mulPose(Axis.YP.rotationDegrees(angles[0]));
 

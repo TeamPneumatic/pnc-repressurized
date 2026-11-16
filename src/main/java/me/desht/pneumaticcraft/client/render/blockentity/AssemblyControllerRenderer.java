@@ -67,7 +67,7 @@ public class AssemblyControllerRenderer extends AbstractBlockEntityModelRenderer
         // have the screen face the player
         poseStack.mulPose(Axis.YP.rotationDegrees(180 + camera.yRot));
 
-        submitPart(submitNodeCollector, screen, poseStack, RenderTypes.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER), state);
+        submitPart(submitNodeCollector, screen, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_CONTROLLER), state);
 
         // status text
         poseStack.translate(-0.23D, 0.50D, -0.04D);

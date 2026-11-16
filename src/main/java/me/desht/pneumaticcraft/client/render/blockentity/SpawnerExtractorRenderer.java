@@ -87,7 +87,7 @@ public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<S
         float extension = state.progress * -0.75f;
 
         poseStack.translate(0, extension, 0);
-        submitPart(submitNodeCollector, model, poseStack, RenderTypes.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR), state);
+        submitPart(submitNodeCollector, model, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_SPAWNER_EXTRACTOR), state);
     }
 
     @Override

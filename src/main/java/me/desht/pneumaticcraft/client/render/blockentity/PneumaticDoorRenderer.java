@@ -113,7 +113,7 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.translate(0, 0, 6.5/16F);
         }
-        submitPart(submitNodeCollector, door, poseStack, RenderTypes.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC), state.lightCoords, state.color, state);
+        submitPart(submitNodeCollector, door, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC), state.lightCoords, state.color, state);
     }
 
     public static class State extends ModelRenderState {

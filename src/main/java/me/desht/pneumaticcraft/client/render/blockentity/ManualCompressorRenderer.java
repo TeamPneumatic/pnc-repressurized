@@ -96,7 +96,7 @@ public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<M
         poseStack.translate(0, 9 / 16F, 0);
         poseStack.translate(0, state.pumprodOffset / 16F, 0);
 
-        submitPart(submitNodeCollector, pumprod, poseStack, RenderTypes.entityCutout(Textures.MODEL_MANUAL_COMPRESSOR), state);
+        submitPart(submitNodeCollector, pumprod, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_MANUAL_COMPRESSOR), state);
     }
 
     public static class State extends ModelRenderState {

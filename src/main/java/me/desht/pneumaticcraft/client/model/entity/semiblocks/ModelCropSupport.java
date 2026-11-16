@@ -22,7 +22,7 @@ public class ModelCropSupport extends Model.Simple {
     private static final String STICK8_R1 = "stick8_r1";
 
     public ModelCropSupport(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        super(root, RenderTypes::entityCutoutCull);
     }
 
     public static LayerDefinition createBodyLayer() {

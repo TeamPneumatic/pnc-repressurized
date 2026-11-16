@@ -92,7 +92,7 @@ public class PneumaticDoorBaseRenderer extends AbstractBlockEntityModelRenderer<
 
     @Override
     public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        RenderType renderType = RenderTypes.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_BASE);
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_PNEUMATIC_DOOR_BASE);
 
         float progress = state.progress;
 
