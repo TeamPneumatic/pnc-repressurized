@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -49,7 +50,9 @@ public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumat
     public void extractRenderState(T blockEntity, S state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        state.rotation = blockEntity.getRotation();
+        // not every block with a model renderer is rotatable (e.g. the assembly controller has no facing property)
+        state.rotation = blockEntity.getBlockState().getBlock() instanceof AbstractPneumaticCraftBlock block && block.isRotatable() ?
+                blockEntity.getRotation() : Direction.NORTH;
     }
 
     @Override
