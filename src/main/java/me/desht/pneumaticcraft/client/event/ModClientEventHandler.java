@@ -38,7 +38,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ModelEvent;
-import net.neoforged.neoforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.neoforged.neoforge.client.event.RegisterBlockStateModels;
 import net.neoforged.neoforge.client.event.RegisterSpecialModelRendererEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -72,13 +71,9 @@ public class ModClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void onModelRegistry(RegisterGeometryLoaders event) {
-        event.register(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
-    }
-
-    @SubscribeEvent
     public static void registerSpecialModelRenderers(RegisterSpecialModelRendererEvent event) {
         event.register(RL("minigun"), MinigunItemRenderer.Unbaked.MAP_CODEC);
+        event.register(RL("fluid_container_item"), FluidItemModel.Unbaked.MAP_CODEC);
     }
 
     @SubscribeEvent

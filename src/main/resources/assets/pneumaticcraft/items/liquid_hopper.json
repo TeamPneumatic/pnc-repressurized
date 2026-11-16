@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "pneumaticcraft:block/liquid_hopper_inv"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "pneumaticcraft:block/liquid_hopper_inv",
+        "model": { "type": "pneumaticcraft:fluid_container_item" }
+      }
+    ]
+  }
+}
