@@ -3,14 +3,13 @@ package me.desht.pneumaticcraft;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
-import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
 import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
@@ -50,31 +49,30 @@ public class CapabilitySetup {
         });
 
         // block entities
-        ModBlockEntityTypes.streamBlockEntities().forEach(blockEntity -> {
-            if (blockEntity instanceof AbstractPneumaticCraftBlockEntity pncBE) {
-                // TODO 26.1 transfer: PNC's item/fluid/energy handlers still implement the legacy interfaces and
-                //  can't be registered for the new Capabilities.Item/Fluid/Energy; exported in PR2
-//                if (pncBE.hasItemCapability()) {
-//                    event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, pncBE.getType(),
-//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getItemHandler(dir) : null);
-//                }
-//                if (pncBE.hasFluidCapability()) {
-//                    event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, pncBE.getType(),
-//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getFluidHandler(dir) : null);
-//                }
-//                if (pncBE.hasEnergyCapability()) {
-//                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, pncBE.getType(),
-//                            (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getEnergyHandler(dir) : null);
-//                }
-                if (pncBE instanceof IHeatExchangingTE) {
-                    event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, pncBE.getType(),
-                            (object, dir) -> object instanceof IHeatExchangingTE heat ? heat.getHeatExchanger(dir) : null);
-                }
-                if (pncBE instanceof AbstractAirHandlingBlockEntity) {
-                    event.registerBlockEntity(PNCCapabilities.AIR_HANDLER_MACHINE, pncBE.getType(),
-                            (object, dir) -> object instanceof AbstractAirHandlingBlockEntity a ? a.getAirHandler(dir) : null);
-                }
-            }
+        // Since 26.1 this event fires before item components are bound, and many block entity constructors create
+        //  ItemStacks (e.g. side configurator icons), so dummy block entities can't be created here any more.
+        //  Instead, the providers are registered for every PNC block entity type; they check the actual block entity
+        //  and return null when it doesn't have the capability, which is the same as not registering it.
+        ModBlockEntityTypes.BLOCK_ENTITY_TYPES.getEntries().forEach(holder -> {
+            BlockEntityType<?> type = holder.get();
+            // TODO 26.1 transfer: PNC's item/fluid/energy handlers still implement the legacy interfaces and
+            //  can't be registered for the new Capabilities.Item/Fluid/Energy; exported in PR2
+//            if (pncBE.hasItemCapability()) {
+//                event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, pncBE.getType(),
+//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getItemHandler(dir) : null);
+//            }
+//            if (pncBE.hasFluidCapability()) {
+//                event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, pncBE.getType(),
+//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getFluidHandler(dir) : null);
+//            }
+//            if (pncBE.hasEnergyCapability()) {
+//                event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, pncBE.getType(),
+//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getEnergyHandler(dir) : null);
+//            }
+            event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, type,
+                    (object, dir) -> object instanceof IHeatExchangingTE heat ? heat.getHeatExchanger(dir) : null);
+            event.registerBlockEntity(PNCCapabilities.AIR_HANDLER_MACHINE, type,
+                    (object, dir) -> object instanceof AbstractAirHandlingBlockEntity a ? a.getAirHandler(dir) : null);
         });
 
         // items
