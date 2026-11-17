@@ -28,14 +28,20 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.criterion.*;
+import net.minecraft.advancements.criterion.DataComponentMatchers;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.core.component.predicates.DamagePredicate;
+import net.minecraft.core.component.predicates.DataComponentPredicates;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.data.advancements.AdvancementProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -50,13 +56,17 @@ import static net.minecraft.advancements.AdvancementRewards.Builder.experience;
 public class ModAdvancementProvider extends AdvancementProvider {
     private static final Identifier BACKGROUND_TEXTURE = RL("textures/gui/advancement_bg.png");
 
-    public ModAdvancementProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
-        super(generatorIn.getPackOutput(), lookupProvider, existingFileHelper, List.of(new PNCAdvancements()));
+    public ModAdvancementProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, List.of(new PNCAdvancements()));
     }
 
-    private static class PNCAdvancements implements AdvancementGenerator {
+    private static class PNCAdvancements implements AdvancementSubProvider {
+        private HolderGetter<Item> items;
+
         @Override
-        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver, ExistingFileHelper existingFileHelper) {
+        public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> saver) {
+            items = registries.lookupOrThrow(Registries.ITEM);
+
             AdvancementHolder root = itemAdvancement("root", AdvancementType.TASK, ModItems.COMPRESSED_IRON_INGOT.get())
                     .rewards(experience(10))
                     .save(saver, id("root"));
@@ -287,24 +297,28 @@ public class ModAdvancementProvider extends AdvancementProvider {
 
         private ItemPredicate itemPredicate(ItemLike item, int minCount) {
             return ItemPredicate.Builder.item()
-                    .of(item.asItem())
+                    .of(items, item)
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
                     .build();
         }
 
         private ItemPredicate itemPredicateWithDurability(ItemLike item, int minCount) {
             return ItemPredicate.Builder.item()
-                    .of(item.asItem())
+                    .of(items, item)
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
-                    .withSubPredicate(ItemSubPredicates.DAMAGE, ItemDamagePredicate.durability(MinMaxBounds.Ints.ANY))
+                    .withComponents(DataComponentMatchers.Builder.components()
+                            .partial(DataComponentPredicates.DAMAGE, DamagePredicate.durability(MinMaxBounds.Ints.ANY))
+                            .build())
                     .build();
         }
 
         private ItemPredicate itemPredicateNoNBT(ItemLike item, int minCount) {
             return ItemPredicate.Builder.item()
-                    .of(item.asItem())
+                    .of(items, item)
                     .withCount(MinMaxBounds.Ints.atLeast(minCount))
-                    .withSubPredicate(ItemSubPredicates.DAMAGE, ItemDamagePredicate.durability(MinMaxBounds.Ints.ANY))
+                    .withComponents(DataComponentMatchers.Builder.components()
+                            .partial(DataComponentPredicates.DAMAGE, DamagePredicate.durability(MinMaxBounds.Ints.ANY))
+                            .build())
 //                    .hasNbt(null)
                     .build();
         }

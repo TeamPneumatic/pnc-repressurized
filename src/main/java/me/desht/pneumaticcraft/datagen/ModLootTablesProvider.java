@@ -26,7 +26,7 @@ import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.loot.LootTableSubProvider;
@@ -39,9 +39,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.ValidationContext;
+import net.minecraft.world.level.storage.loot.ValidationContextSource;
 import net.minecraft.world.level.storage.loot.entries.EmptyLootItem;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
@@ -51,6 +52,7 @@ import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
 import net.minecraft.world.level.storage.loot.functions.EnchantRandomlyFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.ExplosionCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
@@ -65,8 +67,8 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModLootTablesProvider extends LootTableProvider {
 
-    public ModLootTablesProvider(DataGenerator dataGeneratorIn, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-        super(dataGeneratorIn.getPackOutput(), Set.of(), List.of(
+    public ModLootTablesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, Set.of(), List.of(
                 new LootTableProvider.SubProviderEntry(BlockLootTablePNC::new, LootContextParamSets.BLOCK),
                 new LootTableProvider.SubProviderEntry(MechanicVillagerChestLootProvider::new, LootContextParamSets.CHEST),
                 new LootTableProvider.SubProviderEntry(CustomDungeonLootProvider::new, LootContextParamSets.CHEST)
@@ -74,7 +76,7 @@ public class ModLootTablesProvider extends LootTableProvider {
     }
 
     @Override
-    protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
+    protected void validate(WritableRegistry<LootTable> tables, ValidationContextSource validationContext, ProblemReporter.Collector problems) {
         // TODO
     }
 
@@ -114,13 +116,13 @@ public class ModLootTablesProvider extends LootTableProvider {
 
         private void addStandardSerializedDrop(Block block, Identifier blockId) {
             LootPoolSingletonContainer.Builder<?> lootBuilder = LootItem.lootTableItem(block)
-                    .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
+                    .apply(CopyNameFunction.copyName(LootContext.BlockEntityTarget.BLOCK_ENTITY));
 
             if (block instanceof SerializableComponentsProvider scp) {
                 List<DataComponentType<?>> components = new ArrayList<>();
                 scp.addSerializableComponents(components);
                 if (!components.isEmpty()) {
-                    CopyComponentsFunction.Builder compBuilder = CopyComponentsFunction.copyComponents(CopyComponentsFunction.Source.BLOCK_ENTITY);
+                    CopyComponentsFunction.Builder compBuilder = CopyComponentsFunction.copyComponentsFromBlockEntity(LootContextParams.BLOCK_ENTITY);
                     components.forEach(compBuilder::include);
                     lootBuilder.apply(compBuilder);
                 }

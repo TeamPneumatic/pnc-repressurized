@@ -18,20 +18,40 @@
 package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.api.lib.Names;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class DataGenerators {
     @SubscribeEvent
     public static void gatherClientData(GatherDataEvent.Client event) {
-        event.createProvider(output -> new ModModelProvider(output, event.getResourceManager(PackType.CLIENT_RESOURCES)));
-    }
+        // added first, so that the providers below get a lookup which includes these registry entries
+        event.createDatapackRegistryObjects(new RegistrySetBuilder()
+                .add(Registries.CONFIGURED_FEATURE, ModWorldGenProvider.ConfiguredFeatures::bootstrap)
+                .add(Registries.PLACED_FEATURE, ModWorldGenProvider.PlacedFeatures::bootstrap)
+                .add(NeoForgeRegistries.Keys.BIOME_MODIFIERS, ModWorldGenProvider.BiomeModifiers::bootstrap)
+                .add(Registries.DAMAGE_TYPE, ModDamageTypeProvider::bootstrap)
+        );
 
-    // TODO 26.1 datagen: the server data providers (recipes, loot, tags, advancements, worldgen...) aren't ported yet,
-    //  so the data they generated for 1.21.1 stays in src/generated/resources; see this class on the 1.21 branch for
-    //  their registration
+        event.createProvider(output -> new ModModelProvider(output, event.getResourceManager(PackType.CLIENT_RESOURCES)));
+        event.createProvider(ModRecipeProvider.Runner::new);
+        event.createProvider(ModLootTablesProvider::new);
+        event.createBlockAndItemTags(ModBlockTagsProvider::new, ModItemTagsProvider::new);
+        event.createProvider(ModFluidTagsProvider::new);
+        event.createProvider(ModBiomeTagsProvider::new);
+        event.createProvider(ModEntityTypeTagsProvider::new);
+        event.createProvider(ModPoiTypeTagsProvider::new);
+        event.createProvider(ModStructureTagsProvider::new);
+        event.createProvider(ModGameEventTagsProvider::new);
+        event.createProvider(ModDamageTypeTagsProvider::new);
+        event.createProvider(ModAdvancementProvider::new);
+        event.createProvider(ModGLMProvider::new);
+        event.createProvider(ModDataMapProvider::new);
+    }
 }
