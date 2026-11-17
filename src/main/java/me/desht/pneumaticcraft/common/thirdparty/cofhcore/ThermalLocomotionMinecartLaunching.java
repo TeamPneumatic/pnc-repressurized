@@ -5,13 +5,14 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Map;
 
 public class ThermalLocomotionMinecartLaunching {
-    private static final Map<ResourceLocation, EntityType<?>> launchMap = Maps.newHashMap();
+    private static final Map<Identifier, EntityType<?>> launchMap = Maps.newHashMap();
 
     public static void registerMinecartLaunchBehaviour() {
         // Adds thermal minecarts to launch map
@@ -30,7 +31,7 @@ public class ThermalLocomotionMinecartLaunching {
         // Registers launch map
         PneumaticRegistry.getInstance().getItemRegistry().registerItemLaunchBehaviour((stack, player) -> {
             EntityType<?> entityType = launchMap.get(PneumaticCraftUtils.getRegistryName(stack.getItem()).orElseThrow());
-            return entityType != null ? entityType.create(player.level()) : null;
+            return entityType != null ? entityType.create(player.level(), EntitySpawnReason.TRIGGERED) : null;
         });
     }
 
@@ -39,8 +40,8 @@ public class ThermalLocomotionMinecartLaunching {
      * @param itemIDString item ID of item/entity to add to launch map
      */
     private static void register(String itemIDString) {
-        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
-        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        Identifier itemId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
+        Identifier entityId = Identifier.fromNamespaceAndPath(ModIds.THERMAL, itemIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

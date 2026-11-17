@@ -53,7 +53,7 @@ public class CreativeCompressorBlockEntity extends AbstractAirHandlingBlockEntit
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        pressureSetpoint = tag.getFloat("setpoint");
+        pressureSetpoint = tag.getFloatOr("setpoint", 0f);
     }
 
     @Override

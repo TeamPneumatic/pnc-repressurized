@@ -3,11 +3,9 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "c:lpg"
+      "ingredient": "#c:lpg"
     },
-    "item": {
-      "item": "minecraft:coal"
-    }
+    "item": "minecraft:coal"
   },
   "outputs": {
     "fluid_output": {

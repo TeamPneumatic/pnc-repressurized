@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.fluid.AbstractFluidTER;
 import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
@@ -28,15 +27,21 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity> {
+public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<SpawnerExtractorBlockEntity, SpawnerExtractorRenderer.State> {
     private static final AABB FLUID_BB = new AABB(6/16D, 0, 6/16D, 10/16D, 1, 10/16D);
 
     private static final String MODEL = "model";
@@ -65,27 +70,41 @@ public class SpawnerExtractorRenderer extends AbstractBlockEntityModelRenderer<S
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-
     @Override
-    void renderModel(SpawnerExtractorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SPAWNER_EXTRACTOR));
-
-        float extension = te.getProgress() * -0.75f;
-
-        matrixStackIn.translate(0, extension, 0);
-        model.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    protected void renderExtras(SpawnerExtractorBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getProgress() > 0f && te.getProgress() < 1f) {
-            matrixStack.pushPose();
-            matrixStack.translate(0, 13/16D, 0);
-            VertexConsumer builder = iRenderTypeBuffer.getBuffer(RenderType.entityTranslucentCull(TextureAtlas.LOCATION_BLOCKS));
-            TankRenderInfo info = new TankRenderInfo(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), (int) (1000 * te.getProgress())), 1000, FLUID_BB);
-            AbstractFluidTER.renderFluid(builder, info, matrixStack.last().pose(), combinedLightIn, combinedOverlayIn);
-            matrixStack.popPose();
+    public void extractRenderState(SpawnerExtractorBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.progress = blockEntity.getProgress();
+    }
+
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        float extension = state.progress * -0.75f;
+
+        poseStack.translate(0, extension, 0);
+        submitPart(submitNodeCollector, model, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_SPAWNER_EXTRACTOR), state);
+    }
+
+    @Override
+    protected void submitExtras(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.progress > 0f && state.progress < 1f) {
+            poseStack.pushPose();
+            poseStack.translate(0, 13/16D, 0);
+            TankRenderInfo info = new TankRenderInfo(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), (int) (1000 * state.progress)), 1000, FLUID_BB);
+            submitNodeCollector.submitCustomGeometry(poseStack, ModRenderTypes.getEntityTranslucentCull(TextureAtlas.LOCATION_BLOCKS), (pose, builder) ->
+                    AbstractFluidTER.renderFluid(builder, info, pose.pose(), state.lightCoords, OverlayTexture.NO_OVERLAY)
+            );
+            poseStack.popPose();
         }
+    }
+
+    public static class State extends ModelRenderState {
+        float progress;
     }
 
     @Override

@@ -31,20 +31,25 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,7 +65,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
         BlockPos pos = ctx.getClickedPos();
         if (ctx.getPlayer() == null) return InteractionResult.PASS;
         setGPSLocation(ctx.getPlayer().getUUID(), ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
-        if (!ctx.getLevel().isClientSide) {
+        if (!ctx.getLevel().isClientSide()) {
             displayPosition(ctx.getPlayer(), ctx.getItemInHand(), pos, false);
         }
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
@@ -68,27 +73,34 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
     }
 
     private static void displayPosition(Player player, ItemStack itemInHand, BlockPos pos, boolean actionBar) {
-        player.displayClientMessage(itemInHand.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
+        Component msg = itemInHand.getDisplayName().copy().withStyle(ChatFormatting.AQUA)
                         .append(" ")
                         .append(Component.translatable("pneumaticcraft.message.gps_tool.targetSet",
-                                pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN)), actionBar);
+                                pos.getX(), pos.getY(), pos.getZ()).withStyle(ChatFormatting.GREEN));
+        if (actionBar) {
+            player.sendOverlayMessage(msg);
+        } else {
+            player.sendSystemMessage(msg);
+        }
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (worldIn.isClientSide) {
+        if (worldIn.isClientSide()) {
             GPSToolScreen.showGUI(stack, handIn, getGPSLocation(playerIn.getUUID(), stack).orElse(playerIn.blockPosition()));
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag par4) {
-        super.appendHoverText(stack, context, infoList, par4);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag par4) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, par4);
 
         ClientUtils.getOptionalClientLevel().ifPresent(level -> {
-            ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
+            List<Component> guiTooltip = new ArrayList<>();
+            ClientUtils.addGuiContextSensitiveTooltip(stack, guiTooltip);
+            guiTooltip.forEach(infoList);
             getGPSLocation(ClientUtils.getClientPlayer().getUUID(), stack).ifPresent(pos -> {
                 MutableComponent blockName;
                 if (level.isLoaded(pos)) {
@@ -98,19 +110,19 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
                     blockName = Component.empty().plainCopy();
                 }
                 String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-                infoList.add(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
+                infoList.accept(Component.literal(str).withStyle(ChatFormatting.YELLOW).append(blockName.withStyle(ChatFormatting.GREEN)));
             });
             String varName = getVariable(stack);
             if (!varName.isEmpty()) {
-                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+                infoList.accept(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
             }
         });
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level world, Entity entity, int slot, boolean heldItem) {
+    public void inventoryTick(ItemStack stack, ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
         String var = getVariable(stack);
-        if (!var.isEmpty() && !world.isClientSide && entity instanceof Player) {
+        if (!var.isEmpty() && entity instanceof Player) {
             getGPSLocation(entity.getUUID(), stack).ifPresent(curPos -> {
                 BlockPos varPos = GlobalVariableHelper.getInstance().getPos(entity.getUUID(), var, PneumaticCraftUtils.invalidPos());
                 if (!varPos.equals(curPos)) {
@@ -196,7 +208,7 @@ public class GPSToolItem extends Item implements IPositionProvider, IGPSToolSync
 
     @Override
     public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             ItemStack stack = player.getItemInHand(hand);
             getGPSLocation(stack).ifPresent(loc -> {
                 Direction facing = Direction.orderedByNearest(player)[0];

@@ -69,7 +69,7 @@ public abstract class AbstractRedstoneEmittingModule extends AbstractTubeModule 
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        redstone = tag.getInt("redstone");
+        redstone = tag.getIntOr("redstone", 0);
     }
 
     @Override

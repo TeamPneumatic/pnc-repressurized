@@ -2,19 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "L": {
-      "item": "minecraft:leather_boots"
-    }
+    "I": "#c:ingots/compressed_iron",
+    "L": "minecraft:leather_boots"
   },
   "pattern": [
     "ILI",
     "I I"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:compressed_iron_boots"
   }
 }

@@ -3,13 +3,12 @@
   "inputs": [
     {
       "count": 4,
-      "item": "minecraft:ice"
+      "ingredient": "minecraft:ice"
     }
   ],
   "pressure": 2.0,
   "results": [
     {
-      "count": 1,
       "id": "minecraft:packed_ice"
     }
   ]

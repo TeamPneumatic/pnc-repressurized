@@ -27,7 +27,6 @@
       "translate": "pneumaticcraft.advancement.logistics_frame.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:logistics_frame_passive_provider"
     },
     "title": {

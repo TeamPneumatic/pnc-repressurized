@@ -25,11 +25,11 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public record PacketSpawnIndicatorParticles(BlockPos pos0, DyeColor dyeColor, Li
     public static void handle(PacketSpawnIndicatorParticles message, IPayloadContext ctx) {
         Level world = ctx.player().level();
         float[] cols = RenderUtils.decomposeColorF(message.dyeColor().getTextureDiffuseColor());
-        ParticleOptions particle = new DustParticleOptions(new Vector3f(cols[0], cols[1], cols[2]), 1f);
+        ParticleOptions particle = new DustParticleOptions(ARGB.colorFromFloat(1f, cols[0], cols[1], cols[2]), 1f);
         BlockPos pos0 = message.pos0();
         world.addParticle(particle, pos0.getX() + 0.5, pos0.getY() + 0.5, pos0.getZ() + 0.5, 0, 0, 0);
         for (ByteOffset offset : message.offsets()) {

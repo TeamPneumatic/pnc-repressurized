@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.harvesting.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -71,8 +71,8 @@ public class ModHarvestHandlers {
          */
         public Block convert(Block in, TreePart to) {
             return PneumaticCraftUtils.getRegistryName(in).map(rlIn -> {
-                ResourceLocation rlOut = ResourceLocation.fromNamespaceAndPath(rlIn.getNamespace(), pattern.matcher(rlIn.getPath()).replaceAll(to.suffix));
-                return BuiltInRegistries.BLOCK.get(rlOut);
+                Identifier rlOut = Identifier.fromNamespaceAndPath(rlIn.getNamespace(), pattern.matcher(rlIn.getPath()).replaceAll(to.suffix));
+                return BuiltInRegistries.BLOCK.getValue(rlOut);
             }).orElse(Blocks.AIR);
         }
     }

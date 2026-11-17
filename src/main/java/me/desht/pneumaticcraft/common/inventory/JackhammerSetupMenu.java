@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
+import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -75,14 +76,19 @@ public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayer player) {
         ItemStack hammerStack = player.getItemInHand(hand);
-        if (tag.startsWith("digmode:") && hammerStack.getItem() instanceof JackHammerItem) {
-            try {
-                DrillBitItem.DrillBitType ourBit = JackHammerItem.getDrillBit(hammerStack);
-                DigMode newDigMode = DigMode.valueOf(tag.substring(8));
-                if (ourBit.getBitQuality() >= newDigMode.getBitType().getBitQuality() || newDigMode == DigMode.MODE_1X1) {
-                    JackHammerItem.setDigMode(hammerStack, newDigMode);
+        if (hammerStack.getItem() instanceof JackHammerItem) {
+            if (tag.startsWith("digmode:")) {
+                try {
+                    DrillBitItem.DrillBitType ourBit = JackHammerItem.getDrillBit(hammerStack);
+                    DigMode newDigMode = DigMode.valueOf(tag.substring(8));
+                    if (ourBit.getBitQuality() >= newDigMode.getBitType().getBitQuality() || newDigMode == DigMode.MODE_1X1) {
+                        JackHammerItem.setDigMode(hammerStack, newDigMode);
+                    }
+                } catch (IllegalArgumentException ignored) {
                 }
-            } catch (IllegalArgumentException ignored) {
+            } else if (tag.equals("speed_cap")) {
+                boolean capped = JackHammerItem.isSpeedCapped(hammerStack);
+                hammerStack.set(ModDataComponents.JACKHAMMER_SPEED_CAPPED, !capped);
             }
         }
     }

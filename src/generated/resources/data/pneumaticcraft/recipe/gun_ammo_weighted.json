@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "1": {
-      "tag": "c:storage_blocks/gold"
-    },
-    "2": {
-      "tag": "c:obsidians"
-    },
-    "A": {
-      "item": "pneumaticcraft:gun_ammo"
-    },
-    "C": {
-      "tag": "c:ingots/compressed_iron"
-    }
+    "1": "#c:storage_blocks/gold",
+    "2": "#c:obsidians",
+    "A": "pneumaticcraft:gun_ammo",
+    "C": "#c:ingots/compressed_iron"
   },
   "pattern": [
     " A ",
@@ -21,7 +13,6 @@
     "C2C"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:gun_ammo_weighted"
   }
 }

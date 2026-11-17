@@ -29,14 +29,15 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.Util;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 
 import java.util.Collections;
@@ -48,10 +49,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ProgrammableControllerScreen extends AbstractPneumaticCraftContainerScreen<ProgrammableControllerMenu,ProgrammableControllerBlockEntity>
         implements IGuiDrone
 {
-    private static final ItemStack EYE_OFF = new ItemStack(Items.ENDER_EYE);
-    private static final ItemStack EYE_ON = Util.make(new ItemStack(Items.ENDER_EYE),
-            stack -> stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
-    );
+    private static final ItemStackTemplate EYE_OFF = new ItemStackTemplate(Items.ENDER_EYE);
+    private static final ItemStackTemplate EYE_ON = new ItemStackTemplate(Items.ENDER_EYE,
+            DataComponentPatch.builder().set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true).build());
 
     private WidgetAnimatedStat chunkTab;
     private WidgetCheckBox shouldCharge;
@@ -110,7 +110,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
         usage += PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER;
         chunkTab.setText(Collections.singletonList(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage")
                 .append(" " + usage + "mL/t")));
-        chunkTab.setTexture(chunkloadSelf.checked || chunkloadWork.checked ? EYE_ON : EYE_OFF);
+        chunkTab.setTexture(chunkloadSelf.checked || chunkloadWork.checked ? EYE_ON.create() : EYE_OFF.create());
     }
 
     @Override
@@ -119,7 +119,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_PROGRAMMABLE_CONTROLLER;
     }
 

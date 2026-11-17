@@ -18,33 +18,29 @@
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
-import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.world.item.DyeColor;
+import net.minecraft.util.Unit;
 
-public class DroneColourLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
+public class DroneColourLayer extends RenderLayer<DroneRenderState, ModelDrone> {
     private final ModelDroneCore model;
 
-    DroneColourLayer(RenderLayerParent<AbstractDroneEntity, ModelDrone> rendererIn) {
+    DroneColourLayer(RenderLayerParent<DroneRenderState, ModelDrone> rendererIn, EntityRendererProvider.Context ctx) {
         super(rendererIn);
 
-        model = new ModelDroneCore(Minecraft.getInstance().getEntityModels().bakeLayer(PNCModelLayers.DRONE_CORE));
+        model = new ModelDroneCore(ctx.bakeLayer(PNCModelLayers.DRONE_CORE));
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        int col = 0xFF000000 | DyeColor.byId(entityIn.getDroneColor()).getTextureDiffuseColor();
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutoutNoCull(Textures.DRONE_ENTITY));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, LivingEntityRenderer.getOverlayCoords(entityIn, 0.0F), col);
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, DroneRenderState state, float yRot, float xRot) {
+        submitNodeCollector.submitModel(model, Unit.INSTANCE, poseStack, model.renderType(Textures.DRONE_ENTITY), lightCoords,
+                LivingEntityRenderer.getOverlayCoords(state, 0.0F), state.droneColor, null, state.outlineColor, null);
     }
 }

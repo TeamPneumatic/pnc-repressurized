@@ -21,22 +21,23 @@ import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidContainerIngredient;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public class HeatFrameCoolingRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final Either<Ingredient, FluidContainerIngredient> input;
     private final int temperature;
-    private final ItemStack outputItem;
+    private final ItemStackTemplate outputItem;
     private final float bonusMultiplier;
     private final float bonusLimit;
 
-    protected HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output) {
+    protected HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStackTemplate output) {
         this(input, temperature, output, 0f, 0f);
     }
 
-    public HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+    public HeatFrameCoolingRecipeBuilder(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStackTemplate output, float bonusMultiplier, float bonusLimit) {
         this.input = input;
         this.temperature = temperature;
         this.outputItem = output;
@@ -45,7 +46,7 @@ public class HeatFrameCoolingRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
         output.accept(id, new HeatFrameCoolingRecipeImpl(input, temperature, outputItem, bonusMultiplier, bonusLimit), null);
     }
 }

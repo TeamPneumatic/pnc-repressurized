@@ -111,7 +111,7 @@ public class MovingSounds {
     private static class Listener {
         @SubscribeEvent
         public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
-            if (event.getLevel().isClientSide && event.getEntity() instanceof LocalPlayer) {
+            if (event.getLevel().isClientSide() && event.getEntity() instanceof LocalPlayer) {
                 posToTickableSound.clear();
             }
         }

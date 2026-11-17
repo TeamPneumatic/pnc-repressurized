@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,7 +69,7 @@ import java.util.List;
 
 public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity implements IRedstoneControl<ChargingStationBlockEntity>, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<ChargingStationBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
+            new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER, te -> false),
             new EmittingRedstoneMode<>("chargingStation.idle", Textures.GUI_CHARGE_IDLE, ChargingStationBlockEntity::isIdle),
             new EmittingRedstoneMode<>("chargingStation.charging", Textures.GUI_CHARGING, te -> te.charging),
             new EmittingRedstoneMode<>("chargingStation.discharging", Textures.GUI_DISCHARGING, te -> te.discharging)
@@ -241,7 +242,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     public ChargeableItemHandler getChargeableInventory() {
-        return nonNullLevel().isClientSide ? new ChargeableItemHandler(this) : chargeableInventory;
+        return nonNullLevel().isClientSide() ? new ChargeableItemHandler(this) : chargeableInventory;
     }
 
     @Override
@@ -249,13 +250,13 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
         super.loadAdditional(tag, provider);
 
         itemHandler = new ChargingStationHandler();
-        itemHandler.deserializeNBT(provider, tag.getCompound("Items"));
+        itemHandler.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
 
         ItemStack chargeSlot = getChargingStack();
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {
             chargeableInventory = new ChargeableItemHandler(this);
         }
-        upgradeOnly = tag.getBoolean("UpgradeOnly");
+        upgradeOnly = tag.getBooleanOr("UpgradeOnly", false);
     }
 
     @Override
@@ -269,7 +270,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         upgradeOnly = componentInput.getOrDefault(ModDataComponents.UPGRADE_ONLY, false);
@@ -302,7 +303,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             BlockState state = level.getBlockState(worldPosition);
             level.setBlockAndUpdate(worldPosition, state.setValue(ChargingStationBlock.CHARGE_PAD, getUpgrades(ModUpgrades.DISPENSER.get()) > 0));
         }
@@ -374,7 +375,7 @@ public class ChargingStationBlockEntity extends AbstractAirHandlingBlockEntity i
                 chargingStackSynced = new ItemStack(newStack.getItem());
             }
 
-            if (teCS.nonNullLevel().isClientSide || slot != CHARGE_INVENTORY_INDEX) return;
+            if (teCS.nonNullLevel().isClientSide() || slot != CHARGE_INVENTORY_INDEX) return;
 
             teCS.chargeableInventory = newStack.getItem() instanceof IChargeableContainerProvider ?
                     new ChargeableItemHandler(teCS) :

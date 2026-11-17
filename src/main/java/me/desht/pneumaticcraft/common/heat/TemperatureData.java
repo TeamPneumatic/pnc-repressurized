@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -39,14 +39,14 @@ public class TemperatureData {
     public static TemperatureData fromNBT(CompoundTag nbt) {
         Double[] temp = new Double[7];
         if (nbt.contains("heat")) {
-            ListTag tagList = nbt.getList("heat", Tag.TAG_COMPOUND);
+            ListTag tagList = nbt.getListOrEmpty("heat");
             for (int i = 0; i < tagList.size(); i++) {
-                CompoundTag heatTag = tagList.getCompound(i);
-                temp[heatTag.getByte("side")] = (double) heatTag.getInt("temp");
+                CompoundTag heatTag = tagList.getCompoundOrEmpty(i);
+                temp[heatTag.getByteOr("side", (byte) 0)] = (double) heatTag.getIntOr("temp", 0);
             }
             return new TemperatureData(true, temp);
         } else {
-            temp[6] = (double) nbt.getInt("temp");
+            temp[6] = (double) nbt.getIntOr("temp", 0);
             return new TemperatureData(false, temp);
         }
     }

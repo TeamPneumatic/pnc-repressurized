@@ -23,8 +23,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
+import me.desht.pneumaticcraft.api.client.PNCKeyCategories;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
-import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.options.BlockTrackOptions;
@@ -37,15 +37,14 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -65,14 +64,13 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<BlockTrackerHandler> {
-    static final int BLOCK_TRACKING_RANGE = 30;
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsLeft(0.995f, 0.1f);
 
     private final Map<BlockPos, RenderBlockTarget> blockTargets = new Object2ObjectOpenHashMap<>();
     private IGuiAnimatedStat blockTrackInfo;
-    private final Object2IntMap<ResourceLocation> blockTypeCount = new Object2IntOpenHashMap<>();
-    private final Object2IntMap<ResourceLocation> blockTypeCountPartial = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<Identifier> blockTypeCount = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<Identifier> blockTypeCountPartial = new Object2IntOpenHashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
     private RenderBlockTarget focusedTarget = null;
     private Direction focusedFace = null;
@@ -85,7 +83,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public void tickClient(ICommonArmorHandler armorHandler, boolean isEnabled) {
         if (!isEnabled) return;
 
-        int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlot.HEAD, ModUpgrades.RANGE.get()), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_BLOCK;
+        int blockTrackRange = BlockTrackerHandler.getBlockTrackRange(armorHandler);
         int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();
@@ -177,7 +175,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
      */
     private void nextScanPos(BlockPos.MutableBlockPos pos, Player player, int range) {
         Vec3 look = player.getLookAngle();
-        Direction dir = Direction.getNearest(look.x(), look.y(), look.z());
+        Direction dir = Direction.getApproximateNearest(look.x(), look.y(), look.z());
         switch (dir) {
             case UP:
                 if (++xOff > range) {
@@ -252,8 +250,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        int minY = player.level().getMinBuildHeight();
-        int maxY = player.level().getMaxBuildHeight();
+        int minY = player.level().getMinY();
+        int maxY = player.level().getMaxY() + 1;
         pos.set(player.getX() + xOff, Mth.clamp(player.getY() + yOff, minY, maxY), player.getZ() + zOff);
     }
 
@@ -311,7 +309,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -367,15 +365,15 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public Collection<ResourceLocation> getSubKeybinds() {
-        ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+    public Collection<Identifier> getSubKeybinds() {
+        ImmutableList.Builder<Identifier> builder = ImmutableList.builder();
         builder.addAll(BlockTrackHandler.getInstance().getIDs());
         return builder.build();
     }
 
     @Override
-    public String getSubKeybindCategory() {
-        return Names.PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER;
+    public KeyMapping.Category getSubKeybindCategory() {
+        return PNCKeyCategories.BLOCK_TRACKER;
     }
 
     @Override

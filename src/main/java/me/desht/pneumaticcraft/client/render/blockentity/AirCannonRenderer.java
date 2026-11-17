@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -10,11 +9,16 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCannonBlockEntity> {
+public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCannonBlockEntity, AirCannonRenderer.State> {
     private final ModelPart baseTurn;
     private final ModelPart baseFrame1;
     private final ModelPart baseFrame2;
@@ -71,23 +75,41 @@ public class AirCannonRenderer extends AbstractBlockEntityModelRenderer<AirCanno
     }
 
     @Override
-    void renderModel(AirCannonBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_AIR_CANNON));
+    public State createRenderState() {
+        return new State();
+    }
 
-        float angle = RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
-        float rotationAngle = te.rotationAngle - angle + 180F;
+    @Override
+    public void extractRenderState(AirCannonBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        matrixStackIn.translate(0.0, 0.0, -0.09375D);
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotationAngle));
-        matrixStackIn.translate(0.0, 0.0, 0.09375D);
-        baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseFrame2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        axis.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        state.rotationAngle = blockEntity.rotationAngle;
+        state.heightAngle = blockEntity.heightAngle;
+    }
 
-        matrixStackIn.translate(0.0D, 1.0D, -0.09375D);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(te.heightAngle));
-        matrixStackIn.translate(0.0D, -1.0D, 0.09375D);
-        cannon.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_AIR_CANNON);
+
+        float angle = RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
+        float rotationAngle = state.rotationAngle - angle + 180F;
+
+        poseStack.translate(0.0, 0.0, -0.09375D);
+        poseStack.mulPose(Axis.YP.rotationDegrees(rotationAngle));
+        poseStack.translate(0.0, 0.0, 0.09375D);
+        submitPart(submitNodeCollector, baseTurn, poseStack, renderType, state);
+        submitPart(submitNodeCollector, baseFrame1, poseStack, renderType, state);
+        submitPart(submitNodeCollector, baseFrame2, poseStack, renderType, state);
+        submitPart(submitNodeCollector, axis, poseStack, renderType, state);
+
+        poseStack.translate(0.0D, 1.0D, -0.09375D);
+        poseStack.mulPose(Axis.XP.rotationDegrees(state.heightAngle));
+        poseStack.translate(0.0D, -1.0D, 0.09375D);
+        submitPart(submitNodeCollector, cannon, poseStack, renderType, state);
+    }
+
+    public static class State extends ModelRenderState {
+        float rotationAngle;
+        float heightAngle;
     }
 }

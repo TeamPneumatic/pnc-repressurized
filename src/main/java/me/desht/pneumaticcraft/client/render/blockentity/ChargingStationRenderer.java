@@ -22,41 +22,72 @@ import me.desht.pneumaticcraft.api.client.IChargingStationRenderOverride;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStationBlockEntity> {
+public class ChargingStationRenderer implements BlockEntityRenderer<ChargingStationBlockEntity, ChargingStationRenderer.State> {
+    private final ItemModelResolver itemModelResolver;
+
     public ChargingStationRenderer(BlockEntityRendererProvider.Context ctx) {
+        itemModelResolver = ctx.itemModelResolver();
     }
 
     @Override
-    public void render(ChargingStationBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        ItemStack renderStack = te.getChargingStackSynced();
-        if (renderStack.isEmpty() || !te.nonNullLevel().isLoaded(te.getBlockPos()) || te.getCamouflage() != null) return;
+    public State createRenderState() {
+        return new State();
+    }
 
-        matrixStackIn.pushPose();
+    @Override
+    public void extractRenderState(ChargingStationBlockEntity te, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(te, state, partialTicks, cameraPosition, breakProgress);
+
+        ItemStack renderStack = te.getChargingStackSynced();
+        boolean visible = !renderStack.isEmpty() && te.nonNullLevel().isLoaded(te.getBlockPos()) && te.getCamouflage() == null;
+        state.renderStack = visible ? renderStack.copy() : ItemStack.EMPTY;
+        state.rotation = te.getRotation();
+        state.partialTicks = partialTicks;
+        itemModelResolver.updateForTopItem(state.item, state.renderStack, ItemDisplayContext.FIXED, te.getLevel(), null, (int) te.getBlockPos().asLong());
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        ItemStack renderStack = state.renderStack;
+        if (renderStack.isEmpty()) return;
+
+        poseStack.pushPose();
 
         IChargingStationRenderOverride override = ClientRegistryImpl.getInstance().getChargingRenderOverride(renderStack.getItem());
 
-        if (override.onRender(matrixStackIn, renderStack, partialTicks, bufferIn, combinedLightIn, combinedOverlayIn)) {
-            matrixStackIn.translate(0.5, 0.5, 0.5);
-            RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+        if (override.onRender(poseStack, renderStack, state.partialTicks, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY)) {
+            poseStack.translate(0.5, 0.5, 0.5);
+            RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
             if (!(renderStack.getItem() instanceof BlockItem)) {
-                matrixStackIn.scale(0.5F, 0.5F, 0.5F);
+                poseStack.scale(0.5F, 0.5F, 0.5F);
             }
 
-            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            BakedModel bakedModel = itemRenderer.getModel(renderStack, te.getLevel(), null, 0);
-            itemRenderer.render(renderStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+            state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
 
-        matrixStackIn.popPose();
+        poseStack.popPose();
+    }
+
+    public static class State extends BlockEntityRenderState {
+        ItemStack renderStack = ItemStack.EMPTY;
+        Direction rotation = Direction.NORTH;
+        float partialTicks;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 }

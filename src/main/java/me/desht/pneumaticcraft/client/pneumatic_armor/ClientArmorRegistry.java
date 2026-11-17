@@ -40,7 +40,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
@@ -62,9 +62,9 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     // lazy-inited per-armor-slot list of client upgrade handlers
     private List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = null;
     // map upgrade ID to client upgrade handler
-    private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new ConcurrentHashMap<>();
+    private final Map<Identifier, IArmorUpgradeClientHandler<?>> id2HandlerMap = new ConcurrentHashMap<>();
     // map upgrade ID to keymapping that toggles it on/off
-    private final Map<ResourceLocation, KeyMapping> id2KeyBindMap = new ConcurrentHashMap<>();
+    private final Map<Identifier, KeyMapping> id2KeyBindMap = new ConcurrentHashMap<>();
     // map keymapping name to upgrade handler that it triggers (e.g. hacking, kick, item launcher...)
     private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new ConcurrentHashMap<>();
     // frozen when everything set up
@@ -80,7 +80,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     @Override
-    public void registerBlockTrackEntry(ResourceLocation id, Supplier<? extends IBlockTrackEntry> entry) {
+    public void registerBlockTrackEntry(Identifier id, Supplier<? extends IBlockTrackEntry> entry) {
         BlockTrackHandler.getInstance().register(id, entry);
     }
 
@@ -105,7 +105,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     @Override
-    public ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed) {
+    public ICheckboxWidget makeKeybindingCheckBox(Identifier upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed) {
         return WidgetKeybindCheckBox.getOrCreate(upgradeId, xPos, yPos, color, onPressed);
     }
 
@@ -116,7 +116,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
     }
 
     @Override
-    public IGuiAnimatedStat makeHUDStatPanel(Component title, ResourceLocation icon, IArmorUpgradeClientHandler<?> clientHandler) {
+    public IGuiAnimatedStat makeHUDStatPanel(Component title, Identifier icon, IArmorUpgradeClientHandler<?> clientHandler) {
         StatPanelLayout layout = ArmorHUDLayout.INSTANCE.getLayoutFor(clientHandler.getID(), clientHandler.getDefaultStatLayout());
         return new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(icon), HUDHandler.getInstance().getStatOverlayColor(), null, layout);
     }
@@ -142,7 +142,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
      * internal & non-API methods below here
      */
 
-    private void registerKeyBinding(ResourceLocation upgradeID, KeyMapping keyBinding) {
+    private void registerKeyBinding(Identifier upgradeID, KeyMapping keyBinding) {
         id2KeyBindMap.put(upgradeID, keyBinding);
     }
 
@@ -170,7 +170,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
         Minecraft.getInstance().options.keyMappings = ArrayUtils.addAll(Minecraft.getInstance().options.keyMappings, keys);
     }
 
-    public KeyMapping getKeybindingForUpgrade(ResourceLocation upgradeID) {
+    public KeyMapping getKeybindingForUpgrade(Identifier upgradeID) {
         return id2KeyBindMap.get(upgradeID);
     }
 
@@ -183,7 +183,7 @@ public enum ClientArmorRegistry implements IClientArmorRegistry {
         return (C) clientHandlers.get(armorUpgradeHandler.getIndex());
     }
 
-    public IArmorUpgradeClientHandler<?> getClientHandler(ResourceLocation id) {
+    public IArmorUpgradeClientHandler<?> getClientHandler(Identifier id) {
         return id2HandlerMap.get(id);
     }
 

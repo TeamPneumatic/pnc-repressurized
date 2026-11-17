@@ -3,11 +3,9 @@
   "inputs": {
     "fluid": {
       "amount": 1000,
-      "tag": "c:biodiesel"
+      "ingredient": "#c:biodiesel"
     },
-    "item": {
-      "tag": "c:dusts/redstone"
-    }
+    "item": "#c:dusts/redstone"
   },
   "outputs": {
     "fluid_output": {

@@ -34,7 +34,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -187,7 +187,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return operator.texture;
     }
 
@@ -271,7 +271,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         MULIPLY_DIVIDE("multiply_divide", 1, 1),
         MAX_MIN("max_min", Integer.MIN_VALUE, Integer.MAX_VALUE);
 
-        public final ResourceLocation texture;
+        public final Identifier texture;
         private final String name;
         private final int defWhite;
         private final int defBlack;

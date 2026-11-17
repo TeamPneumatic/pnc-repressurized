@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.Consumer;
 
@@ -27,7 +27,7 @@ import java.util.function.Consumer;
  * a toggleable upgrade on &amp; off.
  * <p>
  * Do not implement this class yourself; you can create and retrieve instances of it via
- * {@link IClientArmorRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}. This would
+ * {@link IClientArmorRegistry#makeKeybindingCheckBox(Identifier, int, int, int, Consumer)}. This would
  * typically be done in {@link IOptionPage#populateGui(IGuiScreen)}.
  */
 public interface ICheckboxWidget {
@@ -52,7 +52,7 @@ public interface ICheckboxWidget {
      * Get the upgrade ID for this checkbox; the upgrade that is toggled when the checkbox is clicked.
      * @return the upgrade ID
      */
-    default ResourceLocation getUpgradeId() {
+    default Identifier getUpgradeId() {
         return null;
     }
 
@@ -61,7 +61,7 @@ public interface ICheckboxWidget {
      * @param owningId the upgrade ID of the owning upgrade
      * @return this widget, for fluency
      */
-    default ICheckboxWidget withOwnerUpgradeID(ResourceLocation owningId) {
+    default ICheckboxWidget withOwnerUpgradeID(Identifier owningId) {
         return null;
     }
 }

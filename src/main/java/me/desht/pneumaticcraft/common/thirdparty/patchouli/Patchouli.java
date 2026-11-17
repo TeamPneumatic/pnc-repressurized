@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -34,7 +34,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class Patchouli implements IThirdParty, IDocsProvider {
-    static final ResourceLocation PNC_BOOK = RL("book");
+    static final Identifier PNC_BOOK = RL("book");
 
     private static Screen prevGui;
     private static Screen bookGui;

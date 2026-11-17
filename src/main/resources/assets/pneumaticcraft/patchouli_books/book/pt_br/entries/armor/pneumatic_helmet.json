@@ -33,7 +33,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:coordinate_tracker_upgrade",
-      "text": "A melhoria $(l:base_concepts/upgrades#coordinate_tracker)Rastreador de Coordenadas/$ calculará o caminho mais curto para um local selecionado, usando o próprio pathfinding do Minecraft para realizar isso.$(p)Isso é muito útil quando você está perdido em uma caverna e quer sair: abra o menu de opções (pressione $(thing)$(k:pneumaticcraft.armor.options)/$) e selecione $(bold)Navegar para a superfície/$."
+      "text": "A $(l:base_concepts/upgrades#coordinate_tracker)Melhoria de Rastreamento de Coordenadas/$ calculará o caminho mais curto para um local selecionado, usando o próprio pathfinding do Minecraft para realizar isso.$(p)Isso é muito útil quando você está perdido em uma caverna e quer sair: abra o menu de opções (pressione $(thing)$(k:pneumaticcraft.armor.options)/$) e selecione $(bold)Navegar para a superfície/$."
     },
     {
       "type": "spotlight",
@@ -68,7 +68,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:ender_visor_upgrade",
-      "text": "A $(l:base_concepts/upgrades#ender_visor)Melhoria de Visor do Ender/$ é baseada em pesquisa avançada de $(thing)abóbora/$, e fornece um meio alternável de evitar a agressividade de $(thing)Enderman/$, enquanto mitiga as dificuldades visuais normalmente associadas a enfiar sua cabeça em uma abóbora real."
+      "text": "A $(l:base_concepts/upgrades#ender_visor)Melhoria de Visor de Ender/$ é baseada em pesquisa avançada de $(thing)abóbora/$, e fornece um meio alternável de evitar a agressividade de $(thing)Enderman/$, enquanto mitiga as dificuldades visuais normalmente associadas a enfiar sua cabeça em uma abóbora real."
     }
   ]
 }

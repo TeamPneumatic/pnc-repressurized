@@ -94,6 +94,7 @@ public class CommonConfig {
         public ModConfigSpec.DoubleValue coldSweatMinBlockEffect;
         public ModConfigSpec.DoubleValue coldSweatMaxBlockEffect;
         public ModConfigSpec.DoubleValue coldSweatAirConEfficiency;
+        public ModConfigSpec.BooleanValue curiosAerialInterfaceAccess;
     }
     public static class Advanced {
         public ModConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
@@ -601,6 +602,10 @@ public class CommonConfig {
                 .comment("How efficient is the Air Conditioning upgrade in the PNC Armor?")
                 .translation("pneumaticcraft.config.common.integration.cold_sweat_air_con_efficiency")
                 .defineInRange("cold_sweat_air_con_efficiency", 1.0, 0.01, 10.0);
+        integration.curiosAerialInterfaceAccess = builder
+                .comment("If true, Aerial Interfaces can access a player's curios slots")
+                .translation("pneumaticcraft.config.common.integration.curios_aerial_interface_access")
+                .define("curios_aerial_interface_access", true);
 //        integration.cofhHoldingMultiplier = builder
 //                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items being enchanted with the Holding enchantment at all.")
 //                .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")

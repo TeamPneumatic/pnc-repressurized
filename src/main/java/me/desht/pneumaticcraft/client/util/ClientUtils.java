@@ -43,15 +43,16 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -65,11 +66,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.data.ModelData;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -89,8 +90,8 @@ public class ClientUtils {
      * @param particle the particle type
      */
     public static void emitParticles(Level world, BlockPos pos, ParticleOptions particle, double yOffset) {
-        float xOff = world.random.nextFloat() * 0.6F + 0.2F;
-        float zOff = world.random.nextFloat() * 0.6F + 0.2F;
+        float xOff = world.getRandom().nextFloat() * 0.6F + 0.2F;
+        float zOff = world.getRandom().nextFloat() * 0.6F + 0.2F;
         getClientLevel().addParticle(particle,
                 pos.getX() + xOff, pos.getY() + yOffset, pos.getZ() + zOff,
                 0, 0, 0);
@@ -106,7 +107,7 @@ public class ClientUtils {
     }
 
     public static boolean isKeyDown(int keyCode) {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), keyCode);
+        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), keyCode);
     }
 
     /**
@@ -163,7 +164,7 @@ public class ClientUtils {
     }
 
     public static boolean hasShiftDown() {
-        return Screen.hasShiftDown();
+        return Minecraft.getInstance().hasShiftDown();
     }
 
     /**
@@ -207,7 +208,7 @@ public class ClientUtils {
     }
 
     public static int getLightAt(BlockPos pos) {
-        return LevelRenderer.getLightColor(getClientLevel(), pos);
+        return LevelRenderer.getLightCoords(getClientLevel(), pos);
     }
 
     public static int getStringWidth(String line) {
@@ -224,14 +225,17 @@ public class ClientUtils {
 
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
-        BakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
-        List<BakedQuad> quads = model.getQuads(state, face, getClientLevel().random, ModelData.EMPTY, null);
-        if (!quads.isEmpty()) {
-            TextureAtlasSprite sprite = quads.getFirst().getSprite();
-            return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
-        } else {
-            return null;
+        BlockStateModel model = Minecraft.getInstance().getModelManager().getBlockStateModelSet().get(state);
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        model.collectParts(getClientLevel().getRandom(), parts);
+        for (BlockStateModelPart part : parts) {
+            List<BakedQuad> quads = part.getQuads(face);
+            if (!quads.isEmpty()) {
+                TextureAtlasSprite sprite = quads.getFirst().materialInfo().sprite();
+                return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
+            }
         }
+        return null;
     }
 
     public static void spawnEntityClientside(Entity e) {
@@ -270,7 +274,7 @@ public class ClientUtils {
             String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             Item item = stack.getItem();
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
-            ResourceLocation regName = PneumaticCraftUtils.getRegistryName(item).orElseThrow();
+            Identifier regName = PneumaticCraftUtils.getRegistryName(item).orElseThrow();
             String k = String.join(".", base, regName.getNamespace(), regName.getPath(), subKey);
             if (I18n.exists(k)) {
                 tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(ChatFormatting.GRAY)).toList());

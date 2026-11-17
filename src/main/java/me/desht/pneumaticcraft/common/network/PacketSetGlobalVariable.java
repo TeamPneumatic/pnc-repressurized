@@ -21,6 +21,7 @@ import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.client.gui.remote.AbstractRemoteScreen;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -44,7 +45,7 @@ public record PacketSetGlobalVariable(String varName, Either<Optional<BlockPos>,
     public static final Type<PacketSetGlobalVariable> TYPE = new Type<>(RL("set_global_variable"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketSetGlobalVariable> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, PacketSetGlobalVariable::varName,
+            ByteBufCodecs.stringUtf8(GlobalVariableManager.MAX_VARIABLE_LEN), PacketSetGlobalVariable::varName,
             ByteBufCodecs.either(ByteBufCodecs.optional(BlockPos.STREAM_CODEC), ItemStack.OPTIONAL_STREAM_CODEC), PacketSetGlobalVariable::value,
             PacketSetGlobalVariable::new
     );

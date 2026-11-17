@@ -5,20 +5,18 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
 public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
-    public ModEntityTypeTagsProvider(DataGenerator pGenerator, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-        super(pGenerator.getPackOutput(), lookupProvider, Names.MOD_ID, existingFileHelper);
+    public ModEntityTypeTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, Names.MOD_ID);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
         tag(PneumaticCraftTags.EntityTypes.DRONES).add(ModEntityTypes.DRONE.get());
         tag(PneumaticCraftTags.EntityTypes.DRONES).addTag(PneumaticCraftTags.EntityTypes.BASIC_DRONES);
 
-        var radImmune = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("c", "radiation_immune"));
+        var radImmune = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("c", "radiation_immune"));
         tag(radImmune).addTag(PneumaticCraftTags.EntityTypes.DRONES);
 
         // no PNC entities are suitable for picking up with Carry On

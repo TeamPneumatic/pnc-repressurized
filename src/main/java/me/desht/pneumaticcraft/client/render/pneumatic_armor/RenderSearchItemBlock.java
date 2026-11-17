@@ -24,7 +24,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -98,19 +98,19 @@ public class RenderSearchItemBlock {
         builder.addVertex(posMat, -size, size, 0)
                 .setColor(0, 1, 0, alpha)
                 .setUv(0, 1)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         builder.addVertex(posMat, size, size, 0)
                 .setColor(0, 1, 0, alpha)
                 .setUv(1, 1)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         builder.addVertex(posMat, size, -size, 0)
                 .setColor(0, 1, 0, alpha)
                 .setUv(1, 0)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
         builder.addVertex(posMat, -size, -size, 0)
                 .setColor(0, 1, 0, alpha)
                 .setUv(0, 0)
-                .setLight(LightTexture.FULL_BRIGHT);
+                .setLight(LightCoordsUtil.FULL_BRIGHT);
 
         matrixStack.popPose();
     }

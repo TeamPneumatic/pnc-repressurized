@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "pneumaticcraft:block/pressure_tube" }
+    "": { "type": "pneumaticcraft:pressure_tube" }
   }
 }

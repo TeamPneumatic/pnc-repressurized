@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.block;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -33,10 +33,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableDispenser implements IHackableBlock {
-    private static final ResourceLocation ID = RL("dispenser");
+    private static final Identifier ID = RL("dispenser");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

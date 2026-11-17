@@ -3,15 +3,12 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil"
     },
-    "item": {
-      "item": "pneumaticcraft:raw_salmon_tempura"
-    }
+    "item": "pneumaticcraft:raw_salmon_tempura"
   },
   "outputs": {
     "item_output": {
-      "count": 1,
       "id": "pneumaticcraft:salmon_tempura"
     }
   },

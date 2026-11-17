@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,7 +38,7 @@ import java.util.function.Supplier;
 public enum BlockTrackHandler {
     INSTANCE;
 
-    private final Map<ResourceLocation, Supplier<? extends IBlockTrackEntry>> pendingTrackers = new ConcurrentHashMap<>();
+    private final Map<Identifier, Supplier<? extends IBlockTrackEntry>> pendingTrackers = new ConcurrentHashMap<>();
     private List<IBlockTrackEntry> trackers;
 
     public static BlockTrackHandler getInstance() {
@@ -55,7 +55,7 @@ public enum BlockTrackHandler {
         register(BlockTrackEntryEnergy.ID, BlockTrackEntryEnergy::new);
     }
 
-    public void register(ResourceLocation id, @Nonnull Supplier<? extends IBlockTrackEntry> entry) {
+    public void register(Identifier id, @Nonnull Supplier<? extends IBlockTrackEntry> entry) {
         if (trackers != null) throw new IllegalStateException("entity tracker registry is frozen!");
         pendingTrackers.put(id, entry);
     }
@@ -80,7 +80,7 @@ public enum BlockTrackHandler {
         return trackers;
     }
 
-    public Collection<ResourceLocation> getIDs() {
+    public Collection<Identifier> getIDs() {
         return ImmutableList.copyOf(pendingTrackers.keySet());
     }
 

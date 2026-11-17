@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.RegulatorModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -12,10 +11,9 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
 
-public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModule> {
+public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModule, AbstractTubeModuleRenderer.ModuleRenderState> {
     private final ModelPart tubeConnector;
     private final ModelPart valve1;
     private final ModelPart valve2;
@@ -50,15 +48,19 @@ public class RegulatorRenderer extends AbstractTubeModuleRenderer<RegulatorModul
 
 
     @Override
-    protected void render(RegulatorModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        valve1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        valve2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+    public ModuleRenderState createRenderState() {
+        return new ModuleRenderState();
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected void submitModel(ModuleRenderState state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(tubeConnector, poseStack);
+        submitter.submitPart(valve1, poseStack);
+        submitter.submitPart(valve2, poseStack);
+    }
+
+    @Override
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_REGULATOR_MODULE_UPGRADED : Textures.MODEL_REGULATOR_MODULE;
     }
 }

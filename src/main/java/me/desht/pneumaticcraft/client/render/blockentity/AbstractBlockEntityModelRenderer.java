@@ -18,40 +18,75 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
 /**
  * For block entities with an entity-style model to render
  * @param <T> the block entity type
+ * @param <S> the render state type
  */
-public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumaticCraftBlockEntity> implements BlockEntityRenderer<T> {
+public abstract class AbstractBlockEntityModelRenderer<T extends AbstractPneumaticCraftBlockEntity, S extends AbstractBlockEntityModelRenderer.ModelRenderState> implements BlockEntityRenderer<T, S> {
+    protected final ItemModelResolver itemModelResolver;
+
     AbstractBlockEntityModelRenderer(BlockEntityRendererProvider.Context ctx) {
+        this.itemModelResolver = ctx.itemModelResolver();
     }
 
     @Override
-    public void render(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
-        // boilerplate translation code, common to all our model-rendering TERs, is done here
+    public void extractRenderState(T blockEntity, S state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        matrixStack.pushPose();
+        // not every block with a model renderer is rotatable (e.g. the assembly controller has no facing property)
+        state.rotation = blockEntity.getBlockState().getBlock() instanceof AbstractPneumaticCraftBlock block && block.isRotatable() ?
+                blockEntity.getRotation() : Direction.NORTH;
+    }
+
+    @Override
+    public void submit(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        // boilerplate translation code, common to all our model-rendering BERs, is done here
+
+        poseStack.pushPose();
 
         // necessary transforms to make models render in the right place
-        matrixStack.translate(0.5, 1.5, 0.5);
-        matrixStack.scale(1f, -1f, -1f);
+        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.scale(1f, -1f, -1f);
 
         // actual model rendering work
-        renderModel(te, partialTicks, matrixStack, iRenderTypeBuffer, combinedLightIn, combinedOverlayIn);
+        submitModel(state, poseStack, submitNodeCollector, camera);
 
-        matrixStack.popPose();
+        poseStack.popPose();
 
-        renderExtras(te, partialTicks, matrixStack, iRenderTypeBuffer, combinedLightIn, combinedOverlayIn);
+        submitExtras(state, poseStack, submitNodeCollector, camera);
     }
 
-    abstract void renderModel(T te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn);
+    abstract void submitModel(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera);
 
-    protected void renderExtras(T te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
+    protected void submitExtras(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
     }
 
+    static void submitPart(SubmitNodeCollector submitNodeCollector, ModelPart part, PoseStack poseStack, RenderType renderType, ModelRenderState state) {
+        submitPart(submitNodeCollector, part, poseStack, renderType, state.lightCoords, -1, state);
+    }
+
+    static void submitPart(SubmitNodeCollector submitNodeCollector, ModelPart part, PoseStack poseStack, RenderType renderType, int lightCoords, int tintColor, ModelRenderState state) {
+        submitNodeCollector.submitModelPart(part, poseStack, renderType, lightCoords, OverlayTexture.NO_OVERLAY, null, tintColor, state.breakProgress);
+    }
+
+    public static class ModelRenderState extends BlockEntityRenderState {
+        public Direction rotation = Direction.NORTH;
+    }
 }

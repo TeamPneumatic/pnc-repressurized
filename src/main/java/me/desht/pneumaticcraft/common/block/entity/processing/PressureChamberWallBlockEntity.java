@@ -27,7 +27,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
@@ -77,7 +76,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
                 || newValve != null && valvePos == null;
 
         valvePos = newValve == null ? null : newValve.getBlockPos();
-        if (valveChanging && !nonNullLevel().isClientSide) {
+        if (valveChanging && !nonNullLevel().isClientSide()) {
             teValve = newValve;
             // defer updating the blockstate since this can get called during placement, and updating the blockstate
             // then can cause the TE to change, losing the reference to the valve TE
@@ -86,10 +85,18 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
             setChanged();
         }
     }
-    public void onBlockBreak() {
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        // not called when the block is moved (UPDATE_SKIP_BLOCK_ENTITY_SIDEEFFECTS), so never moving here
+        onBlockBreak(false);
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    public void onBlockBreak(boolean isMoving) {
         teValve = getPrimaryValve();
         if (teValve != null) {
-            teValve.onMultiBlockBreak();
+            teValve.onMultiBlockBreak(isMoving);
         }
     }
 
@@ -160,7 +167,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        valvePos = NbtUtils.readBlockPos(tag, "valvePos").orElse(null);
+        valvePos = tag.read("valvePos", BlockPos.CODEC).orElse(null);
         teValve = null;
     }
 
@@ -169,7 +176,7 @@ public class PressureChamberWallBlockEntity extends AbstractTickingBlockEntity i
         super.saveAdditional(tag, provider);
 
         if (valvePos != null) {
-            tag.put("valvePos", NbtUtils.writeBlockPos(valvePos));
+            tag.store("valvePos", BlockPos.CODEC, valvePos);
         }
     }
 

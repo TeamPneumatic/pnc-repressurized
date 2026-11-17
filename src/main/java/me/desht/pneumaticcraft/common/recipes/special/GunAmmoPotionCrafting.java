@@ -17,49 +17,30 @@
 
 package me.desht.pneumaticcraft.common.recipes.special;
 
-import com.google.common.base.Suppliers;
 import me.desht.pneumaticcraft.common.item.minigun.StandardGunAmmoItem;
 import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
-import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-public class GunAmmoPotionCrafting extends ShapelessRecipe {
+public class GunAmmoPotionCrafting extends PNCSpecialCraftingRecipe {
     private static final List<Predicate<ItemStack>> ITEM_PREDICATES = List.of(
             stack -> stack.getItem() instanceof PotionItem,
             stack -> stack.getItem() instanceof StandardGunAmmoItem
     );
-    private static final Supplier<Ingredient> POTIONS = Suppliers.memoize(() ->
-        Ingredient.of(BuiltInRegistries.POTION.holders().flatMap(GunAmmoPotionCrafting::potionStacks))
-    );
 
     public GunAmmoPotionCrafting(CraftingBookCategory category) {
-        super("", category, ModItems.GUN_AMMO.get().getDefaultInstance(),
-                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), POTIONS.get())
-        );
-    }
-
-    private static Stream<ItemStack> potionStacks(Holder<Potion> potion) {
-        return Stream.of(
-                PotionContents.createItemStack(Items.POTION, potion),
-                PotionContents.createItemStack(Items.SPLASH_POTION, potion),
-                PotionContents.createItemStack(Items.LINGERING_POTION, potion)
-        );
+        super(category);
     }
 
     @Override
@@ -68,7 +49,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registryAccess) {
+    public ItemStack assemble(CraftingInput inv) {
         List<ItemStack> stacks = ModCraftingHelper.findItems(inv, ITEM_PREDICATES);
         if (stacks.size() == 2) {
             ItemStack potion = stacks.get(0);
@@ -82,12 +63,24 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public boolean canCraftInDimensions(int w, int h) {
-        return w * h >= 2;
+    protected List<SlotDisplay> displayIngredients() {
+        return List.of(
+                new SlotDisplay.ItemSlotDisplay(ModItems.GUN_AMMO.get()),
+                new SlotDisplay.Composite(List.of(
+                        new SlotDisplay.ItemSlotDisplay(Items.POTION),
+                        new SlotDisplay.ItemSlotDisplay(Items.SPLASH_POTION),
+                        new SlotDisplay.ItemSlotDisplay(Items.LINGERING_POTION)
+                ))
+        );
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    protected SlotDisplay displayResult() {
+        return new SlotDisplay.ItemSlotDisplay(ModItems.GUN_AMMO.get());
+    }
+
+    @Override
+    public RecipeSerializer<GunAmmoPotionCrafting> getSerializer() {
         return ModRecipeSerializers.GUN_AMMO_POTION_CRAFTING.get();
     }
 }

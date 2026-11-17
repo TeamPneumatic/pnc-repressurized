@@ -19,8 +19,8 @@ package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.ResourceLocationException;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.IdentifierException;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.util.Lazy;
 
@@ -29,9 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
+public class WildcardedRLMatcher implements Predicate<Identifier> {
     private final Set<String> namespaces = new ObjectOpenHashSet<>();
-    private final Set<ResourceLocation> reslocs = new ObjectOpenHashSet<>();
+    private final Set<Identifier> reslocs = new ObjectOpenHashSet<>();
 
     public static Lazy<WildcardedRLMatcher> lazyFromConfig(ModConfigSpec.ConfigValue<List<? extends String>> configValue) {
         return Lazy.of(() -> new WildcardedRLMatcher(configValue.get()));
@@ -44,8 +44,8 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
                 namespaces.add(parts[0]);
             } else {
                 try {
-                    reslocs.add(ResourceLocation.parse(str));
-                } catch (ResourceLocationException e) {
+                    reslocs.add(Identifier.parse(str));
+                } catch (IdentifierException e) {
                     Log.error("WildcardedRLMatcher: invalid resource location '{}'", str);
                 }
             }
@@ -57,7 +57,7 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
     }
 
     @Override
-    public boolean test(ResourceLocation resourceLocation) {
+    public boolean test(Identifier resourceLocation) {
         return reslocs.contains(resourceLocation) || namespaces.contains(resourceLocation.getNamespace());
     }
 
@@ -65,10 +65,10 @@ public class WildcardedRLMatcher implements Predicate<ResourceLocation> {
         if (!(input instanceof String str)) {
             return false;
         }
-        if (ResourceLocation.tryParse(str) != null) {
+        if (Identifier.tryParse(str) != null) {
             return true;
         }
         String[] parts = str.split(":");
-        return parts.length == 2 && ResourceLocation.isValidNamespace(parts[0]) && (parts[0].isEmpty() || parts[1].equals("*"));
+        return parts.length == 2 && Identifier.isValidNamespace(parts[0]) && (parts[0].isEmpty() || parts[1].equals("*"));
     }
 }

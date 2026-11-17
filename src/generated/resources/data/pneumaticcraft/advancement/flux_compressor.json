@@ -18,7 +18,6 @@
       "translate": "pneumaticcraft.advancement.flux_compressor.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:flux_compressor"
     },
     "title": {

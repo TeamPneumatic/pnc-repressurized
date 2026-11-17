@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import me.desht.pneumaticcraft.mixin.accessors.MobAccess;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -37,10 +37,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobDisarm implements IHackableEntity<Mob> {
-    private static final ResourceLocation ID = RL("mob_disarm");
+    private static final Identifier ID = RL("mob_disarm");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -73,7 +73,7 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
 
     @Override
     public void onHackFinished(Mob entity, Player player) {
-        if (!entity.level().isClientSide) {
+        if (!entity.level().isClientSide()) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (doDisarm(entity, slot, player.getRandom())) {
                     return;
@@ -85,18 +85,18 @@ public class HackableMobDisarm implements IHackableEntity<Mob> {
     private boolean doDisarm(Mob entity, EquipmentSlot slot, RandomSource rand) {
         if (entity.getItemBySlot(slot).isEmpty()) return false;
 
-        MobAccess access = (MobAccess)entity;
-        float[] dropChances = slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR ? access.getArmorDropChances() : access.getHandDropChances();
-        int slotIdx = slot.getIndex();
-        boolean noDamage = dropChances[slotIdx] > 1f;
+        float dropChance = entity.getDropChances().byEquipment(slot);
+        boolean noDamage = dropChance > 1f;
         ItemStack stack = entity.getItemBySlot(slot);
-        if (!stack.isEmpty() && rand.nextFloat() < dropChances[slotIdx]) {
+        if (!stack.isEmpty() && rand.nextFloat() < dropChance) {
             if (!noDamage && stack.isDamageableItem()) {
                 int k = Math.max(stack.getMaxDamage() - 25, 1);
                 int l = stack.getMaxDamage() - rand.nextInt(rand.nextInt(k) + 1);
                 stack.setDamageValue(Mth.clamp(l, 1, k));
             }
-            entity.spawnAtLocation(stack, 0f);
+            if (entity.level() instanceof ServerLevel serverLevel) {
+                entity.spawnAtLocation(serverLevel, stack);
+            }
         }
         entity.setItemSlot(slot, ItemStack.EMPTY);
         return true;

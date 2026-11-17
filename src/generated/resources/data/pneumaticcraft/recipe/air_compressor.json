@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "F": {
-      "item": "minecraft:furnace"
-    },
-    "I": {
-      "tag": "pneumaticcraft:reinforced_stone_bricks"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    }
+    "F": "minecraft:furnace",
+    "I": "#pneumaticcraft:reinforced_stone_bricks",
+    "T": "pneumaticcraft:pressure_tube"
   },
   "pattern": [
     "III",
@@ -18,7 +12,6 @@
     "IFI"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:air_compressor"
   }
 }

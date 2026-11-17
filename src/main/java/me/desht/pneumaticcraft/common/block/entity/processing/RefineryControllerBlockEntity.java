@@ -59,6 +59,8 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,7 +91,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     @DescSynced
     private int lastProgress; // indicates to client that refinery is running, for particle spawning
 
-    private List<BlockCapabilityCache<IFluidHandler,Direction>> outputCache;
+    private List<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> outputCache;
     private TemperatureRange operatingTemp = TemperatureRange.invalid();
     private RefineryRecipe currentRecipe;
     private int workTimer = 0;
@@ -279,13 +281,13 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         outputCache = null;
     }
 
-    private List<BlockCapabilityCache<IFluidHandler,Direction>> getOutputCache() {
+    private List<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> getOutputCache() {
         if (outputCache == null) {
             outputCache = new ArrayList<>();
             RefineryOutputBlockEntity output = findAdjacentOutput();
             while (output != null) {
                 // direction DOWN is important here to get the unwrapped cap
-                outputCache.add(BlockCapabilityCache.create(Capabilities.FluidHandler.BLOCK, (ServerLevel) getLevel(),
+                outputCache.add(BlockCapabilityCache.create(Capabilities.Fluid.BLOCK, (ServerLevel) getLevel(),
                         output.getBlockPos(), Direction.DOWN,
                         () -> !isRemoved(), () -> outputCache = null));
                 BlockEntity te = getLevel().getBlockEntity(output.getBlockPos().above());
@@ -298,7 +300,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
     private Optional<IFluidHandler> getOutputHandler(int n) {
         return n >= 0 && n < outputCount ?
-                Optional.ofNullable(getOutputCache().get(n).getCapability()) :
+                Optional.ofNullable(getOutputCache().get(n).getCapability()).map(IFluidHandler::of) :
                 Optional.empty();
     }
 

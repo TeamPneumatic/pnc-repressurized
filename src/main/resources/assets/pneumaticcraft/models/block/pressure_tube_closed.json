@@ -1,6 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
+		"particle": "#pipeplug",
 		"pipeplug": "pneumaticcraft:pnc_model/tube_closed"
 	},
 	"render_type": "solid",

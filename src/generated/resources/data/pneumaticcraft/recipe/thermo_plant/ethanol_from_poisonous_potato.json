@@ -4,11 +4,9 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "pneumaticcraft:yeast_culture"
+      "ingredient": "#pneumaticcraft:yeast_culture"
     },
-    "item": {
-      "item": "minecraft:poisonous_potato"
-    }
+    "item": "minecraft:poisonous_potato"
   },
   "outputs": {
     "fluid_output": {

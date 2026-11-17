@@ -4,8 +4,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -19,8 +18,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class AbstractTameableHack<T extends LivingEntity> implements IHackableEntity<T> {
     @Override
     public boolean canHack(Entity entity, Player player) {
-        return entity instanceof TamableAnimal t && !player.getUUID().equals(t.getOwnerUUID())
-                || entity instanceof Horse h && !player.getUUID().equals(h.getOwnerUUID());
+        return entity instanceof OwnableEntity o && (o.getOwnerReference() == null || !player.getUUID().equals(o.getOwnerReference().getUUID()));
     }
 
     @Override

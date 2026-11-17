@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "X": {
-      "tag": "c:ingots/compressed_iron"
-    }
+    "C": "#pneumaticcraft:plastic_sheets",
+    "L": "#pneumaticcraft:upgrade_components",
+    "X": "#c:ingots/compressed_iron"
   },
   "pattern": [
     "LXL",
@@ -18,7 +12,6 @@
     "LXL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:magnet_upgrade"
   }
 }

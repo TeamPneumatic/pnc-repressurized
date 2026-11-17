@@ -194,8 +194,7 @@ public class ModBlockEntityTypes {
 
     @SafeVarargs
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> supplier, Supplier<? extends Block>... blocks) {
-        //noinspection ConstantConditions
-        return BLOCK_ENTITY_TYPES.register(name, () -> new BlockEntityType<>(supplier, Arrays.stream(blocks).map(Supplier::get).collect(Collectors.toSet()), null));
+        return BLOCK_ENTITY_TYPES.register(name, () -> new BlockEntityType<>(supplier, Arrays.stream(blocks).map(Supplier::get).collect(Collectors.toSet())));
     }
 
     private static final List<BlockEntity> DUMMY_BE_LIST = new ArrayList<>();

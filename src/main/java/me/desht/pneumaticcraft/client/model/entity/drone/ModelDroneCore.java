@@ -1,24 +1,20 @@
 package me.desht.pneumaticcraft.client.model.entity.drone;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class ModelDroneCore extends EntityModel<AbstractDroneEntity> {
-    private final ModelPart drone;
-
+public class ModelDroneCore extends Model.Simple {
     private static final String DRONE = "drone";
     private static final String BODY = "body";
 
     public ModelDroneCore(ModelPart root) {
-        drone = root.getChild(DRONE);
+        super(root, RenderTypes::entityCutout);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -32,14 +28,5 @@ public class ModelDroneCore extends EntityModel<AbstractDroneEntity> {
                 PartPose.offset(0.0F, -3.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 128, 128);
-    }
-
-    @Override
-    public void setupAnim(AbstractDroneEntity drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, int color) {
-        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, color);
     }
 }

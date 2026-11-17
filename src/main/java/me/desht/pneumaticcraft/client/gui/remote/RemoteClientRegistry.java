@@ -11,7 +11,7 @@ import me.desht.pneumaticcraft.client.gui.remote.config.RemoteLabelOptionScreen;
 import me.desht.pneumaticcraft.common.registry.ModRemoteWidgetTypes;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public enum RemoteClientRegistry {
     INSTANCE;
 
-    private final Map<ResourceLocation, Factory<? extends IRemoteWidget,? extends AbstractWidget>> factoryMap = new ConcurrentHashMap<>();
+    private final Map<Identifier, Factory<? extends IRemoteWidget,? extends AbstractWidget>> factoryMap = new ConcurrentHashMap<>();
 
     public void registerClientFactories() {
         register(ModRemoteWidgetTypes.BUTTON.get(), RemoteButtonOptionScreen.Factory.INSTANCE);
@@ -49,7 +49,7 @@ public enum RemoteClientRegistry {
         factory.handleGlobalVariableChange(remoteWidget, mcWidget, varName);
     }
 
-    private static @NotNull ResourceLocation getKey(IRemoteWidget remoteWidget) {
+    private static @NotNull Identifier getKey(IRemoteWidget remoteWidget) {
         return Objects.requireNonNull(PNCRegistries.REMOTE_WIDGETS_REGISTRY.getKey(remoteWidget.getType()));
     }
 

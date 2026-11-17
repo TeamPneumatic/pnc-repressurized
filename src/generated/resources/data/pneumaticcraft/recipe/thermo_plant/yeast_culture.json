@@ -3,11 +3,9 @@
   "inputs": {
     "fluid": {
       "amount": 1000,
-      "fluid": "minecraft:water"
+      "ingredient": "minecraft:water"
     },
-    "item": {
-      "tag": "c:mushrooms"
-    }
+    "item": "#c:mushrooms"
   },
   "outputs": {
     "fluid_output": {

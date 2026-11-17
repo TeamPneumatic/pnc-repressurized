@@ -122,7 +122,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
     protected boolean isWatchingChannel(int channel) {
         return redstoneDirection == EnumRedstoneDirection.OUTPUT && (
                 colorChannel == channel || (operation.useOtherColor && otherColor == channel)
-                );
+        );
     }
 
     @Override
@@ -172,24 +172,24 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
 
-        redstoneDirection = tag.getBoolean("input") ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT;
-        colorChannel = tag.getByte("channel");
+        redstoneDirection = tag.getBooleanOr("input", false) ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT;
+        colorChannel = tag.getByteOr("channel", (byte) 0);
         if (redstoneDirection.isInput()) {
-            setInputLevel(tag.getByte("inputLevel")); // for sync'ing to clients on login
+            setInputLevel(tag.getByteOr("inputLevel", (byte) 0)); // for sync'ing to clients on login
         } else {
-            outputLevel = tag.getByte("outputLevel"); // for sync'ing to clients on login
+            outputLevel = tag.getByteOr("outputLevel", (byte) 0); // for sync'ing to clients on login
         }
         try {
-            operation = tag.contains("op") ? Operation.valueOf(tag.getString("op")) : Operation.PASSTHROUGH;
+            operation = tag.contains("op") ? Operation.valueOf(tag.getStringOr("op", "")) : Operation.PASSTHROUGH;
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             operation = Operation.PASSTHROUGH;
         }
-        otherColor = tag.getByte("color2");
-        constantVal = tag.getInt("const");
-        inverted = tag.getBoolean("invert");
-        decodeLevels(tag.getLong("prevLevels"), prevLevels);
-        comparatorInput = tag.getBoolean("comparatorInput");
+        otherColor = tag.getByteOr("color2", (byte) 0);
+        constantVal = tag.getIntOr("const", 0);
+        inverted = tag.getBooleanOr("invert", false);
+        decodeLevels(tag.getLongOr("prevLevels", 0L), prevLevels);
+        comparatorInput = tag.getBooleanOr("comparatorInput", false);
     }
 
     private long encodeLevels(byte[] l) {
@@ -337,7 +337,7 @@ public class RedstoneModule extends AbstractNetworkedRedstoneModule implements I
         if (comparatorInput && upgraded) {
             BlockPos pos2 = pressureTube.getBlockPos().relative(getDirection());
             BlockState state = world.getBlockState(pos2);
-            return state.hasAnalogOutputSignal() ? state.getAnalogOutputSignal(world, pos2) : 0;
+            return state.hasAnalogOutputSignal() ? state.getAnalogOutputSignal(world, pos2, getDirection().getOpposite()) : 0;
         } else {
             return world.getSignal(pressureTube.getBlockPos().relative(getDirection()), getDirection());
         }

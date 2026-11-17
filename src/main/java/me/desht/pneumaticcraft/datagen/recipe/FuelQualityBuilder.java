@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 
 public class FuelQualityBuilder extends AbstractPNCRecipeBuilder {
@@ -34,7 +35,7 @@ public class FuelQualityBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, ResourceLocation id) {
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
         output.accept(id, new FuelQualityRecipeImpl(fuel, airPerBucket, burnRate), null);
     }
 }

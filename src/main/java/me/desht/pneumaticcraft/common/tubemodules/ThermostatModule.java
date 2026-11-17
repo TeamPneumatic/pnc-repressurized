@@ -224,9 +224,9 @@ public class ThermostatModule extends AbstractNetworkedRedstoneModule implements
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
 
-        colorChannel = tag.getByte("channel");
-        temperature = tag.getInt("temperature");
-        threshold = tag.getInt("threshold");
+        colorChannel = tag.getByteOr("channel", (byte) 0);
+        temperature = tag.getIntOr("temperature", 0);
+        threshold = tag.getIntOr("threshold", 0);
     }
 
     @Override

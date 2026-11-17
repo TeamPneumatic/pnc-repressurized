@@ -20,7 +20,6 @@ package me.desht.pneumaticcraft.common.network;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.util.Mth;
@@ -39,8 +38,8 @@ public record PacketSpawnParticleTrail(ParticleOptions particle, Vector3f start,
 
     public static final StreamCodec<RegistryFriendlyByteBuf, PacketSpawnParticleTrail> STREAM_CODEC = StreamCodec.composite(
             ParticleTypes.STREAM_CODEC, PacketSpawnParticleTrail::particle,
-            ByteBufCodecs.VECTOR3F, PacketSpawnParticleTrail::start,
-            ByteBufCodecs.VECTOR3F, PacketSpawnParticleTrail::end,
+            NetworkHandler.VECTOR3F, PacketSpawnParticleTrail::start,
+            NetworkHandler.VECTOR3F, PacketSpawnParticleTrail::end,
             PacketSpawnParticleTrail::new
     );
 
@@ -59,9 +58,9 @@ public record PacketSpawnParticleTrail(ParticleOptions particle, Vector3f start,
             double py = Mth.lerp(pct, message.start.y(), message.end.y());
             double pz = Mth.lerp(pct, message.start.z(), message.end.z());
             level.addParticle(message.particle(),
-                    px + level.random.nextDouble() * 0.2 - 0.1,
-                    py + level.random.nextDouble() * 0.2 - 0.1,
-                    pz + level.random.nextDouble() * 0.2 - 0.1,
+                    px + level.getRandom().nextDouble() * 0.2 - 0.1,
+                    py + level.getRandom().nextDouble() * 0.2 - 0.1,
+                    pz + level.getRandom().nextDouble() * 0.2 - 0.1,
                     0, 0, 0);
         }
     }

@@ -40,7 +40,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -48,6 +47,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -55,6 +55,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
@@ -71,11 +72,11 @@ public class AmadronTabletItem extends PressurizableItem
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         if (playerIn instanceof ServerPlayer sp) {
             openGui(sp, handIn);
         }
-        return InteractionResultHolder.sidedSuccess(playerIn.getItemInHand(handIn), playerIn.level().isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -94,44 +95,44 @@ public class AmadronTabletItem extends PressurizableItem
         if (IOHelper.getFluidHandlerForBlock(te, facing).isPresent()) {
             GlobalPos current = getFluidProvidingLocation(tabletStack);
             if (current == null || !current.equals(globalPos)) {
-                if (!level.isClientSide) {
+                if (!level.isClientSide()) {
                     setFluidProvidingLocation(tabletStack, globalPos);
                 } else {
                     player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
                 }
                 // By checking if fluid pos was actually changed, we can fall through to checking for
                 //   an item pos, allowing blocks which offer both item and fluid caps to be used
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                return InteractionResult.SUCCESS;
             }
         }
 
         if (IOHelper.getInventoryForBlock(te, facing).isPresent()) {
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 setItemProvidingLocation(tabletStack, globalPos);
             } else {
                 player.playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
+            return InteractionResult.SUCCESS;
         }
 
         return InteractionResult.PASS;
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag flag) {
-        super.appendHoverText(stack, context, infoList, flag);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag flag) {
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(ChatFormatting.YELLOW));
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
+            infoList.accept(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
         }
     }
 

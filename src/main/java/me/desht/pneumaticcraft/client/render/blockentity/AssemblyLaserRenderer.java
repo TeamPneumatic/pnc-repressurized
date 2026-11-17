@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyLaserBlockEntity;
@@ -26,12 +25,16 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class AssemblyLaserRenderer extends AbstractAssemblyRenderer<AssemblyLaserBlockEntity> {
+public class AssemblyLaserRenderer extends AbstractAssemblyRenderer<AssemblyLaserBlockEntity, AssemblyLaserRenderer.State> {
     private final ModelPart baseTurn;
     private final ModelPart baseTurn2;
     private final ModelPart armBase;
@@ -103,42 +106,54 @@ public class AssemblyLaserRenderer extends AbstractAssemblyRenderer<AssemblyLase
     }
 
     @Override
-    public void renderModel(AssemblyLaserBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        float[] angles = new float[5];
-        for (int i = 0; i < 5; i++) {
-            angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(AssemblyLaserBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.laserOn = blockEntity.isLaserOn;
+    }
+
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        float[] angles = state.angles;
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL);
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(angles[0]));
+
+        submitPart(submitNodeCollector, baseTurn, poseStack, renderType, state);
+        submitPart(submitNodeCollector, baseTurn2, poseStack, renderType, state);
+
+        poseStack.translate(0, 18 / 16F, 0);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[1]));
+        poseStack.translate(0, -18 / 16F, 0);
+
+        submitPart(submitNodeCollector, armBase, poseStack, renderType, state);
+
+        poseStack.translate(0, 18 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[2]));
+        poseStack.translate(0, -18 / 16F, -6 / 16F);
+
+        submitPart(submitNodeCollector, armMiddle, poseStack, renderType, state);
+
+        poseStack.translate(0, 3 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[3]));
+        poseStack.translate(0, -3 / 16F, -6 / 16F);
+
+        submitPart(submitNodeCollector, laserBase, poseStack, renderType, state);
+        if (state.laserOn) {
+            poseStack.pushPose();
+            poseStack.translate(0, 2.25 / 16D, 1 / 16D);
+            poseStack.scale(2/8f, 2/8f, 2/8f);
+            submitPart(submitNodeCollector, laser, poseStack, renderType, state);
+            poseStack.popPose();
         }
+    }
 
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
-
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(angles[0]));
-
-        baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-
-        matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[1]));
-        matrixStackIn.translate(0, -18 / 16F, 0);
-
-        armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-
-        matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[2]));
-        matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
-
-        armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-
-        matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[3]));
-        matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
-
-        laserBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        if (te.isLaserOn) {
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, 2.25 / 16D, 1 / 16D);
-            matrixStackIn.scale(2/8f, 2/8f, 2/8f);
-            laser.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
-        }
+    public static class State extends AssemblyRobotState {
+        boolean laserOn;
     }
 }

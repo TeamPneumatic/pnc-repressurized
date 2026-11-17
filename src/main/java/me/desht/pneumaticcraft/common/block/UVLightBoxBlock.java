@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEnt
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockAndLightGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RedstoneTorchBlock;
@@ -62,7 +62,7 @@ public class UVLightBoxBlock extends AbstractPneumaticCraftBlock implements Colo
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable BlockAndTintGetter world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable BlockAndLightGetter world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             return state.hasProperty(UVLightBoxBlock.LIT) && state.getValue(UVLightBoxBlock.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }

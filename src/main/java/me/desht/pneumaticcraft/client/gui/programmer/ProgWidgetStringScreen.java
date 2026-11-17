@@ -21,6 +21,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetText;
+import net.minecraft.client.input.KeyEvent;
 
 public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractProgWidgetScreen<T> {
     private WidgetTextField textfield;
@@ -42,12 +43,13 @@ public class ProgWidgetStringScreen<T extends ProgWidgetText> extends AbstractPr
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == InputConstants.KEY_RETURN) {
             onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override

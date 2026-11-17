@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyDrillBlockEntity;
@@ -26,12 +25,17 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class AssemblyDrillRenderer extends AbstractAssemblyRenderer<AssemblyDrillBlockEntity> {
+public class AssemblyDrillRenderer extends AbstractAssemblyRenderer<AssemblyDrillBlockEntity, AssemblyDrillRenderer.State> {
     private static final String BASETURN = "baseTurn";
     private static final String BASETURN2 = "baseTurn2";
     private static final String ARMBASE = "armBase";
@@ -101,42 +105,53 @@ public class AssemblyDrillRenderer extends AbstractAssemblyRenderer<AssemblyDril
     }
 
     @Override
-    void renderModel(AssemblyDrillBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        float[] angles = new float[5];
-        for (int i = 0; i < 4; i++) {
-            angles[i] = Mth.lerp(partialTicks, te.oldAngles[i], te.angles[i]);
-        }
-        angles[4] = Mth.lerp(partialTicks, te.oldDrillRotation, te.drillRotation);
+    public State createRenderState() {
+        return new State();
+    }
 
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL));
+    @Override
+    public void extractRenderState(AssemblyDrillBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(angles[0]));
+        state.drillRotation = Mth.lerp(partialTicks, blockEntity.oldDrillRotation, blockEntity.drillRotation);
+    }
 
-        baseTurn.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        baseTurn2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        float[] angles = state.angles;
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_LASER_AND_DRILL);
 
-        matrixStackIn.translate(0, 18 / 16F, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[1]));
-        matrixStackIn.translate(0, -18 / 16F, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(angles[0]));
 
-        armBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, baseTurn, poseStack, renderType, state);
+        submitPart(submitNodeCollector, baseTurn2, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 18 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[2]));
-        matrixStackIn.translate(0, -18 / 16F, -6 / 16F);
+        poseStack.translate(0, 18 / 16F, 0);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[1]));
+        poseStack.translate(0, -18 / 16F, 0);
 
-        armMiddle.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, armBase, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 3 / 16F, 6 / 16F);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(angles[3]));
-        matrixStackIn.translate(0, -3 / 16F, -6 / 16F);
+        poseStack.translate(0, 18 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[2]));
+        poseStack.translate(0, -18 / 16F, -6 / 16F);
 
-        drillBase.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, armMiddle, poseStack, renderType, state);
 
-        matrixStackIn.translate(0, 3 / 16F, 0);
-        matrixStackIn.mulPose(Axis.ZP.rotationDegrees(angles[4]));
-        matrixStackIn.translate(0, -3 / 16F, 0);
+        poseStack.translate(0, 3 / 16F, 6 / 16F);
+        poseStack.mulPose(Axis.XP.rotationDegrees(angles[3]));
+        poseStack.translate(0, -3 / 16F, -6 / 16F);
 
-        drill.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        submitPart(submitNodeCollector, drillBase, poseStack, renderType, state);
+
+        poseStack.translate(0, 3 / 16F, 0);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(state.drillRotation));
+        poseStack.translate(0, -3 / 16F, 0);
+
+        submitPart(submitNodeCollector, drill, poseStack, renderType, state);
+    }
+
+    public static class State extends AssemblyRobotState {
+        float drillRotation;
     }
 }

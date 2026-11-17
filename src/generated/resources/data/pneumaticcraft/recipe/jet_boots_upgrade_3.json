@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:blaze_rod"
-    },
-    "T": {
-      "item": "minecraft:ghast_tear"
-    },
-    "U": {
-      "item": "pneumaticcraft:jet_boots_upgrade_2"
-    },
-    "V": {
-      "item": "pneumaticcraft:vortex_cannon"
-    }
+    "B": "minecraft:blaze_rod",
+    "T": "minecraft:ghast_tear",
+    "U": "pneumaticcraft:jet_boots_upgrade_2",
+    "V": "pneumaticcraft:vortex_cannon"
   },
   "pattern": [
     "TBT",
@@ -21,7 +13,6 @@
     "TBT"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:jet_boots_upgrade_3"
   }
 }

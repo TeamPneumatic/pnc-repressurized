@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "tag": "c:dyes/pink"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    }
+    "D": "#c:dyes/pink",
+    "P": "#pneumaticcraft:plastic_sheets"
   },
   "pattern": [
     "PPP",

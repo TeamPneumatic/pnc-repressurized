@@ -45,18 +45,18 @@ import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -78,10 +78,8 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ItemAbilities;
-import net.neoforged.neoforge.common.ItemAbility;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -104,19 +102,15 @@ public class JackHammerItem extends PressurizableItem
             4.16227766016838f
     };
 
-    private static final Set<ItemAbility> JACKHAMMER_ABILITIES = Set.of(
-            ItemAbilities.AXE_DIG,
-            ItemAbilities.PICKAXE_DIG,
-            ItemAbilities.SHOVEL_DIG,
-            ItemAbilities.SWORD_DIG
-    );
+    private static final float CAPPED_SPEED = 10f;
 
     private static long lastModeSwitchTime; // client-side: when player last scrolled to change mode
 
     public JackHammerItem() {
         super(ModItems.toolProps()
-                .component(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1)
-                .component(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY),
+                        .component(ModDataComponents.JACKHAMMER_DIG_MODE, DigMode.MODE_1X1)
+                        .component(ModDataComponents.JACKHAMMER_DRILL_BIT, ItemContainerContents.EMPTY)
+                        .component(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false),
                 PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER
         );
     }
@@ -144,15 +138,13 @@ public class JackHammerItem extends PressurizableItem
         return handler.getStackInSlot(0).getItem() instanceof DrillBitItem bit ? bit.getType() : DrillBitType.NONE;
     }
 
-    @Override
-    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return !state.is(getDrillBit(stack).getTier().getIncorrectBlocksForDrops());
+    public static boolean isSpeedCapped(ItemStack stack) {
+        return stack.getOrDefault(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false);
     }
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
-        return JACKHAMMER_ABILITIES.contains(itemAbility)
-                && PNCCapabilities.getAirHandler(stack).map(h -> h.getPressure() > 0.1f).orElse(false);
+    public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
+        return !state.is(getDrillBit(stack).getTier().incorrectBlocksForDrops());
     }
 
     @Override
@@ -190,7 +182,7 @@ public class JackHammerItem extends PressurizableItem
                             BlockState state1 = level.getBlockState(pos1);
                             if (state1.getDestroySpeed(level, pos1) < 0) continue;
 
-                            BlockEvent.BreakEvent breakEvent = CommonHooks.fireBlockBreak(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1, state1);
+                            BreakBlockEvent breakEvent = CommonHooks.fireBlockBreak(serverPlayer.level(), serverPlayer.gameMode.getGameModeForPlayer(), serverPlayer, pos1, state1);
                             if (breakEvent.isCanceled()) {
                                 continue;
                             }
@@ -199,7 +191,7 @@ public class JackHammerItem extends PressurizableItem
                             }
                             Block block = state1.getBlock();
                             state1 = block.playerWillDestroy(level, pos1, state1, serverPlayer);
-                            boolean removed = state1.onDestroyedByPlayer(level, pos1, serverPlayer, true, level.getFluidState(pos1));
+                            boolean removed = state1.onDestroyedByPlayer(level, pos1, serverPlayer, stack, true, level.getFluidState(pos1));
                             if (removed) {
                                 block.destroy(level, pos1, state1);
                                 if (magnet) {
@@ -232,13 +224,14 @@ public class JackHammerItem extends PressurizableItem
     public float getDestroySpeed(ItemStack stack, BlockState state) {
         DrillBitType bitType = getDrillBit(stack);
         int speed = bitType == DrillBitType.NONE ? 0 : UpgradableItemUtils.getUpgradeCount(stack, ModUpgrades.SPEED.get());
-        return getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
+        float res = getAir(stack) > 0f ? bitType.getBaseEfficiency() * SPEED_MULT[speed] : 1;
+        return stack.getOrDefault(ModDataComponents.JACKHAMMER_SPEED_CAPPED, false) ? Math.min(res, CAPPED_SPEED) : res;
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level worldIn, Player playerIn, InteractionHand handIn) {
+    public InteractionResult use(Level worldIn, Player playerIn, InteractionHand handIn) {
         ItemStack stack = playerIn.getItemInHand(handIn);
-        if (!playerIn.isShiftKeyDown() || stack.getCount() != 1) return InteractionResultHolder.pass(stack);
+        if (!playerIn.isShiftKeyDown() || stack.getCount() != 1) return InteractionResult.PASS;
         if (playerIn instanceof ServerPlayer sp) {
             sp.openMenu(new MenuProvider() {
                 @Override
@@ -252,7 +245,7 @@ public class JackHammerItem extends PressurizableItem
                 }
             }, buf -> AbstractPneumaticCraftMenu.putHand(buf, handIn));
         }
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
@@ -419,11 +412,11 @@ public class JackHammerItem extends PressurizableItem
 
     @Override
     public void onShiftScrolled(Player player, boolean forward, InteractionHand hand) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             DigMode newMode = cycleDigMode(player.getItemInHand(hand), forward);
             if (newMode != null) {
-                player.displayClientMessage(xlate("pneumaticcraft.message.jackhammer.mode")
-                        .append(xlate(newMode.getTranslationKey()).withStyle(ChatFormatting.YELLOW)), true);
+                player.sendOverlayMessage(xlate("pneumaticcraft.message.jackhammer.mode")
+                        .append(xlate(newMode.getTranslationKey()).withStyle(ChatFormatting.YELLOW)));
             }
         } else {
             lastModeSwitchTime = player.level().getGameTime();
@@ -466,7 +459,7 @@ public class JackHammerItem extends PressurizableItem
             return blocksDug;
         }
 
-        public ResourceLocation getGuiIcon() {
+        public Identifier getGuiIcon() {
             return Textures.guiIconTexture("gui_" + name + ".png");
         }
 
@@ -571,7 +564,7 @@ public class JackHammerItem extends PressurizableItem
             Player player = event.getEntity();
             ItemStack stack = player.getItemInHand(event.getHand());
             if (stack.getItem() instanceof JackHammerItem jackHammer && jackHammer.getAir(stack) > 0f) {
-                if (event.getLevel().isClientSide) {
+                if (event.getLevel().isClientSide()) {
                     // play the sound to this player
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getEntity());
                 } else {

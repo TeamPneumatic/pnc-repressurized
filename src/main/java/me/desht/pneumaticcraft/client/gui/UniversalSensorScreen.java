@@ -36,10 +36,11 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.lwjgl.glfw.GLFW;
@@ -66,9 +67,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     private final List<AbstractWidget> sensorButtons = new ArrayList<>();
 
     public UniversalSensorScreen(UniversalSensorMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 239;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 239);
     }
 
     public static void refreshIfOpen() {
@@ -78,7 +77,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_UNIVERSAL_SENSOR;
     }
 
@@ -107,11 +106,11 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
         if (maxPage > 1) {
-            graphics.drawString(font, page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040, false);
+            graphics.text(font, page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0xFF404040, false);
         }
 
         String[] folders = te.getSensorSetting().split("/");
@@ -119,19 +118,19 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             Set<PNCUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
             for (PNCUpgrade upgrade : requiredUpgrades) {
-                graphics.renderItem(upgrade.getItemStack(), curX, 20);
+                graphics.item(upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
         } else {
             int xSpace = imageWidth - 92;
             int size = font.width(folders[folders.length - 1]);
-            graphics.pose().pushPose();
-            graphics.pose().translate(88, 24, 0);
+            graphics.pose().pushMatrix();
+            graphics.pose().translate(88, 24);
             if (size > xSpace) {
-                graphics.pose().scale((float)xSpace / (float)size, 1, 1);
+                graphics.pose().scale((float)xSpace / (float)size, 1);
             }
-            graphics.drawString(font, folders[folders.length - 1], 0, 0, 0x4040A0, false);
-            graphics.pose().popPose();
+            graphics.text(font, folders[folders.length - 1], 0, 0, 0xFF4040A0, false);
+            graphics.pose().popMatrix();
         }
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
@@ -140,7 +139,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
             sensor.getAdditionalInfo(info);
             int yOff = 0;
             for (Component line : info) {
-                graphics.drawString(font, line.getVisualOrderText(), 70, 48 + yOff, 0x404040, false);
+                graphics.text(font, line.getVisualOrderText(), 70, 48 + yOff, 0xFF404040, false);
                 yOff += font.lineHeight;
             }
             textField.setY(topPos + 48 + yOff + 2);
@@ -151,22 +150,23 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
                 GuiUtils.showPopupHelpScreen(graphics, this, font, GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
             } else if (!sensor.getHelpPromptText().isEmpty()) {
                 Component str = Component.translatable(sensor.getHelpPromptText());
-                graphics.drawString(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0xFFFF00, false);
+                graphics.text(font, str, (imageWidth - font.width(str)) / 2, imageHeight + 5, 0xFFFFFF00, false);
             }
         }
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             ClientUtils.getClientPlayer().closeContainer();
         }
 
-        return textField.keyPressed(keyCode, scanCode, modifiers)
+        return textField.keyPressed(event)
                 || textField.canConsumeInput()
-                || comboBox.keyPressed(keyCode, scanCode, modifiers)
+                || comboBox.keyPressed(event)
                 || comboBox.canConsumeInput()
-                || super.keyPressed(keyCode, scanCode, modifiers);
+                || super.keyPressed(event);
     }
 
     @Override

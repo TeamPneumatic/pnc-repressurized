@@ -21,19 +21,22 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractSemiblockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.jspecify.annotations.Nullable;
 
 
-abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends EntityRenderer<T> {
+abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity, S extends RenderSemiblockBase.SemiblockRenderState> extends EntityRenderer<T, S> {
     // not the usual enum order: down last because it's the least likely candidate
     private static final Direction[] LIGHTING_DIRS = new Direction[] {
             Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.DOWN
@@ -43,7 +46,20 @@ abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends En
         super(ctx);
     }
 
-    void wobble(T entityIn, float partialTicks, PoseStack matrixStack) {
+    @Override
+    public void extractRenderState(T entity, S state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+
+        state.wobble = entity.getTimeSinceHit() > 0 ? getWobble(entity, partialTicks) : null;
+    }
+
+    void wobble(S state, PoseStack poseStack) {
+        if (state.wobble != null) {
+            poseStack.mulPose(state.wobble);
+        }
+    }
+
+    private @Nullable Quaternionf getWobble(T entityIn, float partialTicks) {
         float f = (float) entityIn.getTimeSinceHit() - partialTicks;
         float f1 = entityIn.getDamageTaken() - partialTicks;
         if (f1 < 0.0F) {
@@ -53,8 +69,9 @@ abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends En
         if (f > 0.0F) {
             Vec3 look = Minecraft.getInstance().player.getViewVector(partialTicks);
             Vector3f wobble = new Vector3f((float)look.z(), 0.0F, -(float)look.x());
-            matrixStack.mulPose(Axis.of(wobble).rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * 1));
+            return Axis.of(wobble).rotationDegrees(Mth.sin(f) * f * f1 / 10.0F * 1);
         }
+        return null;
     }
 
     /**
@@ -73,10 +90,14 @@ abstract class RenderSemiblockBase<T extends AbstractSemiblockEntity> extends En
                 if (!Block.canSupportCenter(entityIn.level(), pos2, d.getOpposite())) {
                     int block = entityIn.level().getBrightness(LightLayer.BLOCK, pos2);
                     int sky = entityIn.level().getBrightness(LightLayer.SKY, pos2);
-                    return LightTexture.pack(block, sky);
+                    return LightCoordsUtil.pack(block, sky);
                 }
             }
         }
         return packedLight;
+    }
+
+    public static class SemiblockRenderState extends EntityRenderState {
+        @Nullable Quaternionf wobble;
     }
 }

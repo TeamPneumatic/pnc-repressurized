@@ -3,17 +3,16 @@
   "inputs": [
     {
       "count": 1,
-      "tag": "c:ingots/gold"
+      "ingredient": "#c:ingots/gold"
     },
     {
       "count": 2,
-      "tag": "c:dusts/redstone"
+      "ingredient": "#c:dusts/redstone"
     }
   ],
   "pressure": 1.0,
   "results": [
     {
-      "count": 1,
       "id": "pneumaticcraft:turbine_blade"
     }
   ]

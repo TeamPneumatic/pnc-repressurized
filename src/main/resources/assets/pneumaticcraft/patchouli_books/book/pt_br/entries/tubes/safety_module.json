@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Este módulo de tubo é usado para limitar a $(l:base_concepts/pressure)pressão/$ em um tubo a um certo valor, prevenindo $(thing)explosões/$; qualquer excesso de pressão será dispersado na atmosfera, o que significa $(thing)perda de energia/$. Portanto, este módulo é melhor usado em conjunto com o $(l:tubes/pressure_gauge_module)Módulo de Manômetro/$, que pode emitir redstone para desligar compressores."
+      "text": "Este módulo de tubo é usado para limitar a $(l:base_concepts/pressure)pressão/$ em um tubo a um certo valor, prevenindo $(thing)explosões/$; qualquer excesso de pressão será dispersado na atmosfera, o que significa $(thing)perda de energia/$. Portanto, este módulo é melhor usado em conjunto com o $(l:tubes/pressure_gauge_module)Módulo de Medidor de Pressão/$, que pode emitir redstone para desligar compressores."
     },
     {
       "type": "text",
@@ -15,7 +15,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:module_expansion_card",
-      "text": "Quando você aplica uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Segurança, o módulo ganha uma GUI (clique direito) fornecendo muito mais controle sobre o nível limite. Você pode definir um limite preciso na GUI, ou com a caixa de seleção $(bold)Config Avançada/$, configurar níveis de limite interpolados baseados no sinal. Isso funciona muito como a $(l:tubes/pressure_gauge_module#img)GUI do Manômetro/$, mas ao contrário."
+      "text": "Quando você aplica uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Segurança, o módulo ganha uma GUI (clique direito) fornecendo muito mais controle sobre o nível limite. Você pode definir um limite preciso na GUI, ou com a caixa de seleção $(bold)Config Avançada/$, configurar níveis de limite interpolados baseados no sinal. Isso funciona muito como a $(l:tubes/pressure_gauge_module#img)GUI do Medidor de Pressão/$, mas ao contrário."
     },
     {
       "type": "crafting",

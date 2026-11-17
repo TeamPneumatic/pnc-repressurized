@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
@@ -35,7 +35,7 @@ public class ProcessorAmadronTrade implements IComponentProcessor {
 
     @Override
     public void setup(Level level, IVariableProvider iVariableProvider) {
-        ResourceLocation recipeId = ResourceLocation.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
+        Identifier recipeId = Identifier.parse(iVariableProvider.get("recipe", level.registryAccess()).asString());
         ModRecipeTypes.AMADRON.get().getRecipe(Minecraft.getInstance().level, recipeId)
                 .ifPresentOrElse(holder -> recipe = holder.value(),
                         () -> Log.warning("Missing amadron offer recipe: " + recipeId));

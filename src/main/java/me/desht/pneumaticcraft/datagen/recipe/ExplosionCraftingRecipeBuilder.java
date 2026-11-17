@@ -19,8 +19,9 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.List;
@@ -28,16 +29,16 @@ import java.util.List;
 public class ExplosionCraftingRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final SizedIngredient input;
     private final int lossRate;
-    private final List<ItemStack> outputs;
+    private final List<ItemStackTemplate> outputs;
 
-    public ExplosionCraftingRecipeBuilder(SizedIngredient input, int lossRate, ItemStack... outputs) {
+    public ExplosionCraftingRecipeBuilder(SizedIngredient input, int lossRate, ItemStackTemplate... outputs) {
         this.input = input;
         this.lossRate = lossRate;
         this.outputs = List.of(outputs);
     }
 
     @Override
-    public void save(RecipeOutput recipeOutput, ResourceLocation id) {
+    public void save(RecipeOutput recipeOutput, ResourceKey<Recipe<?>> id) {
         recipeOutput.accept(id, new ExplosionCraftingRecipeImpl(input, lossRate, outputs), null);
     }
 }

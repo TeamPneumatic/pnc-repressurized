@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:assembly_drill",
   "input": {
     "count": 1,
-    "tag": "c:dusts/redstone"
+    "ingredient": "#c:dusts/redstone"
   },
   "program": "drill",
   "result": {

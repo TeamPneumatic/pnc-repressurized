@@ -48,7 +48,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.event.InputEvent;
 
@@ -58,7 +58,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class RenderEntityTarget {
     private static final float STAT_SCALE = 0.02f;
@@ -321,20 +321,12 @@ public class RenderEntityTarget {
                 });
 
                 if (renderAsTagged) {
-                    RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.getLineLoops(3.0), (posMat, builder) -> {
+                    RenderUtils.renderWithTypeAndFinish(poseStack, buffer, ModRenderTypes.LINES_NO_DEPTH, (posMat, builder) -> {
                         for (float i = 0; i < QUARTER_CIRCLE; i += STEP) {
-                            Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
-                            Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
-                            RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
-                                    .setColor(255, 0, 0, 255)
-                                    .setNormal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f);
-                        }
-                        for (float i = QUARTER_CIRCLE - STEP; i >= 0f; i -= STEP) {
-                            Vec3 v1 = new Vec3(Mth.cos(i) * size, Mth.sin(i) * size, 0);
-                            Vec3 v2 = new Vec3(Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0);
-                            RenderUtils.posF(builder, posMat, v1.x(), v1.y(), 0)
-                                    .setColor(255, 0, 0, 255)
-                                    .setNormal(poseStack.last(), (float) (v2.x() - v1.x()), (float) (v2.y() - v1.y()), 0f);
+                            RenderUtils.normalLine(builder, poseStack,
+                                    Mth.cos(i) * size, Mth.sin(i) * size, 0f,
+                                    Mth.cos(i + STEP) * size, Mth.sin(i + STEP) * size, 0f,
+                                    1f, 1f, 0f, 0f, 3f);
                         }
                     });
                 }

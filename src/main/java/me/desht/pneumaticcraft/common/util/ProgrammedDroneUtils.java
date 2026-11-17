@@ -34,7 +34,7 @@ import java.util.Arrays;
 public class ProgrammedDroneUtils {
     public static PathfinderMob deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
         Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
-        if (world == null || world.isClientSide) return null;
+        if (world == null || world.isClientSide()) return null;
 
         BlockPos deliveryPos = gPos.pos();
 
@@ -86,7 +86,7 @@ public class ProgrammedDroneUtils {
             BlockPos pos1 = dropOffArea.getPos(0).orElseThrow();
             if (!drone.isBlockValidPathfindBlock(pos1)) {
                 // Worst case scenario; there are definitely no blocks here.
-                dropOffArea.setPos(0, new BlockPos(pos1.getZ(), drone.getDroneLevel().getMaxBuildHeight() + 5, pos1.getZ()));
+                dropOffArea.setPos(0, new BlockPos(pos1.getZ(), drone.getDroneLevel().getMaxY() + 1 + 5, pos1.getZ()));
             }
         }
         return dropOffArea;
@@ -96,7 +96,7 @@ public class ProgrammedDroneUtils {
         Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
-        if (world == null || world.isClientSide) return null;
+        if (world == null || world.isClientSide()) return null;
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
         Validate.isTrue(deliveredFluid.getAmount() > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
@@ -121,7 +121,7 @@ public class ProgrammedDroneUtils {
         Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
-        if (world == null || world.isClientSide) return null;
+        if (world == null || world.isClientSide()) return null;
         Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 36, "Must retrieve between 1 & 36 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
@@ -150,7 +150,7 @@ public class ProgrammedDroneUtils {
         Level world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.pos();
 
-        if (world == null || world.isClientSide) return null;
+        if (world == null || world.isClientSide()) return null;
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
         Validate.isTrue(queriedFluid.getAmount() > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 

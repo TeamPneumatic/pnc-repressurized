@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 
 public enum TemperatureCategory implements StringRepresentable {
@@ -33,7 +33,7 @@ public enum TemperatureCategory implements StringRepresentable {
     SUPER_HOT("super_hot");
 
     private final String name;
-    private final ResourceLocation textureLoc;
+    private final Identifier textureLoc;
 
     TemperatureCategory(String name) {
         this.name = name;
@@ -67,7 +67,7 @@ public enum TemperatureCategory implements StringRepresentable {
         return name;
     }
 
-    public ResourceLocation getTextureLocation() {
+    public Identifier getTextureLocation() {
         return textureLoc;
     }
 }

@@ -11,10 +11,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncClassifyFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 
 import java.util.EnumSet;
@@ -90,21 +90,21 @@ public class ClassifyFilterScreen extends AbstractPneumaticCraftScreen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(graphics, mouseX, mouseY, partialTick);
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBackground(graphics, mouseX, mouseY, partialTick);
 
         GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, guiLeft, guiTop, 0, xSize, ySize, 256, 256, 4);
     }
 
     @Override
-    protected void drawForeground(GuiGraphics graphics, int x, int y, float partialTicks) {
+    protected void drawForeground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         super.drawForeground(graphics, x, y, partialTicks);
 
-        graphics.drawString(font, title, guiLeft + (xSize - font.width(title)) / 2, guiTop + 8, 0x404040, false);
+        graphics.text(font, title, guiLeft + (xSize - font.width(title)) / 2, guiTop + 8, 0xFF404040, false);
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return null;
     }
 }

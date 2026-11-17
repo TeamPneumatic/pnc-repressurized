@@ -149,7 +149,7 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     public double airProduced(Direction side) {
-        if (nonNullLevel().isClientSide) {
+        if (nonNullLevel().isClientSide()) {
             // clientside: just for GUI display purposes
             double diff = Math.abs(getHeatExchanger(side).getTemperatureAsInt() - getHeatExchanger(side.getOpposite()).getTemperatureAsInt());
             return diff < 10 ? 0 : diff * AIR_GEN_MULTIPLIER;
@@ -197,10 +197,10 @@ public class ThermalCompressorBlockEntity extends AbstractAirHandlingBlockEntity
         super.loadAdditional(tag, provider);
 
         for (int i = 0; i < 4; i++) {
-            heatExchangers[i].deserializeNBT(tag.getCompound("side" + i));
+            heatExchangers[i].deserializeNBT(tag.getCompoundOrEmpty("side" + i));
         }
-        connector1.deserializeNBT(tag.getCompound("connector1"));
-        connector2.deserializeNBT(tag.getCompound("connector2"));
+        connector1.deserializeNBT(tag.getCompoundOrEmpty("connector1"));
+        connector2.deserializeNBT(tag.getCompoundOrEmpty("connector2"));
     }
 
     @Override

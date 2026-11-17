@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSenso
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -55,7 +56,8 @@ public class BlockComparatorSensor implements IBlockAndCoordinatePollSensor {
         for (BlockPos p : positions) {
             BlockState state = world.getBlockState(p);
             if (state.hasAnalogOutputSignal()) {
-                maxStrength = Math.max(maxStrength, state.getAnalogOutputSignal(world, p));
+                // not read through a particular side; blocks with side-dependent output report their top side
+                maxStrength = Math.max(maxStrength, state.getAnalogOutputSignal(world, p, Direction.UP));
             }
         }
         return maxStrength;

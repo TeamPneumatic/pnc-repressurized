@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.spawning.SpawnerExtractorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SpawnerExtractorMenu;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 
@@ -38,7 +38,7 @@ public class SpawnerExtractorScreen extends AbstractPneumaticCraftContainerScree
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_ELEVATOR;
     }
 
@@ -50,12 +50,12 @@ public class SpawnerExtractorScreen extends AbstractPneumaticCraftContainerScree
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
         int progress = Mth.clamp((int)(te.getProgress() * 100f), 0, 100);
-        graphics.drawString(font, xlate("pneumaticcraft.gui.misc.progress"), 65, 35, 0x404040, false);
-        graphics.drawString(font, progress + "%", 80, 47, 0x404040, false);
+        graphics.text(font, xlate("pneumaticcraft.gui.misc.progress"), 65, 35, 0xFF404040, false);
+        graphics.text(font, progress + "%", 80, 47, 0xFF404040, false);
     }
 
     @Override

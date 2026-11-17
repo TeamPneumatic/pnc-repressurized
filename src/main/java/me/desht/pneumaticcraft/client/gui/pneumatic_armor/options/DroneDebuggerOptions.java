@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.options;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -37,7 +38,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
@@ -116,12 +117,12 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
     }
 
     @Override
-    public void renderPre(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPre(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         graphics.fill(programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
     }
 
     @Override
-    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPost(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
         Screen guiScreen = getGuiScreen().getScreen();
         Font font = getGuiScreen().getFontRenderer();
 
@@ -129,19 +130,16 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         int screenHeight = guiScreen.height;
 
         if (isDroneValid()) {
-            graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.droneName",
+            graphics.text(font, xlate("pneumaticcraft.gui.progWidget.debug.droneName",
                     selectedDrone.getDroneName().getString()).getVisualOrderText(), 20, screenHeight - 15, 0xFFFFFFFF);
-            graphics.drawString(font, xlate("pneumaticcraft.gui.progWidget.debug.routine",
-                    selectedDrone.getLabel()).getVisualOrderText(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF);
+            graphics.text(font, xlate("pneumaticcraft.gui.progWidget.debug.routine",
+                    IDrone.getLabelAsComponent(selectedDrone.getLabel())).getVisualOrderText(), screenWidth / 2, screenHeight - 15, 0xFFFFFFFF);
         }
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 300);
         programmerUnit.render(graphics, x, y, true, true);
         programmerUnit.renderForeground(graphics, x, y, null, font);
-        graphics.pose().popPose();
 
-        followCheckbox.render(graphics, x, y, partialTicks);
+        followCheckbox.extractRenderState(graphics, x, y, partialTicks);
 
         if (isDroneValid()) {
 
@@ -154,18 +152,16 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
                 }
             }
         } else {
-            graphics.pose().translate(0, 0, 200);
-            graphics.drawCenteredString(Minecraft.getInstance().font,
+            graphics.centeredText(Minecraft.getInstance().font,
                     xlate("pneumaticcraft.gui.progWidget.debug.pressToDebug",
                             ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone)),
                     screenWidth / 2, screenHeight - 40, 0xFFFF0000
             );
-            graphics.pose().translate(0, 0, 200);
         }
     }
 
     @Override
-    public void tick() {
+    public void tick(IGuiScreen gui) {
         programmerUnit.tick();
 
         showStart.active = isDroneValid() && !selectedDrone.getProgWidgets().isEmpty();
@@ -254,7 +250,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
         }
 
         @Override
-        protected void renderAdditionally(GuiGraphics graphics) {
+        protected void renderAdditionally(GuiGraphicsExtractor graphics) {
             if (isDroneValid() && selectedDrone.getActiveWidget() != null) {
                 drawBorder(graphics, selectedDrone.getActiveWidget(), 0xFF00FF00);
                 if (areaShowWidgetId >= 0) {

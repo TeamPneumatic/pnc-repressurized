@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -41,7 +41,7 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryHackable implements IBlockTrackEntry {
-    public static final ResourceLocation ID = RL("block_tracker.module.hackables");
+    public static final Identifier ID = RL("block_tracker.module.hackables");
 
     @Override
     public boolean shouldTrackWithThisEntry(Level world, BlockPos pos, BlockState state, BlockEntity te) {
@@ -85,7 +85,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
     }
 
     @Override
-    public ResourceLocation getEntryID() {
+    public Identifier getEntryID() {
         return ID;
     }
 }

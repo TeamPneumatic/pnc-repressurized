@@ -24,8 +24,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.TagValueInput;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -60,7 +62,7 @@ public record PacketSendNBTPacket(BlockPos pos, CompoundTag tag) implements Cust
         BlockEntity te = ctx.player().level().getBlockEntity(message.pos());
         if (te != null) {
             try {
-                te.loadCustomOnly(message.tag(), ctx.player().registryAccess());
+                te.loadCustomOnly(TagValueInput.create(ProblemReporter.DISCARDING, ctx.player().registryAccess(), message.tag()));
                 if (te instanceof RandomizableContainer r && !message.tag().contains("LootTable")) {
                     // bit of a kludge to ensure loot table data gets cleared clientside
                     r.setLootTable(null);

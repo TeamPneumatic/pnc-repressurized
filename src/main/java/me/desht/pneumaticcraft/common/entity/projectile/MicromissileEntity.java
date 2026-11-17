@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -33,13 +32,15 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.horse.Horse;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -72,7 +73,8 @@ public class MicromissileEntity extends ThrowableProjectile {
     }
 
     public MicromissileEntity(Level worldIn, LivingEntity thrower, ItemStack stack) {
-        super(ModEntityTypes.MICROMISSILE.get(), thrower, worldIn);
+        super(ModEntityTypes.MICROMISSILE.get(), thrower.getX(), thrower.getEyeY() - 0.1F, thrower.getZ(), worldIn);
+        setOwner(thrower);
 
         MicromissilesItem.Settings settings = stack.get(ModDataComponents.MICROMISSILE_SETTINGS);
         if (settings != null) {
@@ -105,12 +107,12 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (getCommandSenderWorld().isClientSide) {
+        if (level().isClientSide()) {
             if (key.equals(MAX_VEL_SQ)) {
                 maxVelocitySq = entityData.get(MAX_VEL_SQ);
             } else if (key.equals(TARGET_ID)) {
                 int id = entityData.get(TARGET_ID);
-                targetEntity = id > 0 ? getCommandSenderWorld().getEntity(entityData.get(TARGET_ID)) : null;
+                targetEntity = id > 0 ? level().getEntity(entityData.get(TARGET_ID)) : null;
             } else if (key.equals(ACCEL)) {
                 accel = entityData.get(ACCEL);
             } else if (key.equals(TURN_SPEED)) {
@@ -124,8 +126,8 @@ public class MicromissileEntity extends ThrowableProjectile {
         super.tick();
 
         if (tickCount == 1) {
-            if (getCommandSenderWorld().isClientSide) {
-                getCommandSenderWorld().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0f, 0.8f, true);
+            if (level().isClientSide()) {
+                level().playLocalSound(getX(), getY(), getZ(), SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.PLAYERS, 1.0f, 0.8f, true);
             } else {
                 entityData.set(MAX_VEL_SQ, maxVelocitySq);
                 entityData.set(ACCEL, accel);
@@ -146,7 +148,7 @@ public class MicromissileEntity extends ThrowableProjectile {
                 setDeltaMovement(getDeltaMovement().scale(1 / 0.99));
             }
 
-            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !getCommandSenderWorld().isClientSide && (tickCount & 0x3) == 0) {
+            if ((targetEntity == null || !targetEntity.isAlive()) && fireMode == FireMode.SMART && !level().isClientSide() && (tickCount & 0x3) == 0) {
                 targetEntity = tryFindNewTarget();
             }
 
@@ -161,7 +163,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             double mul = velSq > maxVelocitySq ? maxVelocitySq / velSq : accel;
             setDeltaMovement(getDeltaMovement().scale(mul));
 
-            if (getCommandSenderWorld().isClientSide && getCommandSenderWorld().random.nextBoolean()) {
+            if (level().isClientSide() && level().getRandom().nextBoolean()) {
                 Vec3 m = getDeltaMovement();
                 level().addParticle(AirParticleData.DENSE, getX(), getY(), getZ(), -m.x/2, -m.y/2, -m.z/2);
             }
@@ -170,14 +172,14 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     private Entity tryFindNewTarget() {
         AABB aabb = new AABB(getX(), getY(), getZ(), getX(), getY(), getZ()).inflate(SEEK_RANGE);
-        List<LivingEntity> l = getCommandSenderWorld().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
+        List<LivingEntity> l = level().getEntitiesOfClass(LivingEntity.class, aabb, EntitySelector.ENTITY_STILL_ALIVE);
         l.sort(new TargetSorter());
         Entity tgt = null;
         // find the closest entity which matches this missile's entity filter
         for (Entity e : l) {
             if (isValidTarget(e) && e.distanceToSqr(this) < SEEK_RANGE * SEEK_RANGE) {
                 ClipContext ctx = new ClipContext(position(), e.position().add(0, e.getEyeHeight(), 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e);
-                HitResult res = getCommandSenderWorld().clip(ctx);
+                HitResult res = level().clip(ctx);
                 if (res.getType() == HitResult.Type.MISS || res.getType() == HitResult.Type.ENTITY) {
                     tgt = e;
                     break;
@@ -194,9 +196,8 @@ public class MicromissileEntity extends ThrowableProjectile {
         if (thrower != null) {
             UUID throwerID = thrower.getUUID();
             if (thrower.equals(e)
-                    || e instanceof TamableAnimal t && throwerID.equals(t.getOwnerUUID())
-                    || e instanceof DroneEntity d && throwerID.equals(d.getOwnerUUID())
-                    || e instanceof Horse h && throwerID.equals(h.getOwnerUUID())) {
+                    || e instanceof OwnableEntity o && o.getOwnerReference() != null && throwerID.equals(o.getOwnerReference().getUUID())
+                    || e instanceof DroneEntity d && throwerID.equals(d.getOwnerUUID())) {
                 return false;
             }
         }
@@ -210,7 +211,7 @@ public class MicromissileEntity extends ThrowableProjectile {
 
     @Override
     protected void onHit(HitResult result) {
-        if (tickCount > 5 && !getCommandSenderWorld().isClientSide && isAlive()) {
+        if (tickCount > 5 && !level().isClientSide() && isAlive()) {
             explode(result instanceof EntityHitResult ? ((EntityHitResult) result).getEntity() : null);
         }
     }
@@ -235,7 +236,7 @@ public class MicromissileEntity extends ThrowableProjectile {
             y = Mth.lerp(0.25f, e.getY(), getY());
             z = Mth.lerp(0.25f, e.getZ(), getZ());
         }
-        getCommandSenderWorld().explode(this, x, y, z, radius, fire, mode);
+        level().explode(this, x, y, z, radius, fire, mode);
     }
 
     @Override
@@ -268,21 +269,21 @@ public class MicromissileEntity extends ThrowableProjectile {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
-        super.addAdditionalSaveData(compound);
-        compound.putFloat("turnSpeed", turnSpeed);
-        compound.putFloat("explosionScaling", explosionPower);
-        compound.putFloat("topSpeedSq", maxVelocitySq);
-        compound.putString("filter", entityFilter.toString());
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putFloat("turnSpeed", turnSpeed);
+        output.putFloat("explosionScaling", explosionPower);
+        output.putFloat("topSpeedSq", maxVelocitySq);
+        output.putString("filter", entityFilter.toString());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
-        super.readAdditionalSaveData(compound);
-        turnSpeed = compound.getFloat("turnSpeed");
-        explosionPower = compound.getFloat("explosionScaling");
-        maxVelocitySq = compound.getFloat("topSpeedSq");
-        entityFilter = EntityFilter.fromString(compound.getString("filter"));
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        turnSpeed = input.getFloatOr("turnSpeed", 0f);
+        explosionPower = input.getFloatOr("explosionScaling", 0f);
+        maxVelocitySq = input.getFloatOr("topSpeedSq", 0f);
+        entityFilter = EntityFilter.fromString(input.getStringOr("filter", ""));
     }
 
     public void setTarget(Entity target) {

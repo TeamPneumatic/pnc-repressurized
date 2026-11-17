@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.recipes.other;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -66,12 +67,12 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.FUEL_QUALITY.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.FUEL_QUALITY.get();
     }
 
@@ -79,32 +80,19 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
         T create(FluidIngredient fluid, int airPerBucket, float burnRate);
     }
 
-    public static class Serializer<T extends FuelQualityRecipe> implements RecipeSerializer<T> {
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    FluidIngredient.CODEC_NON_EMPTY.fieldOf("fluid").forGetter(FuelQualityRecipe::getFuel),
-                    ExtraCodecs.POSITIVE_INT.fieldOf("air_per_bucket").forGetter(FuelQualityRecipe::getAirPerBucket),
-                    ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("burn_rate", 1f).forGetter(FuelQualityRecipe::getBurnRate)
-            ).apply(builder, factory::create));
-            this.streamCodec = StreamCodec.composite(
-                    FluidIngredient.STREAM_CODEC, FuelQualityRecipe::getFuel,
-                    ByteBufCodecs.INT, FuelQualityRecipe::getAirPerBucket,
-                    ByteBufCodecs.FLOAT, FuelQualityRecipe::getBurnRate,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
+    public static <T extends FuelQualityRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                FluidIngredient.CODEC.fieldOf("fluid").forGetter(FuelQualityRecipe::getFuel),
+                ExtraCodecs.POSITIVE_INT.fieldOf("air_per_bucket").forGetter(FuelQualityRecipe::getAirPerBucket),
+                ExtraCodecs.POSITIVE_FLOAT.optionalFieldOf("burn_rate", 1f).forGetter(FuelQualityRecipe::getBurnRate)
+        ).apply(builder, factory::create));
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                FluidIngredient.STREAM_CODEC, FuelQualityRecipe::getFuel,
+                ByteBufCodecs.INT, FuelQualityRecipe::getAirPerBucket,
+                ByteBufCodecs.FLOAT, FuelQualityRecipe::getBurnRate,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
+
 }

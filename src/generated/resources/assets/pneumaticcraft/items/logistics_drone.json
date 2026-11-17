@@ -1,0 +1,16 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pneumaticcraft:item/logistics_drone",
+    "tints": [
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 0
+      },
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 1
+      }
+    ]
+  }
+}

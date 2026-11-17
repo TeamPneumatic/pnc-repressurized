@@ -19,9 +19,9 @@ package me.desht.pneumaticcraft.api.client;
 
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -55,7 +55,7 @@ public interface IClientRegistry {
      * @param backgroundColor background color for the stat in ARGB format
      * @return a new stat widget
      */
-    IGuiAnimatedStat getAnimatedStat(Screen gui, ResourceLocation iconTexture, int backgroundColor);
+    IGuiAnimatedStat getAnimatedStat(Screen gui, Identifier iconTexture, int backgroundColor);
 
     /**
      * Draw a Pressure Gauge in GUI context, the same as in many PneumaticCraft machine GUI's.
@@ -70,7 +70,7 @@ public interface IClientRegistry {
      * @param xPos               x position of the gauge.
      * @param yPos               y position of the gauge.
      */
-    void drawPressureGauge(GuiGraphics graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos);
+    void drawPressureGauge(GuiGraphicsExtractor graphics, Font fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos);
 
     /**
      * Register some custom item rendering behaviour for an item when held in an Assembly machine.

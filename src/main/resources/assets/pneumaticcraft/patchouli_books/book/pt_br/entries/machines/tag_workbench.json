@@ -1,12 +1,12 @@
 {
-  "name": "Bancada de Marcação",
+  "name": "Bancada de Trabalho de Marcaçõe",
   "icon": "pneumaticcraft:tag_workbench",
   "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:logistics_frame",
   "pages": [
     {
       "type": "text",
-      "text": "A $(item)Bancada de Marcação/$ é usada para produzir $(item)Filtros de Marcação/$, que são usados para filtrar itens por suas $(l:https://minecraft.gamepedia.com/Tag)Marcações de item/$. Ex: tratar todos os troncos como o mesmo item ao filtrar. Os Filtros de Marcação podem ser colocados em filtros de $(l:logistics/frames)Frame Logístico/$, bem como em widgets de programação $(l:programming/item_filter)Filtro de Item/$ usados por Drones, e corresponderão a qualquer item que tenha uma tag de item da lista do Filtro de Marcação."
+      "text": "A $(item)Bancada de Trabalho de Marcaçõe/$ é usada para produzir $(item)Filtros de Marcação/$, que são usados para filtrar itens por suas $(l:https://minecraft.gamepedia.com/Tag)Marcações de item/$. Ex: tratar todos os troncos como o mesmo item ao filtrar. Os Filtros de Marcação podem ser colocados em filtros de $(l:logistics/frames)Frame Logístico/$, bem como em widgets de programação $(l:programming/item_filter)Filtro de Item/$ usados por Drones, e corresponderão a qualquer item que tenha uma marcação de item da lista do Filtro de Marcação."
     },
     {
       "type": "text",
@@ -19,7 +19,7 @@
     },
     {
       "type": "crafting",
-      "text": "Criando uma Bancada de Marcação",
+      "text": "Criando uma Bancada de Trabalho de Marcaçõe",
       "recipe": "pneumaticcraft:tag_workbench"
     }
   ]

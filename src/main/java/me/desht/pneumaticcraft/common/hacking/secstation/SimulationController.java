@@ -19,7 +19,6 @@ package me.desht.pneumaticcraft.common.hacking.secstation;
 
 import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
-import me.desht.pneumaticcraft.common.item.NetworkComponentItem;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
@@ -138,7 +137,7 @@ public class SimulationController implements ISimulationController {
     }
 
     private void maybeWakeAI() {
-        if (!te.nonNullLevel().isClientSide && aiSimulation.isStarted() && te.nonNullLevel().random.nextInt(100) < te.getDetectionChance()) {
+        if (!te.nonNullLevel().isClientSide() && aiSimulation.isStarted() && te.nonNullLevel().getRandom().nextInt(100) < te.getDetectionChance()) {
             aiSimulation.wakeUp();
         }
     }
@@ -155,8 +154,9 @@ public class SimulationController implements ISimulationController {
         if (!(hacker.containerMenu instanceof SecurityStationHackingMenu) && !playerSimulation.isHackComplete()) {
             // hacker closed their window before hack complete: AI wins
             for (int slot = 0; slot < HackSimulation.GRID_SIZE; slot++) {
-                if (NetworkComponentItem.isType(te.getItemHandler().getStackInSlot(slot), NetworkComponentType.NETWORK_IO_PORT)) {
-                    aiSimulation.getNodeAt(slot).setHackProgress(slot, 1F, true);
+                HackSimulation.Node node = aiSimulation.getNodeAt(slot);
+                if (node != null && node.getType() == NetworkComponentType.NETWORK_IO_PORT) {
+                    node.setHackProgress(slot, 1F, true);
                     break;
                 }
             }
@@ -171,12 +171,12 @@ public class SimulationController implements ISimulationController {
             syncToClient = true;
             if (aiSimulation.isAwake()) {
                 // if hack window is closed before AI detects intrustion, hacker gets away with it
-                if (te.nonNullLevel().isClientSide) {
+                if (te.nonNullLevel().isClientSide()) {
                     hacker.playSound(SoundEvents.ENDERMAN_DEATH, 1f, 1f);
                 } else {
-                    hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.1").withStyle(ChatFormatting.RED), false);
+                    hacker.sendSystemMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.1").withStyle(ChatFormatting.RED));
                     if (!justTesting) {
-                        hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.2").withStyle(ChatFormatting.RED), false);
+                        hacker.sendSystemMessage(xlate("pneumaticcraft.message.securityStation.hackFailed.2").withStyle(ChatFormatting.RED));
                         te.retaliate(hacker);
                     }
                 }
@@ -184,12 +184,12 @@ public class SimulationController implements ISimulationController {
         } else if (!wasDone && playerSimulation.isHackComplete()) {
             // hacker wins
             syncToClient = true;
-            if (te.nonNullLevel().isClientSide) {
+            if (te.nonNullLevel().isClientSide()) {
                 hacker.playSound(SoundEvents.PLAYER_LEVELUP, 1f, 1f);
             } else {
-                hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN), false);
+                hacker.sendSystemMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").withStyle(ChatFormatting.GREEN));
                 if (!justTesting) {
-                    hacker.displayClientMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.2").withStyle(ChatFormatting.GREEN), false);
+                    hacker.sendSystemMessage(xlate("pneumaticcraft.message.securityStation.hackSucceeded.2").withStyle(ChatFormatting.GREEN));
                     te.addHacker(hacker.getGameProfile());
                 }
             }

@@ -2,7 +2,5 @@
   "type": "pneumaticcraft:fuel_quality",
   "air_per_bucket": 1800000,
   "burn_rate": 1.25,
-  "fluid": {
-    "tag": "c:lpg"
-  }
+  "fluid": "#c:lpg"
 }

@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -28,13 +27,17 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBlockEntity> {
+public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<PneumaticDoorBlockEntity, PneumaticDoorRenderer.State> {
     private static final String DOOR = "door";
 
     private final ModelPart door;
@@ -79,26 +82,45 @@ public class PneumaticDoorRenderer extends AbstractBlockEntityModelRenderer<Pneu
     }
 
     @Override
-    public void renderModel(PneumaticDoorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR)) return;
+    public State createRenderState() {
+        return new State();
+    }
 
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC));
+    @Override
+    public void extractRenderState(PneumaticDoorBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        float rotation = Mth.lerp(partialTicks, te.oldRotationAngle, te.rotationAngle);
-        boolean rightGoing = te.rightGoing;
+        state.topDoor = blockEntity.getBlockState().getValue(PneumaticDoorBlock.TOP_DOOR);
+        state.doorRotation = Mth.lerp(partialTicks, blockEntity.oldRotationAngle, blockEntity.rotationAngle);
+        state.rightGoing = blockEntity.rightGoing;
+        state.color = 0xFF000000 | blockEntity.getColor().getTextureDiffuseColor();
+    }
 
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.topDoor) return;
 
-        matrixStackIn.translate((rightGoing ? -1 : 1) * 6.5F / 16F, 0, -6.5F / 16F);
-        matrixStackIn.mulPose(rightGoing ? Axis.YN.rotationDegrees(rotation) : Axis.YP.rotationDegrees(rotation));
-        matrixStackIn.translate((rightGoing ? -1 : 1) * -6.5F / 16F, 0, 6.5F / 16F);
+        boolean rightGoing = state.rightGoing;
+
+        RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
+
+        poseStack.translate((rightGoing ? -1 : 1) * 6.5F / 16F, 0, -6.5F / 16F);
+        poseStack.mulPose(rightGoing ? Axis.YN.rotationDegrees(state.doorRotation) : Axis.YP.rotationDegrees(state.doorRotation));
+        poseStack.translate((rightGoing ? -1 : 1) * -6.5F / 16F, 0, 6.5F / 16F);
 
         if (rightGoing) {
-            matrixStackIn.translate(0, 0, -6.5/16F);
-            matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
-            matrixStackIn.translate(0, 0, 6.5/16F);
+            poseStack.translate(0, 0, -6.5/16F);
+            poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.translate(0, 0, 6.5/16F);
         }
-        door.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 0xFF000000 | te.getColor().getTextureDiffuseColor());
+        submitPart(submitNodeCollector, door, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_PNEUMATIC_DOOR_DYNAMIC), state.lightCoords, state.color, state);
+    }
+
+    public static class State extends ModelRenderState {
+        boolean topDoor;
+        float doorRotation;
+        boolean rightGoing;
+        int color;
     }
 
     @Override

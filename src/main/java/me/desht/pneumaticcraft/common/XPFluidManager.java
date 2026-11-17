@@ -20,10 +20,10 @@ package me.desht.pneumaticcraft.common;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,9 +58,9 @@ public enum XPFluidManager {
 
     private void resolveFluidIngredients() {
         for (Pair<FluidIngredient, Integer> pair : pendingIngredients) {
-            for (FluidStack fluidStack: pair.getLeft().getStacks()) {
-                Fluid fluid = fluidStack.getFluid();
-                if (fluid.isSource(fluid.defaultFluidState()) && fluidStack.getAmount() > 0) {
+            for (Holder<Fluid> holder : pair.getLeft().fluids()) {
+                Fluid fluid = holder.value();
+                if (fluid.isSource(fluid.defaultFluidState())) {
                     registerXPFluid(fluid, pair.getRight());
                 }
             }
@@ -83,8 +83,8 @@ public enum XPFluidManager {
             builder.addAll(liquidXPs.keySet().stream().sorted((f1, f2) -> {
                 // little kludge: ensure our own Memory Essence is always first in the list
                 if (f1 == ModFluids.MEMORY_ESSENCE.get()) return -1;
-                ResourceLocation r1 = PneumaticCraftUtils.getRegistryName(f1).orElseThrow();
-                ResourceLocation r2 = PneumaticCraftUtils.getRegistryName(f2).orElseThrow();
+                Identifier r1 = PneumaticCraftUtils.getRegistryName(f1).orElseThrow();
+                Identifier r2 = PneumaticCraftUtils.getRegistryName(f2).orElseThrow();
                 return r1.toString().compareTo(r2.toString());
             }).toList());
             availableLiquidXPs = builder.build();

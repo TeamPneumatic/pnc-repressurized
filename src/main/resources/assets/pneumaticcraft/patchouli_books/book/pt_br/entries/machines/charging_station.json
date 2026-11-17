@@ -1,12 +1,12 @@
 {
-  "name": "Estação de Carregamento",
+  "name": "Estação de Carga",
   "icon": "pneumaticcraft:charging_station",
   "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",
-      "text": "A $(item)Estação de Carregamento/$ é uma máquina na qual itens $(l:base_concepts/pressure)pneumáticos/$ podem ser carregados (ou descarregados). A interação entre a $(item)Estação de Carregamento/$ e itens pneumáticos é a mesma que a interação entre tubos/máquinas: as diferenças de pressão serão equalizadas. Isso significa que você precisará de uma $(item)Estação de Carregamento/$ bem pressurizada para carregar os itens completamente."
+      "text": "A $(item)Estação de Carga/$ é uma máquina na qual itens $(l:base_concepts/pressure)pneumáticos/$ podem ser carregados (ou descarregados). A interação entre a $(item)Estação de Carga/$ e itens pneumáticos é a mesma que a interação entre tubos/máquinas: as diferenças de pressão serão equalizadas. Isso significa que você precisará de uma $(item)Estação de Carga/$ bem pressurizada para carregar os itens completamente."
     },
     {
       "type": "spotlight",
@@ -16,12 +16,12 @@
     {
       "type": "text",
       "title": "Tapete de Carga",
-      "text": "Você pode transformar a $(item)Estação de Carregamento/$ em um $(thing)Tapete de Carga/$ inserindo um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$. Isso (des)pressuriza:$(li)itens no chão em cima da Estação de Carregamento$(li)itens carregados pelos jogadores que estão em cima da Estação de Carregamento$(li)todas as tipos de $(l:tools/drone)Drone/$ diretamente acima da Estação de Carregamento"
+      "text": "Você pode transformar a $(item)Estação de Carga/$ em um $(thing)Tapete de Carga/$ inserindo um $(l:base_concepts/upgrades#dispenser)Aprimoramento de Dispensador/$. Isso (des)pressuriza:$(li)itens no chão em cima da Estação de Carga$(li)itens carregados pelos jogadores que estão em cima da Estação de Carga$(li)todas as tipos de $(l:tools/drone)Drone/$ diretamente acima da Estação de Carga"
     },
     {
       "type": "text",
       "title": "Gestão de Aprimoramentos",
-      "text": "A $(item)Estação de Carregamento/$ também funciona como um sistema de gerenciamento para itens que aceitam $(l:base_concepts/upgrades)aprimoramentos/$. Para aprimorar um item, coloque-o na $(item)Estação de Carregamento/$ como de costume e clique no botão $(thing)seta para cima/$ logo acima do slot do item. Isso abrirá uma nova interface onde os aprimoramentos podem ser inseridos; todos os aprimoramentos aplicáveis ao item em questão estão documentados na guia lateral da interface."
+      "text": "A $(item)Estação de Carga/$ também funciona como um sistema de gerenciamento para itens que aceitam $(l:base_concepts/upgrades)aprimoramentos/$. Para aprimorar um item, coloque-o na $(item)Estação de Carga/$ como de costume e clique no botão $(thing)seta para cima/$ logo acima do slot do item. Isso abrirá uma nova interface onde os aprimoramentos podem ser inseridos; todos os aprimoramentos aplicáveis ao item em questão estão documentados na guia lateral da interface."
     },
     {
       "type": "relations",
@@ -53,7 +53,7 @@
     },
     {
       "type": "crafting",
-      "text": "Fabricando uma Estação de Carregamento",
+      "text": "Fabricando uma Estação de Carga",
       "recipe": "pneumaticcraft:charging_station"
     }
   ]

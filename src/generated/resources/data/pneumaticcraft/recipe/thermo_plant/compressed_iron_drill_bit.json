@@ -4,15 +4,12 @@
   "inputs": {
     "fluid": {
       "amount": 4000,
-      "tag": "c:lubricant"
+      "ingredient": "#c:lubricant"
     },
-    "item": {
-      "tag": "c:ingots/compressed_iron"
-    }
+    "item": "#c:ingots/compressed_iron"
   },
   "outputs": {
     "item_output": {
-      "count": 1,
       "id": "pneumaticcraft:drill_bit_compressed_iron"
     }
   },

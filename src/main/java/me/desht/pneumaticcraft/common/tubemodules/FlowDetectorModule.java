@@ -85,8 +85,8 @@ public class FlowDetectorModule extends AbstractRedstoneEmittingModule implement
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        rotation = tag.getFloat("rotation");
-        oldFlow = tag.getInt("flow");//taggin it for waila purposes.
+        rotation = tag.getFloatOr("rotation", 0f);
+        oldFlow = tag.getIntOr("flow", 0);//taggin it for waila purposes.
     }
 
     @Override

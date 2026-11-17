@@ -31,13 +31,15 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.joml.Vector3f;
 
@@ -51,7 +53,7 @@ public class AmadroneEntity extends DroneEntity {
 
     public enum AmadronAction { TAKING_PAYMENT, RESTOCKING }
 
-    private ResourceLocation handlingOffer; // ID of an Amadron offer
+    private Identifier handlingOffer; // ID of an Amadron offer
     private int offerTimes;
     private ItemStack usedTablet = ItemStack.EMPTY;  // Tablet used to place the order.
     private String buyingPlayer;
@@ -98,7 +100,7 @@ public class AmadroneEntity extends DroneEntity {
         return amadroneStack;
     }
 
-    public void setHandlingOffer(ResourceLocation offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {
+    public void setHandlingOffer(Identifier offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {
         this.handlingOffer = offerId;
         this.offerTimes = times;
         this.usedTablet = usedTablet.copy();
@@ -106,7 +108,7 @@ public class AmadroneEntity extends DroneEntity {
         this.amadronAction = amadronAction;
     }
 
-    public ResourceLocation getHandlingOffer() {
+    public Identifier getHandlingOffer() {
         return handlingOffer;
     }
 
@@ -137,7 +139,7 @@ public class AmadroneEntity extends DroneEntity {
     }
 
     @Override
-    protected void dropEquipment() {
+    protected void dropEquipment(ServerLevel level) {
         // The DroneSuicideEvent for amadrones *should* ensure the drone's inventory is emptied before death,
         // but see https://github.com/TeamPneumatic/pnc-repressurized/issues/507
         // So let's be extra-paranoid and drop nothing here
@@ -156,34 +158,32 @@ public class AmadroneEntity extends DroneEntity {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
 
         if (handlingOffer != null) {
-            CompoundTag subTag = new CompoundTag();
+            ValueOutput subTag = output.child("amadron");
             subTag.putString("offerId", handlingOffer.toString());
             subTag.putInt("offerTimes", offerTimes);
             subTag.putString("buyingPlayer", buyingPlayer);
             if (!usedTablet.isEmpty()) {
-                subTag.put("usedTablet", usedTablet.save(registryAccess()));
+                subTag.store("usedTablet", ItemStack.CODEC, usedTablet);
             }
             subTag.putString("amadronAction", amadronAction.toString());
-            tag.put("amadron", subTag);
         }
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
+    public void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
 
-        if (tag.contains("amadron")) {
-            CompoundTag subTag = tag.getCompound("amadron");
-            handlingOffer = ResourceLocation.parse(subTag.getString("offerId"));
-            usedTablet = ItemStack.parseOptional(registryAccess(), subTag.getCompound("usedTablet"));
-            offerTimes = subTag.getInt("offerTimes");
-            buyingPlayer = subTag.getString("buyingPlayer");
-            amadronAction = AmadronAction.valueOf(subTag.getString("amadronAction"));
-        }
+        input.child("amadron").ifPresent(subTag -> {
+            handlingOffer = Identifier.parse(subTag.getStringOr("offerId", ""));
+            usedTablet = subTag.read("usedTablet", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+            offerTimes = subTag.getIntOr("offerTimes", 0);
+            buyingPlayer = subTag.getStringOr("buyingPlayer", "");
+            amadronAction = AmadronAction.valueOf(subTag.getStringOr("amadronAction", ""));
+        });
     }
 
     @Override

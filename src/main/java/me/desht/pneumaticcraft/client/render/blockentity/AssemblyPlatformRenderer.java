@@ -18,29 +18,32 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverriding;
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyPlatformBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<AssemblyPlatformBlockEntity> {
+public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<AssemblyPlatformBlockEntity, AssemblyPlatformRenderer.State> {
     private static final float ITEM_SCALE = 0.5F;
 
     private final ModelPart claw1;
@@ -76,30 +79,50 @@ public class AssemblyPlatformRenderer extends AbstractBlockEntityModelRenderer<A
     }
 
     @Override
-    public void renderModel(AssemblyPlatformBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        ItemStack heldStack = te.getItemHandler(null).getStackInSlot(0);
-        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
+    public State createRenderState() {
+        return new State();
+    }
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0, 0, clawTranslation.getRight());
-        claw1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        matrixStackIn.translate(0, 0, -2 * clawTranslation.getRight());
-        claw2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        matrixStackIn.popPose();
+    @Override
+    public void extractRenderState(AssemblyPlatformBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        if (!heldStack.isEmpty()) {
-            IAssemblyRenderOverriding renderOverride = clawTranslation.getLeft();
-            if (renderOverride == null || renderOverride.applyRenderChangePlatform(matrixStackIn, heldStack)) {
-                matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
-                double yOffset = heldStack.getItem() instanceof BlockItem ? -16.5 / 16F : -17.5 / 16F;
-                matrixStackIn.translate(0, yOffset + 0.05, 0);
-                matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
-                ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                BakedModel bakedModel = itemRenderer.getModel(heldStack, te.getLevel(), null, 0);
-                itemRenderer.render(heldStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        ItemStack heldStack = blockEntity.getItemHandler(null).getStackInSlot(0);
+        Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, blockEntity.oldClawProgress, blockEntity.clawProgress), heldStack);
+        state.heldStack = heldStack.copy();
+        state.renderOverride = clawTranslation.getLeft();
+        state.clawTranslation = clawTranslation.getRight();
+        itemModelResolver.updateForTopItem(state.item, heldStack, ItemDisplayContext.FIXED, blockEntity.getLevel(), null, (int) blockEntity.getBlockPos().asLong());
+    }
+
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ASSEMBLY_PLATFORM);
+
+        poseStack.pushPose();
+        poseStack.translate(0, 0, state.clawTranslation);
+        submitPart(submitNodeCollector, claw1, poseStack, renderType, state);
+        poseStack.translate(0, 0, -2 * state.clawTranslation);
+        submitPart(submitNodeCollector, claw2, poseStack, renderType, state);
+        poseStack.popPose();
+
+        if (!state.heldStack.isEmpty()) {
+            IAssemblyRenderOverriding renderOverride = state.renderOverride;
+            if (renderOverride == null || renderOverride.applyRenderChangePlatform(poseStack, state.heldStack)) {
+                poseStack.mulPose(Axis.XP.rotationDegrees(180));
+                double yOffset = state.heldStack.getItem() instanceof BlockItem ? -16.5 / 16F : -17.5 / 16F;
+                poseStack.translate(0, yOffset + 0.05, 0);
+                poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
+                state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             }
         }
+    }
+
+    public static class State extends ModelRenderState {
+        ItemStack heldStack = ItemStack.EMPTY;
+        @Nullable IAssemblyRenderOverriding renderOverride;
+        float clawTranslation;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 
     private Pair<IAssemblyRenderOverriding, Float> getClawTranslation(float clawProgress, ItemStack heldStack) {

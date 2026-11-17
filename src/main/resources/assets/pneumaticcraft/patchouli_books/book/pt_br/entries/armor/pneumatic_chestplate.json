@@ -44,7 +44,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:charging_upgrade",
-      "text": "Com uma ou mais $(l:base_concepts/upgrades#charging)Melhorias de Carregamento/$ instaladas, o peitoral ganha a habilidade de pressurizar qualquer outro item pneumático em seu inventário, tanto vestido quanto carregado. O peitoral só carregará itens até seu próprio nível de pressão. Adicionar Melhorias de Carregamento extras (até 6) aumenta a taxa de carregamento."
+      "text": "Com uma ou mais $(l:base_concepts/upgrades#charging)Melhoria de Carga/$ instaladas, o peitoral ganha a habilidade de pressurizar qualquer outro item pneumático em seu inventário, tanto vestido quanto carregado. O peitoral só carregará itens até seu próprio nível de pressão. Adicionar Melhoria de Carga extras (até 6) aumenta a taxa de carregamento."
     },
     {
       "type": "spotlight",

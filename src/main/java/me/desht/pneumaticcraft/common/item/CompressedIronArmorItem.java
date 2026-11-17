@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.common.registry.ModArmorMaterials;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.equipment.ArmorType;
 
-public class CompressedIronArmorItem extends ArmorItem {
-    public CompressedIronArmorItem(ArmorItem.Type type) {
-        super(ModArmorMaterials.COMPRESSED_IRON.getDelegate(), type,
-                ModItems.defaultProps().durability(type.getDurability(24)));
+public class CompressedIronArmorItem extends Item {
+    public CompressedIronArmorItem(ArmorType type) {
+        super(ModItems.defaultProps().humanoidArmor(ModArmorMaterials.COMPRESSED_IRON, type));
     }
 }

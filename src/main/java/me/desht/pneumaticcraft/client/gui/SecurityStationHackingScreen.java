@@ -37,12 +37,12 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -66,9 +66,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private WidgetButtonExtended stopWormButton;
 
     public SecurityStationHackingScreen(SecurityStationHackingMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageHeight = 238;
+        super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 238);
     }
 
     @Override
@@ -116,7 +114,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_HACKING;
     }
 
@@ -146,16 +144,16 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int x, int y) {
-        super.renderLabels(graphics, x, y);
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
+        super.extractLabels(graphics, x, y);
 
         if (te.getSimulationController() != null) {
             HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
             HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
             if (aiSim.isAwake()) {
-                graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.tooltip.hacking.aiTracing").withStyle(ChatFormatting.RED), imageWidth / 2, 7, 0xFFFFFF);
+                graphics.centeredText(font, xlate("pneumaticcraft.gui.tooltip.hacking.aiTracing").withStyle(ChatFormatting.RED), imageWidth / 2, 7, 0xFFFFFFFF);
             } else {
-                graphics.drawCenteredString(font, xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).withStyle(ChatFormatting.GOLD), imageWidth / 2, 7, 0xFFFFFF);
+                graphics.centeredText(font, xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).withStyle(ChatFormatting.GOLD), imageWidth / 2, 7, 0xFFFFFFFF);
             }
 
             if (aiSim.isHackComplete()) {
@@ -180,8 +178,9 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int x, int y) {
-        super.renderBg(graphics, partialTicks, x, y);
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
+        super.extractBackground(graphics, x, y, partialTicks);
 
         hackRenderer.render(graphics, bgSimulation, 0xFF2222FF);
         if (te.getSimulationController() != null) {
@@ -193,9 +192,9 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
         }
     }
 
-    private void renderConsumables(GuiGraphics graphics) {
-        graphics.drawString(font, PneumaticCraftUtils.convertAmountToString(nukeViruses), 158, 112, nukeViruses == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
-        graphics.drawString(font, PneumaticCraftUtils.convertAmountToString(stopWorms), 158, 160, stopWorms == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
+    private void renderConsumables(GuiGraphicsExtractor graphics) {
+        graphics.text(font, PneumaticCraftUtils.convertAmountToString(nukeViruses), 158, 112, nukeViruses == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
+        graphics.text(font, PneumaticCraftUtils.convertAmountToString(stopWorms), 158, 160, stopWorms == 0 ? 0xFFFF6060: 0xFFFFFFFF, false);
     }
 
     @Override
@@ -204,7 +203,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
 
         stopWorms = 0;
         nukeViruses = 0;
-        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().items) {
+        for (ItemStack stack : ClientUtils.getClientPlayer().getInventory().getNonEquipmentItems()) {
             if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
             if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
         }
@@ -250,7 +249,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     }
 
     @Override
-    protected void slotClicked(Slot slotIn, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slotIn, int slotId, int mouseButton, ContainerInput type) {
         // slotIn *can* be null here
         //noinspection ConstantConditions
         if (slotIn != null && slotIn.hasItem() && te.getSimulationController() != null) {
@@ -267,7 +266,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private void tryFortifySlot(int slotId) {
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
         HackSimulation.Node node = playerSim.getNodeAt(slotId);
-        if (node.isHacked() && !node.isFortified() && node.getFortification() == 0) {
+        if (node != null && node.isHacked() && !node.isFortified() && node.getFortification() == 0) {
             playerSim.fortify(slotId);
             NetworkHandler.sendToServer(new PacketGuiButton("fortify:" + slotId));
         }
@@ -276,7 +275,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
     private void tryHackSlot(int slotId) {
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
         HackSimulation.Node node = playerSim.getNodeAt(slotId);
-        if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+        if (node != null && !node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
             playerSim.startHack(slotId);
             NetworkHandler.sendToServer(new PacketGuiButton("hack:" + slotId));
         }
@@ -286,7 +285,7 @@ public class SecurityStationHackingScreen extends AbstractPneumaticCraftContaine
         if (hasNukeViruses() && te.getSimulationController() != null) {
             HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
             HackSimulation.Node node = playerSim.getNodeAt(slotId);
-            if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+            if (node != null && !node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
                 // node must have a hacked neighbour for this to work
                 if (playerSim.initiateNukeVirus(slotId)) {
                     NetworkHandler.sendToServer(new PacketGuiButton("nuke:" + slotId));

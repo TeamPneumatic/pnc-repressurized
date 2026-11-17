@@ -24,7 +24,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -48,7 +48,7 @@ public interface ISemiBlock {
      * Get a unique ID for this semiblock, which should match the corresponding item's registry name.
      * @return a semiblock ID
      */
-    ResourceLocation getSemiblockId();
+    Identifier getSemiblockId();
 
     /**
      * Get the displayed name for this semiblock.

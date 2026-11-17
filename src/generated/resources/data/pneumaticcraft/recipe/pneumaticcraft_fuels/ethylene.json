@@ -8,7 +8,5 @@
   "type": "pneumaticcraft:fuel_quality",
   "air_per_bucket": 1800800,
   "burn_rate": 1.25,
-  "fluid": {
-    "tag": "c:ethene"
-  }
+  "fluid": "#c:ethene"
 }

@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "pneumaticcraft:reinforced_stone"
-    }
+    "B": "pneumaticcraft:reinforced_stone"
   },
   "pattern": [
     "BBB"

@@ -2,14 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "M": {
-      "item": "minecraft:phantom_membrane"
-    },
-    "N": {
-      "item": "minecraft:nether_star"
-    },
+    "M": "minecraft:phantom_membrane",
+    "N": "minecraft:nether_star",
     "P": {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {
         "minecraft:potion_contents": {
           "potion": "minecraft:slow_falling"
@@ -17,12 +13,8 @@
       },
       "items": "minecraft:potion"
     },
-    "U": {
-      "item": "pneumaticcraft:jet_boots_upgrade_3"
-    },
-    "V": {
-      "item": "pneumaticcraft:vortex_cannon"
-    }
+    "U": "pneumaticcraft:jet_boots_upgrade_3",
+    "V": "pneumaticcraft:vortex_cannon"
   },
   "pattern": [
     "MNM",
@@ -30,7 +22,6 @@
     "P P"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:jet_boots_upgrade_4"
   }
 }

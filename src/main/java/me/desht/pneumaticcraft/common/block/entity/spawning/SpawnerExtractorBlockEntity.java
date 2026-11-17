@@ -37,11 +37,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.MenuProvider;
@@ -49,6 +49,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityProcessor;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +66,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.extensions.IOwnedSpawner;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.EventHooks;
@@ -74,7 +79,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         implements IMinWorkingPressure, MenuProvider, IOwnedSpawner {
@@ -152,7 +156,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
             addAir(PneumaticValues.USAGE_SPAWNER_EXTRACTOR);
             if (progress >= 1f) {
                 extractSpawnerCore();
-            } else if (currentSpeed > 0.1f && nonNullLevel().random.nextInt(defenderChance) == 0) {
+            } else if (currentSpeed > 0.1f && nonNullLevel().getRandom().nextInt(defenderChance) == 0) {
                 // spawn defending entities; each entity nearby will slow down the extraction process
                 nonNullLevel().getBlockEntity(worldPosition.below(), BlockEntityType.MOB_SPAWNER).ifPresent(te -> {
                     if (!trySpawnDefender(te)) {
@@ -178,21 +182,22 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         int maxNearbyEntities = 16;
 
         CompoundTag nbt = ((BaseSpawnerAccess) spawner).getNextSpawnData().getEntityToSpawn();
-        Optional<EntityType<?>> optional = EntityType.by(nbt);
+        Level level = nonNullLevel();
+        ValueInput input = TagValueInput.create(ProblemReporter.DISCARDING, level.registryAccess(), nbt);
+        Optional<EntityType<?>> optional = EntityType.by(input);
         if (optional.isEmpty()) {
             return false;
         }
         BlockPos pos = te.getBlockPos();
-        ListTag listnbt = nbt.getList("Pos", Tag.TAG_DOUBLE);
-        int size = listnbt.size();
-        Level level = nonNullLevel();
-        double x = size >= 1 ? listnbt.getDouble(0) : (double)pos.getX() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-        double y = size >= 2 ? listnbt.getDouble(1) : (double)(pos.getY() + level.random.nextInt(3) - 1);
-        double z = size >= 3 ? listnbt.getDouble(2) : (double)pos.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-        if (level.noCollision(optional.get().getSpawnAABB(x, y, z))) {
+        Vec3 spawnPos = input.read("Pos", Vec3.CODEC).orElseGet(() -> new Vec3(
+                (double)pos.getX() + (level.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D,
+                (double)(pos.getY() + level.getRandom().nextInt(3) - 1),
+                (double)pos.getZ() + (level.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D
+        ));
+        if (level.noCollision(optional.get().getSpawnAABB(spawnPos.x, spawnPos.y, spawnPos.z))) {
             ServerLevel serverworld = (ServerLevel) level;
-            Entity entity = EntityType.loadEntityRecursive(nbt, level, (e1) -> {
-                e1.moveTo(x, y, z, e1.getYRot(), e1.getXRot());
+            Entity entity = EntityType.loadEntityRecursive(input, level, EntitySpawnReason.SPAWNER, (e1) -> {
+                e1.snapTo(spawnPos.x, spawnPos.y, spawnPos.z, e1.getYRot(), e1.getXRot());
                 return e1;
             });
             if (entity == null) {
@@ -204,13 +209,13 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
                 return false;
             }
 
-            entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), level.random.nextFloat() * 360.0F, 0.0F);
+            entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), level.getRandom().nextFloat() * 360.0F, 0.0F);
             if (entity instanceof Mob mobentity) {
-                if (nbt.size() == 1 && nbt.contains("id", Tag.TAG_STRING)) {
-                    EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
+                if (nbt.size() == 1 && nbt.contains("id")) {
+                    EventHooks.finalizeMobSpawnSpawner(mobentity, serverworld, serverworld.getCurrentDifficultyAt(getPosition()), EntitySpawnReason.SPAWNER, null, this, true);
                     // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
                     if (level.getDifficulty() == Difficulty.HARD) {
-                        getRandomEffects(level.random).forEach(effect ->
+                        getRandomEffects(level.getRandom()).forEach(effect ->
                                 mobentity.addEffect(new MobEffectInstance(effect, Integer.MAX_VALUE, 2))
                         );
                     }
@@ -233,8 +238,8 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
         List<Holder<MobEffect>> l = new ArrayList<>();
         int n = rand.nextInt(100);
         if (n > 50) l.add(MobEffects.FIRE_RESISTANCE);
-        if (n > 75) l.add(MobEffects.MOVEMENT_SPEED);
-        if (n > 82) l.add(MobEffects.DAMAGE_BOOST);
+        if (n > 75) l.add(MobEffects.SPEED);
+        if (n > 82) l.add(MobEffects.STRENGTH);
         if (n > 92) l.add(MobEffects.REGENERATION);
         if (n > 96) l.add(MobEffects.INVISIBILITY);
         return l;
@@ -279,7 +284,7 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
 
     public Entity getCachedEntity(SpawnerBlockEntity spawner) {
         if (this.cachedEntity == null) {
-            this.cachedEntity = EntityType.loadEntityRecursive(((BaseSpawnerAccess)spawner.getSpawner()).getNextSpawnData().getEntityToSpawn(), this.nonNullLevel(), Function.identity());
+            this.cachedEntity = EntityType.loadEntityRecursive(((BaseSpawnerAccess)spawner.getSpawner()).getNextSpawnData().getEntityToSpawn(), this.nonNullLevel(), EntitySpawnReason.SPAWNER, EntityProcessor.NOP);
         }
         return this.cachedEntity;
     }
@@ -314,10 +319,10 @@ public class SpawnerExtractorBlockEntity extends AbstractAirHandlingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        progress = tag.getFloat("progress");
-        mode = Mode.values()[tag.getByte("mode")];
-        targetSpeed = tag.getFloat("targetSpeed");
-        spawnFailures = tag.getInt("spawnFailures");
+        progress = tag.getFloatOr("progress", 0f);
+        mode = Mode.values()[tag.getByteOr("mode", (byte) 0)];
+        targetSpeed = tag.getFloatOr("targetSpeed", 0f);
+        spawnFailures = tag.getIntOr("spawnFailures", 0);
     }
 
     @Override

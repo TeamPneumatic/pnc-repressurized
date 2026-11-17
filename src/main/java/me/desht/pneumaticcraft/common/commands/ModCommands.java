@@ -44,9 +44,10 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
@@ -59,7 +60,7 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -83,12 +84,12 @@ public class ModCommands {
     private static final DeferredHolder<ArgumentTypeInfo<?, ?>, SingletonArgumentInfo<VarnameType>> VARNAME_COMMAND_ARGUMENT_TYPE
             = COMMAND_ARGUMENT_TYPES.register("varname",
             () -> ArgumentTypeInfos.registerByClass(ModCommands.VarnameType.class, SingletonArgumentInfo.contextFree(VarnameType::new)));
-    private static final ResourceLocation UNKNOWN_ITEM = RL("unknown");
+    private static final Identifier UNKNOWN_ITEM = RL("unknown");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(literal("pncr")
                 .then(literal("dump_components")
-                        .requires(cs -> cs.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(ctx -> dumpComponents(ctx.getSource(), false))
                         .then(literal("all")
                                 .executes(ctx -> dumpComponents(ctx.getSource(), true))
@@ -125,7 +126,7 @@ public class ModCommands {
                         )
                 )
                 .then(literal("amadrone_deliver")
-                        .requires(cs -> cs.hasPermission(2))
+                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(argument("toPos", BlockPosArgument.blockPos())
                                 .then(argument("fromPos", BlockPosArgument.blockPos())
                                         .executes(ctx -> amadroneDeliver(ctx.getSource(), getLoadedBlockPos(ctx, "toPos"), getLoadedBlockPos(ctx, "fromPos")))
@@ -138,17 +139,17 @@ public class ModCommands {
                         )
                 )
                 .then(literal("armor_upgrade")
-                        .then(argument("upgrade", ResourceLocationArgument.id())
+                        .then(argument("upgrade", IdentifierArgument.id())
                                 .suggests((ctx, builder) -> suggestUpgradeIDs(builder))
                                 .then(argument("enabled", BoolArgumentType.bool())
-                                        .executes(ctx -> setArmorUpgrade(ctx.getSource(), ResourceLocationArgument.getId(ctx, "upgrade"), BoolArgumentType.getBool(ctx, "enabled")))
+                                        .executes(ctx -> setArmorUpgrade(ctx.getSource(), IdentifierArgument.getId(ctx, "upgrade"), BoolArgumentType.getBool(ctx, "enabled")))
                                 )
                         )
                 )
         );
     }
 
-    private static int setArmorUpgrade(CommandSourceStack source, ResourceLocation id, boolean enabled) throws CommandSyntaxException {
+    private static int setArmorUpgrade(CommandSourceStack source, Identifier id, boolean enabled) throws CommandSyntaxException {
         Optional<IArmorUpgradeHandler<?>> upgrade = CommonArmorRegistry.getInstance().getArmorUpgradeHandler(id);
 
         if (upgrade.isPresent()) {
@@ -181,7 +182,7 @@ public class ModCommands {
 
         if (!stack.getComponents().isEmpty()) {
             int amount = stack.getComponents().size();
-            source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.components_header", amount, stack.getItem().getDescription())
+            source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.components_header", amount, stack.getItem().getName(stack))
                     .withStyle(ChatFormatting.YELLOW), false);
             if (!all) {
                 source.sendSuccess(() -> Component.translatable("pneumaticcraft.message.non_default_components")
@@ -289,9 +290,10 @@ public class ModCommands {
                 GlobalVariableHelper.getInstance().setPos(id, v, pos);
                 source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
             }).ifRight(item -> {
-                ItemStack stack = new ItemStack(item.getItem());
+                ItemStack stack = new ItemStack(item.item());
                 GlobalVariableHelper.getInstance().setStack(id, v, stack);
-                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM)), true);
+                Identifier itemId = PneumaticCraftUtils.getRegistryName(stack.getItem()).orElse(UNKNOWN_ITEM);
+                source.sendSuccess(() -> xlate("pneumaticcraft.command.globalVariable.output", v, itemId.toString()), true);
             });
         } catch (CommandSyntaxException e) {
             source.sendFailure(xlate("pneumaticcraft.command.globalVariable.contextError"));

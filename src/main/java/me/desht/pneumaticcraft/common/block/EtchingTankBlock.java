@@ -65,7 +65,7 @@ public class EtchingTankBlock extends AbstractPneumaticCraftBlock implements Pne
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state) {
         return AbstractPneumaticCraftBlock.ALMOST_FULL_SHAPE;
     }
 

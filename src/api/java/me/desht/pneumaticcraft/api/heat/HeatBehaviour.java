@@ -20,8 +20,7 @@ package me.desht.pneumaticcraft.api.heat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  * obsidian. A ticking heat exchanger adjacent to the Lava block is needed to actually drain the heat.
  * <p>
  * You can extend this class, and register the extended class via
- * {@link IHeatRegistry#registerHeatBehaviour(ResourceLocation, Supplier)}
+ * {@link IHeatRegistry#registerHeatBehaviour(Identifier, Supplier)}
  * <p>
  * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
  * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
@@ -100,7 +99,7 @@ public abstract class HeatBehaviour {
      *
      * @return a unique ID
      */
-    public abstract ResourceLocation getId();
+    public abstract Identifier getId();
 
     /**
      * Return true when this heat behaviour is applicable for this coordinate. World access methods can be used here
@@ -117,12 +116,12 @@ public abstract class HeatBehaviour {
 
     public CompoundTag serializeNBT() {
         CompoundTag tag = new CompoundTag();
-        tag.put("BlockPos", NbtUtils.writeBlockPos(pos));
+        tag.store("BlockPos", BlockPos.CODEC, pos);
         return tag;
     }
 
     public void deserializeNBT(CompoundTag nbt) {
-        pos = NbtUtils.readBlockPos(nbt, "BlockPos").orElse(BlockPos.ZERO);
+        pos = nbt.read("BlockPos", BlockPos.CODEC).orElse(BlockPos.ZERO);
     }
 
     @Override

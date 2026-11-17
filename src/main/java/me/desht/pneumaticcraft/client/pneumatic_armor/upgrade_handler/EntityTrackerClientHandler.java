@@ -35,9 +35,8 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHand
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -46,7 +45,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.vehicle.minecart.AbstractMinecart;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -62,7 +61,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<EntityTrackerHandler> {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
-    private static final float ENTITY_TRACKING_RANGE = 16F;
     private static final StatPanelLayout DEFAULT_STAT_LAYOUT = StatPanelLayout.expandsLeft(0.995f, 0.2f);
 
     private final Int2ObjectMap<RenderEntityTarget> targets = new Int2ObjectOpenHashMap<>();
@@ -101,7 +99,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         // find applicable entities and create/update render targets for them as needed
-        double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY;
+        double entityTrackRange = EntityTrackerHandler.getEntityTrackRange(rangeUpgrades);
         AABB bbBox = getAABBFromRange(player, rangeUpgrades);
         List<Entity> entities = armorHandler.getPlayer().level().getEntitiesOfClass(Entity.class, bbBox,
                 new EntityTrackerSelector(player, entityFilter, entityTrackRange));
@@ -121,7 +119,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
-                    toRemove.add(entityId.intValue());
+                    toRemove.add(entityId);
                 }
             }
         });
@@ -151,7 +149,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     static AABB getAABBFromRange(Player player, int rangeUpgrades) {
-        double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(5, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE_ENTITY;
+        double entityTrackRange = EntityTrackerHandler.getEntityTrackRange(rangeUpgrades);
 
         return new AABB(player.blockPosition()).inflate(entityTrackRange);
     }
@@ -162,7 +160,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

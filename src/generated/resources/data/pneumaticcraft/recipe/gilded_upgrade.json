@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "minecraft:gilded_blackstone"
-    },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "X": {
-      "tag": "c:ingots/gold"
-    }
+    "C": "minecraft:gilded_blackstone",
+    "L": "#pneumaticcraft:upgrade_components",
+    "X": "#c:ingots/gold"
   },
   "pattern": [
     "LXL",
@@ -18,7 +12,6 @@
     "LXL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:gilded_upgrade"
   }
 }

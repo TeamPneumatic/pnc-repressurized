@@ -1,6 +1,6 @@
 {
   "name": "Semiblocos/Dispositivos",
-  "description": "$(thing)Semiblocos/$ são itens curiosos que não são exatamente blocos, mas são colocáveis como blocos, e podem existir no mesmo espaço que blocos reais.$(p)Veja também $(l:logistics/frames)Estruturas Logísticas/$ que também são tecnicamente semiblocos.",
+  "description": "$(thing)Semiblocos/$ são itens curiosos que não são exatamente blocos, mas são colocáveis como blocos, e podem existir no mesmo espaço que blocos reais.$(p)Veja também $(l:logistics/frames)Molduras Logísticas/$ que também são tecnicamente semiblocos.",
   "icon": "pneumaticcraft:transfer_gadget",
   "sortnum": 7
 }

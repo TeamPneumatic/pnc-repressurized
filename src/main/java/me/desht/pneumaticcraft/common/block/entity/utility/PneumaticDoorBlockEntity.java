@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.DyeColor;
@@ -89,7 +90,7 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
             color = dyeColor;
             nonNullLevel().getBlockEntity(getBlockPos(), ModBlockEntityTypes.PNEUMATIC_DOOR.get()).ifPresent(topHalf -> {
                 topHalf.color = color;
-                if (!nonNullLevel().isClientSide) {
+                if (!nonNullLevel().isClientSide()) {
                     setChanged();
                     topHalf.setChanged();
                     sendDescriptionPacket();
@@ -120,13 +121,13 @@ public class PneumaticDoorBlockEntity extends AbstractTickingBlockEntity {
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        rightGoing = tag.getBoolean("rightGoing");
-        color = DyeColor.byId(tag.getInt("color"));
+        rightGoing = tag.getBooleanOr("rightGoing", false);
+        color = DyeColor.byId(tag.getIntOr("color", 0));
         scheduleDescriptionPacket();
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         color = componentInput.getOrDefault(ModDataComponents.DOOR_COLOR, DyeColor.WHITE);

@@ -1,5 +1,5 @@
 {
-  "name": "Manômetro",
+  "name": "Medidor de Pressão",
   "icon": "pneumaticcraft:pressure_gauge",
   "category": "pneumaticcraft:components",
   "advancement": "pneumaticcraft:root",
@@ -10,7 +10,7 @@
     },
     {
       "type": "crafting",
-      "text": "Criando um Manômetro",
+      "text": "Criando um Medidor de Pressão",
       "recipe": "pneumaticcraft:pressure_gauge"
     }
   ]

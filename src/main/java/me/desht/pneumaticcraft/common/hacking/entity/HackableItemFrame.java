@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.player.Player;
@@ -32,10 +32,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableItemFrame implements IHackableEntity<ItemFrame> {
 
-    private static final ResourceLocation ID = RL("item_frame");
+    private static final Identifier ID = RL("item_frame");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -68,7 +68,7 @@ public class HackableItemFrame implements IHackableEntity<ItemFrame> {
 
     @Override
     public void onHackFinished(ItemFrame entity, Player player) {
-        if (!entity.level().isClientSide) {
+        if (!entity.level().isClientSide()) {
             entity.hurt(entity.damageSources().playerAttack(player), 0.1f);
         }
     }

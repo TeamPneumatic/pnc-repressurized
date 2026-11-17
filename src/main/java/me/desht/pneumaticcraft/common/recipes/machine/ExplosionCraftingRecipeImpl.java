@@ -21,6 +21,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import net.minecraft.core.NonNullList;
@@ -29,6 +30,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
@@ -43,10 +45,10 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
 
     private final SizedIngredient input;
-    private final List<ItemStack> outputs;
+    private final List<ItemStackTemplate> outputs;
     private final int lossRate;
 
-    public ExplosionCraftingRecipeImpl(SizedIngredient input, int lossRate, List<ItemStack> outputs) {
+    public ExplosionCraftingRecipeImpl(SizedIngredient input, int lossRate, List<ItemStackTemplate> outputs) {
         this.input = input;
         this.outputs = outputs;
         this.lossRate = lossRate;
@@ -59,6 +61,10 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     @Override
     public List<ItemStack> getOutputs() {
+        return outputs.stream().map(ItemStackTemplate::create).toList();
+    }
+
+    public List<ItemStackTemplate> getOutputTemplates() {
         return outputs;
     }
 
@@ -106,55 +112,38 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
         return ModRecipeSerializers.EXPLOSION_CRAFTING.get();
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<? extends PneumaticCraftRecipe> getType() {
         return ModRecipeTypes.EXPLOSION_CRAFTING.get();
     }
 
     @Override
-    public String getGroup() {
+    public String group() {
         return PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING;
     }
 
-    @Override
-    public ItemStack getToastSymbol() {
-        return new ItemStack(Blocks.TNT);
+
+    public interface IFactory<T extends ExplosionCraftingRecipeImpl> {
+        T create(SizedIngredient input, int lossRate, List<ItemStackTemplate> result);
     }
 
-    public interface IFactory<T extends ExplosionCraftingRecipe> {
-        T create(SizedIngredient input, int lossRate, List<ItemStack> result);
+    public static <T extends ExplosionCraftingRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
+        MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                SizedIngredient.NESTED_CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
+                ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
+                ItemStackTemplate.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipeImpl::getOutputTemplates)
+        ).apply(builder, factory::create));
+        StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
+                SizedIngredient.STREAM_CODEC, ExplosionCraftingRecipe::getInput,
+                ByteBufCodecs.VAR_INT, ExplosionCraftingRecipe::getLossRate,
+                ItemStackTemplate.STREAM_CODEC.apply(ByteBufCodecs.list()), ExplosionCraftingRecipeImpl::getOutputTemplates,
+                factory::create
+        );
+        return new RecipeSerializer<>(codec, streamCodec);
     }
 
-    public static class Serializer<T extends ExplosionCraftingRecipe> implements RecipeSerializer<T> {
-        private final MapCodec<T> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    SizedIngredient.FLAT_CODEC.fieldOf("input").forGetter(ExplosionCraftingRecipe::getInput),
-                    ExtraCodecs.intRange(0, 99).fieldOf("loss_rate").forGetter(ExplosionCraftingRecipe::getLossRate),
-                    ItemStack.CODEC.listOf().fieldOf("results").forGetter(ExplosionCraftingRecipe::getOutputs)
-            ).apply(builder, factory::create));
-            this.streamCodec = StreamCodec.composite(
-                    SizedIngredient.STREAM_CODEC, ExplosionCraftingRecipe::getInput,
-                    ByteBufCodecs.VAR_INT, ExplosionCraftingRecipe::getLossRate,
-                    ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), ExplosionCraftingRecipe::getOutputs,
-                    factory::create
-            );
-        }
-
-        @Override
-        public MapCodec<T> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-            return streamCodec;
-        }
-    }
 }

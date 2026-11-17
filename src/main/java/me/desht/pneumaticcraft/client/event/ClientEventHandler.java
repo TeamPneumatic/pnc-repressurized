@@ -17,8 +17,7 @@
 
 package me.desht.pneumaticcraft.client.event;
 
-import com.mojang.blaze3d.shaders.FogShape;
-import com.mojang.blaze3d.vertex.PoseStack;
+import java.util.List;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.lib.Names;
@@ -33,6 +32,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.IAuxConfig;
 import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.PneumaticArmorItem;
+import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -42,6 +42,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBo
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -55,7 +56,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.List;
 
 @EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
 public class ClientEventHandler {
@@ -64,7 +64,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void screenTilt(ViewportEvent.ComputeCameraAngles event) {
-        if (event.getCamera().getEntity() instanceof Player player) {
+        if (event.getCamera().entity() instanceof Player player) {
             if (PneumaticArmorItem.isPneumaticArmorPiece(player, EquipmentSlot.FEET) && !player.onGround()) {
                 float targetRoll;
                 float div = 50F;
@@ -89,13 +89,12 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
-        Player player = event.getEntity();
-        if (!player.isFallFlying()) {
+    public static void playerPreRotateEvent(RenderPlayerEvent.Pre<?> event) {
+        AvatarRenderState renderState = event.getRenderState();
+        if (!renderState.isFallFlying && ClientUtils.getClientLevel().getEntity(renderState.id) instanceof Player player) {
             JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
-                player.walkAnimation.setSpeed(0f);
-//                player.animationPosition = player.animationSpeed = 0F;
+                renderState.walkAnimationSpeed = 0f;
             }
         }
     }
@@ -115,19 +114,15 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void fogDensityEvent(ViewportEvent.RenderFog event) {
-        if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().getEntity() instanceof Player) {
+        if (event.getCamera().getFluidInCamera() == FogType.WATER && event.getCamera().entity() instanceof Player) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             if (handler.upgradeUsable(CommonUpgradeHandlers.scubaHandler, true)) {
                 event.setNearPlaneDistance(20f);
-                event.setNearPlaneDistance(50f);
-                event.setFogShape(FogShape.SPHERE);
-                event.setCanceled(true);
+                event.setFarPlaneDistance(50f);
             }
         } else if (isPlayerHeadInOil()) {
             event.setNearPlaneDistance(0.25F);
             event.setFarPlaneDistance(2.0F);
-            event.setFogShape(FogShape.SPHERE);
-            event.setCanceled(true);
         }
     }
 
@@ -154,9 +149,6 @@ public class ClientEventHandler {
 
         // custom durability bars
         AbstractContainerScreen<?> container = event.getContainerScreen();
-        PoseStack poseStack = event.getGuiGraphics().pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 300);
         for (Slot s : container.getMenu().slots) {
             if (s.getItem().getItem() instanceof ICustomDurabilityBar custom) {
                 if (custom.shouldShowCustomDurabilityBar(s.getItem())) {
@@ -173,7 +165,6 @@ public class ClientEventHandler {
                 }
             }
         }
-        poseStack.popPose();
     }
 
     @SubscribeEvent
@@ -184,11 +175,8 @@ public class ClientEventHandler {
                     .map(l -> (IDrawAfterRender) l)
                     .toList();
             if (!toDraw.isEmpty()) {
-                PoseStack poseStack = event.getGuiGraphics().pose();
-                poseStack.pushPose();
-                poseStack.translate(0, 0, 500);
+                event.getGuiGraphics().nextStratum();
                 toDraw.forEach(d -> d.renderAfterEverythingElse(event.getGuiGraphics(), event.getMouseX(), event.getMouseY(), event.getPartialTick()));
-                poseStack.popPose();
             }
         }
     }
@@ -196,7 +184,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollingEvent event) {
         Player player = ClientUtils.getClientPlayer();
-        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().selected == crouchSelected) {
+        if (player.isShiftKeyDown() && crouchSelected >= 0 && player.getInventory().getSelectedSlot() == crouchSelected) {
             if (!tryHand(event, InteractionHand.MAIN_HAND)) tryHand(event, InteractionHand.OFF_HAND);
         }
     }
@@ -216,10 +204,20 @@ public class ClientEventHandler {
     public static void onPlayerTick(PlayerTickEvent.Pre event) {
         if (event.getEntity().level().isClientSide()) {
             if (event.getEntity().isShiftKeyDown()) {
-                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().selected;
+                if (crouchSelected == -1) crouchSelected = event.getEntity().getInventory().getSelectedSlot();
             } else {
                 crouchSelected = -1;
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        // Item#inventoryTick() is server-side only in 26.1; the local player's held minigun still needs a client tick
+        Player player = event.getEntity();
+        if (player.level().isClientSide() && player == Minecraft.getInstance().player
+                && player.getMainHandItem().getItem() instanceof MinigunItem minigunItem) {
+            minigunItem.clientTick(player.getMainHandItem(), player);
         }
     }
 

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.world.entity.animal.Pufferfish;
+import net.minecraft.world.entity.animal.fish.Pufferfish;
 
 /**
  * Gather all the reflection work we need to do here for ease of reference.

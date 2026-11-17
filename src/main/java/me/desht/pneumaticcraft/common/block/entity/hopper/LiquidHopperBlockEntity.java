@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,6 +38,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -51,6 +53,8 @@ import net.neoforged.neoforge.fluids.*;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,18 +71,18 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @GuiSynced
     private final RedstoneController<LiquidHopperBlockEntity> rsController = new RedstoneController<>(this);
 
-    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> inputCache = Lazy.of(() -> createFluidHandlerCache(inputDir));
-    private final Lazy<BlockCapabilityCache<IFluidHandler,Direction>> outputCache = Lazy.of(() -> createFluidHandlerCache(getRotation()));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> inputCache = Lazy.of(() -> createFluidHandlerCache(inputDir));
+    private final Lazy<BlockCapabilityCache<ResourceHandler<FluidResource>,Direction>> outputCache = Lazy.of(() -> createFluidHandlerCache(getRotation()));
 
     public LiquidHopperBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntityTypes.LIQUID_HOPPER.get(), pos, state);
     }
 
-    private BlockCapabilityCache<IFluidHandler,Direction> getInputCache() {
+    private BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> getInputCache() {
         return inputCache.get();
     }
 
-    private BlockCapabilityCache<IFluidHandler,Direction> getOutputCache() {
+    private BlockCapabilityCache<ResourceHandler<FluidResource>,Direction> getOutputCache() {
         return outputCache.get();
     }
 
@@ -134,7 +138,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         Direction dir = getRotation();
 
         // try to fill any neighbouring fluid-accepting block entity
-        IFluidHandler dstHandler = getOutputCache().getCapability();
+        IFluidHandler dstHandler = IOHelper.legacyFluid(getOutputCache());
         if (dstHandler != null) {
             int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
             FluidStack transferred = FluidUtil.tryFluidTransfer(dstHandler, tank, amount, true);
@@ -173,7 +177,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
     @Override
     protected boolean doImport(int maxItems) {
-        IFluidHandler srcHandler = getInputCache().getCapability();
+        IFluidHandler srcHandler = IOHelper.legacyFluid(getInputCache());
         if (srcHandler != null) {
             FluidStack fluid = srcHandler.drain(maxItems * 100, FluidAction.SIMULATE);
             if (!fluid.isEmpty()) {
@@ -195,14 +199,20 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         }
 
         for (Entity e : cachedInputEntities) {
-            if (e.isAlive() && e instanceof ItemEntity entity) {
-                // special case: buckets can only drain 1000 mB at a time
-                int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
-                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
-                if (res.success) {
-                    entity.setItem(res.result);
+            if (e.isAlive()) {
+                if (e instanceof ItemEntity entity) {
+                    // special case: buckets can only drain 1000 mB at a time
+                    int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
+                    FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
+                    if (res.success) {
+                        entity.setItem(res.result);
+                    }
+                    if (tank.getFluidAmount() >= tank.getCapacity()) break;
+                } else if (e instanceof ExperienceOrb orb && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
+                    if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, FluidAction.EXECUTE)) {
+                        orb.discard();
+                    }
                 }
-                if (tank.getFluidAmount() >= tank.getCapacity()) break;
             }
         }
 

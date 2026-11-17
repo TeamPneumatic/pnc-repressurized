@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.client.util.KeyModifierUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.neoforged.neoforge.client.settings.KeyModifier;
@@ -53,7 +54,11 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
     }
 
     @Override
-    public void onPress() {
+    public void onPress(InputWithModifiers input) {
+        toggleBindingMode();
+    }
+
+    private void toggleBindingMode() {
         if (bindingMode) {
             if (!modifier) {
                 setBindingMode(false);
@@ -84,17 +89,19 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
         if (bindingMode) {
             if (type == InputConstants.Type.KEYSYM && keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputConstants.UNKNOWN);
-                Minecraft.getInstance().options.setKey(keyBinding, InputConstants.UNKNOWN);
+                keyBinding.setKey(InputConstants.UNKNOWN);
+                Minecraft.getInstance().options.save();
                 action = Action.REMOVE;
             } else {
                 InputConstants.Key input = type.getOrCreate(keyCode);
                 modifier = KeyModifier.isKeyCodeModifier(input);
                 keyBinding.setKeyModifierAndCode(KeyModifierUtil.oneModifierAtMost(), input);
-                Minecraft.getInstance().options.setKey(keyBinding, input);
+                keyBinding.setKey(input);
+                Minecraft.getInstance().options.save();
                 action = Action.ADD;
             }
             KeyMapping.resetMapping();
-            onPress();
+            toggleBindingMode();
             return true;
         }
         return false;

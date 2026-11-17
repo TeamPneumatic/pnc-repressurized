@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "tag": "c:glass_blocks"
-    },
-    {
-      "item": "pneumaticcraft:pressure_chamber_wall"
-    },
-    {
-      "item": "pneumaticcraft:pressure_chamber_wall"
-    },
-    {
-      "item": "pneumaticcraft:pressure_chamber_wall"
-    },
-    {
-      "item": "pneumaticcraft:pressure_chamber_wall"
-    }
+    "#c:glass_blocks",
+    "pneumaticcraft:pressure_chamber_wall",
+    "pneumaticcraft:pressure_chamber_wall",
+    "pneumaticcraft:pressure_chamber_wall",
+    "pneumaticcraft:pressure_chamber_wall"
   ],
   "result": {
     "count": 4,

@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.pneumatic_armor.hacking;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorRegistry;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.ApiStatus;
@@ -42,7 +42,7 @@ public interface IHackableEntity<T extends Entity> {
      * @return a unique String id
      */
     @Nonnull
-    ResourceLocation getHackableId();
+    Identifier getHackableId();
 
     /**
      * Get the class of the entity this hack should apply to. All subclasses of this class will also be applicable.

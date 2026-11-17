@@ -91,7 +91,7 @@ public class DroneItemHandler extends ItemStackHandler {
      * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/block entity creation!)
      */
     public void setFakePlayerReady() {
-        if (!fakePlayerReady && !holder.getDroneLevel().isClientSide) {
+        if (!fakePlayerReady && !holder.getDroneLevel().isClientSide()) {
             fakePlayerReady = true;
             for (int slot = 0; slot < getSlots(); slot++) {
                 copyItemToFakePlayer(slot);
@@ -136,13 +136,13 @@ public class DroneItemHandler extends ItemStackHandler {
 
         // As it stands, drone inv can't go above 36 items (max 35 inv upgrades),
         // but let's be paranoid here
-        if (slot >= fakePlayer.getInventory().items.size()) return;
+        if (slot >= fakePlayer.getInventory().getNonEquipmentItems().size()) return;
 
         // not a copy: any changes to items in the fake player should also be reflected in the drone's item handler
         ItemStack newStack = getStackInSlot(slot);
 
-        fakePlayer.getInventory().items.set(slot, newStack);
-        if (slot == fakePlayer.getInventory().selected) {
+        fakePlayer.getInventory().getNonEquipmentItems().set(slot, newStack);
+        if (slot == fakePlayer.getInventory().getSelectedSlot()) {
             // currentItem is always 0 but we'll use that rather than a literal 0
             // maybe one day drones will be able to change their current held-item slot
             fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, newStack);

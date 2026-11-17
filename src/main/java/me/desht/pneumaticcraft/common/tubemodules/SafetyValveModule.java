@@ -58,7 +58,7 @@ public class SafetyValveModule extends AbstractRedstoneReceivingModule {
 
     @Override
     public void onRemoved() {
-        if (!pressureTube.nonNullLevel().isClientSide) {
+        if (!pressureTube.nonNullLevel().isClientSide()) {
             PNCCapabilities.getAirHandler(pressureTube).ifPresent(h -> {
                 h.disableSafetyVenting();
                 h.setSideLeaking(null);

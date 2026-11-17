@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    }
+    "B": "pneumaticcraft:printed_circuit_board",
+    "I": "#c:ingots/compressed_iron",
+    "T": "pneumaticcraft:pressure_tube"
   },
   "pattern": [
     " B ",
@@ -18,7 +12,6 @@
     "III"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:assembly_controller"
   }
 }

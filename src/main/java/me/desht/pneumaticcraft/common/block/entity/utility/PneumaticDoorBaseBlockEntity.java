@@ -60,13 +60,13 @@ import static me.desht.pneumaticcraft.lib.BlockEntityConstants.PNEUMATIC_DOOR_SP
 public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity implements
         IRedstoneControl<PneumaticDoorBaseBlockEntity>, IMinWorkingPressure, CamouflageableBlockEntity, MenuProvider {
     private static final List<RedstoneMode<PneumaticDoorBaseBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new ReceivingRedstoneMode<>("pneumaticDoor.playerNearby", new ItemStack(Items.OBSERVER),
+            new ReceivingRedstoneMode<>("pneumaticDoor.playerNearby", Items.OBSERVER,
                     te -> true),
-            new ReceivingRedstoneMode<>("pneumaticDoor.playerNearbyAndLooking", new ItemStack(Items.ENDER_EYE),
+            new ReceivingRedstoneMode<>("pneumaticDoor.playerNearbyAndLooking", Items.ENDER_EYE,
                     te -> true),
-            new ReceivingRedstoneMode<>("pneumaticDoor.woodenDoor", new ItemStack(Items.OAK_DOOR),
+            new ReceivingRedstoneMode<>("pneumaticDoor.woodenDoor", Items.OAK_DOOR,
                     te -> true),
-            new ReceivingRedstoneMode<>("pneumaticDoor.ironDoor", new ItemStack(Items.IRON_DOOR),
+            new ReceivingRedstoneMode<>("pneumaticDoor.ironDoor", Items.IRON_DOOR,
                     te -> true)
     );
 
@@ -244,10 +244,10 @@ public class PneumaticDoorBaseBlockEntity extends AbstractAirHandlingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        progress = tag.getFloat("extension");
-        opening = tag.getBoolean("opening");
-        rightGoing = tag.getBoolean("rightGoing");
-        passSignal = tag.getBoolean("passSignal");
+        progress = tag.getFloatOr("extension", 0f);
+        opening = tag.getBooleanOr("opening", false);
+        rightGoing = tag.getBooleanOr("rightGoing", false);
+        passSignal = tag.getBooleanOr("passSignal", false);
     }
 
     @Override

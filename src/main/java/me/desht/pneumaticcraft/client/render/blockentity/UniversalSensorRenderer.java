@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
@@ -12,13 +11,18 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity> {
+public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<UniversalSensorBlockEntity, UniversalSensorRenderer.State> {
     private final ModelPart part1;
     private final ModelPart part2;
     private final ModelPart part3;
@@ -171,26 +175,41 @@ public class UniversalSensorRenderer extends AbstractBlockEntityModelRenderer<Un
     }
 
     @Override
-    public void renderModel(UniversalSensorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_UNIVERSAL_SENSOR));
+    public State createRenderState() {
+        return new State();
+    }
 
-        float rotation = Mth.lerp(partialTicks, te.oldDishRotation, te.dishRotation);
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotation));
-        part1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part3.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part4.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part6.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part7.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part8.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part9.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part10.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part11.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part12.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part13.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part14.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        part15.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    @Override
+    public void extractRenderState(UniversalSensorBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.dishRotation = Mth.lerp(partialTicks, blockEntity.oldDishRotation, blockEntity.dishRotation);
+    }
+
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_UNIVERSAL_SENSOR);
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(state.dishRotation));
+        submitPart(submitNodeCollector, part1, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part2, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part3, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part4, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part5, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part6, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part7, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part8, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part9, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part10, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part11, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part12, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part13, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part14, poseStack, renderType, state);
+        submitPart(submitNodeCollector, part15, poseStack, renderType, state);
+    }
+
+    public static class State extends ModelRenderState {
+        float dishRotation;
     }
 
     @Override

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.api.upgrade;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -96,7 +96,7 @@ public interface IUpgradeRegistry {
      * @return an upgrade object
      * @throws IllegalStateException if this upgrade ID has already been registered
      */
-    PNCUpgrade registerUpgrade(ResourceLocation id, int maxTier, String... depModIds);
+    PNCUpgrade registerUpgrade(Identifier id, int maxTier, String... depModIds);
 
     /**
      * Register an upgrade with just one tier.
@@ -104,7 +104,7 @@ public interface IUpgradeRegistry {
      * @return an upgrade object
      * @throws IllegalStateException if this upgrade ID has already been registered
      */
-    default PNCUpgrade registerUpgrade(ResourceLocation id) {
+    default PNCUpgrade registerUpgrade(Identifier id) {
         return registerUpgrade(id, 1);
     }
 
@@ -113,7 +113,7 @@ public interface IUpgradeRegistry {
      * @param upgradeId the upgrade ID, as used to register id
      * @return the registered upgrade, or null if the id is not known
      */
-    PNCUpgrade getUpgradeById(ResourceLocation upgradeId);
+    PNCUpgrade getUpgradeById(Identifier upgradeId);
 
     /**
      * Retrieve an unmodifiable collection of all known registered upgrade objects
@@ -132,7 +132,7 @@ public interface IUpgradeRegistry {
      * The item created by this method will be in the PneumaticCraft creative tab and have no other special
      * item properties; see {@link #makeUpgradeItem(PNCUpgrade, int, Item.Properties)} if you need custom behaviour here.
      *
-     * @param upgrade the upgrade object, as returned by {@link #registerUpgrade(ResourceLocation)}
+     * @param upgrade the upgrade object, as returned by {@link #registerUpgrade(Identifier)}
      * @param tier    upgrade tier of this item
      * @param rarity  the item rarity, for display purposes
      * @return an item, which should be registered in the usual way

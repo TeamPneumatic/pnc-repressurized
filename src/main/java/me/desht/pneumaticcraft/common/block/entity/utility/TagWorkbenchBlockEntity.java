@@ -26,7 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.MenuProvider;
@@ -47,6 +47,8 @@ import java.util.Set;
 public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements MenuProvider {
     public static final int PAPER_SLOT = 1;
     public static final int OUTPUT_SLOT = 2;
+
+    private static final int MAX_TAGS_IN_ITEM = 32;
 
     private final TagMatcherItemHandler inventory = new TagMatcherItemHandler();
 
@@ -76,11 +78,19 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
             }
             if (!outputStack.isEmpty()) {
                 Set<TagKey<Item>> tags = new HashSet<>(TagFilterItem.getConfiguredTagList(outputStack));
-                for (String s : data) {
-                    tags.add(TagKey.create(Registries.ITEM, ResourceLocation.parse(s)));
+                if (tags.size() < MAX_TAGS_IN_ITEM) {
+                    for (String s : data) {
+                        Identifier id = Identifier.tryParse(s);
+                        if (id != null) {
+                            tags.add(TagKey.create(Registries.ITEM, id));
+                        }
+                        if (tags.size() >= MAX_TAGS_IN_ITEM) {
+                            break;
+                        }
+                    }
+                    TagFilterItem.setConfiguredTagList(outputStack, tags);
+                    inventory.setStackInSlot(OUTPUT_SLOT, outputStack);
                 }
-                TagFilterItem.setConfiguredTagList(outputStack, tags);
-                inventory.setStackInSlot(OUTPUT_SLOT, outputStack);
             }
         }
     }
@@ -95,7 +105,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         displayedStack = inventory.getStackInSlot(0);
         paperItemId = Item.getId(inventory.getStackInSlot(1).getItem());
         outputItemId = Item.getId(inventory.getStackInSlot(2).getItem());
@@ -105,8 +115,8 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
 
-        paperItemId = tag.getInt("PaperItemId");
-        outputItemId = tag.getInt("OutputItemId");
+        paperItemId = tag.getIntOr("PaperItemId", 0);
+        outputItemId = tag.getIntOr("OutputItemId", 0);
     }
 
     @Override

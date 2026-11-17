@@ -25,23 +25,29 @@ import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.item.TubeModuleItem;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureTubeBlockEntity> {
+public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureTubeBlockEntity, PressureTubeModuleRenderer.State> {
 
-    private final Map<ResourceLocation, AbstractTubeModuleRenderer<?>> models = new HashMap<>();
+    private final Map<Identifier, AbstractTubeModuleRenderer<?, ?>> models = new HashMap<>();
     private final BlockEntityRendererProvider.Context ctx;
 
     public PressureTubeModuleRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -49,7 +55,16 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
     }
 
     @Override
-    public void render(PressureTubeBlockEntity tile, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void extractRenderState(PressureTubeBlockEntity tile, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(tile, state, partialTicks, cameraPosition, breakProgress);
+
+        state.modules.clear();
+
         if (tile.getCamouflage() != null) {
             return;
         }
@@ -77,29 +92,48 @@ public class PressureTubeModuleRenderer implements BlockEntityRenderer<PressureT
                 AbstractTubeModule fakeModule = moduleItem.createModule(face, tile);
                 if (tile.mayPlaceModule(fakeModule)) {
                     fakeModule.markFake();
-                    getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
+                    state.modules.add(extractModule(fakeModule, partialTicks, cameraPosition));
                 }
             }
         }
 
         for (AbstractTubeModule m : modules) {
-            getModuleRenderer(m).renderModule(m, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
+            state.modules.add(extractModule(m, partialTicks, cameraPosition));
         }
     }
 
-    private <T extends AbstractTubeModule> AbstractTubeModuleRenderer<T> getModuleRenderer(T module) {
-        AbstractTubeModuleRenderer<?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module, ctx));
-        //noinspection unchecked
-        return (AbstractTubeModuleRenderer<T>) res;
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        for (ModuleEntry<?> entry : state.modules) {
+            entry.submit(poseStack, submitNodeCollector, state);
+        }
     }
 
-    @Override
-    public boolean shouldRenderOffScreen(PressureTubeBlockEntity te) {
-        return te.tubeModules().findAny().isPresent();
+    private <T extends AbstractTubeModule, S extends AbstractTubeModuleRenderer.ModuleRenderState> ModuleEntry<S> extractModule(T module, float partialTicks, Vec3 cameraPosition) {
+        AbstractTubeModuleRenderer<T, S> renderer = getModuleRenderer(module);
+        S moduleState = renderer.createRenderState();
+        renderer.extractRenderState(module, moduleState, partialTicks, cameraPosition);
+        return new ModuleEntry<>(renderer, moduleState);
+    }
+
+    private <T extends AbstractTubeModule, S extends AbstractTubeModuleRenderer.ModuleRenderState> AbstractTubeModuleRenderer<T, S> getModuleRenderer(T module) {
+        AbstractTubeModuleRenderer<?, ?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module, ctx));
+        //noinspection unchecked
+        return (AbstractTubeModuleRenderer<T, S>) res;
     }
 
     @Override
     public AABB getRenderBoundingBox(PressureTubeBlockEntity blockEntity) {
         return blockEntity.getRenderBoundingBox();
+    }
+
+    public static class State extends BlockEntityRenderState {
+        final List<ModuleEntry<?>> modules = new ArrayList<>();
+    }
+
+    record ModuleEntry<S extends AbstractTubeModuleRenderer.ModuleRenderState>(AbstractTubeModuleRenderer<?, S> renderer, S moduleState) {
+        void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, State state) {
+            renderer.submit(moduleState, poseStack, submitNodeCollector, state.lightCoords, state.breakProgress);
+        }
     }
 }

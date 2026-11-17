@@ -20,12 +20,14 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.common.pneumatic_armor.BlockTrackLootable;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -51,7 +53,7 @@ public record PacketDescriptionPacketRequest(BlockPos pos) implements CustomPack
     public static void handle(PacketDescriptionPacketRequest message, IPayloadContext ctx) {
         if (ctx.player() instanceof ServerPlayer serverPlayer && !serverPlayer.isSpectator()) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(serverPlayer);
-            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true)) {
+            if (handler.upgradeUsable(CommonUpgradeHandlers.blockTrackerHandler, true) && serverPlayer.level().isLoaded(message.pos) && inRange(serverPlayer, message.pos, handler)) {
                 BlockEntity blockEntity = serverPlayer.level().getBlockEntity(message.pos);
                 if (blockEntity != null) {
                     BlockTrackLootable.INSTANCE.apply(serverPlayer, blockEntity);
@@ -59,5 +61,10 @@ public record PacketDescriptionPacketRequest(BlockPos pos) implements CustomPack
                 }
             }
         }
+    }
+
+    private static boolean inRange(ServerPlayer serverPlayer, BlockPos pos, CommonArmorHandler handler) {
+        int blockTrackRange = BlockTrackerHandler.getBlockTrackRange(handler);
+        return serverPlayer.distanceToSqr(Vec3.atCenterOf(pos)) <= blockTrackRange * blockTrackRange;
     }
 }

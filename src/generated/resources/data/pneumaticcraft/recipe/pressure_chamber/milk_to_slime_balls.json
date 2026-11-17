@@ -3,11 +3,11 @@
   "inputs": [
     {
       "count": 1,
-      "item": "minecraft:milk_bucket"
+      "ingredient": "minecraft:milk_bucket"
     },
     {
       "count": 4,
-      "tag": "c:dyes/green"
+      "ingredient": "#c:dyes/green"
     }
   ],
   "pressure": 1.0,
@@ -17,7 +17,6 @@
       "id": "minecraft:slime_ball"
     },
     {
-      "count": 1,
       "id": "minecraft:bucket"
     }
   ]

@@ -22,7 +22,7 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
 import vazkii.patchouli.api.IVariableSerializer;
@@ -54,7 +54,7 @@ public class FluidStackVariableSerializer implements IVariableSerializer<FluidSt
             id = split[0];
             count = Integer.parseInt(split[1]);
         }
-        ResourceLocation fluidId = ResourceLocation.parse(id);
+        Identifier fluidId = Identifier.parse(id);
         if (!BuiltInRegistries.FLUID.containsKey(fluidId)) {
             throw new RuntimeException("Unknown fluid: " + id);
         }

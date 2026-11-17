@@ -1,5 +1,5 @@
 {
-  "name": "Módulo de Manômetro para Tubo",
+  "name": "Módulo de Tubo Medidor de Pressão",
   "icon": "pneumaticcraft:pressure_gauge_module",
   "category": "pneumaticcraft:tubes",
   "advancement": "pneumaticcraft:pressure_tube",
@@ -11,7 +11,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:module_expansion_card",
-      "text": "Aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Manômetro para Tubo desbloqueia uma GUI (clique direito) para fornecer muito mais controle sobre a emissão de $(#f00)sinal de redstone/$. Por padrão, você pode fornecer um nível limite: o sinal estará desligado abaixo desse nível e totalmente ligado acima dele (ou vice-versa). Se você selecionar a opção $(bold)Config Avançada/$ na GUI, você ganha ainda mais controle (veja a seguir)."
+      "text": "Aplicar uma $(l:tubes/module_expansion_card)Placa de Expansão de Módulo/$ ao Módulo de Tubo Medidor de Pressão desbloqueia uma GUI (clique direito) para fornecer muito mais controle sobre a emissão de $(#f00)sinal de redstone/$. Por padrão, você pode fornecer um nível limite: o sinal estará desligado abaixo desse nível e totalmente ligado acima dele (ou vice-versa). Se você selecionar a opção $(bold)Config Avançada/$ na GUI, você ganha ainda mais controle (veja a seguir)."
     },
     {
       "type": "image",
@@ -23,7 +23,7 @@
     },
     {
       "type": "crafting",
-      "text": "Fabricando um Módulo de Manômetro para Tubo",
+      "text": "Fabricando um Módulo de Tubo Medidor de Pressão",
       "recipe": "pneumaticcraft:pressure_gauge_module"
     }
   ]

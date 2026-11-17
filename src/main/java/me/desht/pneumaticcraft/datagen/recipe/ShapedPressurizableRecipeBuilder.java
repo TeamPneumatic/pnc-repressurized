@@ -18,27 +18,27 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.special.ShapedPressurizableRecipe;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.NotNull;
 
 public class ShapedPressurizableRecipeBuilder extends PNCShapedRecipeBuilder {
-    public ShapedPressurizableRecipeBuilder(ItemLike resultIn, int countIn) {
-        super(RecipeCategory.MISC, resultIn, countIn);
+    public ShapedPressurizableRecipeBuilder(HolderGetter<Item> items, ItemLike result, int count) {
+        super(items, RecipeCategory.MISC, result, count);
     }
 
-    public static ShapedPressurizableRecipeBuilder shapedRecipe(ItemLike resultIn) {
-        return shapedRecipe(resultIn, 1);
+    public static ShapedPressurizableRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result) {
+        return shapedRecipe(items, result, 1);
     }
 
-    public static ShapedPressurizableRecipeBuilder shapedRecipe(ItemLike resultIn, int countIn) {
-        return new ShapedPressurizableRecipeBuilder(resultIn, countIn);
+    public static ShapedPressurizableRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result, int count) {
+        return new ShapedPressurizableRecipeBuilder(items, result, count);
     }
 
     @Override
-    protected @NotNull ShapedRecipe makeRecipe(ResourceLocation id) {
-        return new ShapedPressurizableRecipe(super.makeRecipe(id));
+    protected ShapedRecipe makeRecipe() {
+        return new ShapedPressurizableRecipe(super.makeRecipe());
     }
 }

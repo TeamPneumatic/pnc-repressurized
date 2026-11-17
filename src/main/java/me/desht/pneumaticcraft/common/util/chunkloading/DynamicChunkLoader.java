@@ -40,8 +40,8 @@ public class DynamicChunkLoader {
     }
 
     public void updateLoadedChunks(ServerLevel level, ChunkPos origin) {
-        for (int cx = origin.x - 1; cx <= origin.x + 1; cx++) {
-            for (int cz = origin.z - 1; cz <= origin.z + 1; cz++) {
+        for (int cx = origin.x() - 1; cx <= origin.x() + 1; cx++) {
+            for (int cz = origin.z() - 1; cz <= origin.z() + 1; cz++) {
                 ChunkPos cp = new ChunkPos(cx, cz);
                 if (shouldLoadChunk(level.getServer(), cp)) {
                     loadedChunks.add(cp);
@@ -74,8 +74,8 @@ public class DynamicChunkLoader {
 
     private void setChunkLoaded(ServerLevel level, ChunkPos cp, boolean loaded) {
         subject.map(
-                drone -> ticketController.forceChunk(level, drone, cp.x, cp.z, loaded, true),
-                blockPos -> ticketController.forceChunk(level, blockPos, cp.x, cp.z, loaded, true)
+                drone -> ticketController.forceChunk(level, drone, cp.x(), cp.z(), loaded, true),
+                blockPos -> ticketController.forceChunk(level, blockPos, cp.x(), cp.z(), loaded, true)
         );
     }
 }

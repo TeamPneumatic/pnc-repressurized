@@ -51,13 +51,11 @@ public record PacketAmadronTradeNotifyDeal(AmadronPlayerOffer offer, int offerAm
 
     public static void handle(PacketAmadronTradeNotifyDeal message, IPayloadContext ctx) {
             if (ConfigHelper.common().amadron.notifyOfDealMade.get())
-                ctx.player().displayClientMessage(
-                        xlate("pneumaticcraft.message.amadron.playerBought",
+                ctx.player().sendSystemMessage(xlate("pneumaticcraft.message.amadron.playerBought",
                                 message.buyingPlayer(),
                                 message.offerAmount(),
                                 message.offer().getOutput().toString(),
                                 message.offer().getInput().toString()
-                        ), false
-                );
+                        ));
     }
 }

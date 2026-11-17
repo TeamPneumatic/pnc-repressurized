@@ -29,7 +29,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetItemFilter;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.BlockItem;
@@ -172,15 +172,15 @@ public class ProgWidgetItemFilterScreen extends AbstractProgWidgetScreen<ProgWid
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(graphics, mouseX, mouseY, partialTicks);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
 
         if (itemRad.isChecked()) {
             GuiUtils.drawInsetPanel(graphics, guiLeft + itemX, guiTop + 51, 18, 18);
             if (!progWidget.getRawFilter().isEmpty()) {
-                graphics.renderItem(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
+                graphics.item(progWidget.getRawFilter(), guiLeft + itemX + 1, guiTop + 52);
                 if (mouseX >= guiLeft + itemX && mouseX <= guiLeft + itemX + 16 && mouseY >= guiTop + 51 && mouseY <= guiTop + 67) {
-                    graphics.renderTooltip(font, progWidget.getRawFilter(), mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(font, progWidget.getRawFilter(), mouseX, mouseY);
                 }
             }
         }

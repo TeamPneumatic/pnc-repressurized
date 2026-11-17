@@ -53,7 +53,7 @@ public class VortexEntity extends ThrowableProjectile {
         super.tick();
 
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             BlockPos.betweenClosedStream(getBoundingBox())
                     .filter(pos -> vortexBreakable(level(), pos))
                     .forEach(this::handleVortexCollision);
@@ -99,7 +99,7 @@ public class VortexEntity extends ThrowableProjectile {
         } else if (hitResult instanceof BlockHitResult blockHitResult) {
             BlockPos pos = blockHitResult.getBlockPos();
             if (vortexBreakable(level(), pos)) {
-                if (!level().isClientSide) {
+                if (!level().isClientSide()) {
                     handleVortexCollision(pos);
                 }
             } else {

@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "R": {
-      "item": "pneumaticcraft:regulator_tube_module"
-    },
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    }
+    "L": "#pneumaticcraft:upgrade_components",
+    "P": "#pneumaticcraft:plastic_sheets",
+    "R": "pneumaticcraft:regulator_tube_module",
+    "T": "pneumaticcraft:advanced_pressure_tube"
   },
   "pattern": [
     "LTL",
@@ -21,7 +13,6 @@
     "LPL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:scuba_upgrade"
   }
 }

@@ -68,7 +68,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
         final BlockPos pos = context.getClickedPos();
         final BlockState state = world.getBlockState(pos);
         if (blockPredicate.test(state)) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 Direction facing = state.hasProperty(HorizontalDirectionalBlock.FACING) ? state.getValue(HorizontalDirectionalBlock.FACING) : Direction.NORTH;
 
                 // 1. copy & clear the existing inventory

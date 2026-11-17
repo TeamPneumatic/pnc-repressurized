@@ -12,7 +12,7 @@
       "type": "spotlight",
       "title": "Carregamento Automático",
       "item": "pneumaticcraft:charging_station",
-      "text": "Assim como todos os tipos de Drone, estes drones requerem $(l:base_concepts/pressure)pressão/$ para operar, e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carregamento com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
+      "text": "Assim como todos os tipos de Drone, estes drones requerem $(l:base_concepts/pressure)pressão/$ para operar, e buscarão automaticamente $(l:tools/drone#charging)uma Estação de Carga com uma Melhoria de Ejetor/$ se estiverem com pouco ar."
     },
     {
       "type": "entity",

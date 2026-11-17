@@ -26,7 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class ElementPressure implements IElement {
@@ -80,7 +80,7 @@ public class ElementPressure implements IElement {
     }
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return TOPInit.ELEMENT_PRESSURE;
     }
 
@@ -91,7 +91,7 @@ public class ElementPressure implements IElement {
         }
 
         @Override
-        public ResourceLocation getId() {
+        public Identifier getId() {
             return TOPInit.ELEMENT_PRESSURE;
         }
     }

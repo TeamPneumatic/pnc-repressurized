@@ -23,8 +23,8 @@ import me.desht.pneumaticcraft.common.item.UpgradeItem;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.data.PackOutput;
+import net.neoforged.neoforge.common.data.BlockTagCopyingItemTagProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -33,15 +33,14 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
-public class ModItemTagsProvider extends ItemTagsProvider {
-    public ModItemTagsProvider(DataGenerator generatorIn, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagsProvider, ExistingFileHelper existingFileHelper) {
-        super(generatorIn.getPackOutput(), lookupProvider, blockTagsProvider, Names.MOD_ID, existingFileHelper);
+public class ModItemTagsProvider extends BlockTagCopyingItemTagProvider {
+    public ModItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagsProvider) {
+        super(output, lookupProvider, blockTagsProvider, Names.MOD_ID);
     }
 
     @Override
@@ -75,9 +74,6 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         addItemsToTag(PneumaticCraftTags.Items.FLOUR, ModItems.WHEAT_FLOUR);
         addItemsToTag(Tags.Items.NUGGETS, ModItems.COPPER_NUGGET);
         addItemsToTag(PneumaticCraftTags.Items.NUGGETS_COPPER, ModItems.COPPER_NUGGET);
-        addItemsToTag(ItemTags.DYEABLE,
-                ModItems.PNEUMATIC_HELMET, ModItems.PNEUMATIC_CHESTPLATE, ModItems.PNEUMATIC_LEGGINGS, ModItems.PNEUMATIC_BOOTS
-        );
         addItemsToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, ModBlocks.REINFORCED_CHEST, ModBlocks.SMART_CHEST);
         appendToTag(PneumaticCraftTags.Items.REINFORCED_CHEST_DISALLOWED, Tags.Items.SHULKER_BOXES);
         addItemsToTag(PneumaticCraftTags.Items.LOGISTIC_FRAMES,

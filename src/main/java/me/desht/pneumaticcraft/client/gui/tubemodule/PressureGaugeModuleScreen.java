@@ -17,28 +17,28 @@
 
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractRedstoneReceivingModule;
 import me.desht.pneumaticcraft.common.tubemodules.AbstractTubeModule;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -108,65 +108,63 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_TUBE_MODULE;
     }
 
     @Override
-    public void drawForeground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void drawForeground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (AbstractTubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (AbstractTubeModule.MAX_VALUE + 1)));
 
-        graphics.blit(getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        graphics.blit(getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12, 256, 256);
 
         renderGraph(graphics);
 
         // current redstone input, if applicable
         if (module instanceof AbstractRedstoneReceivingModule) {
             module.onNeighborBlockUpdate();
-            graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((AbstractRedstoneReceivingModule) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
+            graphics.horizontalLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((AbstractRedstoneReceivingModule) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
             String status = I18n.get("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
                     + " " + PneumaticCraftUtils.roundNumberTo(((AbstractRedstoneReceivingModule) module).getThreshold(), 1) + " bar";
-            graphics.drawString(font, status, guiLeft + xSize / 2f - font.width(status) / 2f, guiTop + 175, 0xFF404040, false);
+            graphics.text(font, status, (int) (guiLeft + xSize / 2f - font.width(status) / 2f), guiTop + 175, 0xFF404040, false);
         }
 
         // the actual graph data
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        Matrix4f posMat = graphics.pose().last().pose();
-        for (int i = 0; i < 16; i++) {
-            float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
-            float x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
-            bufferBuilder.addVertex(posMat, x, y, 90f).setColor(0.25f + i * 0.05f, 0f, 0f, 1.0f);
-        }
-        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
-        RenderSystem.disableBlend();
+        float lineWidth = GuiVertexRenderState.pixels(1f);
+        GuiVertexRenderState.submit(graphics, wr -> {
+            for (int i = 0; i < 15; i++) {
+                float y1 = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
+                float x1 = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
+                float y2 = graphHighY + (graphLowY - graphHighY) * (15 - (i + 1)) / 15f;
+                float x2 = graphLeft + (graphRight - graphLeft) * module.getThreshold(i + 1) / 30f;
+                wr.line(x1, y1, x2, y2, lineWidth, ARGB.colorFromFloat(1f, 0.25f + i * 0.05f, 0f, 0f), ARGB.colorFromFloat(1f, 0.25f + (i + 1) * 0.05f, 0f, 0f));
+            }
+        });
 
     }
 
-    private void renderGraph(GuiGraphics graphics) {
-        graphics.vLine(graphLeft, graphHighY, graphLowY, 0xFF303030);
+    private void renderGraph(GuiGraphicsExtractor graphics) {
+        graphics.verticalLine(graphLeft, graphHighY, graphLowY, 0xFF303030);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
                 String txt = String.valueOf(i);
-                graphics.drawString(font, txt, graphLeft - 5 - font.width(txt), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030, false);
-                graphics.hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
+                graphics.text(font, txt, graphLeft - 5 - font.width(txt), (int) (graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3), 0xFF303030, false);
+                graphics.horizontalLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
 
             }
-            graphics.hLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
+            graphics.horizontalLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
         }
         for (int i = 0; i < 31; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
                 String txt = String.valueOf(i);
-                graphics.drawString(font, txt, graphLeft + (graphRight - graphLeft) * i / 30f - font.width(txt) / 2f + 1, graphLowY + 6, 0xFF303030, false);
-                graphics.vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
+                graphics.text(font, txt, (int) (graphLeft + (graphRight - graphLeft) * i / 30f - font.width(txt) / 2f + 1), graphLowY + 6, 0xFF303030, false);
+                graphics.verticalLine(graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
             }
-            graphics.vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
+            graphics.verticalLine(graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
         }
     }
 
@@ -195,7 +193,9 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (lowerBoundArea.contains((int)mouseX, (int)mouseY)) {
             module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
             module.lowerBound = Math.min(Math.max(-1, module.lowerBound), AbstractTubeModule.MAX_VALUE);
@@ -207,11 +207,12 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
             grabHigher = true;
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double dx, double dy) {
+    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+        double mouseX = event.x();
         if (grabLower) {
             module.lowerBound = (float) (mouseX - 6 - (guiLeft + 11)) / (158 - 11) * AbstractTubeModule.MAX_VALUE;
             module.lowerBound = Math.min(Math.max(-1, module.lowerBound), AbstractTubeModule.MAX_VALUE);
@@ -221,12 +222,12 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
             module.higherBound = Math.min(Math.max(-1, module.higherBound), AbstractTubeModule.MAX_VALUE);
             return true;
         } else {
-            return super.mouseDragged(mouseX, mouseY, clickedMouseButton, dx, dy);
+            return super.mouseDragged(event, dx, dy);
         }
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int state) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (grabLower) {
             NetworkHandler.sendToServer(PacketUpdatePressureModule.forModule(module));
             grabLower = false;
@@ -236,7 +237,7 @@ public class PressureGaugeModuleScreen extends AbstractTubeModuleScreen<Abstract
             grabHigher = false;
             return true;
         } else {
-            return super.mouseReleased(mouseX, mouseY, state);
+            return super.mouseReleased(event);
         }
     }
 

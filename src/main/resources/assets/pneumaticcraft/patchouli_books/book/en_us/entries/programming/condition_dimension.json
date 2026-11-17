@@ -1,0 +1,23 @@
+{
+  "name": "Condition: Dimension Widget",
+  "icon": "pneumaticcraft:textures/progwidgets/condition_dimension_piece.png",
+  "category": "pneumaticcraft:widget_cond",
+  "advancement": "pneumaticcraft:programmer",
+  "pages": [
+    {
+      "type": "text",
+      "text": "This is a $(l:programming/conditions)Condition/$ widget.$(p)The $(thing)Condition: Dimension/$ widget allows you to check the drone's current dimension. Presence of this widget in your drone program is $(o)required/$ to allow programmable drones to change dimensions, e.g. by going through a Nether portal."
+    },
+    {
+      "type": "text",
+      "text": "You can filter the dimension to be checked for with a $(l:programming/text)Text/$ widget containing the dimension ID to check for, e.g. $(thing)minecraft:overworld/$ or $(thing)minecraft:the_nether/$. Text widgets on the right act as a whitelist, text widgets on the left act as a blacklist."
+    },
+    {
+      "type": "image",
+      "images": [
+        "pneumaticcraft:textures/progwidgets/condition_dimension_piece.png"
+      ],
+      "text": "$(italic)It's a whole new world/$"
+    }
+  ]
+}

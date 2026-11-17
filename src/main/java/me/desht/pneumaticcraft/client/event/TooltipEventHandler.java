@@ -155,7 +155,7 @@ public class TooltipEventHandler {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             String key = ICustomTooltipName.getTranslationKey(event.getItemStack(), true);
             if (I18n.exists(key)) {
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     String translatedInfo = ChatFormatting.AQUA + I18n.get(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo)));
                 } else {

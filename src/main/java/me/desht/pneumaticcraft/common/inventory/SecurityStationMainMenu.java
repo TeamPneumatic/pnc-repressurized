@@ -64,7 +64,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
         public void setChanged() {
             super.setChanged();
 
-            if (blockEntity != null && blockEntity.nonNullLevel().isClientSide) SecurityStationInventoryScreen.reinitConnectionRendering();
+            if (blockEntity != null && blockEntity.nonNullLevel().isClientSide()) SecurityStationInventoryScreen.reinitConnectionRendering();
         }
     }
 }

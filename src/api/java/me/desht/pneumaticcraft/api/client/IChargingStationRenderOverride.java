@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -20,10 +20,10 @@ public interface IChargingStationRenderOverride {
      * @param poseStack the pose stack
      * @param renderedStack the item to be rendered
      * @param partialTicks partial ticks
-     * @param bufferIn the buffer source
-     * @param combinedLightIn light level
-     * @param combinedOverlayIn overlay
+     * @param submitNodeCollector the collector to submit any custom rendering to
+     * @param lightCoords light level
+     * @param overlayCoords overlay
      * @return true to use the standard item renderer for charging stations, false to cancel default rendering
      */
-    boolean onRender(PoseStack poseStack, ItemStack renderedStack, float partialTicks, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn);
+    boolean onRender(PoseStack poseStack, ItemStack renderedStack, float partialTicks, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords);
 }

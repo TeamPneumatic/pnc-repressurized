@@ -33,9 +33,8 @@ import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -56,7 +55,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
 public class RenderBlockTarget {
     private static final int SERVER_REQUEST_INTERVAL = 30; // ticks
@@ -91,7 +90,7 @@ public class RenderBlockTarget {
         this.blockTracker = blockTracker;
 
         BlockState state = world.getBlockState(pos);
-        ItemStack stack = state.getBlock().getCloneItemStack(state, Minecraft.getInstance().hitResult, world, pos, player);
+        ItemStack stack = state.getCloneItemStack(pos, world, false, player);
 
         Component title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);

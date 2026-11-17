@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.mixin.accessors.BaseSpawnerAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BaseSpawner;
 import net.minecraft.world.level.BlockGetter;
@@ -36,10 +36,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobSpawner implements IHackableBlock {
-    private static final ResourceLocation ID = RL("mob_spawner");
+    private static final Identifier ID = RL("mob_spawner");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -69,7 +69,7 @@ public class HackableMobSpawner implements IHackableBlock {
 
     @Override
     public void onHackComplete(Level world, BlockPos pos, Player player) {
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             if (world.getBlockEntity(pos) instanceof SpawnerBlockEntity sbe) {
                 ((BaseSpawnerAccess) sbe.getSpawner()).setRequiredPlayerRange(0);
                 BlockState state = world.getBlockState(pos);

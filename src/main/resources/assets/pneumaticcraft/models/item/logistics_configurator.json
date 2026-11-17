@@ -1,6 +1,7 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
+		"particle": "#base",
 		"base": "pneumaticcraft:item/model/logistics_configurator"
 	},
 	"elements": [

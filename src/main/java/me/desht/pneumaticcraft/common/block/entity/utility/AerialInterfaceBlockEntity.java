@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.common.block.entity.utility;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
@@ -37,11 +36,8 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
-import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
-import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,7 +46,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -60,11 +56,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -98,15 +95,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private static final int PLAYER_AIR_MULTIPLIER = 5;
 
     private static final List<RedstoneMode<AerialInterfaceBlockEntity>> REDSTONE_MODES = ImmutableList.of(
-            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER),
+            new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER,
                     te -> false),
-            new EmittingRedstoneMode<>("aerialInterface.playerConnected", new ItemStack(ModBlocks.AERIAL_INTERFACE.get()),
+            new EmittingRedstoneMode<>("aerialInterface.playerConnected", ModBlocks.AERIAL_INTERFACE,
                     te -> te.isConnectedToPlayer)
     );
     private static final String NO_AERIAL_INTERFACE = "pneumaticcraft:no_aerial_interface";
 
     private static final Lazy<WildcardedRLMatcher> dimensionBlacklist
             = WildcardedRLMatcher.lazyFromConfig(ConfigHelper.common().machines.aerialInterfaceDimensionBlacklist);
+
+    private static boolean curiosIntegrationEnabled = false;
 
     @DescSynced
     private String playerName = "";
@@ -141,7 +140,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     private final IntList chargeableSlots = new IntArrayList();
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
-    public GameProfile gameProfileClient;  // for rendering
+    public ResolvableProfile gameProfileClient;  // for rendering
     private boolean validatePlayerNow;
 
     public AerialInterfaceBlockEntity(BlockPos pos, BlockState state) {
@@ -153,16 +152,16 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         PlayerEnderInvHandler playerEnderInvHandler = new PlayerEnderInvHandler();
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
-        itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
-                Capabilities.ItemHandler.BLOCK, () -> playerMainInvHandler,
+        itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStackTemplate(Blocks.CHEST.asItem()),
+                Capabilities.Item.BLOCK, () -> playerMainInvHandler,
                 SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
-                Capabilities.ItemHandler.BLOCK, () -> playerArmorInvHandler,
+        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStackTemplate(ModItems.PNEUMATIC_CHESTPLATE.get()),
+                Capabilities.Item.BLOCK, () -> playerArmorInvHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.BOTTOM);
-        itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
-                Capabilities.ItemHandler.BLOCK, () -> playerOffhandInvHandler);
-        itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
-                Capabilities.ItemHandler.BLOCK, () -> playerEnderInvHandler);
+        itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStackTemplate(Items.SHIELD),
+                Capabilities.Item.BLOCK, () -> playerOffhandInvHandler);
+        itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStackTemplate(Blocks.ENDER_CHEST.asItem()),
+                Capabilities.Item.BLOCK, () -> playerEnderInvHandler);
 
         invHandlers.add(playerMainInvHandler);
         invHandlers.add(playerArmorInvHandler);
@@ -173,12 +172,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         // 1) reports of item duplication (which I can't reproduce)
         // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
 
-        if (Curios.available) {
-            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
-            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-                    Capabilities.ItemHandler.BLOCK, () -> playerCuriosHandler);
-            invHandlers.add(playerCuriosHandler);
-        }
+        // TODO 26.1 integration: Curios
+//        if (Curios.available && curiosIntegrationEnabled) {
+//            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
+//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStackTemplate(Items.DIAMOND),
+//                    Capabilities.Item.BLOCK, () -> playerCuriosHandler);
+//            invHandlers.add(playerCuriosHandler);
+//        }
+    }
+
+    public static void onConfigRefresh() {
+        curiosIntegrationEnabled = ConfigHelper.common().integration.curiosAerialInterfaceAccess.get();
     }
 
     public String getPlayerName() {
@@ -223,7 +227,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             playerName = "";
         } else {
             isConnectedToPlayer = true;
-            playerName = player.getGameProfile().getName();
+            playerName = player.getGameProfile().name();
             scanForChargeableItems(player);
         }
         if (wasConnected != isConnectedToPlayer) {
@@ -243,8 +247,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (playerName.isEmpty()) {
             gameProfileClient = null;
         } else {
-            SkullBlockEntity.fetchGameProfile(playerName)
-                    .thenAcceptAsync(optProfile -> gameProfileClient = optProfile.orElse(null));
+            // resolved (skin etc.) by the renderer when needed (PlayerSkinRenderCache in AerialInterfaceRenderer)
+            gameProfileClient = ResolvableProfile.createUnresolved(playerName);
         }
     }
 
@@ -271,7 +275,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         if (getLevel() instanceof ServerLevel serverLevel && (validatePlayerNow || (getLevel().getGameTime() & 0xf) == 0)) {
             ServerPlayer player = serverLevel.getServer().getPlayerList().getPlayer(playerUUID);
             setPlayer(player);
-            if (player != null && player.getTags().contains(NO_AERIAL_INTERFACE)) {
+            if (player != null && player.entityTags().contains(NO_AERIAL_INTERFACE)) {
                 operatingProblem = OperatingProblem.PLAYER_BARRED;
             } else if (isDimensionBlacklisted(serverLevel, player)) {
                 operatingProblem = OperatingProblem.BAD_DIMENSION;
@@ -298,8 +302,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private static boolean isDimensionBlacklisted(ServerLevel beLevel, ServerPlayer player) {
-        return dimensionBlacklist.get().test(beLevel.dimension().location())
-                || player != null && dimensionBlacklist.get().test(player.level().dimension().location());
+        return dimensionBlacklist.get().test(beLevel.dimension().identifier())
+                || player != null && dimensionBlacklist.get().test(player.level().dimension().identifier());
     }
 
     public static void clearDimensionBlacklist() {
@@ -365,9 +369,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        playerUUID = UUID.fromString(tag.getString("playerUUID"));
-        feedMode = FeedMode.valueOf(tag.getString("feedMode"));
-        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.get(ResourceLocation.parse(tag.getString("curXpFluid"))) : Fluids.EMPTY;
+        playerUUID = UUID.fromString(tag.getStringOr("playerUUID", ""));
+        feedMode = FeedMode.valueOf(tag.getStringOr("feedMode", ""));
+        curXpFluid = tag.contains("curXpFluid") ? BuiltInRegistries.FLUID.getValue(Identifier.parse(tag.getStringOr("curXpFluid", ""))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
 
@@ -421,9 +425,10 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                 if (energyLeft == 0) break;
             }
 
-            if (Curios.available && energyStorage.getEnergyStored() > 0) {
-                CuriosUtils.chargeItems(player, energyStorage, RF_PER_TICK);
-            }
+            // TODO 26.1 integration: Curios
+//            if (Curios.available && energyStorage.getEnergyStored() > 0) {
+//                CuriosUtils.chargeItems(player, energyStorage, RF_PER_TICK);
+//            }
         }
     }
 
@@ -572,12 +577,14 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
     }
 
-    private class PlayerCuriosHandler extends PlayerInvHandler {
-        @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, p -> CuriosUtils.makeCombinedInvWrapper(p.player));
-        }
-    }
+    // TODO 26.1 integration: Curios
+//    private class PlayerCuriosHandler extends PlayerInvHandler {
+//        @Override
+//        protected IItemHandler getInvWrapper(Player player) {
+//            // do not cache curios handlers because they can change size dynamically
+//            return CuriosUtils.makeCombinedInvWrapper(player);
+//        }
+//    }
 
     private class PlayerFoodHandler implements IItemHandler {
         @Override
@@ -614,7 +621,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
                             player.drop(remainingItem, false);
                         }
                     }
-                    player.displayClientMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()), true);
+                    player.sendOverlayMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()));
                     if (stack.getCount() == startValue) break;
                 }
                 return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;
@@ -728,11 +735,11 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         SMART("smart", Items.GOLDEN_APPLE);
 
         private final String key;
-        private final ItemStack stack;
+        private final ItemStackTemplate icon;
 
         FeedMode(String key, Item item) {
             this.key = key;
-            this.stack = new ItemStack(item);
+            this.icon = new ItemStackTemplate(item);
         }
 
         @Override
@@ -745,7 +752,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         public ItemStack getIconStack() {
-            return stack;
+            return icon.create();
         }
     }
 

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
 import me.desht.pneumaticcraft.mixin.accessors.ShulkerAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,14 +32,14 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableShulker extends AbstractPersistentEntityHack<Shulker> {
 
-    private static final ResourceLocation ID = RL("shulker");
+    private static final Identifier ID = RL("shulker");
 
     public HackableShulker() {
         super(StockHackTypes.NEUTRALIZE);
     }
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -51,7 +51,7 @@ public class HackableShulker extends AbstractPersistentEntityHack<Shulker> {
 
     @Override
     public boolean afterHackTick(Shulker entity) {
-        if (entity.level().random.nextInt(5) < 4) {
+        if (entity.level().getRandom().nextInt(5) < 4) {
             ((ShulkerAccess)entity).callSetRawPeekAmount(100);
         }
         return true;

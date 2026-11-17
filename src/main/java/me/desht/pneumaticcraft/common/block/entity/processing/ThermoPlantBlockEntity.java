@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +53,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -144,7 +144,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void tickClient() {
         super.tickClient();
 
-        if (didWork && nonNullLevel().random.nextBoolean()) {
+        if (didWork && nonNullLevel().getRandom().nextBoolean()) {
             ClientUtils.emitParticles(nonNullLevel(), getBlockPos(), ParticleTypes.SMOKE, 0.9);
         }
     }
@@ -172,21 +172,24 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
         didWork = false;
         if (currentRecipe != null) {
+            requiredPressure = currentRecipe.getRequiredPressure();
+            minTemperature = currentRecipe.getOperatingTemperature().getMin();
+            maxTemperature = currentRecipe.getOperatingTemperature().getMax();
             if (getInputTank().getFluidAmount() < currentRecipe.getInputFluidAmount()) {
                 problem = TPProblem.NOT_ENOUGH_FLUID;
-            } else if (heatExchanger.getTemperature() > currentRecipe.getOperatingTemperature().getMax()) {
+            } else if (heatExchanger.getTemperature() > maxTemperature) {
                 problem = TPProblem.TOO_HOT;
-            } else if (heatExchanger.getTemperature() < currentRecipe.getOperatingTemperature().getMin()) {
+            } else if (heatExchanger.getTemperature() < minTemperature) {
                 problem = TPProblem.TOO_COLD;
             } else if (rsController.shouldRun() && hasEnoughPressure()) {
                 runOneCycle();
             }
         } else {
             problem = TPProblem.NO_RECIPE;
-            craftingProgress = 0;
+            craftingProgress = 0f;
+            requiredPressure = 0f;
             minTemperature = 0;
             maxTemperature = 0;
-            requiredPressure = 0;
         }
     }
 
@@ -200,10 +203,10 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
             airUsage += currentRecipe.airUsed() * progressDivider * speedBoost * currentRecipe.getAirUseMultiplier();
             if (airUsage > 1) {
                 int i = (int) airUsage;
-                addAir(-i);
+                addAir(currentRecipe.getRequiredPressure() > 0f ? -i : i);
                 airUsage -= i;
             }
-            heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * speedBoost * 0.75 * progressDivider);
+            heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * speedBoost * 0.75f * progressDivider);
         }
         if (craftingProgress >= CRAFTING_TIME) {
             int filled = outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE);
@@ -223,8 +226,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
 
     private int getInputItemCount() {
         if (currentRecipe != null) {
-            ItemStack[] stacks = currentRecipe.getInputItem().map(Ingredient::getItems).orElse(new ItemStack[0]);
-            return stacks.length > 0 ? stacks[0].getCount() : 0;
+            return currentRecipe.getInputItem().isPresent() ? 1 : 0;
         }
         return 0;
     }
@@ -248,9 +250,6 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         for (RecipeHolder<ThermoPlantRecipe> holder : ModRecipeTypes.getRecipes(level, ModRecipeTypes.THERMO_PLANT)) {
             ThermoPlantRecipe recipe = holder.value();
             if (recipe.matches(inputTank.getFluid(), inputItemHandler.getStackInSlot(0))) {
-                requiredPressure = recipe.getRequiredPressure();
-                minTemperature = recipe.getOperatingTemperature().getMin();
-                maxTemperature = recipe.getOperatingTemperature().getMax();
                 return Optional.of(holder);
             }
         }
@@ -278,8 +277,8 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", inputItemHandler.serializeNBT(provider));
-        tag.put("Output", outputItemHandler.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inputItemHandler, provider));
+        tag.put("Output", ValueIOBridge.serialize(outputItemHandler, provider));
         tag.putFloat("craftingProgress", craftingProgress);
     }
 
@@ -287,9 +286,9 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inputItemHandler.deserializeNBT(provider, tag.getCompound("Items"));
-        outputItemHandler.deserializeNBT(provider, tag.getCompound("Output"));
-        craftingProgress = tag.getFloat("craftingProgress");
+        ValueIOBridge.deserialize(inputItemHandler, provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(outputItemHandler, provider, tag.getCompoundOrEmpty("Output"));
+        craftingProgress = tag.getFloatOr("craftingProgress", 0f);
     }
 
     @Override

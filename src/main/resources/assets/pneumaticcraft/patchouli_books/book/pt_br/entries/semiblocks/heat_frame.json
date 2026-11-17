@@ -1,5 +1,5 @@
 {
-  "name": "Estrutura de Calor",
+  "name": "Moldura de Calor",
   "icon": "pneumaticcraft:heat_frame",
   "category": "pneumaticcraft:semiblocks",
   "advancement": "pneumaticcraft:root",
@@ -12,13 +12,13 @@
       "type": "link",
       "flag": "mod:crafttweaker",
       "title": "CraftTweaker",
-      "text": "A $(thing)Estrutura de Calor/$ tem suporte ao $(l:https://minecraft.curseforge.com/projects/crafttweaker)CraftTweaker/$ para resfriamento (a fundição usa apenas receitas normais de $(item)Fornalha/$): receitas podem ser adicionadas e removidas. Siga o link abaixo para mais informações.",
+      "text": "A $(thing)Moldura de Calor/$ tem suporte ao $(l:https://minecraft.curseforge.com/projects/crafttweaker)CraftTweaker/$ para resfriamento (a fundição usa apenas receitas normais de $(item)Fornalha/$): receitas podem ser adicionadas e removidas. Siga o link abaixo para mais informações.",
       "url": "https://crafttweaker.readthedocs.io/en/latest/#Mods/PneumaticCraft_Repressurized/Heat_Frame_Cooling/",
       "link_text": "Docs do CraftTweaker"
     },
     {
       "type": "crafting",
-      "text": "Fabricando uma Estrutura de Calor",
+      "text": "Fabricando uma Moldura de Calor",
       "recipe": "pneumaticcraft:heat_frame"
     }
   ]

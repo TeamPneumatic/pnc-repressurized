@@ -18,7 +18,6 @@
       "translate": "pneumaticcraft.advancement.pressure_tube.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:pressure_tube"
     },
     "title": {

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
@@ -57,11 +57,11 @@ public class WidgetLabel extends PNCWidget<WidgetLabel> {
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         return switch (alignment) {
-            case LEFT -> super.clicked(mouseX, mouseY);
-            case CENTRE -> super.clicked(mouseX + width / 2d, mouseY);
-            case RIGHT -> super.clicked(mouseX + width, mouseY);
+            case LEFT -> super.isMouseOver(mouseX, mouseY);
+            case CENTRE -> super.isMouseOver(mouseX + width / 2d, mouseY);
+            case RIGHT -> super.isMouseOver(mouseX + width, mouseY);
         };
     }
 
@@ -83,7 +83,7 @@ public class WidgetLabel extends PNCWidget<WidgetLabel> {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             int drawX;
             Font fr = Minecraft.getInstance().font;

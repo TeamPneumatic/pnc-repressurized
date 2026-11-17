@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
@@ -34,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.apache.commons.lang3.Validate;
@@ -42,10 +44,10 @@ import java.util.List;
 
 public class RefineryRecipeImpl extends RefineryRecipe {
 	public final SizedFluidIngredient input;
-	public final List<FluidStack> outputs;
+	public final List<FluidStackTemplate> outputs;
 	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipeImpl(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs) {
+	public RefineryRecipeImpl(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStackTemplate> outputs) {
 		super();
 
 		this.operatingTemp = operatingTemp;
@@ -62,6 +64,10 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public List<FluidStack> getOutputs() {
+		return outputs.stream().map(FluidStackTemplate::create).toList();
+	}
+
+	public List<FluidStackTemplate> getOutputTemplates() {
 		return outputs;
 	}
 
@@ -71,61 +77,44 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<? extends PneumaticCraftRecipe> getSerializer() {
 		return ModRecipeSerializers.REFINERY.get();
 	}
 
 	@Override
-	public RecipeType<?> getType() {
+	public RecipeType<? extends PneumaticCraftRecipe> getType() {
 		return ModRecipeTypes.REFINERY.get();
 	}
 
 	@Override
-	public String getGroup() {
+	public String group() {
 		return Names.MOD_ID + ":refinery";
 	}
 
-	@Override
-	public ItemStack getToastSymbol() {
-		return new ItemStack(ModBlocks.REFINERY.get());
+
+	public interface IFactory<T extends RefineryRecipeImpl> {
+		T create(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStackTemplate> outputs);
 	}
 
-	public interface IFactory<T extends RefineryRecipe> {
-		T create(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs);
-	}
-
-	public static class Serializer<T extends RefineryRecipe> implements RecipeSerializer<T> {
-		private final MapCodec<T> codec;
-		private final StreamCodec<RegistryFriendlyByteBuf,T> streamCodec;
-
-        public Serializer(IFactory<T> factory) {
-            this.codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
-					SizedFluidIngredient.FLAT_CODEC
+	public static <T extends RefineryRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
+            MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
+					SizedFluidIngredient.CODEC
 							.fieldOf("input")
 							.forGetter(RefineryRecipe::getInput),
 					TemperatureRange.CODEC
 							.optionalFieldOf("temperature", TemperatureRange.min(373))
 							.forGetter(RefineryRecipe::getOperatingTemp),
-					FluidStack.CODEC.listOf(2, RefineryRecipe.MAX_OUTPUTS)
+					FluidStackTemplate.CODEC.listOf(2, RefineryRecipe.MAX_OUTPUTS)
 							.fieldOf("outputs")
-							.forGetter(RefineryRecipe::getOutputs)
+							.forGetter(RefineryRecipeImpl::getOutputTemplates)
 			).apply(builder, factory::create));
-			this.streamCodec = StreamCodec.composite(
+			StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
 					SizedFluidIngredient.STREAM_CODEC, RefineryRecipe::getInput,
 					TemperatureRange.STREAM_CODEC, RefineryRecipe::getOperatingTemp,
-					FluidStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipe::getOutputs,
+					FluidStackTemplate.STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipeImpl::getOutputTemplates,
 					factory::create
 			);
-		}
+	    return new RecipeSerializer<>(codec, streamCodec);
+	}
 
-		@Override
-		public MapCodec<T> codec() {
-			return codec;
-		}
-
-		@Override
-		public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
-			return streamCodec;
-		}
-    }
 }

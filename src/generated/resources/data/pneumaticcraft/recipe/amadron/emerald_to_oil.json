@@ -2,7 +2,6 @@
   "type": "pneumaticcraft:amadron",
   "input": {
     "resource": {
-      "count": 1,
       "id": "minecraft:emerald"
     }
   },

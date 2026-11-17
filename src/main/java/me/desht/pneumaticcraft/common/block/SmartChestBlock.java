@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -27,9 +28,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -40,6 +41,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -82,16 +84,16 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
     }
 
     @Override
-    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid) {
+    public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         if (!willHarvest && level.getBlockEntity(pos) instanceof SmartChestBlockEntity be) {
             // broken with wrong tool; ensure any contents get dropped even if the block itself doesn't
             PneumaticCraftUtils.forceDropContents(level, pos, be.getItemHandler());
         }
 
-        return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);
+        return super.onDestroyedByPlayer(state, level, pos, player, toolStack, willHarvest, fluid);
     }
 
-    public static class ItemBlockBlockSmartChest extends BlockItem implements IInventoryItem {
+    public static class ItemBlockBlockSmartChest extends PNCBlockItem implements IInventoryItem {
         public ItemBlockBlockSmartChest(Block block) {
             super(block, ModItems.defaultProps());
         }
@@ -108,18 +110,18 @@ public class SmartChestBlock extends AbstractPneumaticCraftBlock implements Pneu
         }
 
         @Override
-        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-            super.appendHoverText(stack, context, tooltip, flagIn);
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+            super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
             SmartChestBlockEntity.SavedData savedData = stack.get(ModDataComponents.SMART_CHEST_SAVED);
             if (savedData != null) {
                 int filterSize = savedData.filter().getSlots();
                 if (filterSize > 0) {
-                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", filterSize));
+                    tooltip.accept(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", filterSize));
                 }
                 int lastSlot = savedData.lastSlot();
                 if (lastSlot < SmartChestBlockEntity.CHEST_SIZE) {
-                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
+                    tooltip.accept(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", SmartChestBlockEntity.CHEST_SIZE - lastSlot));
                 }
             }
         }
