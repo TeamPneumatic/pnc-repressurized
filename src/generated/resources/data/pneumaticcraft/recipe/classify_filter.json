@@ -2,15 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "pneumaticcraft:logistics_core"
-    },
-    {
-      "item": "pneumaticcraft:plastic"
-    }
+    "pneumaticcraft:logistics_core",
+    "pneumaticcraft:plastic"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:classify_filter"
   }
 }

@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "item": "pneumaticcraft:air_compressor"
-    },
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "P": {
-      "item": "minecraft:heavy_weighted_pressure_plate"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    }
+    "A": "pneumaticcraft:air_compressor",
+    "I": "#c:ingots/compressed_iron",
+    "P": "minecraft:heavy_weighted_pressure_plate",
+    "T": "pneumaticcraft:pressure_tube"
   },
   "pattern": [
     "ITI",
@@ -21,7 +13,6 @@
     "ITI"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:thermal_compressor"
   }
 }

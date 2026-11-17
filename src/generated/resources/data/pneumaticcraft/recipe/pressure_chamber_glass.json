@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "I": {
-      "item": "pneumaticcraft:reinforced_bricks"
-    }
+    "G": "#c:glass_blocks",
+    "I": "pneumaticcraft:reinforced_bricks"
   },
   "pattern": [
     "III",

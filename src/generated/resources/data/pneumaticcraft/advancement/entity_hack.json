@@ -14,7 +14,6 @@
       "translate": "pneumaticcraft.advancement.entity_hack.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:entity_tracker_upgrade"
     },
     "title": {

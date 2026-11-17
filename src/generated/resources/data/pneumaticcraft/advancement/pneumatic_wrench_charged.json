@@ -14,7 +14,6 @@
       "translate": "pneumaticcraft.advancement.charged_wrench.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:pneumatic_wrench"
     },
     "title": {

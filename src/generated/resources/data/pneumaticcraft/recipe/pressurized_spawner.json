@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "E": {
-      "item": "pneumaticcraft:empty_spawner"
-    },
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "T": {
-      "item": "pneumaticcraft:advanced_pressure_tube"
-    }
+    "E": "pneumaticcraft:empty_spawner",
+    "I": "#c:ingots/compressed_iron",
+    "T": "pneumaticcraft:advanced_pressure_tube"
   },
   "pattern": [
     "ITI",
@@ -18,7 +12,6 @@
     "ITI"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:pressurized_spawner"
   }
 }

@@ -3,18 +3,14 @@
   "category": "misc",
   "key": {
     "C": {
-      "type": "pneumaticcraft:fluid_container",
+      "neoforge:ingredient_type": "pneumaticcraft:fluid_container",
       "fluid": {
         "amount": 1000,
         "tag": "c:lubricant"
       }
     },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "X": {
-      "item": "pneumaticcraft:glycerol"
-    }
+    "L": "#pneumaticcraft:upgrade_components",
+    "X": "pneumaticcraft:glycerol"
   },
   "pattern": [
     "LXL",

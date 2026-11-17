@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "F": {
-      "item": "minecraft:fire_charge"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "T": {
-      "item": "minecraft:tnt"
-    },
-    "W": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    }
+    "F": "minecraft:fire_charge",
+    "P": "pneumaticcraft:printed_circuit_board",
+    "T": "minecraft:tnt",
+    "W": "#pneumaticcraft:plastic_sheets"
   },
   "pattern": [
     " T ",
@@ -21,7 +13,6 @@
     "WFW"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:micromissiles"
   }
 }

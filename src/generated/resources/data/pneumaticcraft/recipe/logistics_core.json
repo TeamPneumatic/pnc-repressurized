@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "pneumaticcraft:reinforced_brick_tile"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    }
+    "B": "pneumaticcraft:reinforced_brick_tile",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "BBB",

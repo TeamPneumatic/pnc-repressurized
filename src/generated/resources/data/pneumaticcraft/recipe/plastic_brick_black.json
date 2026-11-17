@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "D": {
-      "tag": "c:dyes/black"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    }
+    "D": "#c:dyes/black",
+    "P": "#pneumaticcraft:plastic_sheets"
   },
   "pattern": [
     "PPP",

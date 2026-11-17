@@ -14,7 +14,6 @@
       "translate": "pneumaticcraft.advancement.block_hack.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:block_tracker_upgrade"
     },
     "title": {

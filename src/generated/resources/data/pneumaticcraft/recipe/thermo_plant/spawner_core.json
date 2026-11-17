@@ -4,15 +4,12 @@
   "inputs": {
     "fluid": {
       "amount": 4000,
-      "tag": "c:experience"
+      "ingredient": "#c:experience"
     },
-    "item": {
-      "item": "pneumaticcraft:spawner_core_shell"
-    }
+    "item": "pneumaticcraft:spawner_core_shell"
   },
   "outputs": {
     "item_output": {
-      "count": 1,
       "id": "pneumaticcraft:spawner_core"
     }
   },

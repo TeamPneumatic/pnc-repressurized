@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "minecraft:iron_bars"
-    },
-    "G": {
-      "tag": "c:glass_blocks"
-    },
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    }
+    "B": "minecraft:iron_bars",
+    "G": "#c:glass_blocks",
+    "I": "#c:ingots/compressed_iron"
   },
   "pattern": [
     "BIB",
@@ -18,7 +12,6 @@
     "BIB"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:small_tank"
   }
 }

@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "pneumaticcraft:pcb_blueprint"
-    },
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "L": {
-      "item": "minecraft:redstone_lamp"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    }
+    "B": "pneumaticcraft:pcb_blueprint",
+    "I": "#c:ingots/compressed_iron",
+    "L": "minecraft:redstone_lamp",
+    "T": "pneumaticcraft:pressure_tube"
   },
   "pattern": [
     "LLL",
@@ -21,7 +13,6 @@
     "III"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:uv_light_box"
   }
 }

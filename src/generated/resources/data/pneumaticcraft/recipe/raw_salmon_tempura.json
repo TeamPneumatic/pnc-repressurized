@@ -2,15 +2,10 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:salmon"
-    },
-    {
-      "item": "pneumaticcraft:sourdough"
-    }
+    "minecraft:salmon",
+    "pneumaticcraft:sourdough"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:raw_salmon_tempura"
   }
 }

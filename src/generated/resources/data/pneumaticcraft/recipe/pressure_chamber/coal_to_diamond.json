@@ -3,13 +3,12 @@
   "inputs": [
     {
       "count": 8,
-      "tag": "c:storage_blocks/coal"
+      "ingredient": "#c:storage_blocks/coal"
     }
   ],
   "pressure": 4.0,
   "results": [
     {
-      "count": 1,
       "id": "minecraft:diamond"
     }
   ]

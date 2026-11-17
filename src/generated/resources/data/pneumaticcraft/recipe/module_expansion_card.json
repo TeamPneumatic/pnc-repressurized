@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "P": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "R": {
-      "tag": "c:dusts/redstone"
-    }
+    "C": "pneumaticcraft:printed_circuit_board",
+    "P": "#pneumaticcraft:plastic_sheets",
+    "R": "#c:dusts/redstone"
   },
   "pattern": [
     "RPR",

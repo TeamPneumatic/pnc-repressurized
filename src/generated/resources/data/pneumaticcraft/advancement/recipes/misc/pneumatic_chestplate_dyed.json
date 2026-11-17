@@ -1,17 +1,11 @@
 {
-  "neoforge:conditions": [
-    {
-      "type": "neoforge:mod_loaded",
-      "modid": "computercraft"
-    }
-  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_printed_circuit_board": {
+    "has_pneumatic_chestplate": {
       "conditions": {
         "items": [
           {
-            "items": "pneumaticcraft:printed_circuit_board"
+            "items": "pneumaticcraft:pneumatic_chestplate"
           }
         ]
       },
@@ -19,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "pneumaticcraft:drone_interface"
+        "recipe": "pneumaticcraft:pneumatic_chestplate_dyed"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -27,12 +21,12 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_printed_circuit_board"
+      "has_pneumatic_chestplate"
     ]
   ],
   "rewards": {
     "recipes": [
-      "pneumaticcraft:drone_interface"
+      "pneumaticcraft:pneumatic_chestplate_dyed"
     ]
   }
 }

@@ -3,18 +3,14 @@
   "category": "misc",
   "key": {
     "C": {
-      "type": "pneumaticcraft:fluid_container",
+      "neoforge:ingredient_type": "pneumaticcraft:fluid_container",
       "fluid": {
         "amount": 1000,
         "tag": "c:lubricant"
       }
     },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "X": {
-      "item": "minecraft:sugar"
-    }
+    "L": "#pneumaticcraft:upgrade_components",
+    "X": "minecraft:sugar"
   },
   "pattern": [
     "LXL",
@@ -22,7 +18,6 @@
     "LXL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:speed_upgrade"
   }
 }

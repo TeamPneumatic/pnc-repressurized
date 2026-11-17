@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "pneumaticcraft:compressed_iron_block"
-    }
+    "pneumaticcraft:compressed_iron_block"
   ],
   "result": {
     "count": 9,
