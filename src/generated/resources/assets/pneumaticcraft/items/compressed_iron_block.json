@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pneumaticcraft:item/compressed_iron_block",
+    "tints": [
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 0
+      }
+    ]
+  }
+}

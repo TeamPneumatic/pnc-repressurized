@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pneumaticcraft:item/pressure_chamber_valve"
+  }
+}
