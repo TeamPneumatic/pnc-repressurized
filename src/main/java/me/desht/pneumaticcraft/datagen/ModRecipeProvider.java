@@ -1171,13 +1171,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).save(consumer);
 
-        Item mekRadShield = BuiltInRegistries.ITEM.getValue(Identifier.parse("mekanism:module_radiation_shielding_unit"));
-        shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                "LIL/IRI/LIL",
-                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
-                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'R', mekRadShield
-        ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
+        // the Mekanism item must exist to be used in an ingredient, so this is only generated with Mekanism present
+        //  (TODO 26.1 integration: Mekanism isn't available for 26.1.2 yet)
+        if (ModList.get().isLoaded(ModIds.MEKANISM)) {
+            Item mekRadShield = BuiltInRegistries.ITEM.getValue(Identifier.parse("mekanism:module_radiation_shielding_unit"));
+            shaped(ModUpgrades.RADIATION_SHIELDING.get().getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                    "LIL/IRI/LIL",
+                    'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                    'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+                    'R', mekRadShield
+            ).save(consumer.withConditions(new ModLoadedCondition(ModIds.MEKANISM)));
+        }
 
         shaped(ModUpgrades.AIR_CONDITIONING.get().getItem(), ModItems.PNEUMATIC_CHESTPLATE.get(),
                 "LML/HPH/LIL",
