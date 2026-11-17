@@ -434,15 +434,8 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
 
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (leftSided) {
-            return this.active && this.visible
-                    && mouseX >= (double)this.getX() - this.width
-                    && mouseX < (double)this.getX()
-                    && mouseY >= (double)this.getY()
-                    && mouseY < (double)(this.getY() + this.height);
-        } else {
-            return super.isMouseOver(mouseX, mouseY);
-        }
+        // effective bounds: left-sided stats extend left from x, and stats are offset by any stat above them
+        return this.active && this.visible && getBounds().contains((int) mouseX, (int) mouseY);
     }
 
     @Override
