@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import net.minecraft.advancements.Criterion;
 import net.minecraft.data.recipes.RecipeBuilder;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPNCRecipeBuilder implements RecipeBuilder {
@@ -18,7 +18,7 @@ public abstract class AbstractPNCRecipeBuilder implements RecipeBuilder {
     }
 
     @Override
-    public Item getResult() {
-        return Items.AIR;
+    public ResourceKey<Recipe<?>> defaultId() {
+        throw new UnsupportedOperationException("PneumaticCraft recipes must be saved with an explicit id");
     }
 }

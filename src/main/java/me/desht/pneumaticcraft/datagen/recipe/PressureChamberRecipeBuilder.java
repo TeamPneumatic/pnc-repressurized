@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
@@ -38,7 +39,7 @@ public class PressureChamberRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, Identifier id) {
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
         output.accept(id, new PressureChamberRecipeImpl(inputs, requiredPressure, Arrays.asList(outputs)), null);
     }
 }

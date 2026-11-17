@@ -20,7 +20,8 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -62,7 +63,7 @@ public class HeatPropertiesRecipeBuilder extends AbstractPNCRecipeBuilder {
     }
 
     @Override
-    public void save(RecipeOutput output, Identifier id) {
+    public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
         output.accept(id, new HeatPropertiesRecipeImpl(block,
                 new HeatPropertiesRecipe.Transforms(
                         Optional.ofNullable(transformHot), Optional.of(transformCold),

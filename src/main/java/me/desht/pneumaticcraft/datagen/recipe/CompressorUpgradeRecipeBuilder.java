@@ -18,33 +18,27 @@
 package me.desht.pneumaticcraft.datagen.recipe;
 
 import me.desht.pneumaticcraft.common.recipes.special.CompressorUpgradeCrafting;
+import net.minecraft.core.HolderGetter;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
-import org.jetbrains.annotations.NotNull;
 
 public class CompressorUpgradeRecipeBuilder extends PNCShapedRecipeBuilder {
-	public CompressorUpgradeRecipeBuilder(ItemLike pResult, int pCount) {
-		super(RecipeCategory.MISC, pResult, pCount);
-	}
-
-    public static CompressorUpgradeRecipeBuilder shapedRecipe(ItemLike resultIn) {
-        return shapedRecipe(resultIn, 1);
+    public CompressorUpgradeRecipeBuilder(HolderGetter<Item> items, ItemLike result, int count) {
+        super(items, RecipeCategory.MISC, result, count);
     }
 
-    public static CompressorUpgradeRecipeBuilder shapedRecipe(ItemLike resultIn, int countIn) {
-        return new CompressorUpgradeRecipeBuilder(resultIn, countIn);
+    public static CompressorUpgradeRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result) {
+        return shapedRecipe(items, result, 1);
     }
 
-    @Override
-    public void save(RecipeOutput output, Identifier id) {
-        super.save(output, id);
+    public static CompressorUpgradeRecipeBuilder shapedRecipe(HolderGetter<Item> items, ItemLike result, int count) {
+        return new CompressorUpgradeRecipeBuilder(items, result, count);
     }
 
     @Override
-    protected @NotNull ShapedRecipe makeRecipe(Identifier id) {
-        return new CompressorUpgradeCrafting(super.makeRecipe(id));
+    protected ShapedRecipe makeRecipe() {
+        return new CompressorUpgradeCrafting(super.makeRecipe());
     }
 }
