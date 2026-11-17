@@ -31,6 +31,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 
@@ -42,15 +43,15 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     public final Either<Ingredient,FluidContainerIngredient> input;
     private final int temperature;
-    public final ItemStack output;
+    public final ItemStackTemplate output;
     private final float bonusMultiplier;
     private final float bonusLimit;
 
-    public HeatFrameCoolingRecipeImpl(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStack output) {
+    public HeatFrameCoolingRecipeImpl(Either<Ingredient, FluidContainerIngredient> input, int temperature, ItemStackTemplate output) {
         this(input, temperature, output, 0f, 0f);
     }
 
-    public HeatFrameCoolingRecipeImpl(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStack output, float bonusMultiplier, float bonusLimit) {
+    public HeatFrameCoolingRecipeImpl(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStackTemplate output, float bonusMultiplier, float bonusLimit) {
         this.input = input;
         this.temperature = temperature;
         this.output = output;
@@ -65,6 +66,10 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     @Override
     public ItemStack getOutput() {
+        return output.create();
+    }
+
+    public ItemStackTemplate getOutputTemplate() {
         return output;
     }
 
@@ -119,18 +124,18 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         return maxThresholdTemp;
     }
 
-    public interface IFactory<T extends HeatFrameCoolingRecipe> {
-        T create(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStack out, float bonusMultiplier, float bonusLimit);
+    public interface IFactory<T extends HeatFrameCoolingRecipeImpl> {
+        T create(Either<Ingredient,FluidContainerIngredient> input, int temperature, ItemStackTemplate out, float bonusMultiplier, float bonusLimit);
     }
 
-    public static <T extends HeatFrameCoolingRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+    public static <T extends HeatFrameCoolingRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
         MapCodec<T> codec = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Codec.either(Ingredient.CODEC, FluidContainerIngredient.CODEC).fieldOf("input")
                         .forGetter(HeatFrameCoolingRecipe::getInput),
                 ExtraCodecs.NON_NEGATIVE_INT.fieldOf("temperature")
                         .forGetter(HeatFrameCoolingRecipe::getThresholdTemperature),
-                ItemStack.CODEC.fieldOf("output")
-                        .forGetter(HeatFrameCoolingRecipe::getOutput),
+                ItemStackTemplate.CODEC.fieldOf("output")
+                        .forGetter(HeatFrameCoolingRecipeImpl::getOutputTemplate),
                 Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("bonusMultiplier", 0f)
                         .forGetter(HeatFrameCoolingRecipe::getBonusMultiplier),
                 Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("bonusLimit", 0f)
@@ -139,7 +144,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
                 ByteBufCodecs.either(Ingredient.CONTENTS_STREAM_CODEC, FluidContainerIngredient.STREAM_CODEC), HeatFrameCoolingRecipe::getInput,
                 ByteBufCodecs.INT, HeatFrameCoolingRecipe::getThresholdTemperature,
-                ItemStack.STREAM_CODEC, HeatFrameCoolingRecipe::getOutput,
+                ItemStackTemplate.STREAM_CODEC, HeatFrameCoolingRecipeImpl::getOutputTemplate,
                 ByteBufCodecs.FLOAT, HeatFrameCoolingRecipe::getBonusMultiplier,
                 ByteBufCodecs.FLOAT, HeatFrameCoolingRecipe::getBonusLimit,
                 factory::create

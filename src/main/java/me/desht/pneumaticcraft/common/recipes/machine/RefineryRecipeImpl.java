@@ -35,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.apache.commons.lang3.Validate;
@@ -43,10 +44,10 @@ import java.util.List;
 
 public class RefineryRecipeImpl extends RefineryRecipe {
 	public final SizedFluidIngredient input;
-	public final List<FluidStack> outputs;
+	public final List<FluidStackTemplate> outputs;
 	private final TemperatureRange operatingTemp;
 
-	public RefineryRecipeImpl(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs) {
+	public RefineryRecipeImpl(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStackTemplate> outputs) {
 		super();
 
 		this.operatingTemp = operatingTemp;
@@ -63,6 +64,10 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public List<FluidStack> getOutputs() {
+		return outputs.stream().map(FluidStackTemplate::create).toList();
+	}
+
+	public List<FluidStackTemplate> getOutputTemplates() {
 		return outputs;
 	}
 
@@ -87,11 +92,11 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 
-	public interface IFactory<T extends RefineryRecipe> {
-		T create(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStack> outputs);
+	public interface IFactory<T extends RefineryRecipeImpl> {
+		T create(SizedFluidIngredient input, TemperatureRange operatingTemp, List<FluidStackTemplate> outputs);
 	}
 
-	public static <T extends RefineryRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+	public static <T extends RefineryRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
             MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
 					SizedFluidIngredient.CODEC
 							.fieldOf("input")
@@ -99,14 +104,14 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 					TemperatureRange.CODEC
 							.optionalFieldOf("temperature", TemperatureRange.min(373))
 							.forGetter(RefineryRecipe::getOperatingTemp),
-					FluidStack.CODEC.listOf(2, RefineryRecipe.MAX_OUTPUTS)
+					FluidStackTemplate.CODEC.listOf(2, RefineryRecipe.MAX_OUTPUTS)
 							.fieldOf("outputs")
-							.forGetter(RefineryRecipe::getOutputs)
+							.forGetter(RefineryRecipeImpl::getOutputTemplates)
 			).apply(builder, factory::create));
 			StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
 					SizedFluidIngredient.STREAM_CODEC, RefineryRecipe::getInput,
 					TemperatureRange.STREAM_CODEC, RefineryRecipe::getOperatingTemp,
-					FluidStack.OPTIONAL_STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipe::getOutputs,
+					FluidStackTemplate.STREAM_CODEC.apply(ByteBufCodecs.list()), RefineryRecipeImpl::getOutputTemplates,
 					factory::create
 			);
 	    return new RecipeSerializer<>(codec, streamCodec);

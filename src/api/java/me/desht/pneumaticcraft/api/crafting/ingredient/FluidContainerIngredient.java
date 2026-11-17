@@ -27,6 +27,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.crafting.ICustomIngredient;
 import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
@@ -45,15 +46,15 @@ import java.util.stream.StreamSupport;
  *
  * @param either the fluidstack OR fluid-tag/amount which must be contained in matching items
  */
-public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) implements ICustomIngredient {
+public record FluidContainerIngredient(Either<FluidStackTemplate,TagWithAmount> either) implements ICustomIngredient {
     public static final MapCodec<FluidContainerIngredient> MAP_CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-            Codec.either(FluidStack.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
+            Codec.either(FluidStackTemplate.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
     ).apply(builder, FluidContainerIngredient::new));
     public static final Codec<FluidContainerIngredient> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-            Codec.either(FluidStack.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
+            Codec.either(FluidStackTemplate.CODEC, TagWithAmount.CODEC).fieldOf("fluid").forGetter(FluidContainerIngredient::either)
     ).apply(builder, FluidContainerIngredient::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, FluidContainerIngredient> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.either(FluidStack.STREAM_CODEC, TagWithAmount.STREAM_CODEC), FluidContainerIngredient::either,
+            ByteBufCodecs.either(FluidStackTemplate.STREAM_CODEC, TagWithAmount.STREAM_CODEC), FluidContainerIngredient::either,
             FluidContainerIngredient::new
     );
 
@@ -66,7 +67,7 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
             ).map(BuiltInRegistries.BLOCK::getValue).toList());
 
     public static FluidContainerIngredient of(Fluid fluid, int amount) {
-        return new FluidContainerIngredient(Either.left(new FluidStack(fluid, amount)));
+        return new FluidContainerIngredient(Either.left(new FluidStackTemplate(fluid, amount)));
     }
 
     public static FluidContainerIngredient of(TagKey<Fluid> tag, int amount) {
@@ -81,7 +82,7 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
         if (handler == null) return false;
         try (Transaction tx = Transaction.openRoot()) {
             return either.map(
-                    fluidStack -> handler.extract(FluidResource.of(fluidStack), fluidStack.getAmount(), tx) >= fluidStack.getAmount(),
+                    fluid -> handler.extract(FluidResource.of(fluid), fluid.amount(), tx) >= fluid.amount(),
                     tagWithAmount -> {
                         FluidResource contained = ResourceHandlerUtil.findExtractableResource(handler, r -> r.is(tagWithAmount.tag), tx);
                         return contained != null && handler.extract(contained, tagWithAmount.amount, tx) == tagWithAmount.amount;
@@ -103,9 +104,9 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
     }
 
     private Stream<ItemStack> filledStacks() {
-        int amount = either.map(FluidStack::getAmount, TagWithAmount::amount);
+        int amount = amount();
         List<FluidStack> fluidStacks = either.map(
-                List::of,
+                fluid -> List.of(fluid.create()),
                 tagWithAmount -> StreamSupport.stream(BuiltInRegistries.FLUID.getTagOrEmpty(tagWithAmount.tag).spliterator(), false)
                         .map(holder -> new FluidStack(holder.value(), amount))
                         .toList()
@@ -134,7 +135,7 @@ public record FluidContainerIngredient(Either<FluidStack,TagWithAmount> either) 
     }
 
     public int amount() {
-        return either.map(FluidStack::getAmount, TagWithAmount::amount);
+        return either.map(FluidStackTemplate::amount, TagWithAmount::amount);
     }
 
     public record TagWithAmount(TagKey<Fluid> tag, int amount) {

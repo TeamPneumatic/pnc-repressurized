@@ -30,6 +30,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -46,10 +47,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class AssemblyRecipeImpl extends AssemblyRecipe {
     private final SizedIngredient input;
-    private final ItemStack output;
+    private final ItemStackTemplate output;
     private final AssemblyProgramType program;
 
-    public AssemblyRecipeImpl(@Nonnull SizedIngredient input, @Nonnull ItemStack output, AssemblyProgramType program) {
+    public AssemblyRecipeImpl(@Nonnull SizedIngredient input, @Nonnull ItemStackTemplate output, AssemblyProgramType program) {
         this.input = input;
         this.output = output;
         this.program = program;
@@ -62,6 +63,10 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     @Override
     public ItemStack getOutput() {
+        return output.create();
+    }
+
+    public ItemStackTemplate getOutputTemplate() {
         return output;
     }
 
@@ -117,27 +122,27 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
                     ItemStack output = r2.getOutput().copy();
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
                     Identifier id = RL(h1.id().identifier().getPath() + "_" + h2.id().identifier().getPath());
-                    drillLaser.put(id, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, id), new AssemblyRecipeImpl(r1.getInput(), output, AssemblyProgramType.DRILL_LASER)));
+                    drillLaser.put(id, new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, id), new AssemblyRecipeImpl(r1.getInput(), ItemStackTemplate.fromNonEmptyStack(output), AssemblyProgramType.DRILL_LASER)));
                 }
             }
         }
         return drillLaser;
     }
 
-    public interface IFactory<T extends AssemblyRecipe> {
-        T create(@Nonnull SizedIngredient input, @Nonnull ItemStack output, AssemblyProgramType program);
+    public interface IFactory<T extends AssemblyRecipeImpl> {
+        T create(@Nonnull SizedIngredient input, @Nonnull ItemStackTemplate output, AssemblyProgramType program);
     }
 
-    public static <T extends AssemblyRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+    public static <T extends AssemblyRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
         MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                 SizedIngredient.NESTED_CODEC.fieldOf("input").forGetter(AssemblyRecipe::getInput),
-                ItemStack.CODEC.fieldOf("result").forGetter(AssemblyRecipe::getOutput),
+                ItemStackTemplate.CODEC.fieldOf("result").forGetter(AssemblyRecipeImpl::getOutputTemplate),
                 AssemblyProgramType.CODEC.validate(AssemblyRecipeImpl::checkNotDrillAndLaser)
                         .fieldOf("program").forGetter(AssemblyRecipe::getProgramType)
         ).apply(builder, factory::create));
         StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
                 SizedIngredient.STREAM_CODEC, AssemblyRecipe::getInput,
-                ItemStack.STREAM_CODEC, AssemblyRecipe::getOutput,
+                ItemStackTemplate.STREAM_CODEC, AssemblyRecipeImpl::getOutputTemplate,
                 NeoForgeStreamCodecs.enumCodec(AssemblyProgramType.class), AssemblyRecipe::getProgramType,
                 factory::create
         );

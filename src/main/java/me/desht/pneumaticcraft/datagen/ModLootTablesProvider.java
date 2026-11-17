@@ -34,7 +34,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
@@ -164,12 +163,12 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private LootPoolEntryContainer.Builder<?> createEntry(ItemLike item, int weight, int min, int max) {
-            return createEntry(new ItemStack(item), weight)
+            return createEntry(item, weight)
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)));
         }
 
-        private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
-            return LootItem.lootTableItem(item.getItem()).setWeight(weight);
+        private LootPoolSingletonContainer.Builder<?> createEntry(ItemLike item, int weight) {
+            return LootItem.lootTableItem(item).setWeight(weight);
         }
     }
 
@@ -221,18 +220,18 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private LootPoolEntryContainer.Builder<?> ammo(ItemLike item) {
-            return createEntry(new ItemStack(item), 1)
+            return createEntry(item, 1)
                     .apply(SetItemCountFunction.setCount(ConstantValue.exactly(1)))
                     .apply(EnchantRandomlyFunction.randomApplicableEnchantment(provider));
         }
 
         private LootPoolEntryContainer.Builder<?> createEntry(ItemLike item, int weight, int min, int max) {
-            return createEntry(new ItemStack(item), weight)
+            return createEntry(item, weight)
                     .apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)));
         }
 
-        private LootPoolSingletonContainer.Builder<?> createEntry(ItemStack item, int weight) {
-            return LootItem.lootTableItem(item.getItem()).setWeight(weight);
+        private LootPoolSingletonContainer.Builder<?> createEntry(ItemLike item, int weight) {
+            return LootItem.lootTableItem(item).setWeight(weight);
         }
     }
 }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.RefineryRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import java.util.List;
@@ -30,9 +30,9 @@ import java.util.List;
 public class RefineryRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final SizedFluidIngredient input;
     private final TemperatureRange operatingTemp;
-    private final FluidStack[] outputs;
+    private final FluidStackTemplate[] outputs;
 
-    public RefineryRecipeBuilder(SizedFluidIngredient input, TemperatureRange operatingTemp, FluidStack... outputs) {
+    public RefineryRecipeBuilder(SizedFluidIngredient input, TemperatureRange operatingTemp, FluidStackTemplate... outputs) {
         this.input = input;
         this.operatingTemp = operatingTemp;
         this.outputs = outputs;

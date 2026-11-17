@@ -28,21 +28,25 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+
+import java.util.Optional;
 
 public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     private final SizedFluidIngredient input1;
     private final SizedFluidIngredient input2;
-    private final FluidStack outputFluid;
-    private final ItemStack outputItem;
+    private final Optional<FluidStackTemplate> outputFluid;
+    private final Optional<ItemStackTemplate> outputItem;
     private final float pressure;
     private final int processingTime;
 
-    public FluidMixerRecipeImpl(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
+    public FluidMixerRecipeImpl(SizedFluidIngredient input1, SizedFluidIngredient input2, Optional<FluidStackTemplate> outputFluid, Optional<ItemStackTemplate> outputItem, float pressure, int processingTime) {
         this.input1 = input1;
         this.input2 = input2;
         this.outputFluid = outputFluid;
@@ -72,11 +76,19 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public FluidStack getOutputFluid() {
-        return outputFluid;
+        return outputFluid.map(FluidStackTemplate::create).orElse(FluidStack.EMPTY);
     }
 
     @Override
     public ItemStack getOutputItem() {
+        return outputItem.map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
+    }
+
+    public Optional<FluidStackTemplate> getOutputFluidTemplate() {
+        return outputFluid;
+    }
+
+    public Optional<ItemStackTemplate> getOutputItemTemplate() {
         return outputItem;
     }
 
@@ -101,25 +113,25 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
     }
 
 
-    public interface IFactory<T extends FluidMixerRecipe> {
+    public interface IFactory<T extends FluidMixerRecipeImpl> {
         T create(SizedFluidIngredient input1, SizedFluidIngredient input2,
-                 FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime);
+                 Optional<FluidStackTemplate> outputFluid, Optional<ItemStackTemplate> outputItem, float pressure, int processingTime);
     }
 
-    public static <T extends FluidMixerRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+    public static <T extends FluidMixerRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
         MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                 SizedFluidIngredient.CODEC.fieldOf("input1").forGetter(FluidMixerRecipe::getInput1),
                 SizedFluidIngredient.CODEC.fieldOf("input2").forGetter(FluidMixerRecipe::getInput2),
-                FluidStack.OPTIONAL_CODEC.fieldOf("fluid_output").forGetter(FluidMixerRecipe::getOutputFluid),
-                ItemStack.OPTIONAL_CODEC.fieldOf("item_output").forGetter(FluidMixerRecipe::getOutputItem),
+                FluidStackTemplate.CODEC.optionalFieldOf("fluid_output").forGetter(FluidMixerRecipeImpl::getOutputFluidTemplate),
+                ItemStackTemplate.CODEC.optionalFieldOf("item_output").forGetter(FluidMixerRecipeImpl::getOutputItemTemplate),
                 Codec.FLOAT.fieldOf("pressure").forGetter(FluidMixerRecipe::getRequiredPressure),
                 Codec.INT.fieldOf("time").forGetter(FluidMixerRecipe::getProcessingTime)
         ).apply(builder, factory::create));
         StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
                 SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput1,
                 SizedFluidIngredient.STREAM_CODEC, FluidMixerRecipe::getInput2,
-                FluidStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputFluid,
-                ItemStack.OPTIONAL_STREAM_CODEC, FluidMixerRecipe::getOutputItem,
+                ByteBufCodecs.optional(FluidStackTemplate.STREAM_CODEC), FluidMixerRecipeImpl::getOutputFluidTemplate,
+                ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC), FluidMixerRecipeImpl::getOutputItemTemplate,
                 ByteBufCodecs.FLOAT, FluidMixerRecipe::getRequiredPressure,
                 ByteBufCodecs.VAR_INT, FluidMixerRecipe::getProcessingTime,
                 factory::create

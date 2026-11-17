@@ -28,12 +28,13 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.apache.commons.lang3.Validate;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -41,18 +42,22 @@ import java.util.stream.IntStream;
 /**
  * Represents an Amadron trade resource. The input and output may be either an item or a fluid.
  */
-public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
+public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> resource) {
     public static final Codec<AmadronTradeResource> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.either(ItemStack.CODEC, FluidStack.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
+            Codec.either(ItemStackTemplate.CODEC, FluidStackTemplate.CODEC).fieldOf("resource").forGetter(AmadronTradeResource::resource)
     ).apply(inst, AmadronTradeResource::new));
 
     public static StreamCodec<RegistryFriendlyByteBuf, AmadronTradeResource> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.either(ItemStack.STREAM_CODEC, FluidStack.STREAM_CODEC), AmadronTradeResource::resource,
+            ByteBufCodecs.either(ItemStackTemplate.STREAM_CODEC, FluidStackTemplate.STREAM_CODEC), AmadronTradeResource::resource,
             AmadronTradeResource::new
     );
 
+    /**
+     * Trade resources are never empty; kept for compatibility.
+     * @return false
+     */
     public boolean isEmpty() {
-        return resource.map(ItemStack::isEmpty, FluidStack::isEmpty);
+        return false;
     }
 
     /**
@@ -62,17 +67,39 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      */
     public boolean equivalentTo(AmadronTradeResource other) {
         return resource.map(
-                itemStack -> itemStack.getItem() == other.getItem().getItem(),
-                fluidStack -> fluidStack.getFluid() == other.getFluid().getFluid()
+                item -> other.resource.left().map(o -> o.item().value() == item.item().value()).orElse(false),
+                fluid -> other.resource.right().map(o -> o.fluid().value() == fluid.fluid().value()).orElse(false)
         );
     }
 
+    /**
+     * Create an item resource from a (non-empty) item stack
+     * @param stack the stack
+     * @return a new trade resource
+     * @throws IllegalArgumentException if the stack is empty
+     */
     public static AmadronTradeResource of(ItemStack stack) {
-        return new AmadronTradeResource(Either.left(stack));
+        Validate.isTrue(!stack.isEmpty(), "item resource may not be empty");
+        return of(ItemStackTemplate.fromNonEmptyStack(stack));
     }
 
+    /**
+     * Create a fluid resource from a (non-empty) fluid stack
+     * @param stack the stack
+     * @return a new trade resource
+     * @throws IllegalArgumentException if the stack is empty
+     */
     public static AmadronTradeResource of(FluidStack stack) {
-        return new AmadronTradeResource(Either.right(stack));
+        Validate.isTrue(!stack.isEmpty(), "fluid resource may not be empty");
+        return of(FluidStackTemplate.fromNonEmptyStack(stack));
+    }
+
+    public static AmadronTradeResource of(ItemStackTemplate item) {
+        return new AmadronTradeResource(Either.left(item));
+    }
+
+    public static AmadronTradeResource of(FluidStackTemplate fluid) {
+        return new AmadronTradeResource(Either.right(fluid));
     }
 
     /**
@@ -80,7 +107,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      * @return the itemstack, or ItemStack.EMPTY if the resource is a fluid
      */
     public ItemStack getItem() {
-        return resource.left().orElse(ItemStack.EMPTY);
+        return resource.left().map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
     }
 
     /**
@@ -88,7 +115,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      * @return the fluidstack, or FluidStack.EMPTY if the resource is an item
      */
     public FluidStack getFluid() {
-        return resource.right().orElse(FluidStack.EMPTY);
+        return resource.right().map(FluidStackTemplate::create).orElse(FluidStack.EMPTY);
     }
 
     /**
@@ -97,7 +124,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      * @param cFluidStack consumer which is called when the resource is a fluid
      */
     public void accept(Consumer<ItemStack> cItemStack, Consumer<FluidStack> cFluidStack) {
-        resource.ifLeft(cItemStack).ifRight(cFluidStack);
+        resource.ifLeft(item -> cItemStack.accept(item.create())).ifRight(fluid -> cFluidStack.accept(fluid.create()));
     }
 
     /**
@@ -106,7 +133,7 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      * @param fFluidStack function which is called when the resource is a fluid
      */
     public <T> T apply(Function<ItemStack,T> fItemStack, Function<FluidStack,T> fFluidStack) {
-        return resource.map(fItemStack, fFluidStack);
+        return resource.map(item -> fItemStack.apply(item.create()), fluid -> fFluidStack.apply(fluid.create()));
     }
 
     /**
@@ -116,81 +143,75 @@ public record AmadronTradeResource(Either<ItemStack,FluidStack> resource) {
      */
     public int totalSpaceRequired(int units) {
         return resource.map(
-                itemStack -> (((itemStack.getCount() * units) - 1) / itemStack.getMaxStackSize()) + 1,
-                fluidStack -> fluidStack.getAmount() * units
+                item -> (((item.count() * units) - 1) / item.create().getMaxStackSize()) + 1,
+                fluid -> fluid.amount() * units
         );
     }
 
     public int countTradesInInventory(IItemHandler inv) {
-        return resource.left().map(item -> countItemsInHandler(item, inv) / item.getCount()).orElse(0);
+        return resource.left().map(item -> countItemsInHandler(item.create(), inv) / item.count()).orElse(0);
     }
 
     public int findSpaceInItemOutput(IItemHandler inv, int wantedTradeCount) {
-        return resource.left().map(item -> Math.min(wantedTradeCount, findSpaceInHandler(item, wantedTradeCount, inv))).orElse(0);
+        return resource.left().map(item -> Math.min(wantedTradeCount, findSpaceInHandler(item.create(), wantedTradeCount, inv))).orElse(0);
     }
 
     public int countTradesInTank(IFluidHandler fluidHandler) {
         return resource.right().map(fluid -> {
-            FluidStack searchingFluid = fluid.copy();
-            searchingFluid.setAmount(Integer.MAX_VALUE);
+            FluidStack searchingFluid = fluid.withAmount(Integer.MAX_VALUE).create();
             FluidStack extracted = fluidHandler.drain(searchingFluid, IFluidHandler.FluidAction.SIMULATE);
-            return extracted.getAmount() / fluid.getAmount();
+            return extracted.getAmount() / fluid.amount();
         }).orElse(0);
     }
 
     public int findSpaceInFluidOutput(IFluidHandler fluidHandler, int wantedTradeCount) {
         return resource.right().map(fluid -> {
-            FluidStack providingFluid = fluid.copy();
-            providingFluid.setAmount(providingFluid.getAmount() * wantedTradeCount);
+            FluidStack providingFluid = fluid.withAmount(fluid.amount() * wantedTradeCount).create();
             int amountFilled = fluidHandler.fill(providingFluid, IFluidHandler.FluidAction.SIMULATE);
-            return amountFilled / fluid.getAmount();
+            return amountFilled / fluid.amount();
         }).orElse(0);
     }
 
     public AmadronTradeResource validate() {
-        resource.ifLeft(stack -> Validate.isTrue(!stack.isEmpty()))
-                .ifRight(fluidStack -> Validate.isTrue(!fluidStack.isEmpty()));
+        // templates can't be empty
         return this;
     }
 
     public String getName() {
         return resource.map(
-                itemStack -> itemStack.getHoverName().getString(),
-                fluidStack -> fluidStack.getHoverName().getString()
+                item -> item.create().getHoverName().getString(),
+                fluid -> fluid.create().getHoverName().getString()
         );
     }
 
     public Identifier getId() {
         return resource.map(
-                itemStack -> BuiltInRegistries.ITEM.getKey(itemStack.getItem()),
-                fluidStack -> BuiltInRegistries.FLUID.getKey(fluidStack.getFluid())
+                item -> BuiltInRegistries.ITEM.getKey(item.item().value()),
+                fluid -> BuiltInRegistries.FLUID.getKey(fluid.fluid().value())
         );
     }
 
     public int getAmount() {
-        return resource.map(ItemStack::getCount, FluidStack::getAmount);
+        return resource.map(ItemStackTemplate::count, FluidStackTemplate::amount);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof AmadronTradeResource that)) return false;
-        return resource.map(
-                itemStack -> ItemStack.matches(itemStack, that.getItem()),
-                fluidStack -> FluidStack.matches(fluidStack, that.getFluid())
-        );
+        return resource.equals(that.resource);
     }
 
     @Override
     public int hashCode() {
-        return resource.map(Objects::hash, Objects::hash);
+        return resource.hashCode();
     }
 
     @Override
     public String toString() {
         return resource.map(
-                itemStack -> itemStack.getCount() + " x " + itemStack.getHoverName().getString(),
-                fluidStack -> fluidStack.getAmount() + "mB " + fluidStack.getHoverName().getString()
+                item -> item.count() + " x " + item.create().getHoverName().getString(),
+                fluid -> fluid.amount() + "mB " + fluid.create().getHoverName().getString()
         );
     }
 

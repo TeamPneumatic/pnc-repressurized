@@ -21,19 +21,21 @@ import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidStack;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+
+import java.util.Optional;
 
 public class FluidMixerRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final SizedFluidIngredient input1;
     private final SizedFluidIngredient input2;
-    private final FluidStack outputFluid;
-    private final ItemStack outputItem;
+    private final FluidStackTemplate outputFluid;
+    private final ItemStackTemplate outputItem;
     private final float pressure;
     private final int processingTime;
 
-    public FluidMixerRecipeBuilder(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
+    public FluidMixerRecipeBuilder(SizedFluidIngredient input1, SizedFluidIngredient input2, FluidStackTemplate outputFluid, ItemStackTemplate outputItem, float pressure, int processingTime) {
         this.input1 = input1;
         this.input2 = input2;
         this.outputFluid = outputFluid;
@@ -44,6 +46,6 @@ public class FluidMixerRecipeBuilder extends AbstractPNCRecipeBuilder {
 
     @Override
     public void save(RecipeOutput output, ResourceKey<Recipe<?>> id) {
-        output.accept(id, new FluidMixerRecipeImpl(input1, input2, outputFluid, outputItem, pressure, processingTime), null);
+        output.accept(id, new FluidMixerRecipeImpl(input1, input2, Optional.ofNullable(outputFluid), Optional.ofNullable(outputItem), pressure, processingTime), null);
     }
 }

@@ -22,7 +22,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.AssemblyRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import javax.annotation.Nonnull;
@@ -30,10 +30,10 @@ import javax.annotation.Nonnull;
 public class AssemblyRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final SizedIngredient input;
     @Nonnull
-    private final ItemStack output;
+    private final ItemStackTemplate output;
     private final AssemblyRecipe.AssemblyProgramType program;
 
-    public AssemblyRecipeBuilder(SizedIngredient input, @Nonnull ItemStack output, AssemblyRecipe.AssemblyProgramType program) {
+    public AssemblyRecipeBuilder(SizedIngredient input, @Nonnull ItemStackTemplate output, AssemblyRecipe.AssemblyProgramType program) {
         this.input = input;
         this.output = output;
         this.program = program;

@@ -39,14 +39,14 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.AMADRON_OFFERS,
             () -> AmadronOffer.serializer(AmadronOffer::new));
 
-    public static final Supplier<RecipeSerializer<AssemblyRecipe>> ASSEMBLY_LASER
+    public static final Supplier<RecipeSerializer<AssemblyRecipeImpl>> ASSEMBLY_LASER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.ASSEMBLY_LASER,
             () -> AssemblyRecipeImpl.serializer(AssemblyRecipeImpl::new));
-    public static final Supplier<RecipeSerializer<AssemblyRecipe>> ASSEMBLY_DRILL
+    public static final Supplier<RecipeSerializer<AssemblyRecipeImpl>> ASSEMBLY_DRILL
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.ASSEMBLY_DRILL,
             () -> AssemblyRecipeImpl.serializer(AssemblyRecipeImpl::new));
 
-    public static final Supplier<RecipeSerializer<PressureChamberRecipe>> PRESSURE_CHAMBER
+    public static final Supplier<RecipeSerializer<PressureChamberRecipeImpl>> PRESSURE_CHAMBER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER,
             () -> PressureChamberRecipeImpl.serializer(PressureChamberRecipeImpl::new));
 
@@ -57,15 +57,15 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register(PressureDisenchantingRecipe.ID.getPath(),
             () -> PressureDisenchantingRecipe.SERIALIZER);
 
-    public static final Supplier<RecipeSerializer<ExplosionCraftingRecipe>> EXPLOSION_CRAFTING
+    public static final Supplier<RecipeSerializer<ExplosionCraftingRecipeImpl>> EXPLOSION_CRAFTING
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.EXPLOSION_CRAFTING,
             () -> ExplosionCraftingRecipeImpl.serializer(ExplosionCraftingRecipeImpl::new));
 
-    public static final Supplier<RecipeSerializer<HeatFrameCoolingRecipe>> HEAT_FRAME_COOLING
+    public static final Supplier<RecipeSerializer<HeatFrameCoolingRecipeImpl>> HEAT_FRAME_COOLING
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.HEAT_FRAME_COOLING,
             () -> HeatFrameCoolingRecipeImpl.serializer(HeatFrameCoolingRecipeImpl::new));
 
-    public static final Supplier<RecipeSerializer<RefineryRecipe>> REFINERY
+    public static final Supplier<RecipeSerializer<RefineryRecipeImpl>> REFINERY
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.REFINERY,
             () -> RefineryRecipeImpl.serializer(RefineryRecipeImpl::new));
 
@@ -73,7 +73,7 @@ public class ModRecipeSerializers {
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.THERMO_PLANT,
             () -> ThermoPlantRecipeImpl.serializer(ThermoPlantRecipeImpl::new));
 
-    public static final Supplier<RecipeSerializer<FluidMixerRecipe>> FLUID_MIXER
+    public static final Supplier<RecipeSerializer<FluidMixerRecipeImpl>> FLUID_MIXER
             = RECIPE_SERIALIZERS.register(PneumaticCraftRecipeTypes.FLUID_MIXER,
             () -> FluidMixerRecipeImpl.serializer(FluidMixerRecipeImpl::new));
 

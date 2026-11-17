@@ -32,10 +32,12 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 
@@ -97,12 +99,12 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public FluidStack getOutputFluid() {
-        return outputs.outputFluid();
+        return outputs.outputFluid().map(FluidStackTemplate::create).orElse(FluidStack.EMPTY);
     }
 
     @Override
     public ItemStack getOutputItem() {
-        return outputs.outputItem();
+        return outputs.outputItem().map(ItemStackTemplate::create).orElse(ItemStack.EMPTY);
     }
 
     @Override

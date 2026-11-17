@@ -34,6 +34,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
@@ -45,10 +46,10 @@ import java.util.*;
 public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     private final float pressureRequired;
     private final List<SizedIngredient> inputs;
-    private final List<ItemStack> outputs;
+    private final List<ItemStackTemplate> outputs;
     private List<List<ItemStack>> displayStacks = null;
 
-    public PressureChamberRecipeImpl(List<SizedIngredient> inputs, float pressureRequired, List<ItemStack> outputs) {
+    public PressureChamberRecipeImpl(List<SizedIngredient> inputs, float pressureRequired, List<ItemStackTemplate> outputs) {
         super();
         this.inputs = List.copyOf(inputs);
         this.outputs = List.copyOf(outputs);
@@ -67,6 +68,10 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public List<ItemStack> getOutputs() {
+        return outputs.stream().map(ItemStackTemplate::create).toList();
+    }
+
+    public List<ItemStackTemplate> getOutputTemplates() {
         return outputs;
     }
 
@@ -120,7 +125,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     protected List<ItemStack> getSingleResultsForDisplay(HolderLookup.Provider provider) {
-        return outputs;
+        return getOutputs();
     }
 
     @Override
@@ -161,24 +166,24 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
             }
         }
 
-        return outputs;
+        return getOutputs();
     }
 
 
-    public interface IFactory<T extends PressureChamberRecipe> {
-        T create(List<SizedIngredient> inputs, float pressureRequired, List<ItemStack> outputs);
+    public interface IFactory<T extends PressureChamberRecipeImpl> {
+        T create(List<SizedIngredient> inputs, float pressureRequired, List<ItemStackTemplate> outputs);
     }
 
-    public static <T extends PressureChamberRecipe> RecipeSerializer<T> serializer(IFactory<T> factory) {
+    public static <T extends PressureChamberRecipeImpl> RecipeSerializer<T> serializer(IFactory<T> factory) {
         MapCodec<T> codec = RecordCodecBuilder.mapCodec(builder -> builder.group(
                 SizedIngredient.NESTED_CODEC.listOf().fieldOf("inputs").forGetter(PressureChamberRecipe::getInputs),
                 Codec.floatRange(-1f, 20f).fieldOf("pressure").forGetter(PressureChamberRecipe::getPressure),
-                ItemStack.CODEC.listOf().fieldOf("results").forGetter(PressureChamberRecipe::getOutputs)
+                ItemStackTemplate.CODEC.listOf().fieldOf("results").forGetter(PressureChamberRecipeImpl::getOutputTemplates)
         ).apply(builder, factory::create));
         StreamCodec<RegistryFriendlyByteBuf, T> streamCodec = StreamCodec.composite(
                 SizedIngredient.STREAM_CODEC.apply(ByteBufCodecs.list()), PressureChamberRecipe::getInputs,
                 ByteBufCodecs.FLOAT, PressureChamberRecipe::getPressure,
-                ItemStack.STREAM_CODEC.apply(ByteBufCodecs.list()), PressureChamberRecipe::getOutputs,
+                ItemStackTemplate.STREAM_CODEC.apply(ByteBufCodecs.list()), PressureChamberRecipeImpl::getOutputTemplates,
                 factory::create
         );
         return new RecipeSerializer<>(codec, streamCodec);

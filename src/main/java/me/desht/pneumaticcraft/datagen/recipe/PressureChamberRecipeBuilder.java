@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
 
 import java.util.Arrays;
@@ -30,9 +30,9 @@ import java.util.List;
 public class PressureChamberRecipeBuilder extends AbstractPNCRecipeBuilder {
     private final List<SizedIngredient> inputs;
     private final float requiredPressure;
-    private final ItemStack[] outputs;
+    private final ItemStackTemplate[] outputs;
 
-    public PressureChamberRecipeBuilder(List<SizedIngredient> inputs, float requiredPressure, ItemStack... outputs) {
+    public PressureChamberRecipeBuilder(List<SizedIngredient> inputs, float requiredPressure, ItemStackTemplate... outputs) {
         this.inputs = inputs;
         this.requiredPressure = requiredPressure;
         this.outputs = outputs;
