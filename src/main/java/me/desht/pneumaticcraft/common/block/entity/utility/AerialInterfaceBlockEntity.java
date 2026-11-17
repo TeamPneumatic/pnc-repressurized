@@ -152,15 +152,15 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         PlayerEnderInvHandler playerEnderInvHandler = new PlayerEnderInvHandler();
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
-        itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStack(Blocks.CHEST),
+        itemHandlerSideConfigurator.registerHandler("mainInv", new ItemStackTemplate(Blocks.CHEST.asItem()),
                 Capabilities.Item.BLOCK, () -> playerMainInvHandler,
                 SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
+        itemHandlerSideConfigurator.registerHandler("armorInv", new ItemStackTemplate(ModItems.PNEUMATIC_CHESTPLATE.get()),
                 Capabilities.Item.BLOCK, () -> playerArmorInvHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.BOTTOM);
-        itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStack(Items.SHIELD),
+        itemHandlerSideConfigurator.registerHandler("offhandInv", new ItemStackTemplate(Items.SHIELD),
                 Capabilities.Item.BLOCK, () -> playerOffhandInvHandler);
-        itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStack(Blocks.ENDER_CHEST),
+        itemHandlerSideConfigurator.registerHandler("enderInv", new ItemStackTemplate(Blocks.ENDER_CHEST.asItem()),
                 Capabilities.Item.BLOCK, () -> playerEnderInvHandler);
 
         invHandlers.add(playerMainInvHandler);
@@ -175,7 +175,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         // TODO 26.1 integration: Curios
 //        if (Curios.available && curiosIntegrationEnabled) {
 //            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
-//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
+//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStackTemplate(Items.DIAMOND),
 //                    Capabilities.Item.BLOCK, () -> playerCuriosHandler);
 //            invHandlers.add(playerCuriosHandler);
 //        }

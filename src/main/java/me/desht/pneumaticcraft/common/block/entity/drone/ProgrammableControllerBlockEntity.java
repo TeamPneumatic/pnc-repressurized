@@ -77,6 +77,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -187,10 +188,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         NeoForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
-        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
+        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStackTemplate(ModItems.DRONE.get()),
                 Capabilities.Item.BLOCK, () -> droneItemHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
+        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStackTemplate(ModItems.NETWORK_API.get()),
                 Capabilities.Item.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");

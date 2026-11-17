@@ -65,6 +65,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.fml.ModList;
@@ -278,7 +279,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         RelativeFace relativeFace = button.relativeFace;
         SideConfigurator.ConnectionEntry<?> c = sc.getEntry(relativeFace);
         if (c != null && c.texture() != null) {
-            button.setTexture(c.texture());
+            button.setTexture(c.texture().mapLeft(ItemStackTemplate::create));
         } else {
             button.setRenderedIcon(Textures.GUI_X_BUTTON);
         }
