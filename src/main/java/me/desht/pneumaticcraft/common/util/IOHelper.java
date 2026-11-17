@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.util;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -87,6 +88,11 @@ public class IOHelper {
     }
 
     public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te, Direction facing) {
+        // TODO 26.1 transfer: PNC block entities aren't exposed via Capabilities.Item.BLOCK until PR2,
+        //  so query their legacy handler directly for now
+        if (te instanceof AbstractPneumaticCraftBlockEntity pncBE && pncBE.hasItemCapability()) {
+            return Optional.ofNullable(pncBE.getItemHandler(facing));
+        }
         return getCap(te, Capabilities.Item.BLOCK, facing).map(IItemHandler::of);
     }
 
@@ -111,6 +117,10 @@ public class IOHelper {
     }
 
     public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te, Direction facing) {
+        // TODO 26.1 transfer: as above, for Capabilities.Fluid.BLOCK
+        if (te instanceof AbstractPneumaticCraftBlockEntity pncBE && pncBE.hasFluidCapability()) {
+            return Optional.ofNullable(pncBE.getFluidHandler(facing));
+        }
         return getCap(te, Capabilities.Fluid.BLOCK, facing).map(IFluidHandler::of);
     }
 
