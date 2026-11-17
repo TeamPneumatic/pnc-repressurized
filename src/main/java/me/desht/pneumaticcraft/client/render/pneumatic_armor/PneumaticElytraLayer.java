@@ -21,7 +21,7 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.PlayerSkin;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
@@ -36,9 +36,8 @@ public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerM
     private final ElytraModel elytraModel;
     private final ElytraModel elytraBabyModel;
     private final EquipmentLayerRenderer equipmentRenderer;
-    // plain elytra stack, so the armor's own layer tint isn't applied to the wings; created on first render,
-    //  since item components aren't bound yet when render layers are created during the initial resource reload
-    private ItemStack elytraStack;
+    // plain elytra stack, so the armor's own layer tint isn't applied to the wings
+    private static final ItemStackTemplate ELYTRA = new ItemStackTemplate(Items.ELYTRA);
 
     public PneumaticElytraLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer, EntityModelSet modelSet, EquipmentLayerRenderer equipmentRenderer) {
         super(renderer);
@@ -53,13 +52,10 @@ public class PneumaticElytraLayer extends RenderLayer<AvatarRenderState, PlayerM
             return;
         }
 
-        if (elytraStack == null) {
-            elytraStack = new ItemStack(Items.ELYTRA);
-        }
         ElytraModel model = state.isBaby ? elytraBabyModel : elytraModel;
         poseStack.pushPose();
         poseStack.translate(0.0F, 0.0F, 0.125F);
-        equipmentRenderer.renderLayers(EquipmentClientInfo.LayerType.WINGS, EquipmentAssets.ELYTRA, model, state, elytraStack,
+        equipmentRenderer.renderLayers(EquipmentClientInfo.LayerType.WINGS, EquipmentAssets.ELYTRA, model, state, ELYTRA.create(),
                 poseStack, submitNodeCollector, lightCoords, getPlayerElytraTexture(state), state.outlineColor, 0);
         poseStack.popPose();
     }

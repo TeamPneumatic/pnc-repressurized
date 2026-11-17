@@ -48,6 +48,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.permissions.Permissions;
 import net.minecraft.util.Util;
@@ -73,6 +74,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -88,12 +90,14 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation.GRID_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -101,7 +105,7 @@ public class SecurityStationBlockEntity extends AbstractTickingBlockEntity imple
         IRedstoneControl<SecurityStationBlockEntity>, MenuProvider, IRangedTE {
     private static final List<RedstoneMode<SecurityStationBlockEntity>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", Items.GUNPOWDER, te -> false),
-            new EmittingRedstoneMode<>("securityStation.hacked", () -> ModUpgrades.SECURITY.get().getItemStack(), SecurityStationBlockEntity::isHacked),
+            new EmittingRedstoneMode<>("securityStation.hacked", new ItemStackTemplate(DeferredHolder.create(Registries.ITEM, RL("security_upgrade"))), SecurityStationBlockEntity::isHacked),
             new EmittingRedstoneMode<>("securityStation.doneRebooting", ModBlocks.SECURITY_STATION, te -> te.getRebootTime() <= 0)
     );
 

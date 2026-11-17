@@ -48,8 +48,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,16 +61,15 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class ArmorMainScreen extends AbstractPneumaticCraftScreen implements IGuiScreen {
     private static final ChatFormatting[] TITLE_PREFIX = { ChatFormatting.AQUA, ChatFormatting.UNDERLINE };
 
-    // created on first use: item components aren't bound yet when this class is first loaded
-    private static final Lazy<ItemStack[]> ARMOR_STACKS = Lazy.of(() -> new ItemStack[]{
-            new ItemStack(ModItems.PNEUMATIC_BOOTS.get()),
-            new ItemStack(ModItems.PNEUMATIC_LEGGINGS.get()),
-            new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
-            new ItemStack(ModItems.PNEUMATIC_HELMET.get())
-    });
+    private static final ItemStackTemplate[] ARMOR_STACKS = new ItemStackTemplate[]{
+            new ItemStackTemplate(ModItems.PNEUMATIC_BOOTS),
+            new ItemStackTemplate(ModItems.PNEUMATIC_LEGGINGS),
+            new ItemStackTemplate(ModItems.PNEUMATIC_CHESTPLATE),
+            new ItemStackTemplate(ModItems.PNEUMATIC_HELMET)
+    };
 
     public static ItemStack getArmorStack(EquipmentSlot slot) {
-        return ARMOR_STACKS.get()[slot.getIndex()];
+        return ARMOR_STACKS[slot.getIndex()].create();
     }
 
     // A static instance which can handle keybinds when the GUI is closed.

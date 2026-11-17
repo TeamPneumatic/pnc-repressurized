@@ -56,6 +56,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
@@ -734,12 +735,11 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         SMART("smart", Items.GOLDEN_APPLE);
 
         private final String key;
-        private final Item item;
-        private ItemStack stack;  // created on first use, see RedstoneController.RedstoneMode
+        private final ItemStackTemplate icon;
 
         FeedMode(String key, Item item) {
             this.key = key;
-            this.item = item;
+            this.icon = new ItemStackTemplate(item);
         }
 
         @Override
@@ -752,10 +752,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         public ItemStack getIconStack() {
-            if (stack == null) {
-                stack = new ItemStack(item);
-            }
-            return stack;
+            return icon.create();
         }
     }
 

@@ -49,9 +49,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.neoforge.common.util.Lazy;
 
 import java.util.Collection;
 
@@ -59,10 +59,10 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<JetBootsHandler> {
-    private static final Lazy<ItemStack> PICK = Lazy.of(() -> new ItemStack(Items.DIAMOND_PICKAXE));
-    private static final Lazy<ItemStack> ROTOR = Lazy.of(() -> new ItemStack(ModItems.TURBINE_ROTOR.get()));
-    private static final Lazy<ItemStack> ELYTRA = Lazy.of(() -> new ItemStack(Items.ELYTRA));
-    private static final Lazy<ItemStack> FEATHER = Lazy.of(() -> new ItemStack(Items.FEATHER));
+    private static final ItemStackTemplate PICK = new ItemStackTemplate(Items.DIAMOND_PICKAXE);
+    private static final ItemStackTemplate ROTOR = new ItemStackTemplate(ModItems.TURBINE_ROTOR);
+    private static final ItemStackTemplate ELYTRA = new ItemStackTemplate(Items.ELYTRA);
+    private static final ItemStackTemplate FEATHER = new ItemStackTemplate(Items.FEATHER);
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -178,19 +178,19 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             }
             int iconX = xr - 30;
             if (builderMode) {
-                graphics.item(PICK.get(), iconX, jbStat.getBaseY());
+                graphics.item(PICK.create(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (flightStabilizers) {
-                graphics.item(ROTOR.get(), iconX, jbStat.getBaseY());
+                graphics.item(ROTOR.create(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (ClientUtils.getClientPlayer().isFallFlying()) {
-                graphics.item(ELYTRA.get(), iconX, jbStat.getBaseY());
+                graphics.item(ELYTRA.create(), iconX, jbStat.getBaseY());
                 iconX -= 16;
             }
             if (smartHover) {
-                graphics.item(FEATHER.get(), iconX, jbStat.getBaseY());
+                graphics.item(FEATHER.create(), iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }
