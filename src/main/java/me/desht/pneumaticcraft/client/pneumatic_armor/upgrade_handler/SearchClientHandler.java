@@ -52,7 +52,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,10 +206,10 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         }
     }
 
-    private boolean checkForItems(IItemHandler handler, Item item) {
-        for (int l = 0; l < handler.getSlots(); l++) {
-            if (!handler.getStackInSlot(l).isEmpty()) {
-                int items = RenderSearchItemBlock.getSearchedItemCount(handler.getStackInSlot(l), item);
+    private boolean checkForItems(ResourceHandler<ItemResource> handler, Item item) {
+        for (int l = 0; l < handler.size(); l++) {
+            if (!IOHelper.getStack(handler, l).isEmpty()) {
+                int items = RenderSearchItemBlock.getSearchedItemCount(IOHelper.getStack(handler, l), item);
                 if (items > 0) {
                     return true;
                 }

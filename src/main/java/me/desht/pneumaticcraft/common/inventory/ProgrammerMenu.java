@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.ProgrammerScreen;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
@@ -34,7 +35,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
@@ -48,7 +48,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         boolean isClient = playerInventory.player.level().isClientSide();
         AreaGeometry geometry = isClient ? ProgrammerScreen.calculateAreaBounds() : AreaGeometry.DUMMY;
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, geometry.x + geometry.width + 24, geometry.y - 8) {
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, geometry.x + geometry.width + 24, geometry.y - 8) {
             @Override
             public boolean mayPlace(@Nonnull ItemStack stack) {
                 return IProgrammable.isProgrammable(stack);

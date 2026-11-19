@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -60,8 +61,8 @@ public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition impl
 
     @Override
     protected int getCount(IDrone drone, IProgWidget widget) {
-        int count = !drone.getFluidTank().getFluid().isEmpty()
-                && ((ILiquidFiltered) widget).isFluidValid(drone.getFluidTank().getFluid().getFluid()) ? drone.getFluidTank().getFluidAmount() : 0;
+        int count = !FluidUtils.getFluid(drone.getFluidTank(), 0).isEmpty()
+                && ((ILiquidFiltered) widget).isFluidValid(FluidUtils.getFluid(drone.getFluidTank(), 0).getFluid()) ? drone.getFluidTank().getAmountAsInt(0) : 0;
         maybeRecordMeasuredVal(drone, count);
         return count;
     }

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.item.minigun.MinigunItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -29,7 +30,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import static me.desht.pneumaticcraft.common.item.minigun.MinigunItem.NOT_LOCKED;
 
@@ -47,8 +47,8 @@ public class MinigunMagazineMenu extends AbstractPneumaticCraftMenu<AbstractPneu
 
         MinigunItem minigun = (MinigunItem) playerInventory.player.getItemInHand(hand).getItem();
         gunInv = minigun.getMagazine(playerInventory.player.getItemInHand(hand));
-        for (int i = 0; i < gunInv.getSlots(); i++) {
-            addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+        for (int i = 0; i < gunInv.size(); i++) {
+            addSlot(new ItemHandlerSlot(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
         }
 
         addPlayerSlots(playerInventory, 84);

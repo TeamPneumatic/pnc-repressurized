@@ -19,12 +19,14 @@ package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.entity.AbstractFluidTankBlockEntity;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,9 +61,8 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
-            // TODO 26.1 transfer: item fluid capabilities aren't registered until PR2, so there may be no handler
             return IOHelper.getFluidHandlerForItem(stack)
-                    .map(h -> List.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
+                    .map(h -> List.of(new TankRenderInfo(FluidUtils.getFluid(h, 0), h.getCapacityAsInt(0, FluidResource.EMPTY), BOUNDS_NONE)))
                     .orElse(List.of());
         }
     }
@@ -70,7 +71,7 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
         private final boolean up;
         private final boolean down;
 
-        FluidTankRenderInfo(IFluidTank tank, boolean up, boolean down, AABB bounds) {
+        FluidTankRenderInfo(PNCFluidTank tank, boolean up, boolean down, AABB bounds) {
             super(tank, bounds);
             this.up = up;
             this.down = down;

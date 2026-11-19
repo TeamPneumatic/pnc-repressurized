@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -46,12 +48,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,10 +73,10 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
         }
     };
 
-    private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final BaseItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
+            return itemStack.isEmpty() || IOHelper.getFluidHandlerForItem(itemStack).isPresent();
         }
     };
 
@@ -102,11 +102,11 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return tank;
     }
 
-    public IFluidTank getTank() {
+    public PNCFluidTank getTank() {
         return tank;
     }
 
@@ -146,7 +146,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
                 double fuelValue = FuelRegistry.getInstance().getFuelValue(level, tank.getFluid().getFluid()) / 1000D;
                 if (fuelValue > 0) {
                     int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
-                    tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
+                    FluidUtils.drain(tank, usedFuel, false);
                     internalFuelBuffer += usedFuel * fuelValue;
                     burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(level, tank.getFluid().getFluid());
                 }
@@ -215,7 +215,7 @@ public class LiquidCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

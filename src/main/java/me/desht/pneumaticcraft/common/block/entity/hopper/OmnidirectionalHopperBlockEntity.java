@@ -48,12 +48,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<OmnidirectionalHopperBlockEntity> {
@@ -91,7 +91,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     protected boolean doExport(final int maxItems) {
         Direction outputDir = getRotation();
 
-        IItemHandler destInv = IOHelper.legacy(getOutputCache());
+        ResourceHandler<ItemResource> destInv = IOHelper.getCapability(getOutputCache());
 
         int notExported = maxItems;
         if (destInv != null) {
@@ -114,24 +114,24 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         return maxItems;
     }
 
-    private int exportToInventory(IItemHandler otherHandler, int maxItems) {
+    private int exportToInventory(ResourceHandler<ItemResource> otherHandler, int maxItems) {
         int remaining = maxItems;
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
+        for (int i = 0; i < itemHandler.size(); i++) {
             int slot = actualSlot(i);
             int amount = itemHandler.getStackInSlot(slot).getCount();
-            ItemStack exportedStack = itemHandler.extractItem(slot, amount - leaveMaterialCount, true);  //getStackInSlot(actualSlot(i));
+            ItemStack exportedStack = IOHelper.extract(itemHandler, slot, amount - leaveMaterialCount, true);  //getStackInSlot(actualSlot(i));
             if (exportedStack.getCount() > leaveMaterialCount) {
                 exportedStack.setCount(Math.min(exportedStack.getCount(), remaining));
-                ItemStack excess = ItemHandlerHelper.insertItem(otherHandler, exportedStack, false);
+                ItemStack excess = IOHelper.insert(otherHandler, exportedStack, false);
                 int exportedCount = exportedStack.getCount() - excess.getCount();
                 if (!isCreative && exportedCount > 0) {
-                    itemHandler.extractItem(slot, exportedCount, false);
+                    IOHelper.extract(itemHandler, slot, exportedCount, false);
                 }
                 remaining -= exportedCount;
                 if (remaining <= leaveMaterialCount) {
                     if (roundRobin) {
                         rrSlot = slot + 1;
-                        if (rrSlot >= itemHandler.getSlots()) rrSlot = 0;
+                        if (rrSlot >= itemHandler.size()) rrSlot = 0;
                     }
                     break;
                 }
@@ -143,7 +143,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     private int actualSlot(int i) {
         if (roundRobin) {
             int slot = rrSlot + i;
-            if (slot >= itemHandler.getSlots()) slot -= itemHandler.getSlots();
+            if (slot >= itemHandler.size()) slot -= itemHandler.size();
             return slot;
         } else {
             return i;
@@ -157,7 +157,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
             return false;
         }
 
-        IItemHandler srcInv = IOHelper.legacy(getInputCache());
+        ResourceHandler<ItemResource> srcInv = IOHelper.getCapability(getInputCache());
 
         // Suck from input inventory
         if (srcInv != null) {
@@ -171,7 +171,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         if (!isInputBlocked()) {
             for (Entity e : cachedInputEntities) {
                 if (e.isAlive() && e instanceof ItemEntity entity) {
-                    ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false);
+                    ItemStack remainder = IOHelper.insert(itemHandler, entity.getItem(), false);
                     if (remainder.isEmpty()) {
                         entity.discard();
                         success = true;
@@ -204,18 +204,18 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         return 0;
     }
 
-    private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {
+    private int importFromInventory(ResourceHandler<ItemResource> inv, int maxItems, boolean playerArmor) {
         int remaining = maxItems;
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (inv.getStackInSlot(i).isEmpty()) continue;
-            ItemStack toExtract = inv.extractItem(i, remaining, true);
+        for (int i = 0; i < inv.size(); i++) {
+            if (IOHelper.getStack(inv, i).isEmpty()) continue;
+            ItemStack toExtract = IOHelper.extract(inv, i, remaining, true);
             if (playerArmor && EnchantmentHelper.has(toExtract, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE)) {
                 continue;
             }
-            ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
+            ItemStack excess = IOHelper.insertStacked(itemHandler, toExtract, false);
             int transferred = toExtract.getCount() - excess.getCount();
             if (transferred > 0) {
-                inv.extractItem(i, transferred, false);
+                IOHelper.extract(inv, i, transferred, false);
                 remaining -= transferred;
                 if (remaining <= 0) {
                     return maxItems;
@@ -226,7 +226,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     private boolean isInventoryFull() {
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
+        for (int i = 0; i < itemHandler.size(); i++) {
             ItemStack stack = itemHandler.getStackInSlot(i);
             if (stack.isEmpty() || stack.getCount() < stack.getMaxStackSize()) {
                 return false;
@@ -282,7 +282,7 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return itemHandler;
     }
 
@@ -307,7 +307,11 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         return rsController;
     }
 
-    private record DropInWorldHandler(Level world, BlockPos pos, Direction outputDir) implements IItemHandler {
+    private static final class DropInWorldHandler implements ResourceHandler<ItemResource> {
+        private final Level world;
+        private final BlockPos pos;
+        private final Direction outputDir;
+
         private DropInWorldHandler(Level world, BlockPos pos, Direction outputDir) {
             this.world = world;
             this.pos = pos.relative(outputDir);
@@ -315,43 +319,45 @@ public class OmnidirectionalHopperBlockEntity extends AbstractHopperBlockEntity<
         }
 
         @Override
-        public int getSlots() {
+        public int size() {
             return 1;
         }
 
-        @Nonnull
         @Override
-        public ItemStack getStackInSlot(int slot) {
-            return ItemStack.EMPTY;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!Block.canSupportCenter(world, pos, outputDir.getOpposite())) {
-                if (!simulate) {
-                    PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-                }
-                return ItemStack.EMPTY;
-            } else {
-                return stack;
-            }
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+        public ItemResource getResource(int index) {
+            return ItemResource.EMPTY;
         }
 
         @Override
-        public int getSlotLimit(int slot) {
+        public long getAmountAsLong(int index) {
+            return 0;
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
             return 64;
         }
 
         @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        public boolean isValid(int index, ItemResource resource) {
             return true;
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            if (Block.canSupportCenter(world, pos, outputDir.getOpposite())) {
+                return 0;
+            }
+            // only drop the item if the transaction is actually committed
+            new RootCommitJournal(() -> PneumaticCraftUtils.dropItemOnGroundPrecisely(resource.toStack(amount), world,
+                    pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)).updateSnapshots(transaction);
+            return amount;
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            return 0;
         }
     }
 }

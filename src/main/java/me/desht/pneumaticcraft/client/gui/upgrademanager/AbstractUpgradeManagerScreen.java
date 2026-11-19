@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -65,7 +66,7 @@ public abstract class AbstractUpgradeManagerScreen extends AbstractPneumaticCraf
 
     AbstractUpgradeManagerScreen(ChargingStationUpgradeManagerMenu container, Inventory inv, Component displayString) {
         super(container, inv, displayString, DEFAULT_IMAGE_WIDTH, 182);
-        itemStack = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        itemStack = IOHelper.getStack(te.getItemHandler(), ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
     }
 
     @Override

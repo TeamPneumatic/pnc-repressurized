@@ -26,7 +26,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.function.Predicate;
 
@@ -56,7 +57,7 @@ public class SecurityStationMainMenu extends AbstractPneumaticCraftMenu<Security
     }
 
     private class SlotSecurityNode extends ItemFilteredSlot {
-        SlotSecurityNode(IItemHandler handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
+        SlotSecurityNode(ResourceHandler<ItemResource> handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
             super(handler, itemAllowed, index, x, y);
         }
 

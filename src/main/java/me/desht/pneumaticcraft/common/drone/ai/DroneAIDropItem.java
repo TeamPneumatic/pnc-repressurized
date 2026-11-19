@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IItemDropper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -37,8 +38,8 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
     @Override
     public boolean canUse() {
         boolean shouldExecute = false;
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             if (progWidget.isItemValidForFilters(stack)) {
                 shouldExecute = super.canUse();
                 break;
@@ -60,15 +61,15 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         visitedPositions.add(pos);
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             if (progWidget.isItemValidForFilters(stack)) {
                 if (useCount() && getRemainingCount() < stack.getCount()) {
                     stack = stack.split(getRemainingCount());
                     decreaseCount(getRemainingCount());
                 } else {
                     decreaseCount(stack.getCount());
-                    drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                    IOHelper.setStack(drone.getInv(), i, ItemStack.EMPTY);
                 }
                 ItemEntity item = new ItemEntity(drone.getDroneLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                 if (progWidget.dropStraight()) {

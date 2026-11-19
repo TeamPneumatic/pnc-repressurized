@@ -26,9 +26,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
-import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -38,7 +38,8 @@ import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -76,7 +77,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public float getCraftingPressure(IItemHandler chamberHandler, IntList ingredientSlots) {
+    public float getCraftingPressure(ResourceHandler<ItemResource> chamberHandler, IntList ingredientSlots) {
         return pressureRequired;
     }
 
@@ -86,7 +87,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public IntCollection findIngredients(IItemHandler chamberHandler) {
+    public IntCollection findIngredients(ResourceHandler<ItemResource> chamberHandler) {
         // Ingredient doesn't override equals() and hashCode() but there's always the possibility
         // that some subclass might, so we'll use an identity set here.  We want to always treat
         // two equivalent ingredients in a recipe as different objects.
@@ -94,12 +95,12 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
         inputSet.addAll(inputs);
 
         IntCollection slots = new IntArrayList();
-        for (int i = 0; i < chamberHandler.getSlots(); i++) {
-            if (!chamberHandler.getStackInSlot(i).isEmpty()) {
+        for (int i = 0; i < chamberHandler.size(); i++) {
+            if (!IOHelper.getStack(chamberHandler, i).isEmpty()) {
                 Iterator<SizedIngredient> iter = inputSet.iterator();
                 while (iter.hasNext()) {
                     SizedIngredient ingr = iter.next();
-                    if (ingr.test(chamberHandler.getStackInSlot(i))) {
+                    if (ingr.test(IOHelper.getStack(chamberHandler, i))) {
                         iter.remove();
                         slots.add(i);
                         break;
@@ -152,15 +153,15 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Nonnull
     @Override
-    public List<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
+    public List<ItemStack> craftRecipe(@Nonnull ResourceHandler<ItemResource> chamberHandler, IntList ingredientSlots, boolean simulate) {
         // remove the recipe's input items from the chamber
         for (SizedIngredient ingredient : inputs) {
 //            if (ingredient.isEmpty()) return NonNullList.create(); // sanity check
             int nItems = ingredient.count();
             for (int i = 0; i < ingredientSlots.size() && nItems > 0; i++) {
                 int slot = ingredientSlots.getInt(i);
-                if (ingredient.test(chamberHandler.getStackInSlot(slot))) {
-                    ItemStack extracted = chamberHandler.extractItem(slot, nItems, simulate);
+                if (ingredient.test(IOHelper.getStack(chamberHandler, slot))) {
+                    ItemStack extracted = IOHelper.extract(chamberHandler, slot, nItems, simulate);
                     nItems -= extracted.getCount();
                 }
             }

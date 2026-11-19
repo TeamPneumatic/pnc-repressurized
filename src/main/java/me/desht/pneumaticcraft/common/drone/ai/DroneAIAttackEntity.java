@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.item.minigun.AbstractGunAmmoItem;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -54,7 +55,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 }
             }
             case MISSILE -> {
-                MicromissilesItem.setEntityFilter(attacker.getInv().getStackInSlot(0), filterString);
+                MicromissilesItem.setEntityFilter(IOHelper.getStack(attacker.getInv(), 0), filterString);
                 rangeMult = 2f;
             }
         }
@@ -93,7 +94,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
         attacker.incAttackCount();
 
-        if (attackType == AttackType.MELEE && attacker.getTarget() != null && attacker.getInv().getSlots() > 1) {
+        if (attackType == AttackType.MELEE && attacker.getTarget() != null && attacker.getInv().size() > 1) {
             equipBestMeleeWeapon();
         }
     }
@@ -140,7 +141,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean isMissileUsable(DroneEntity drone) {
-        ItemStack stack = drone.getInv().getStackInSlot(0);
+        ItemStack stack = IOHelper.getStack(drone.getInv(), 0);
         return stack.getItem() instanceof MicromissilesItem && stack.getDamageValue() < stack.getMaxDamage();
     }
 
@@ -148,8 +149,8 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
         // switch to the carried melee weapon with the highest attack damage
         int bestSlot = 0;
         double bestDmg = 0;
-        for (int i = 0; i < attacker.getInv().getSlots(); i++) {
-            ItemStack stack = attacker.getInv().getStackInSlot(i);
+        for (int i = 0; i < attacker.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(attacker.getInv(), i);
             if (!stack.isEmpty()) {
                 AttributeInstance damage = new AttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
                 stack.getAttributeModifiers().forEach(EquipmentSlot.MAINHAND, (attr, mod) -> {
@@ -165,9 +166,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             }
         }
         if (bestSlot != 0) {
-            ItemStack copy = attacker.getInv().getStackInSlot(0).copy();
-            attacker.getInv().setStackInSlot(0, attacker.getInv().getStackInSlot(bestSlot));
-            attacker.getInv().setStackInSlot(bestSlot, copy);
+            ItemStack copy = IOHelper.getStack(attacker.getInv(), 0).copy();
+            IOHelper.setStack(attacker.getInv(), 0, IOHelper.getStack(attacker.getInv(), bestSlot));
+            IOHelper.setStack(attacker.getInv(), bestSlot, copy);
         }
     }
 
@@ -178,7 +179,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
         static AttackType forDrone(DroneEntity drone) {
             if (drone.hasMinigun()) return MINIGUN;
-            if (drone.getInv().getStackInSlot(0).getItem() instanceof MicromissilesItem) return MISSILE;
+            if (IOHelper.getStack(drone.getInv(), 0).getItem() instanceof MicromissilesItem) return MISSILE;
             return MELEE;
         }
 
@@ -193,7 +194,7 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
         private static boolean tryFireMicromissile(DroneEntity attacker, LivingEntity target) {
             FakePlayer fakePlayer = attacker.getFakePlayer();
             fakePlayer.lookAt(EntityAnchorArgument.Anchor.EYES, target.position());
-            ItemStack stack = attacker.getInv().getStackInSlot(0);
+            ItemStack stack = IOHelper.getStack(attacker.getInv(), 0);
             if (stack.getItem() instanceof MicromissilesItem) {
                 fakePlayer.gameMode.useItem(fakePlayer, attacker.level(), stack, InteractionHand.MAIN_HAND);
                 return true;

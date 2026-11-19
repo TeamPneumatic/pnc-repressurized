@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.inventory.FluidMixerMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.OutputItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -32,6 +33,8 @@ import me.desht.pneumaticcraft.common.recipes.RecipeCaches;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -53,13 +56,11 @@ import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,7 +73,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     // Maps a fluid to all the other fluids it can combine with
     private static final Map<Fluid, Set<Fluid>> FLUID_MATCHES = new HashMap<>();
 
-    private final ItemStackHandler outputInv = new BaseItemStackHandler(this, 1);
+    private final BaseItemStackHandler outputInv = new BaseItemStackHandler(this, 1);
     private final OutputItemHandler outputInvWrapper = new OutputItemHandler(outputInv);
 
     @GuiSynced
@@ -152,7 +153,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         }
         if (rsController.shouldRun() && currentRecipe != null) {
             if (craftingProgress < maxProgress) {
-                if (getPressure() >= requiredPressure && takeInputIngredients(FluidAction.SIMULATE)) {
+                if (getPressure() >= requiredPressure && takeInputIngredients(true)) {
                     craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
                     didWork = true;
                     airUsed += 2.5f * getPressure();
@@ -163,12 +164,12 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
                     }
                 }
             } else {
-                if (hasOutputSpace() && takeInputIngredients(FluidAction.EXECUTE)) {
+                if (hasOutputSpace() && takeInputIngredients(false)) {
                     if (!currentRecipe.getOutputFluid().isEmpty()) {
-                        outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
+                        FluidUtils.fill(outputTank, currentRecipe.getOutputFluid().copy(), false);
                     }
                     if (!currentRecipe.getOutputItem().isEmpty()) {
-                        outputInv.insertItem(0, currentRecipe.getOutputItem().copy(), false);
+                        IOHelper.insert(outputInv, 0, currentRecipe.getOutputItem().copy(), false);
                     }
                     craftingProgress -= maxProgress;
                 }
@@ -195,25 +196,25 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         return currentRecipeIdSynced;
     }
 
-    private boolean takeInputIngredients(FluidAction action) {
+    private boolean takeInputIngredients(boolean simulate) {
         if (currentRecipe.getInput1().test(inputTank1.getFluid()) && currentRecipe.getInput2().test(inputTank2.getFluid())) {
-            FluidStack f1 = inputTank1.drain(currentRecipe.getInput1().amount(), action);
-            FluidStack f2 = inputTank2.drain(currentRecipe.getInput2().amount(), action);
+            FluidStack f1 = FluidUtils.drain(inputTank1, currentRecipe.getInput1().amount(), simulate);
+            FluidStack f2 = FluidUtils.drain(inputTank2, currentRecipe.getInput2().amount(), simulate);
             return f1.getAmount() == currentRecipe.getInput1().amount() && f2.getAmount() == currentRecipe.getInput2().amount();
         } else if (currentRecipe.getInput2().test(inputTank1.getFluid()) && currentRecipe.getInput1().test(inputTank2.getFluid())) {
-            FluidStack f1 = inputTank1.drain(currentRecipe.getInput2().amount(), action);
-            FluidStack f2 = inputTank2.drain(currentRecipe.getInput1().amount(), action);
+            FluidStack f1 = FluidUtils.drain(inputTank1, currentRecipe.getInput2().amount(), simulate);
+            FluidStack f2 = FluidUtils.drain(inputTank2, currentRecipe.getInput1().amount(), simulate);
             return f1.getAmount() == currentRecipe.getInput2().amount() && f2.getAmount() == currentRecipe.getInput1().amount();
         }
         return false;
     }
 
     public boolean hasOutputSpace() {
-        if (!currentRecipe.getOutputItem().isEmpty() && !outputInv.insertItem(0, currentRecipe.getOutputItem(), true).isEmpty()) {
+        if (!currentRecipe.getOutputItem().isEmpty() && !IOHelper.insert(outputInv, 0, currentRecipe.getOutputItem(), true).isEmpty()) {
             return false;
         }
         return currentRecipe.getOutputFluid().isEmpty()
-                || outputTank.fill(currentRecipe.getOutputFluid(), FluidAction.SIMULATE) >= currentRecipe.getOutputFluid().getAmount();
+                || FluidUtils.fill(outputTank, currentRecipe.getOutputFluid(), true) >= currentRecipe.getOutputFluid().getAmount();
     }
 
     private Optional<RecipeHolder<FluidMixerRecipe>> findApplicableRecipe() {
@@ -226,12 +227,12 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return outputInvWrapper;
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return fluidHandler;
     }
 
@@ -307,9 +308,9 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         FluidStack moved;
         SmartSyncTank inputTank = tank == 1 ? inputTank1 : inputTank2;
         if (shiftHeld) {
-            moved = inputTank.drain(inputTank.getCapacity(), FluidAction.EXECUTE);
+            moved = FluidUtils.drain(inputTank, inputTank.getCapacity(), false);
         } else {
-            moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
+            moved = FluidUtils.transfer(inputTank, outputTank, inputTank.getFluidAmount(), false);
         }
         if (!moved.isEmpty() && player instanceof ServerPlayer) {
             NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, worldPosition, 1f, 1f, false), (ServerPlayer) player);
@@ -331,15 +332,15 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         );
     }
 
-    public IFluidTank getInputTank1() {
+    public PNCFluidTank getInputTank1() {
         return inputTank1;
     }
 
-    public IFluidTank getInputTank2() {
+    public PNCFluidTank getInputTank2() {
         return inputTank2;
     }
 
-    public IFluidTank getOutputTank() {
+    public PNCFluidTank getOutputTank() {
         return outputTank;
     }
 
@@ -354,67 +355,35 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         );
     }
 
-    private class MixerFluidHandler implements IFluidHandler {
-        @Override
-        public int getTanks() {
-            return 3;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return tanks[tank].getFluid();
+    private class MixerFluidHandler extends IOCombinedHandler<FluidResource> {
+        MixerFluidHandler() {
+            super(tank -> tank < 2, tank -> tank == 2, inputTank1, inputTank2, outputTank);
         }
 
         @Override
-        public int getTankCapacity(int tank) {
-            return tanks[tank].getCapacity();
+        public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            return index < 2 && canFillTank(index, resource.getFluid()) ? super.insert(index, resource, amount, transaction) : 0;
         }
 
-        @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return tanks[tank].isFluidValid(stack);
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            if (isFluidAccepted(resource.getFluid())) {
-                if (inputTank1.isEmpty() && inputTank2.isEmpty()) {
-                    // both tanks empty - fill first tank by default
-                    return inputTank1.fill(resource, action);
-                } else if (inputTank2.isEmpty()) {
-                    if (resource.getFluid() == inputTank1.getFluid().getFluid()) {
-                        return inputTank1.fill(resource, action);
-                    } else if (isFluidMatch(resource.getFluid(), inputTank1.getFluid().getFluid())) {
-                        // fluid in first tank only - fill second tank iff fluid is compatible
-                        return inputTank2.fill(resource, action);
-                    }
-                } else if (inputTank1.isEmpty()) {
-                    if (resource.getFluid() == inputTank2.getFluid().getFluid()) {
-                        return inputTank2.fill(resource, action);
-                    } else if (isFluidMatch(resource.getFluid(), inputTank2.getFluid().getFluid())) {
-                        // fluid in second tank only - fill first tank iff fluid is compatible
-                        return inputTank1.fill(resource, action);
-                    }
-                } else {
-                    // fluid in both tanks - fill whichever one matches, if either
-                    int filled = inputTank1.fill(resource, action);
-                    return filled == 0 ? inputTank2.fill(resource, action) : filled;
-                }
+        private boolean canFillTank(int tank, Fluid fluid) {
+            if (!isFluidAccepted(fluid)) {
+                return false;
             }
-            return 0;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction action) {
-            return outputTank.drain(resource, action);
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action) {
-            return outputTank.drain(maxDrain, action);
+            if (inputTank1.isEmpty() && inputTank2.isEmpty()) {
+                // both tanks empty - fill first tank by default
+                return tank == 0;
+            } else if (inputTank2.isEmpty()) {
+                // fluid in first tank only - fill second tank iff fluid is compatible
+                Fluid fluid1 = inputTank1.getFluid().getFluid();
+                return tank == 0 ? fluid == fluid1 : fluid != fluid1 && isFluidMatch(fluid, fluid1);
+            } else if (inputTank1.isEmpty()) {
+                // fluid in second tank only - fill first tank iff fluid is compatible
+                Fluid fluid2 = inputTank2.getFluid().getFluid();
+                return tank == 1 ? fluid == fluid2 : fluid != fluid2 && isFluidMatch(fluid, fluid2);
+            } else {
+                // fluid in both tanks - fill whichever one matches, if either
+                return true;
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -37,7 +38,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +72,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 return false;
             }
 
-            ItemStack placeableStack = drone.getInv().getStackInSlot(slot);
+            ItemStack placeableStack = IOHelper.getStack(drone.getInv(), slot);
             BlockPos placerPos = findClearSide(pos);
             if (placerPos == null) {
                 drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
@@ -98,7 +100,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
         if (squareDistToBlock < 2 * 2) {
             int slot = pickPlaceableSlot();
             if (slot >= 0) {   // should always be the case, we checked in isValidPosition()
-                ItemStack droneStack = drone.getInv().getStackInSlot(slot);
+                ItemStack droneStack = IOHelper.getStack(drone.getInv(), slot);
                 BlockItem blockItem = (BlockItem) droneStack.getItem();  // already verified this is the case
                 if (worldCache.getBlockState(pos).canBeReplaced()) {
                     BlockPlaceContext ctx = getPlacementContext(pos, pos, droneStack);
@@ -106,9 +108,9 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                         InteractionResult res = blockItem.place(ctx);
                         if (res.consumesAction()) {
                             drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
-                            if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
+                            if (slot == 0 && IOHelper.getStack(drone.getInv(), slot).isEmpty()) {
                                 // kludge to force update of visible held item
-                                drone.getInv().setStackInSlot(slot, ItemStack.EMPTY);
+                                IOHelper.setStack(drone.getInv(), slot, ItemStack.EMPTY);
                             }
                             return false;
                         }
@@ -122,12 +124,12 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     }
 
     private int pickPlaceableSlot() {
-        IItemHandlerModifiable inv = drone.getInv();
+        ResourceHandler<ItemResource> inv = drone.getInv();
 
-        if (inv.getSlots() > 1 && progWidget instanceof ProgWidgetPlace p && p.isRandomize()) {
+        if (inv.size() > 1 && progWidget instanceof ProgWidgetPlace p && p.isRandomize()) {
             List<Integer> l = new ArrayList<>();
-            for (int i = 0; i < inv.getSlots(); i++) {
-                ItemStack droneStack = inv.getStackInSlot(i);
+            for (int i = 0; i < inv.size(); i++) {
+                ItemStack droneStack = IOHelper.getStack(inv, i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     l.add(i);
                 }
@@ -136,8 +138,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 return l.get(drone.getDroneLevel().getRandom().nextInt(l.size()));
             }
         } else {
-            for (int i = 0; i < inv.getSlots(); i++) {
-                ItemStack droneStack = inv.getStackInSlot(i);
+            for (int i = 0; i < inv.size(); i++) {
+                ItemStack droneStack = IOHelper.getStack(inv, i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     return i;
                 }

@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -45,14 +46,17 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.*;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem, IFluidCapProvider {
@@ -79,18 +83,18 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
         if (stack.getCount() != 1) return InteractionResult.PASS;
 
         if (!worldIn.isClientSide()) {
-            IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
+            ItemAccess access = ItemAccess.forPlayerSlot(playerIn, handIn == InteractionHand.MAIN_HAND ? playerIn.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND);
+            Optional.ofNullable(access.getCapability(Capabilities.Fluid.ITEM)).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
                 if (playerIn.isShiftKeyDown()) {
                     // take XP fluid from the stick and give to player
                     int xpToGive = EnchantmentUtils.getExperienceForLevel(playerIn.experienceLevel + 1) - playerXp;
                     int fluidAmount = xpToGive * ratio;
-                    FluidStack toDrain = handler.drain(fluidAmount, IFluidHandler.FluidAction.SIMULATE);
+                    FluidStack toDrain = FluidUtils.drain(handler, fluidAmount, true);
                     if (!toDrain.isEmpty()) {
                         EnchantmentUtils.addPlayerXP(playerIn, toDrain.getAmount() / ratio);
-                        handler.drain(toDrain.getAmount(), IFluidHandler.FluidAction.EXECUTE);
-                        playerIn.setItemInHand(handIn, handler.getContainer());
+                        FluidUtils.drain(handler, toDrain.getAmount(), false);
                     }
                 } else {
                     if (playerXp > 0) {
@@ -101,20 +105,19 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
                         }
                         int fluidAmount = xpToTake * ratio;
                         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
-                        int filled = handler.fill(toFill, IFluidHandler.FluidAction.SIMULATE);
+                        int filled = FluidUtils.fill(handler, toFill, true);
                         if (filled >= ratio) {
                             EnchantmentUtils.addPlayerXP(playerIn, -(filled / ratio));
-                            handler.fill(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), IFluidHandler.FluidAction.EXECUTE);
-                            playerIn.setItemInHand(handIn, handler.getContainer());
-                        }
+                            FluidUtils.fill(handler, new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), false);
+                            }
                     }
                 }
             });
         } else {
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
-                int amount = handler.getFluidInTank(0).getAmount();
-                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isShiftKeyDown()
-                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
+                int amount = FluidUtils.getFluid(handler, 0).getAmount();
+                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getCapacityAsInt(0, FluidResource.EMPTY) && !playerIn.isShiftKeyDown()
+                        || FluidUtils.getFluid(handler, 0).getAmount() > 0 && playerIn.isShiftKeyDown()) {
                     playerIn.playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.1f,
                             (worldIn.getRandom().nextFloat() - worldIn.getRandom().nextFloat()) * 0.35F + 0.9F);
                 }
@@ -131,7 +134,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
             IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 if (ratio > 0) {  // could be 0 if queried too early, e.g. JEI item scanning
-                    FluidStack fluidStack = handler.getFluidInTank(0);
+                    FluidStack fluidStack = FluidUtils.getFluid(handler, 0);
                     int amount = fluidStack.getAmount();
                     int levels = EnchantmentUtils.getLevelForExperience(amount / ratio);
                     tooltip.accept(Component.translatable("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).withStyle(ChatFormatting.GREEN));
@@ -145,8 +148,8 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     @Override
     public int getBarWidth(ItemStack stack) {
         return IOHelper.getFluidHandlerForItem(stack).map(handler -> {
-            FluidStack fluidStack = handler.getFluidInTank(0);
-            return Math.round((float)fluidStack.getAmount() / (float) handler.getTankCapacity(0) * 13F);
+            FluidStack fluidStack = FluidUtils.getFluid(handler, 0);
+            return Math.round((float)fluidStack.getAmount() / (float) handler.getCapacityAsInt(0, FluidResource.EMPTY) * 13F);
         }).orElse(0);
     }
 
@@ -169,9 +172,9 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     public int getTintColor(ItemStack stack, int tintIndex) {
         return switch (tintIndex) {
             case 1 -> IOHelper.getFluidHandlerForItem(stack).map(handler -> {
-                FluidStack fluidStack = handler.getFluidInTank(0);
+                FluidStack fluidStack = FluidUtils.getFluid(handler, 0);
                 if (fluidStack.isEmpty()) return 0xFFFFFF;
-                float f = (float) fluidStack.getAmount() / (float) handler.getTankCapacity(0);
+                float f = (float) fluidStack.getAmount() / (float) handler.getCapacityAsInt(0, FluidResource.EMPTY);
                 return TINT_COLORS[(int) (f * 5)];
             }).orElse(0xFFFFFFFF);
             case 2 -> shouldAbsorbXPOrbs(stack) ? 0xFF00FF00 : 0xFF808080;
@@ -186,7 +189,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
 
     public static boolean isRoomInStick(ItemStack stick) {
         return stick.getItem() instanceof MemoryStickItem && IOHelper.getFluidHandlerForItem(stick)
-                .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
+                .map(h -> FluidUtils.getFluid(h, 0).getAmount() < h.getCapacityAsInt(0, FluidResource.EMPTY))
                 .orElseThrow(RuntimeException::new);
     }
 
@@ -204,8 +207,8 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-        return new PNCFluidHandlerItemStack(ModDataComponents.STORED_FLUID, stack, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
+    public ResourceHandler<FluidResource> provideFluidCapability(ItemAccess itemAccess) {
+        return new PNCFluidHandlerItemStack(ModDataComponents.STORED_FLUID, itemAccess, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
     @EventBusSubscriber(modid = Names.MOD_ID)
@@ -241,7 +244,7 @@ public class MemoryStickItem extends Item implements ColorHandlers.ITintableItem
             ItemStack stack = findMemoryStick(event.getEntity());
             if (!stack.isEmpty()) {
                 IOHelper.getFluidHandlerForItem(stack).ifPresent(handler -> {
-                    if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
+                    if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), false)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
                         event.getOrb().discard();
                         event.setCanceled(true);

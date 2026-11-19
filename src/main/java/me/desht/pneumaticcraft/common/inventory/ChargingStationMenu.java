@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -29,7 +30,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.equipment.Equippable;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -42,7 +42,7 @@ public class ChargingStationMenu extends AbstractPneumaticCraftMenu<ChargingStat
     public ChargingStationMenu(int i, Inventory inventoryPlayer, BlockPos pos) {
         super(ModMenuTypes.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 91, 45) {
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, 91, 45) {
             @Override
             public int getMaxStackSize() {
                 return 1;

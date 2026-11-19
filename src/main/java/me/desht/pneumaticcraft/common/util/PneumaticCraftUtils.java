@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.registry.ModFluids;
 import net.minecraft.ChatFormatting;
@@ -53,9 +54,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -71,13 +70,10 @@ import net.neoforged.neoforge.common.util.BlockSnapshot;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joml.Vector3f;
@@ -493,14 +489,13 @@ public class PneumaticCraftUtils {
                 consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
             } else {
-                ResourceHandler<ItemResource> itemHandler = ItemAccess.forStack(invStack).getCapability(Capabilities.Item.ITEM);
-                IItemHandler handler = itemHandler == null ? null : IItemHandler.of(itemHandler);
+                ResourceHandler<ItemResource> handler = invStack.isEmpty() ? null : ItemAccess.forPlayerSlot(inv.player, i).getCapability(Capabilities.Item.ITEM);
                 if (handler != null) {
-                    for (int j = 0; j < handler.getSlots(); j++) {
-                        ItemStack invStack2 = handler.getStackInSlot(j);
+                    for (int j = 0; j < handler.size(); j++) {
+                        ItemStack invStack2 = IOHelper.getStack(handler, j);
                         if (ItemStack.isSameItem(invStack2, stack)) {
                             int extracted = Math.min(invStack2.getCount(), stack.getCount());
-                            ItemStack s = handler.extractItem(j, extracted, false);
+                            ItemStack s = IOHelper.extract(handler, j, extracted, false);
                             consumed = s.getCount();
                             break;
                         }
@@ -518,18 +513,18 @@ public class PneumaticCraftUtils {
      * @param handler the item handler
      * @param items the list
      */
-    public static NonNullList<ItemStack> collectNonEmptyItems(IItemHandler handler, NonNullList<ItemStack> items) {
+    public static NonNullList<ItemStack> collectNonEmptyItems(ResourceHandler<ItemResource> handler, NonNullList<ItemStack> items) {
         if (handler != null) {
-            for (int i = 0; i < handler.getSlots(); i++) {
-                if (!handler.getStackInSlot(i).isEmpty()) {
-                    items.add(handler.getStackInSlot(i));
+            for (int i = 0; i < handler.size(); i++) {
+                if (!IOHelper.getStack(handler, i).isEmpty()) {
+                    items.add(IOHelper.getStack(handler, i));
                 }
             }
         }
         return items;
     }
 
-    public static void forceDropContents(Level level, BlockPos pos, IItemHandler handler) {
+    public static void forceDropContents(Level level, BlockPos pos, ResourceHandler<ItemResource> handler) {
         collectNonEmptyItems(handler, NonNullList.create())
                 .forEach(stack -> dropItemOnGround(stack, level, pos));
     }
@@ -558,11 +553,11 @@ public class PneumaticCraftUtils {
      * @param dest the dest handler
      * @param maxSlots the number of slots to copy
      */
-    public static ItemStackHandler copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {
-        int nSlots = Math.min(maxSlots, source.getSlots());
+    public static BaseItemStackHandler copyItemHandler(ResourceHandler<ItemResource> source, BaseItemStackHandler dest, int maxSlots) {
+        int nSlots = Math.min(maxSlots, source.size());
         dest.setSize(nSlots);
         for (int i = 0; i < nSlots; i++) {
-            dest.setStackInSlot(i, source.getStackInSlot(i).copy());
+            dest.setStackInSlot(i, IOHelper.getStack(source, i).copy());
         }
         return dest;
     }
@@ -574,8 +569,8 @@ public class PneumaticCraftUtils {
      * @param source the source handler
      * @param dest the dest handler
      */
-    public static ItemStackHandler copyItemHandler(IItemHandler source, ItemStackHandler dest) {
-        return copyItemHandler(source, dest, source.getSlots());
+    public static BaseItemStackHandler copyItemHandler(ResourceHandler<ItemResource> source, BaseItemStackHandler dest) {
+        return copyItemHandler(source, dest, source.size());
     }
 
     public static String posToString(@Nullable BlockPos pos) {
@@ -611,12 +606,12 @@ public class PneumaticCraftUtils {
      * @param action whether to simulate the action
      * @return true if the XP orb was (or could be) fully absorbed into the fluid handler
      */
-    public static boolean fillTankWithOrb(IFluidHandler handler, ExperienceOrb orb, FluidAction action) {
+    public static boolean fillTankWithOrb(ResourceHandler<FluidResource> handler, ExperienceOrb orb, boolean simulate) {
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
         int fluidAmount = orb.getValue() * ratio;
         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
-        int filled = handler.fill(toFill, action);
-        if (filled > 0 && filled < fluidAmount && action.execute()) {
+        int filled = FluidUtils.fill(handler, toFill, simulate);
+        if (filled > 0 && filled < fluidAmount && !simulate) {
             orb.setValue(orb.getValue() - Math.max(1, filled / ratio));  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
@@ -734,10 +729,10 @@ public class PneumaticCraftUtils {
         return Optional.ofNullable(stack.get(type));
     }
 
-    public static boolean ensureSlotsEmpty(IItemHandler handler, int required) {
+    public static boolean ensureSlotsEmpty(ResourceHandler<ItemResource> handler, int required) {
         int nFree = 0;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            if (handler.getStackInSlot(i).isEmpty() && ++nFree >= required) {
+        for (int i = 0; i < handler.size(); i++) {
+            if (IOHelper.getStack(handler, i).isEmpty() && ++nFree >= required) {
                 return true;
             }
         }

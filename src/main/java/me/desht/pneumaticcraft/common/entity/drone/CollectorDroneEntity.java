@@ -31,7 +31,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
         int rangeUpgrades = UpgradableItemUtils.getUpgradeCount(droneStack, ModUpgrades.RANGE.get());
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
 
-        Optional<IItemHandler> itemCap = IOHelper.getInventoryForBlock(level().getBlockEntity(clickPos), facing);
+        Optional<ResourceHandler<ItemResource>> itemCap = IOHelper.getInventoryForBlock(level().getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {
             // placed on a chest; filter on the chest's contents, if any
             Set<Item> filtered = getFilteredItems(itemCap.get());
@@ -91,10 +92,10 @@ public class CollectorDroneEntity extends AbstractBasicDroneEntity {
                 .orElse(pos);
     }
 
-    private Set<Item> getFilteredItems(IItemHandler handler) {
-        return IntStream.range(0, handler.getSlots())
-                .filter(i -> !handler.getStackInSlot(i).isEmpty())
-                .mapToObj(i -> handler.getStackInSlot(i).getItem())
+    private Set<Item> getFilteredItems(ResourceHandler<ItemResource> handler) {
+        return IntStream.range(0, handler.size())
+                .filter(i -> !IOHelper.getStack(handler, i).isEmpty())
+                .mapToObj(i -> IOHelper.getStack(handler, i).getItem())
                 .collect(Collectors.toSet());
     }
 }

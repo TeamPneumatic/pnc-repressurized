@@ -38,8 +38,8 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
+    protected void onContentsChanged(int slot, ItemStack previousContents) {
+        super.onContentsChanged(slot, previousContents);
         writeToChargingStack();
     }
 
@@ -64,7 +64,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     private boolean isUnique(int slot, ItemStack stack) {
-        for (int i = 0; i < getSlots(); i++) {
+        for (int i = 0; i < size(); i++) {
             if (i != slot && PNCUpgrade.from(stack) == PNCUpgrade.from(getStackInSlot(i))) return false;
         }
         return true;

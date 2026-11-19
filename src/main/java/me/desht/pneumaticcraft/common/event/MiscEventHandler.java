@@ -43,7 +43,8 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.registry.ModCriterionTriggers;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
-import me.desht.pneumaticcraft.common.util.LegacyFluidHandlerItem;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -82,13 +83,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 public class MiscEventHandler {
@@ -123,7 +124,7 @@ public class MiscEventHandler {
         // allow burning of PNC fuel fluids in any container item, iff item.hasContainer() is true
         ItemStack containerStack = event.getItemStack();
         if (containerStack.getCraftingRemainder() != null) {
-            FluidUtil.getFluidContained(containerStack).ifPresent(fluidStack -> {
+            Optional.of(FluidUtils.getFirstFluidContained(containerStack)).filter(fs -> !fs.isEmpty()).ifPresent(fluidStack -> {
                 PneumaticCraftUtils.getRegistryName(fluidStack.getFluid()).ifPresent(regName -> {
                     if (Names.MOD_ID.equals(regName.getNamespace())) {
                         int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
@@ -142,9 +143,9 @@ public class MiscEventHandler {
 
     private int amountTaken(int origAmount, ItemStack stack) {
         ItemStackTemplate remainder = stack.getCraftingRemainder();
-        IFluidHandlerItem handler = remainder == null ? null : LegacyFluidHandlerItem.of(remainder.create());
+        ResourceHandler<FluidResource> handler = remainder == null ? null : IOHelper.getFluidHandlerForItem(remainder.create()).orElse(null);
         if (handler != null) {
-            int newAmount = handler.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).getAmount();
+            int newAmount = FluidUtils.drain(handler, Integer.MAX_VALUE, true).getAmount();
             return origAmount - newAmount;
         }
         return origAmount;

@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.item;
 
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public interface IFluidCapProvider {
-    IFluidHandlerItem provideFluidCapability(ItemStack stack);
+    ResourceHandler<FluidResource> provideFluidCapability(ItemAccess itemAccess);
 }

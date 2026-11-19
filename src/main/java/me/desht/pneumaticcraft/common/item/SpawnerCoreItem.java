@@ -247,8 +247,8 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
 
             stats = null;
         }

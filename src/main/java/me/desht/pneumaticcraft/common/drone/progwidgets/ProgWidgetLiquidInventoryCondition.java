@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
@@ -91,8 +92,8 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             private int countFluid(BlockEntity te) {
                 return IOHelper.getFluidHandlerForBlock(te).map(handler -> {
                     int total = 0;
-                    for (int i = 0; i < handler.getTanks(); i++) {
-                        FluidStack stack = handler.getFluidInTank(i);
+                    for (int i = 0; i < handler.size(); i++) {
+                        FluidStack stack = FluidUtils.getFluid(handler, i);
                         if (!stack.isEmpty() && ProgWidgetLiquidFilter.isLiquidValid(stack.getFluid(), progWidget, 1)) {
                             total += stack.getAmount();
                         }

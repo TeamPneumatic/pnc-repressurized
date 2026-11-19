@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -69,7 +69,7 @@ public class ChargingStationUpgradeManagerMenu extends AbstractPneumaticCraftMen
         return new ChargingStationUpgradeManagerMenu(ModMenuTypes.CHARGING_AMADRON.get(), windowId, inv, data);
     }
 
-    private class UpgradeSlot extends SlotItemHandler {
+    private class UpgradeSlot extends ItemHandlerSlot {
         UpgradeSlot(ChargingStationBlockEntity te, int slotIndex, int posX, int posY) {
             super(te.getChargeableInventory(), slotIndex, posX, posY);
         }

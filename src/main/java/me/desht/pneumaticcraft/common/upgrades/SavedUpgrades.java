@@ -5,7 +5,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.UpgradeItem;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,8 +15,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.*;
 import java.util.function.ToIntFunction;
@@ -45,12 +47,12 @@ public class SavedUpgrades {
         this.map = map;
     }
 
-    public static SavedUpgrades fromItemHandler(IItemHandler upgradeHandler, ToIntFunction<PNCUpgrade> maxCalculator) {
+    public static SavedUpgrades fromItemHandler(ResourceHandler<ItemResource> upgradeHandler, ToIntFunction<PNCUpgrade> maxCalculator) {
         Map<PNCUpgrade,Integer> map = new HashMap<>();
 
-        List<ItemStack> items = new ArrayList<>(upgradeHandler.getSlots());
-        for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-            ItemStack stack = upgradeHandler.getStackInSlot(i);
+        List<ItemStack> items = new ArrayList<>(upgradeHandler.size());
+        for (int i = 0; i < upgradeHandler.size(); i++) {
+            ItemStack stack = IOHelper.getStack(upgradeHandler, i);
             items.add(stack);
             if (stack.getItem() instanceof UpgradeItem upgradeItem) {
                 PNCUpgrade type = upgradeItem.getUpgradeType();
@@ -69,17 +71,17 @@ public class SavedUpgrades {
         return Collections.unmodifiableMap(map);
     }
 
-    public IItemHandler getUpgradeHandler() {
-        ItemStackHandler res = new ItemStackHandler(contents.getSlots());
+    public ResourceHandler<ItemResource> getUpgradeHandler() {
+        BaseItemStackHandler res = new BaseItemStackHandler(contents.getSlots());
         for (int i = 0; i < contents.getSlots(); i++) {
             res.setStackInSlot(i, contents.getStackInSlot(i));
         }
         return res;
     }
 
-    public void fillItemHandler(ItemStackHandler handler) {
+    public void fillItemHandler(BaseItemStackHandler handler) {
         // handler is expected to be large enough to hold the upgrades
-        for (int i = 0; i < contents.getSlots() && i < handler.getSlots(); i++) {
+        for (int i = 0; i < contents.getSlots() && i < handler.size(); i++) {
             handler.setStackInSlot(i, contents.getStackInSlot(i));
         }
     }

@@ -21,10 +21,12 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.upgrade.IUpgradeItem;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.Optional;
 
@@ -58,11 +60,11 @@ public class UpgradeCache {
         if (countCache != null) return;
 
         countCache = new byte[largestID() + 1];
-        IItemHandler handler = holder.getUpgradeHandler();
+        ResourceHandler<ItemResource> handler = holder.getUpgradeHandler();
 
         ejectDirection = null;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = IOHelper.getStack(handler, i);
             if (stack.getItem() instanceof IUpgradeItem upgradeItem) {
                 PNCUpgrade upgradeType = upgradeItem.getUpgradeType();
                 if (countCache[upgradeType.getCacheId()] != 0) {

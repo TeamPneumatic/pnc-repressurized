@@ -18,19 +18,19 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.utility.TagWorkbenchBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class TagWorkbenchMenu extends AbstractPneumaticCraftMenu<TagWorkbenchBlockEntity> {
     public TagWorkbenchMenu(int windowId, Inventory inv, BlockPos pos) {
         super(ModMenuTypes.TAG_MATCHER.get(), windowId, inv, pos);
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 8, 18));
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 1, 123, 18));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, 8, 18));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 1, 123, 18));
         addSlot(new OutputOnlySlot(blockEntity.getItemHandler(), 2, 206, 18));
 
         addPlayerSlots(inv, 34, 174);

@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLiquidImport;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,8 +31,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
@@ -56,7 +57,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
     }
 
     private boolean emptyTank(BlockPos pos, boolean simulate) {
-        if (!shouldVoidExcess() && drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
+        if (!shouldVoidExcess() && drone.getFluidTank().getAmountAsInt(0) == drone.getFluidTank().getCapacityAsInt(0, FluidResource.EMPTY)) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
         } else {
@@ -80,12 +81,12 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 BlockState blockState = drone.getDroneLevel().getBlockState(pos);
                 if (state.isSource() && progWidget.isFluidValid(state.getType())) {
                     FluidStack stack = new FluidStack(state.getType(), BUCKET_VOLUME);
-                    if (shouldVoidExcess() || drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
+                    if (shouldVoidExcess() || FluidUtils.fill(drone.getFluidTank(), stack, true) == BUCKET_VOLUME) {
                         if (!simulate) {
                             if (blockState.getBlock() instanceof BucketPickup pickup) {
                                 pickup.pickupBlock(drone.getFakePlayer(), drone.getDroneLevel(), pos, blockState);
                                 decreaseCount(BUCKET_VOLUME);
-                                drone.getFluidTank().fill(stack, FluidAction.EXECUTE);
+                                FluidUtils.fill(drone.getFluidTank(), stack, false);
                                 return true;
                             }
                         }
@@ -99,15 +100,15 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
         return false;
     }
 
-    private boolean tryImportFluid(IFluidHandler sourceHandler, boolean simulate) {
-        FluidStack importedFluid = sourceHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
+    private boolean tryImportFluid(ResourceHandler<FluidResource> sourceHandler, boolean simulate) {
+        FluidStack importedFluid = FluidUtils.drain(sourceHandler, Integer.MAX_VALUE, true);
         if (!importedFluid.isEmpty() && progWidget.isFluidValid(importedFluid.getFluid())) {
-            int filledAmount = drone.getFluidTank().fill(importedFluid, FluidAction.SIMULATE);
+            int filledAmount = FluidUtils.fill(drone.getFluidTank(), importedFluid, true);
             if (filledAmount > 0) {
                 if (progWidget.useCount())
                     filledAmount = Math.min(filledAmount, getRemainingCount());
                 if (!simulate) {
-                    decreaseCount(drone.getFluidTank().fill(sourceHandler.drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
+                    decreaseCount(FluidUtils.fill(drone.getFluidTank(), FluidUtils.drain(sourceHandler, filledAmount, false), false));
                 }
                 return true;
             } else {

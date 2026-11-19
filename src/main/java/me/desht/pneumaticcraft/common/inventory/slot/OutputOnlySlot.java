@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.inventory.slot;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
-public class OutputOnlySlot extends SlotItemHandler {
+public class OutputOnlySlot extends ItemHandlerSlot {
 
-    public OutputOnlySlot(IItemHandler inventoryIn, int index, int xPosition, int yPosition) {
+    public OutputOnlySlot(ResourceHandler<ItemResource> inventoryIn, int index, int xPosition, int yPosition) {
         super(inventoryIn, index, xPosition, yPosition);
     }
 

@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.inventory.ThermoPlantMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -35,6 +36,8 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -58,13 +61,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,11 +110,11 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     private ThermoPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
-    private final ItemStackHandler inputItemHandler = new InputItemHandler(this);
-    private final ItemStackHandler outputItemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
-    private final ThermopneumaticInvWrapper invWrapper = new ThermopneumaticInvWrapper(inputItemHandler, outputItemHandler);
+    private final BaseItemStackHandler inputItemHandler = new InputItemHandler(this);
+    private final BaseItemStackHandler outputItemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
+    private final ResourceHandler<ItemResource> invWrapper = new IOCombinedHandler<>(slot -> slot == 0, slot -> slot == 1, inputItemHandler, outputItemHandler);
 
-    private final ThermopneumaticFluidHandler fluidHandler = new ThermopneumaticFluidHandler();
+    private final ResourceHandler<FluidResource> fluidHandler = new IOCombinedHandler<>(tank -> tank == 0, tank -> tank == 1, inputTank, outputTank);
     private double airUsage;
 
     public ThermoPlantBlockEntity(BlockPos pos, BlockState state) {
@@ -209,13 +209,13 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
             heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * speedBoost * 0.75f * progressDivider);
         }
         if (craftingProgress >= CRAFTING_TIME) {
-            int filled = outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE);
-            ItemStack excess = outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), true);
+            int filled = FluidUtils.fill(outputTank, currentRecipe.getOutputFluid().copy(), true);
+            ItemStack excess = IOHelper.insert(outputItemHandler, 0, currentRecipe.getOutputItem().copy(), true);
             if (filled == currentRecipe.getOutputFluid().getAmount() && excess.isEmpty()) {
-                outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
-                outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), false);
-                inputTank.drain(currentRecipe.getInputFluidAmount(), FluidAction.EXECUTE);
-                inputItemHandler.extractItem(0, getInputItemCount(), false);
+                FluidUtils.fill(outputTank, currentRecipe.getOutputFluid().copy(), false);
+                IOHelper.insert(outputItemHandler, 0, currentRecipe.getOutputItem().copy(), false);
+                FluidUtils.drain(inputTank, currentRecipe.getInputFluidAmount(), false);
+                IOHelper.extract(inputItemHandler, 0, getInputItemCount(), false);
                 craftingProgress -= CRAFTING_TIME;
             } else {
                 problem = TPProblem.OUTPUT_BLOCKED;
@@ -256,16 +256,16 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         return Optional.empty();
     }
 
-    public IFluidTank getInputTank() {
+    public PNCFluidTank getInputTank() {
         return inputTank;
     }
 
-    public IFluidTank getOutputTank() {
+    public PNCFluidTank getOutputTank() {
         return outputTank;
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return fluidHandler;
     }
 
@@ -298,9 +298,9 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         if (tag.equals("dump")) {
             FluidStack moved;
             if (shiftHeld) {
-                moved = inputTank.drain(inputTank.getCapacity(), FluidAction.EXECUTE);
+                moved = FluidUtils.drain(inputTank, inputTank.getCapacity(), false);
             } else {
-                moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
+                moved = FluidUtils.transfer(inputTank, outputTank, inputTank.getFluidAmount(), false);
             }
             if (!moved.isEmpty()) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, worldPosition, 1f, 1f, false), player);
@@ -309,7 +309,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return invWrapper;
     }
 
@@ -338,15 +338,15 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         return new ThermoPlantMenu(i, playerInventory, getBlockPos());
     }
 
-    public IItemHandler getOutputInventory() {
+    public ResourceHandler<ItemResource> getOutputInventory() {
         return outputItemHandler;
     }
 
     @Override
     public int getComparatorValue() {
         if (currentRecipe == null
-                || outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE) < currentRecipe.getOutputFluid().getAmount()
-                || !outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), true).isEmpty()) {
+                || FluidUtils.fill(outputTank, currentRecipe.getOutputFluid().copy(), true) < currentRecipe.getOutputFluid().getAmount()
+                || !IOHelper.insert(outputItemHandler, 0, currentRecipe.getOutputItem().copy(), true).isEmpty()) {
             return 0;
         } else {
             return 15;
@@ -375,7 +375,7 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         );
     }
 
-    public IItemHandler getInputItemHandler() {
+    public ResourceHandler<ItemResource> getInputItemHandler() {
         return inputItemHandler;
     }
 
@@ -420,101 +420,12 @@ public class ThermoPlantBlockEntity extends AbstractAirHandlingBlockEntity imple
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
             if (getStackInSlot(0).getItem() != prev) {
                 searchForRecipe = true;
             }
             prev = getStackInSlot(0).getItem();
-        }
-    }
-
-    private class ThermopneumaticFluidHandler implements IFluidHandler {
-        final IFluidTank[] tanks;
-
-        ThermopneumaticFluidHandler() {
-            tanks = new IFluidTank[]{ inputTank, outputTank };
-        }
-
-        @Override
-        public int getTanks() {
-            return tanks.length;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return tanks[tank].getFluid();
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return tanks[tank].getCapacity();
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return tanks[tank].isFluidValid(stack);
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction doFill) {
-            return inputTank.fill(resource, doFill);
-        }
-
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            return FluidStack.isSameFluidSameComponents(outputTank.getFluid(), resource) ?
-                    outputTank.drain(resource.getAmount(), doDrain) :
-                    FluidStack.EMPTY;
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            return outputTank.drain(maxDrain, doDrain);
-        }
-    }
-
-    private class ThermopneumaticInvWrapper implements IItemHandler {
-        private final IItemHandler input;
-        private final IItemHandler output;
-
-        ThermopneumaticInvWrapper(IItemHandler input, IItemHandler output) {
-            this.input = input;
-            this.output = output;
-        }
-
-        @Override
-        public int getSlots() {
-            return 2;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return slot == 0 ? input.getStackInSlot(0) : output.getStackInSlot(0);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return slot == 0 ? inputItemHandler.insertItem(0, stack, simulate) : stack;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot == 1 ? outputItemHandler.extractItem(0, amount, simulate) : ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return slot == 0 ? input.getSlotLimit(0) : output.getSlotLimit(0);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 ? input.isItemValid(0, stack) : output.isItemValid(0, stack);
         }
     }
 

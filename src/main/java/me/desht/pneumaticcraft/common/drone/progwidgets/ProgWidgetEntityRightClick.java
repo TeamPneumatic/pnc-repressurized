@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -126,7 +127,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
             @Override
             protected boolean doAction() {
                 visitedEntities.add(targetedEntity);
-                ItemStack stack = drone.getInv().getStackInSlot(0);
+                ItemStack stack = IOHelper.getStack(drone.getInv(), 0);
                 Player fakePlayer = drone.getFakePlayer();
                 if (stack.getItem().interactLivingEntity(stack, fakePlayer, targetedEntity, InteractionHand.MAIN_HAND).consumesAction()
                         || targetedEntity.interact(fakePlayer, InteractionHand.MAIN_HAND, targetedEntity.position()).consumesAction()) {
@@ -134,8 +135,8 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                     // copy items back to drone inventory, dropping on the ground any items that don't fit
                     for (int i = 0; i < fakePlayer.getInventory().getNonEquipmentItems().size(); i++) {
                         ItemStack fakePlayerStack = fakePlayer.getInventory().getNonEquipmentItems().get(i);
-                        if (i < drone.getInv().getSlots()) {
-                            drone.getInv().setStackInSlot(i, fakePlayerStack);
+                        if (i < drone.getInv().size()) {
+                            IOHelper.setStack(drone.getInv(), i, fakePlayerStack);
                         } else if (!fakePlayerStack.isEmpty()) {
                             drone.dropItem(fakePlayerStack);
                             fakePlayer.getInventory().getNonEquipmentItems().set(i, ItemStack.EMPTY);

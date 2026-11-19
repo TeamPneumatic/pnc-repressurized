@@ -5,12 +5,14 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.inventory.AmadronMenu;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,8 +76,8 @@ public class MutableBasket extends ShoppingBasket {
     public AmadronMenu.EnumProblemState validate(ItemStack tablet, boolean allOffers) {
         if (basket.isEmpty()) return AmadronMenu.EnumProblemState.NO_PROBLEMS;  // simple case
 
-        Optional<IItemHandler> itemCap = AmadronTabletItem.getItemCapability(tablet);
-        Optional<IFluidHandler> fluidCap = AmadronTabletItem.getFluidCapability(tablet);
+        Optional<ResourceHandler<ItemResource>> itemCap = AmadronTabletItem.getItemCapability(tablet);
+        Optional<ResourceHandler<FluidResource>> fluidCap = AmadronTabletItem.getFluidCapability(tablet);
 
         // make sure the inventory and/or tank are actually present for each available offer
         if (basket.keySet().removeIf(offerId -> {
@@ -162,10 +164,10 @@ public class MutableBasket extends ShoppingBasket {
     }
 
 
-    private static Map<Fluid, Integer> countFluids(IFluidHandler handler) {
+    private static Map<Fluid, Integer> countFluids(ResourceHandler<FluidResource> handler) {
         Map<Fluid, Integer> result = new HashMap<>();
-        for (int i = 0; i < handler.getTanks(); i++) {
-            FluidStack stack = handler.getFluidInTank(i);
+        for (int i = 0; i < handler.size(); i++) {
+            FluidStack stack = FluidUtils.getFluid(handler, i);
             result.merge(stack.getFluid(), stack.getAmount(), Integer::sum);
         }
         return result;

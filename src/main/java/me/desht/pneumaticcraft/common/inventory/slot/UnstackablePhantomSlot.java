@@ -17,11 +17,13 @@
 
 package me.desht.pneumaticcraft.common.inventory.slot;
 
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+
 
 public class UnstackablePhantomSlot extends PhantomSlot {
 
-    public UnstackablePhantomSlot(IItemHandler handler, int index, int x, int y) {
+    public UnstackablePhantomSlot(ResourceHandler<ItemResource> handler, int index, int x, int y) {
         super(handler, index, x, y);
     }
 

@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.api.misc.ITranslatableEnum;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -38,7 +39,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -213,7 +213,7 @@ public class TransferGadgetEntity extends AbstractSemiblockEntity implements IDi
     private void tryTransferFluid(BlockEntity inputTE, BlockEntity outputTE, Direction side, Direction otherSide) {
         IOHelper.getFluidHandlerForBlock(inputTE, side)
                 .ifPresent(input -> IOHelper.getFluidHandlerForBlock(outputTE, otherSide)
-                        .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));
+                        .ifPresent(output -> FluidUtils.transfer(input, output, 100, false)));
     }
 
     public enum IOMode implements ITranslatableEnum {

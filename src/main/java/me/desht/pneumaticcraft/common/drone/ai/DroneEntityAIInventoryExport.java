@@ -46,8 +46,8 @@ public class DroneEntityAIInventoryExport extends DroneAIImportExportBase<ProgWi
     private boolean export(BlockPos pos, boolean simulate) {
         BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
         if (te != null) {
-            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                ItemStack droneStack = drone.getInv().getStackInSlot(i);
+            for (int i = 0; i < drone.getInv().size(); i++) {
+                ItemStack droneStack = IOHelper.getStack(drone.getInv(), i);
                 if (!droneStack.isEmpty()) {
                     if (progWidget.isItemValidForFilters(droneStack)) {
                         for (Direction dir : DirectionUtil.VALUES) {
@@ -58,11 +58,11 @@ public class DroneEntityAIInventoryExport extends DroneAIImportExportBase<ProgWi
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
                                 ItemStack remainder = IOHelper.insert(te, droneStack.copy(), dir, simulate);
-                                int stackSize = drone.getInv().getStackInSlot(i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
+                                int stackSize = IOHelper.getStack(drone.getInv(), i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
                                 droneStack.setCount(stackSize);
                                 int exportedItems = oldCount - stackSize;
                                 if (!simulate) {
-                                    drone.getInv().setStackInSlot(i, stackSize > 0 ? droneStack : ItemStack.EMPTY);
+                                    IOHelper.setStack(drone.getInv(), i, stackSize > 0 ? droneStack : ItemStack.EMPTY);
                                     decreaseCount(exportedItems);
                                 }
                                 if (simulate && exportedItems > 0) return true;

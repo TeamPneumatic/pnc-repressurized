@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.compressor.AirCompressorBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class AirCompressorMenu extends AbstractPneumaticCraftMenu<AirCompressorBlockEntity> {
 
@@ -39,7 +39,7 @@ public class AirCompressorMenu extends AbstractPneumaticCraftMenu<AirCompressorB
         super(type, windowId, invPlayer, tePos);
 
         // Add the burn slot
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, getFuelSlotXOffset(), 54));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, getFuelSlotXOffset(), 54));
 
         addUpgradeSlots(23, 29);
         addPlayerSlots(invPlayer, 84);

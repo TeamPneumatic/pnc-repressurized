@@ -17,11 +17,13 @@
 
 package me.desht.pneumaticcraft.common.upgrades;
 
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+
 
 @FunctionalInterface
 public interface IUpgradeHolder {
-    IItemHandler getUpgradeHandler();
+    ResourceHandler<ItemResource> getUpgradeHandler();
 
     default void onUpgradesChanged() {}
 }

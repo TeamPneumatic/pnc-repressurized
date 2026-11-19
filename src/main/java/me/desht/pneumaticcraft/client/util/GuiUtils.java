@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.util;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.*;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -37,7 +38,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public class GuiUtils {
      * @param fluidStack the fluid to draw
      * @param tank a fluid tank; if non-null, fluid Y size is scaled according to the tank's capacity
      */
-    public static void drawFluid(GuiGraphicsExtractor graphics, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {
+    public static void drawFluid(GuiGraphicsExtractor graphics, final Rect2i bounds, @Nullable FluidStack fluidStack, @Nullable PNCFluidTank tank) {
         if (fluidStack == null || fluidStack.getFluid() == Fluids.EMPTY) {
             return;
         }

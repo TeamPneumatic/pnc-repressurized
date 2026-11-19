@@ -13,7 +13,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity {
@@ -165,7 +166,7 @@ public class ManualCompressorBlockEntity extends AbstractAirHandlingBlockEntity 
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return null;
     }
 

@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetDig;
 import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.mixin.accessors.ServerPlayerGameModeAccess;
 import net.minecraft.core.BlockPos;
@@ -77,20 +78,20 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
      * @return true if the drone has any tool which is better than using an empty hand
      */
     private boolean swapBestItemToFirstSlot(BlockPos pos) {
-        ItemStack currentStackSaved = drone.getInv().getStackInSlot(0).copy();
+        ItemStack currentStackSaved = IOHelper.getStack(drone.getInv(), 0).copy();
 
         // get relative hardness for empty hand
-        drone.getInv().setStackInSlot(0, ItemStack.EMPTY);
+        IOHelper.setStack(drone.getInv(), 0, ItemStack.EMPTY);
         float baseSoftness = worldCache.getBlockState(pos).getDestroyProgress(drone.getFakePlayer(), drone.getDroneLevel(), pos);
-        drone.getInv().setStackInSlot(0, currentStackSaved);
+        IOHelper.setStack(drone.getInv(), 0, currentStackSaved);
         boolean hasDiggingTool = false;
 
         // now find the best tool which is better than an empty hand
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;
         BlockState state = worldCache.getBlockState(pos);
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            IOHelper.setStack(drone.getInv(), 0, IOHelper.getStack(drone.getInv(), i));
             float softness = state.getDestroyProgress(drone.getFakePlayer(), drone.getDroneLevel(), pos);
             if (softness > bestSoftness) {
                 bestSlot = i;
@@ -101,11 +102,11 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 }
             }
         }
-        drone.getInv().setStackInSlot(0, currentStackSaved);
+        IOHelper.setStack(drone.getInv(), 0, currentStackSaved);
         if (bestSlot != 0) {
-            ItemStack bestItem = drone.getInv().getStackInSlot(bestSlot).copy();
-            drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
-            drone.getInv().setStackInSlot(0, bestItem);
+            ItemStack bestItem = IOHelper.getStack(drone.getInv(), bestSlot).copy();
+            IOHelper.setStack(drone.getInv(), bestSlot, IOHelper.getStack(drone.getInv(), 0));
+            IOHelper.setStack(drone.getInv(), 0, bestItem);
         }
         return hasDiggingTool || !state.requiresCorrectToolForDrops();
     }
@@ -160,7 +161,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return state.getDrops(new LootParams.Builder((ServerLevel) drone.getDroneLevel())
                 .withParameter(LootContextParams.BLOCK_STATE, state)
                 .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .withParameter(LootContextParams.TOOL, drone.getInv().getStackInSlot(0))
+                .withParameter(LootContextParams.TOOL, IOHelper.getStack(drone.getInv(), 0))
                 .withOptionalParameter(LootContextParams.THIS_ENTITY, d)
                 .withOptionalParameter(LootContextParams.BLOCK_ENTITY, worldCache.getBlockEntity(pos))
         );

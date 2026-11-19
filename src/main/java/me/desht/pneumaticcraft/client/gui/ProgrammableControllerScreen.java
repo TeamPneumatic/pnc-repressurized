@@ -127,7 +127,7 @@ public class ProgrammableControllerScreen extends AbstractPneumaticCraftContaine
     protected void addProblems(List<Component> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.getItemHandler().getStackInSlot(0).isEmpty()) {
+        if (IOHelper.getStack(te.getItemHandler(), 0).isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.programmableController.noProgram"));
         }
     }

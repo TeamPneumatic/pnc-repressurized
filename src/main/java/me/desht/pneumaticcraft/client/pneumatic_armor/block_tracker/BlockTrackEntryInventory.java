@@ -98,9 +98,9 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
         }
         try {
             IOHelper.getInventoryForBlock(te, face).ifPresent(inventory -> {
-                List<ItemStack> inventoryStacks = new ArrayList<>(inventory.getSlots());
-                for (int i = 0; i < inventory.getSlots(); i++) {
-                    ItemStack iStack = inventory.getStackInSlot(i);
+                List<ItemStack> inventoryStacks = new ArrayList<>(inventory.size());
+                for (int i = 0; i < inventory.size(); i++) {
+                    ItemStack iStack = IOHelper.getStack(inventory, i);
                     if (!iStack.isEmpty()) {
                         inventoryStacks.add(iStack);
                     }

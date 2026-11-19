@@ -24,14 +24,14 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 public class WidgetEnergy extends AbstractWidget {
     private static final int DEFAULT_SCALE = 42;
 
-    private final IEnergyStorage storage;
+    private final EnergyHandler storage;
 
-    public WidgetEnergy(int x, int y, IEnergyStorage storage) {
+    public WidgetEnergy(int x, int y, EnergyHandler storage) {
         super(x, y, 16, DEFAULT_SCALE, Component.empty());
         this.storage = storage;
     }
@@ -46,16 +46,16 @@ public class WidgetEnergy extends AbstractWidget {
 
         if (isHovered) {
             graphics.setTooltipForNextFrame(Minecraft.getInstance().font,
-                    Component.literal(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " FE"),
+                    Component.literal(storage.getAmountAsInt() + " / " + storage.getCapacityAsInt() + " FE"),
                     mouseX, mouseY);
         }
     }
 
     private int getScaled(){
-        if (storage.getMaxEnergyStored() <= 0) {
+        if (storage.getCapacityAsInt() <= 0) {
             return height;
         }
-        return storage.getEnergyStored() * height / storage.getMaxEnergyStored();
+        return storage.getAmountAsInt() * height / storage.getCapacityAsInt();
     }
 
     @Override

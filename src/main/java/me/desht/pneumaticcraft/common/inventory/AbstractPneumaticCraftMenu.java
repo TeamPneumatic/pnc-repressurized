@@ -166,7 +166,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     protected void addUpgradeSlots(int xBase, int yBase) {
-        for (int i = 0; i < blockEntity.getUpgradeHandler().getSlots(); i++) {
+        for (int i = 0; i < blockEntity.getUpgradeHandler().size(); i++) {
             addSlot(new UpgradeSlot(blockEntity, i, xBase + (i % 2) * 18, yBase + (i / 2) * 18));
         }
     }

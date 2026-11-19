@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.block.entity.utility.SentryTurretBlockEnti
 import me.desht.pneumaticcraft.common.inventory.SentryTurretMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.entityfilter.EntityFilter;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -137,8 +138,8 @@ public class SentryTurretScreen extends AbstractPneumaticCraftContainerScreen<Se
         super.addProblems(curInfo);
 
         boolean hasAmmo = false;
-        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
-            if (!te.getItemHandler().getStackInSlot(i).isEmpty()) {
+        for (int i = 0; i < te.getItemHandler().size(); i++) {
+            if (!IOHelper.getStack(te.getItemHandler(), i).isEmpty()) {
                 hasAmmo = true;
                 break;
             }

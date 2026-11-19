@@ -25,12 +25,15 @@ import me.desht.pneumaticcraft.common.block.entity.ISerializableTanks;
 import me.desht.pneumaticcraft.common.block.entity.SmartSyncTank;
 import me.desht.pneumaticcraft.common.inventory.EtchingTankMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
@@ -48,10 +51,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,8 +69,9 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     private final OutputItemHandler outputHandler = new OutputItemHandler();
     private final FailedItemHandler failedHandler = new FailedItemHandler();
 
-    private final WrappedInvHandler sideHandler = new WrappedInvHandler(outputHandler);
-    private final WrappedInvHandler endHandler = new WrappedInvHandler(failedHandler);
+    // slot 0 is the output slot (success for side access, failed for top/bottom access), and slots 1 -> ETCHING_SLOTS + 1 are the input slots
+    private final ResourceHandler<ItemResource> sideHandler = new IOCombinedHandler<>(slot -> slot > 0, slot -> slot == 0, outputHandler, itemHandler);
+    private final ResourceHandler<ItemResource> endHandler = new IOCombinedHandler<>(slot -> slot > 0, slot -> slot == 0, failedHandler, itemHandler);
 
     @DescSynced
     @GuiSynced
@@ -89,7 +93,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return acidTank;
     }
 
@@ -128,7 +132,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
                 if (didWork && tickInterval < 30) {
                     // heated - chance to use up some acid
                     if (level.getRandom().nextInt(100) < 30 - tickInterval) {
-                        acidTank.drain(1, IFluidHandler.FluidAction.EXECUTE);
+                        FluidUtils.drain(acidTank, 1, false);
                     }
                     heatExchanger.addHeat(-(30 - tickInterval));
                 }
@@ -142,17 +146,17 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     private void tryMoveFinishedItem(int slot, boolean success) {
-        ItemStack inputStack = itemHandler.extractItem(slot, 1, true);
+        ItemStack inputStack = IOHelper.extract(itemHandler, slot, 1, true);
         if (!inputStack.isEmpty()) {
             ItemStack result = getResultItem(inputStack, success);
             ItemStack excess;
             if (success) {
-                excess = outputHandler.insertItem(0, result, false);
+                excess = IOHelper.insert(outputHandler, 0, result, false);
             } else {
-                excess = failedHandler.insertItem(0, result, false);
+                excess = IOHelper.insert(failedHandler, 0, result, false);
             }
             if (excess.isEmpty()) {
-                itemHandler.extractItem(slot, 1, false);
+                IOHelper.extract(itemHandler, slot, 1, false);
             }
         }
     }
@@ -176,7 +180,7 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         if (dir == null) {
             return itemHandler;
         } else if (dir.getAxis() == Direction.Axis.Y) {
@@ -186,15 +190,15 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
         }
     }
 
-    public IItemHandler getOutputHandler() {
+    public ResourceHandler<ItemResource> getOutputHandler() {
         return outputHandler;
     }
 
-    public IItemHandler getFailedHandler() {
+    public ResourceHandler<ItemResource> getFailedHandler() {
         return failedHandler;
     }
 
-    public IFluidTank getAcidTank() {
+    public PNCFluidTank getAcidTank() {
         return acidTank;
     }
 
@@ -266,51 +270,6 @@ public class EtchingTankBlockEntity extends AbstractTickingBlockEntity
     private class FailedItemHandler extends BaseItemStackHandler {
         FailedItemHandler() {
             super(EtchingTankBlockEntity.this, 1);
-        }
-    }
-
-    /**
-     * Wrapped item handler exposed via capability. Slot 0 is the output slot (success for side access, failed for
-     * top/bottom access), and slots 1 -> ETCHING_SLOTS + 1 are the input slots.
-     */
-    private class WrappedInvHandler implements IItemHandler {
-        private final IItemHandler output;
-
-        WrappedInvHandler(IItemHandler output) {
-            this.output = output;
-        }
-
-        @Override
-        public int getSlots() {
-            return ETCHING_SLOTS + 1;  // either the success or failed slot
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return slot == 0 ? output.getStackInSlot(0) : itemHandler.getStackInSlot(slot - 1);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return slot == 0 ? stack : itemHandler.insertItem(slot - 1, stack, simulate);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot == 0 ? output.extractItem(0, amount, simulate) : ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return slot == 0 ? output.getSlotLimit(0) : itemHandler.getSlotLimit(slot - 1);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 ? output.isItemValid(0, stack) : itemHandler.isItemValid(slot - 1, stack);
         }
     }
 

@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController.ReceivingR
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
@@ -51,14 +52,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -90,8 +87,8 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     public int threshold = 100;
 
     private final UVInputHandler inputHandler = new UVInputHandler();
-    private final ItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
-    private final UVInvWrapper inventoryExt = new UVInvWrapper();
+    private final BaseItemStackHandler outputHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
+    private final ResourceHandler<ItemResource> inventoryExt = new IOCombinedHandler<>(slot -> slot == 0, slot -> slot == 1, inputHandler, outputHandler);
     private BlockCapabilityCache<ResourceHandler<ItemResource>,Direction> ejectionCache;
 
     public int ticksExisted;
@@ -119,9 +116,9 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
                     setExposureProgress(stack, progress);
                 }
                 if (progress >= threshold) {
-                    if (outputHandler.insertItem(0, inputHandler.getStackInSlot(0), true).isEmpty()) {
-                        ItemStack toMove = inputHandler.extractItem(0, 1, false);
-                        outputHandler.insertItem(0, toMove, false);
+                    if (IOHelper.insert(outputHandler, 0, inputHandler.getStackInSlot(0), true).isEmpty()) {
+                        ItemStack toMove = IOHelper.extract(inputHandler, 0, 1, false);
+                        IOHelper.insert(outputHandler, 0, toMove, false);
                     }
                 }
                 didWork = true;
@@ -168,11 +165,11 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     private void tryEject() {
         getUpgradeCache().getEjectDirection().ifPresent(dir -> {
-            IItemHandler dstHandler = IOHelper.legacy(getEjectionCache(dir));
+            ResourceHandler<ItemResource> dstHandler = IOHelper.getCapability(getEjectionCache(dir));
             if (dstHandler != null) {
-                ItemStack stack = outputHandler.extractItem(0, 1, true);
-                if (!stack.isEmpty() && ItemHandlerHelper.insertItem(dstHandler, stack, false).isEmpty()) {
-                    outputHandler.extractItem(0, 1, false);
+                ItemStack stack = IOHelper.extract(outputHandler, 0, 1, true);
+                if (!stack.isEmpty() && IOHelper.insert(dstHandler, stack, false).isEmpty()) {
+                    IOHelper.extract(outputHandler, 0, 1, false);
                 }
             }
         });
@@ -257,15 +254,15 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventoryExt;
     }
 
-    public IItemHandler getInputHandler() {
+    public ResourceHandler<ItemResource> getInputHandler() {
         return inputHandler;
     }
 
-    public IItemHandler getOutputHandler() {
+    public ResourceHandler<ItemResource> getOutputHandler() {
         return outputHandler;
     }
 
@@ -306,44 +303,6 @@ public class UVLightBoxBlockEntity extends AbstractAirHandlingBlockEntity implem
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof EmptyPCBItem && EmptyPCBItem.getEtchProgress(itemStack) == 0;
-        }
-    }
-
-    private class UVInvWrapper implements IItemHandler {
-        UVInvWrapper() {
-        }
-
-        @Override
-        public int getSlots() {
-            return 2;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return slot == 0 ? inputHandler.getStackInSlot(0) : outputHandler.getStackInSlot(0);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return slot == 0 ? inputHandler.insertItem(0, stack, simulate) : stack;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return slot == 1 ? outputHandler.extractItem(0, amount, simulate) : ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return slot == 0 ? inputHandler.getSlotLimit(0) : outputHandler.getSlotLimit(0);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return slot == 0 ? inputHandler.isItemValid(0, stack) : outputHandler.isItemValid(0, stack);
         }
     }
 }

@@ -25,8 +25,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
 public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBlockEntity> extends Abstract4SlotMenu<T> {
 
@@ -37,12 +37,12 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
     public AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
-        IEnergyStorage storage = blockEntity.getEnergyHandler(null);
+        EnergyHandler storage = blockEntity.getEnergyHandler(null);
         if (storage != null) {
             try {
-                addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));
+                addSyncedField(new SyncedField.SyncedInt(storage, SimpleEnergyHandler.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
-                Log.error("EnergyStorage class is missing 'energy' field!?");
+                Log.error("SimpleEnergyHandler class is missing 'energy' field!?");
             }
         } else {
             throw new IllegalStateException("block entity must support Capabilities.EnergyStorage.BLOCK on face null!");

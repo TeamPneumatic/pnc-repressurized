@@ -41,7 +41,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 import javax.annotation.Nullable;
 
@@ -81,10 +81,10 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
         }
 
         boolean newEnabled;
-        if (rsController.shouldRun() && getPressure() > getMinWorkingPressure() && energy.getMaxEnergyStored() - energy.getEnergyStored() >= rfPerTick) {
+        if (rsController.shouldRun() && getPressure() > getMinWorkingPressure() && energy.getCapacityAsInt() - energy.getAmountAsInt() >= rfPerTick) {
             this.addAir(-airPerTick);
             heatExchanger.addHeat(airPerTick / 100D);
-            energy.receiveEnergy(rfPerTick, false);
+            IOHelper.insertEnergy(energy, rfPerTick, false);
             newEnabled = true;
         } else {
             newEnabled = false;
@@ -98,10 +98,10 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
         BlockEntity receiver = getCachedNeighbor(getRotation());
         if (receiver != null) {
             IOHelper.getEnergyStorageForBlock(receiver, getRotation().getOpposite()).ifPresent(neighborStorage -> {
-                int extracted = energy.extractEnergy(rfPerTick * 2, true);
-                int energyPushed = neighborStorage.receiveEnergy(extracted, true);
+                int extracted = IOHelper.extractEnergy(energy, rfPerTick * 2, true);
+                int energyPushed = IOHelper.insertEnergy(neighborStorage, extracted, true);
                 if (energyPushed > 0) {
-                    neighborStorage.receiveEnergy(energy.extractEnergy(energyPushed, false), false);
+                    IOHelper.insertEnergy(neighborStorage, IOHelper.extractEnergy(energy, energyPushed, false), false);
                 }
             });
         }
@@ -141,7 +141,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     public int getInfoEnergyStored() {
-        return energy.getEnergyStored();
+        return energy.getAmountAsInt();
     }
 
     @Override
@@ -150,7 +150,7 @@ public class PneumaticDynamoBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+    public EnergyHandler getEnergyHandler(@Nullable Direction dir) {
         return dir == getRotation() || dir == null ? energy : null;
     }
 

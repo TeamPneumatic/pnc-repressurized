@@ -29,7 +29,8 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity implements IComparatorSupport {
@@ -45,7 +46,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -75,8 +76,8 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
 
             if (slot == 0) {
                 displayedStack = getStackInSlot(0);

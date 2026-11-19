@@ -32,6 +32,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.AcceptabilityCache;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -53,14 +54,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -120,7 +117,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return inputTank;
     }
 
@@ -189,7 +186,7 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
                 redistributeFluids();
             }
 
-            if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(FluidAction.SIMULATE)) {
+            if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(true)) {
                 hasWork = true;
                 if (operatingTemp.inRange(heatExchanger.getTemperature())
                         && inputTank.getFluidAmount() >= currentRecipe.getInput().amount()) {
@@ -200,8 +197,8 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
                     workTimer += progress;
                     while (workTimer >= 20 && inputTank.getFluidAmount() >= currentRecipe.getInput().amount()) {
                         workTimer -= 20;
-                        doRefiningStep(FluidAction.EXECUTE);
-                        inputTank.drain(currentRecipe.getInput().amount(), FluidAction.EXECUTE);
+                        doRefiningStep(false);
+                        FluidUtils.drain(inputTank, currentRecipe.getInput().amount(), false);
                     }
                     lastProgress = progress;
                 }
@@ -214,8 +211,8 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
             for (int i = 0; i < outputCount; i++) {
                 final int j = i;
                 getOutputHandler(i).ifPresent(h -> {
-                    if (!FluidStack.matches(outputsSynced[j].getFluid(), h.getFluidInTank(0))) {
-                        outputsSynced[j].setFluid(h.getFluidInTank(0).copy());
+                    if (!FluidStack.matches(outputsSynced[j].getFluid(), FluidUtils.getFluid(h, 0))) {
+                        outputsSynced[j].setFluid(FluidUtils.getFluid(h, 0).copy());
                         outputsSynced[j].tick();
                     }
                 });
@@ -236,16 +233,16 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     private void redistributeFluids() {
         int nTanks = Math.min(outputCount, currentRecipe.getOutputs().size());
 
-        FluidTank[] tempTanks = new FluidTank[nTanks];
+        PNCFluidTank[] tempTanks = new PNCFluidTank[nTanks];
         for (int i = 0; i < nTanks; i++) {
-            tempTanks[i] = new FluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
+            tempTanks[i] = new PNCFluidTank(PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 
         // now scan all refineries and ensure each one has the correct output, according to the current recipe
         for (int i = 0; i < nTanks; i++) {
             final FluidStack wantedFluid = currentRecipe.getOutputs().get(i);
             getOutputHandler(i).ifPresent(outputHandler -> {
-                FluidStack fluid = outputHandler.getFluidInTank(0);
+                FluidStack fluid = FluidUtils.getFluid(outputHandler, 0);
                 if (!FluidStack.isSameFluidSameComponents(fluid, wantedFluid)) {
                     // this fluid shouldn't be here; find the appropriate output tank to move it to,
                     // using an intermediate temporary tank to allow for possible swapping of fluids
@@ -261,17 +258,17 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
 
         // and finally move fluids back to the actual output tanks
         for (int i = 0; i < outputCount; i++) {
-            final IFluidHandler tempTank = tempTanks[i];
+            final ResourceHandler<FluidResource> tempTank = tempTanks[i];
             getOutputHandler(i).ifPresent(outputHandler -> tryMoveFluid(tempTank, outputHandler));
         }
     }
 
-    private void tryMoveFluid(IFluidHandler sourceHandler, IFluidHandler destHandler) {
-        FluidStack fluid = sourceHandler.drain(sourceHandler.getTankCapacity(0), FluidAction.SIMULATE);
+    private void tryMoveFluid(ResourceHandler<FluidResource> sourceHandler, ResourceHandler<FluidResource> destHandler) {
+        FluidStack fluid = FluidUtils.drain(sourceHandler, sourceHandler.getCapacityAsInt(0, FluidResource.EMPTY), true);
         if (!fluid.isEmpty()) {
-            int moved = destHandler.fill(fluid, FluidAction.EXECUTE);
+            int moved = FluidUtils.fill(destHandler, fluid, false);
             if (moved > 0) {
-                sourceHandler.drain(moved, FluidAction.EXECUTE);
+                FluidUtils.drain(sourceHandler, moved, false);
             }
         }
     }
@@ -298,9 +295,9 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         return outputCache;
     }
 
-    private Optional<IFluidHandler> getOutputHandler(int n) {
+    private Optional<ResourceHandler<FluidResource>> getOutputHandler(int n) {
         return n >= 0 && n < outputCount ?
-                Optional.ofNullable(getOutputCache().get(n).getCapability()).map(IFluidHandler::of) :
+                Optional.ofNullable(getOutputCache().get(n).getCapability()) :
                 Optional.empty();
     }
 
@@ -313,12 +310,12 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         return null;
     }
 
-    private boolean doRefiningStep(FluidAction action) {
+    private boolean doRefiningStep(boolean simulate) {
         List<FluidStack> recipeOutputs = currentRecipe.getOutputs();
 
         for (int i = 0; i < outputCount && i < recipeOutputs.size(); i++) {
             final FluidStack outFluid = recipeOutputs.get(i);
-            int filled = getOutputHandler(i).map(h -> h.fill(outFluid, action)).orElse(0);
+            int filled = getOutputHandler(i).map(h -> FluidUtils.fill(h, outFluid, simulate)).orElse(0);
             if (filled != outFluid.getAmount()) {
                 blocked = true;
                 return false;
@@ -357,11 +354,11 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
-    public IFluidTank getInputTank() {
+    public PNCFluidTank getInputTank() {
         return inputTank;
     }
 

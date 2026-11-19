@@ -20,7 +20,8 @@ package me.desht.pneumaticcraft.common.util;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
     private final boolean canCoalesce;
@@ -43,12 +44,12 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
         canCoalesce = false;
     }
 
-    public CountedItemStacks(IItemHandler handler) {
-        super(handler.getSlots(), new ItemStackHashingStrategy());
+    public CountedItemStacks(ResourceHandler<ItemResource> handler) {
+        super(handler.size(), new ItemStackHashingStrategy());
 
         boolean canCoalesce = false;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = IOHelper.getStack(handler, i);
             if (!stack.isEmpty()) {
                 int seenAlready = getInt(stack);
                 if (seenAlready > 0 && seenAlready + stack.getCount() <= stack.getMaxStackSize()) {

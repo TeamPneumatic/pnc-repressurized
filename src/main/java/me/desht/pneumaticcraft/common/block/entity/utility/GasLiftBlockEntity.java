@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
@@ -52,12 +53,11 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,7 +75,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     @GuiSynced
     private final GasLiftFluidTank tank = new GasLiftFluidTank();
 
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final BaseItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() == ModBlocks.DRILL_PIPE.get().asItem();
@@ -103,12 +103,12 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return tank;
     }
 
@@ -166,8 +166,8 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             if (isPipe(level, getBlockPos().offset(0, -currentDepth, 0))) {
                 BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
                 ItemStack toInsert = new ItemStack(level.getBlockState(pos1).getBlock());
-                if (inventory.insertItem(0, toInsert, true).isEmpty()) {
-                    inventory.insertItem(0, toInsert, false);
+                if (IOHelper.insert(inventory, 0, toInsert, true).isEmpty()) {
+                    IOHelper.insert(inventory, 0, toInsert, false);
                     level.destroyBlock(pos1, false);
                     addAir(-100);
                     currentDepth--;
@@ -189,14 +189,14 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             BlockPos pos1 = getBlockPos().relative(Direction.DOWN, currentDepth);
             final Level level = nonNullLevel();
             if (!isPipe(level, pos1)) {
-                ItemStack extracted = inventory.extractItem(0, 1, true);
+                ItemStack extracted = IOHelper.extract(inventory, 0, 1, true);
                 if (extracted.getItem() == ModBlocks.DRILL_PIPE.get().asItem()) {
                     BlockState currentState = level.getBlockState(pos1);
                     BlockState newState = ((BlockItem) extracted.getItem()).getBlock().defaultBlockState();
 
                     int airRequired = Math.round(66.66f * currentState.getDestroySpeed(level, pos1));
                     if (airHandler.getAir() > airRequired) {
-                        inventory.extractItem(0, 1, false);
+                        IOHelper.extract(inventory, 0, 1, false);
                         level.destroyBlock(pos1, false);
                         level.setBlockAndUpdate(pos1, newState);
                         // kludge: don't permit placing more than one tube per tick
@@ -235,7 +235,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         }
         FluidStack fluidStack = new FluidStack(fluidState.getType(), FluidType.BUCKET_VOLUME);
 
-        if (tank.fill(fluidStack, FluidAction.SIMULATE) == fluidStack.getAmount()) {
+        if (FluidUtils.fill(tank, fluidStack, true) == fluidStack.getAmount()) {
             if (pumpingLake.isEmpty()) {
                 findLake(fluidStack.getFluid());
             }
@@ -249,7 +249,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             }
             if (curPos != null) {
                 // if pumpingLake isn't empty, we *must* have found a source block
-                FluidStack taken = FluidUtils.tryPickupFluid(tank, level, curPos, false, FluidAction.EXECUTE);
+                FluidStack taken = FluidUtils.tryPickupFluid(tank, level, curPos, false, false);
                 if (taken.getAmount() == FluidType.BUCKET_VOLUME) {
                     addAir(-100);
                     status = Status.PUMPING;
@@ -323,7 +323,7 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
         currentDepth = tag.getIntOr("currentDepth", 0);
     }
 
-    public IFluidTank getTank() {
+    public PNCFluidTank getTank() {
         return tank;
     }
 
@@ -344,12 +344,11 @@ public class GasLiftBlockEntity extends AbstractAirHandlingBlockEntity implement
             super(GasLiftBlockEntity.this, PneumaticValues.NORMAL_TANK_CAPACITY);
         }
 
-        @Nonnull
         @Override
-        public FluidStack drain(int maxDrain, FluidAction action) {
-            int inTank = fluidStack.getAmount();
-            int amount = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
-            return super.drain(Math.min(maxDrain, amount), action);
+        public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            int inTank = getFluidAmount();
+            int available = pumpMode == PumpMode.PUMP_LEAVE_FLUID ? Math.max(0, inTank - 1) : inTank;
+            return available > 0 ? super.extract(index, resource, Math.min(amount, available), transaction) : 0;
         }
     }
 

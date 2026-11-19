@@ -20,11 +20,11 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.block.entity.utility.AirCannonBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.slot.ItemFilteredSlot;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import java.util.List;
 
@@ -47,7 +47,7 @@ public class AirCannonMenu extends AbstractPneumaticCraftMenu<AirCannonBlockEnti
         }, 1, 51, 29));
 
         // add the cannoned slot.
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 79, 40));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, 79, 40));
 
         addPlayerSlots(playerInventory, 84);
     }

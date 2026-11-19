@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.block.entity;
 
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.block.AbstractPneumaticCraftBlock;
 import me.desht.pneumaticcraft.common.block.FluidTankBlock;
 import me.desht.pneumaticcraft.common.inventory.FluidTankMenu;
@@ -44,12 +45,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -67,10 +66,10 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     @GuiSynced
     private final StackableTank tank;
 
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final BaseItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack.copyWithCount(1)).isPresent();
+            return itemStack.isEmpty() || IOHelper.getFluidHandlerForItem(itemStack.copyWithCount(1)).isPresent();
         }
     };
 
@@ -100,7 +99,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
                 BlockState other = nonNullLevel().getBlockState(worldPosition.relative(dir));
                 if (other.getBlock() instanceof FluidTankBlock && other.getValue(AbstractPneumaticCraftBlock.connectionProperty(dir.getOpposite()))) {
                     if (getCachedNeighbor(dir) instanceof AbstractFluidTankBlockEntity tankBE) {
-                        FluidUtil.tryFluidTransfer(tankBE.getTank(), tank, tank.getCapacity() / 32, true);
+                        FluidUtils.transfer(tank, tankBE.getTank(), tank.getCapacity() / 32, false);
                     }
                 }
             }
@@ -110,14 +109,14 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
             if (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(AbstractPneumaticCraftBlock.connectionProperty(ejectDir))) {
                 IOHelper.getFluidHandlerForBlock(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
                     int amount = BASE_EJECT_RATE << getUpgrades(ModUpgrades.SPEED.get());
-                    FluidUtil.tryFluidTransfer(h, tank, amount, true);
+                    FluidUtils.transfer(tank, h, amount, false);
                 });
             }
         });
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -127,7 +126,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return tank;
     }
 
@@ -184,7 +183,7 @@ public abstract class AbstractFluidTankBlockEntity extends AbstractTickingBlockE
         return true;
     }
 
-    public boolean isFluidCompatible(FluidStack stack, IFluidTank tank) {
+    public boolean isFluidCompatible(FluidStack stack, PNCFluidTank tank) {
         return stack.isEmpty() || tank.getFluid().isEmpty() || stack.getFluid() == tank.getFluid().getFluid();
     }
 

@@ -217,8 +217,8 @@ public class ModCommands {
 
         int status = IOHelper.getInventoryForBlock(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
-            for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 36; i++) {
-                if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
+            for (int i = 0; i < inv.size() && deliveredStacks.size() < 36; i++) {
+                if (!IOHelper.getStack(inv, i).isEmpty()) deliveredStacks.add(IOHelper.getStack(inv, i));
             }
             if (!deliveredStacks.isEmpty()) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getLevel(), toPos);

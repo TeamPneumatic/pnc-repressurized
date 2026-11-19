@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.item.logistics.AbstractLogisticsFrameItem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -69,7 +70,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -467,8 +467,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         payload.writeBoolean(matchComponents);
         payload.writeBoolean(matchDurability);
         payload.writeBoolean(matchModId);
-        payload.writeVarInt(itemFilterHandler.getSlots());
-        for (int i = 0; i < itemFilterHandler.getSlots(); i++) {
+        payload.writeVarInt(itemFilterHandler.size());
+        for (int i = 0; i < itemFilterHandler.size(); i++) {
             ItemStack.OPTIONAL_STREAM_CODEC.encode(payload, itemFilterHandler.getStackInSlot(i));
         }
         FluidFilter.STREAM_CODEC.encode(payload, fluidFilter);
@@ -530,7 +530,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
     /**
      * Specialised item handler which caches a list of non-empty filter stacks, for more efficient iteration over them.
      */
-    public class ItemFilterHandler extends ItemStackHandler {
+    public class ItemFilterHandler extends BaseItemStackHandler {
         private final List<ItemStack> filterStacks = new ArrayList<>();
 
         ItemFilterHandler(int size) {
@@ -564,7 +564,7 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
 
         private void buildFilterList() {
             filterStacks.clear();
-            for (int i = 0; i < getSlots(); i++) {
+            for (int i = 0; i < size(); i++) {
                 if (!getStackInSlot(i).isEmpty()) {
                     filterStacks.add(getStackInSlot(i));
                 }
@@ -579,8 +579,8 @@ public abstract class AbstractLogisticsFrameEntity extends AbstractSemiblockEnti
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
 
             buildFilterList();
         }

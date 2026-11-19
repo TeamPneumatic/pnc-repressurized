@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.block.entity.compressor.LiquidCompressorBl
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.LiquidCompressorMenu;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -98,7 +99,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
         super.addProblems(curInfo);
 
         IOHelper.getFluidHandlerForBlock(te).ifPresentOrElse(fluidHandler -> {
-            if (!te.isActive() && fluidHandler.getFluidInTank(0).isEmpty()) {
+            if (!te.isActive() && FluidUtils.getFluid(fluidHandler, 0).isEmpty()) {
                 curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
             }
         }, () -> curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel")));

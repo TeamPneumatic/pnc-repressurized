@@ -17,23 +17,25 @@
 
 package me.desht.pneumaticcraft.common.inventory.slot;
 
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
-public class FluidContainerSlot extends SlotItemHandler {
+public class FluidContainerSlot extends ItemHandlerSlot {
     private final int minFluid;
 
-    public FluidContainerSlot(IItemHandler handler, int index, int x, int y, int minFluid) {
+    public FluidContainerSlot(ResourceHandler<ItemResource> handler, int index, int x, int y, int minFluid) {
         super(handler, index, x, y);
 
         this.minFluid = minFluid;
     }
 
-    public FluidContainerSlot(IItemHandler handler, int index, int x, int y) {
+    public FluidContainerSlot(ResourceHandler<ItemResource> handler, int index, int x, int y) {
         super(handler, index, x, y);
 
         this.minFluid = 0;
@@ -41,8 +43,9 @@ public class FluidContainerSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@Nonnull ItemStack stack) {
-        if (FluidUtil.getFluidHandler(stack).isPresent()) {
-            return FluidUtil.getFluidContained(stack).map(fluidStack -> fluidStack.getAmount() >= minFluid).orElse(minFluid == 0);
+        if (IOHelper.getFluidHandlerForItem(stack).isPresent()) {
+            FluidStack fluidStack = FluidUtils.getFirstFluidContained(stack);
+            return fluidStack.isEmpty() ? minFluid == 0 : fluidStack.getAmount() >= minFluid;
         } else {
             return false;
         }

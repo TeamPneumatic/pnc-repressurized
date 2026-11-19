@@ -18,13 +18,13 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.processing.ThermoPlantBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.inventory.slot.UpgradeSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class ThermoPlantMenu extends AbstractPneumaticCraftMenu<ThermoPlantBlockEntity> {
 
@@ -39,7 +39,7 @@ public class ThermoPlantMenu extends AbstractPneumaticCraftMenu<ThermoPlantBlock
         for (int i = 0; i < 4; i++) {
             addSlot(new UpgradeSlot(blockEntity, i, 98 + i * 18, 106));
         }
-        addSlot(new SlotItemHandler(blockEntity.getInputItemHandler(), 0, 38, 19));
+        addSlot(new ItemHandlerSlot(blockEntity.getInputItemHandler(), 0, 38, 19));
         addSlot(new OutputOnlySlot(blockEntity.getOutputInventory(), 0, 53, 67));
 
         addPlayerSlots(playerInventory, 130);

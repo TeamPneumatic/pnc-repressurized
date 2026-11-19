@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -45,12 +46,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
-import net.neoforged.neoforge.fluids.FluidUtil;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -152,7 +153,7 @@ public class TooltipEventHandler {
     }
 
     private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
-        FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
+        Optional.of(FluidUtils.getFirstFluidContained(event.getItemStack())).filter(fs -> !fs.isEmpty()).ifPresent(fluidStack -> {
             String key = ICustomTooltipName.getTranslationKey(event.getItemStack(), true);
             if (I18n.exists(key)) {
                 if (Minecraft.getInstance().hasShiftDown()) {

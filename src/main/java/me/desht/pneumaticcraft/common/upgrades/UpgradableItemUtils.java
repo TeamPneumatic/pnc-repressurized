@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -31,7 +32,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,9 +78,9 @@ public class UpgradableItemUtils {
      * to manage saved upgrades on a dropped block which has serialized upgrade data.
      *
      * @param stack the stack
-     * @param handler an ItemStackHandler holding upgrade items
+     * @param handler an BaseItemStackHandler holding upgrade items
      */
-    public static void setUpgrades(ItemStack stack, IItemHandler handler) {
+    public static void setUpgrades(ItemStack stack, ResourceHandler<ItemResource> handler) {
         stack.set(ModDataComponents.ITEM_UPGRADES, SavedUpgrades.fromItemHandler(handler, t -> ApplicableUpgradesDB.getInstance().getMaxUpgrades(stack.getItem(), t)));
 
         // in case volume upgrade count has changed...

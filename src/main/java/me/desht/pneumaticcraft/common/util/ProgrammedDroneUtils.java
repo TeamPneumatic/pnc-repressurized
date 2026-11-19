@@ -26,7 +26,6 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.Validate;
 
 import java.util.Arrays;
@@ -57,7 +56,7 @@ public class ProgrammedDroneUtils {
         drone.progWidgets = builder.build();
 
         for (int i = 0; i < deliveredStacks.length; i++) {
-            drone.getInv().setStackInSlot(i, deliveredStacks[i].copy());
+            IOHelper.setStack(drone.getInv(), i, deliveredStacks[i].copy());
         }
         world.addFreshEntity(drone);
         return drone;
@@ -112,7 +111,7 @@ public class ProgrammedDroneUtils {
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets = builder.build();
 
-        drone.getFluidTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
+        FluidUtils.fill(drone.getFluidTank(), deliveredFluid, false);
         world.addFreshEntity(drone);
         return drone;
     }

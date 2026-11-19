@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.network;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -128,7 +128,7 @@ public class NetworkUtils {
                             builder.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
                     }
-                } else if (o instanceof ItemStackHandler[] array) {
+                } else if (o instanceof BaseItemStackHandler[] array) {
                     if (filteredIndex >= 0) {
                         builder.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
@@ -162,7 +162,7 @@ public class NetworkUtils {
         if (field.getType().isEnum()) return new SyncedEnum(te, field);
         if (ItemStack.class.isAssignableFrom(field.getType())) return new SyncedItemStack(te, field);
         if (FluidStack.class.isAssignableFrom(field.getType())) return new SyncedFluidStack(te, field);
-        if (IItemHandlerModifiable.class.isAssignableFrom(field.getType())) return new SyncedItemHandler(te, field);
+        if (BaseItemStackHandler.class.isAssignableFrom(field.getType()) || IOCombinedHandler.class.isAssignableFrom(field.getType())) return new SyncedItemHandler(te, field);
         return null;
     }
 }

@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.processing.EtchingTankBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.inventory.slot.OutputOnlySlot;
 import me.desht.pneumaticcraft.common.item.EmptyPCBItem;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
@@ -26,8 +27,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
@@ -52,8 +53,8 @@ public class EtchingTankMenu extends AbstractPneumaticCraftMenu<EtchingTankBlock
         this(windowId, playerInv, getTilePos(buffer));
     }
 
-    private static class SlotPCB extends SlotItemHandler {
-        SlotPCB(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+    private static class SlotPCB extends ItemHandlerSlot {
+        SlotPCB(ResourceHandler<ItemResource> itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }
 

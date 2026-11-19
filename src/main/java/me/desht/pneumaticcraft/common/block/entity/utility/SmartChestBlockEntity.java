@@ -45,7 +45,6 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -61,8 +60,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
@@ -131,11 +130,11 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
                 // empty inventory
                 return false;
             }
-            ItemStack excess = ItemHandlerHelper.insertItem(dstHandler, toPush, false);
+            ItemStack excess = IOHelper.insert(dstHandler, toPush, false);
             int transferred = toPush.getCount() - excess.getCount();
             if (transferred > 0) {
                 // success!
-                inventory.extractItem(pushSlots.getOrDefault(dir, 0), transferred, false);
+                IOHelper.extract(inventory, pushSlots.getOrDefault(dir, 0), transferred, false);
                 return true;
             } else {
                 // this item can't be pushed... move on
@@ -150,7 +149,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             if (!Block.canSupportCenter(nonNullLevel(), worldPosition, dir.getOpposite())) {
                 ItemStack toPush = findNextItem(inventory, pushSlots, dir);
                 if (!toPush.isEmpty()) {
-                    ItemStack pushed = inventory.extractItem(pushSlots.getOrDefault(dir, 0), toPush.getCount(), false);
+                    ItemStack pushed = IOHelper.extract(inventory, pushSlots.getOrDefault(dir, 0), toPush.getCount(), false);
                     BlockPos dropPos = worldPosition.relative(dir);
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(pushed, level,dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5);
                     return true;
@@ -175,11 +174,11 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
                 // source inventory is empty
                 return false;
             }
-            ItemStack excess = ItemHandlerHelper.insertItem(inventory, toPull, false);
+            ItemStack excess = IOHelper.insert(inventory, toPull, false);
             int transferred = toPull.getCount() - excess.getCount();
             if (transferred > 0) {
                 // success!
-                srcHandler.extractItem(pullSlots.getOrDefault(dir, 0), transferred, false);
+                IOHelper.extract(srcHandler, pullSlots.getOrDefault(dir, 0), transferred, false);
                 return true;
             } else {
                 // this item can't be inserted into this chest... move on to next item next tick
@@ -199,7 +198,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
             boolean didWork = false;
             for (ItemEntity item : items) {
                 ItemStack stack = item.getItem();
-                ItemStack excess = ItemHandlerHelper.insertItemStacked(inventory, stack, false);
+                ItemStack excess = IOHelper.insertStacked(inventory, stack, false);
                 if (excess.isEmpty()) {
                     item.discard();
                 } else {
@@ -220,10 +219,10 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         return false;
     }
 
-    private void validateCachedSlot(Map<Direction,Integer> slotMap, Direction dir, IItemHandler handler) {
+    private void validateCachedSlot(Map<Direction,Integer> slotMap, Direction dir, ResourceHandler<ItemResource> handler) {
         // ensure cached slot is still valid for the handler we have
         // could become invalid if the neighbouring BE has been replaced by one with a smaller inventory?
-        if (slotMap.getOrDefault(dir, 0) >= handler.getSlots()) {
+        if (slotMap.getOrDefault(dir, 0) >= handler.size()) {
             slotMap.remove(dir);
         }
     }
@@ -235,13 +234,13 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
      * @param dir the side; index into the slots array
      * @return the next non-empty item (or ItemStack.EMPTY if the whole inventory is empty)
      */
-    private ItemStack findNextItem(IItemHandler handler, EnumMap<Direction,Integer> slotMap, Direction dir) {
-        if (handler.getSlots() <= 0) return ItemStack.EMPTY; // https://github.com/TeamPneumatic/pnc-repressurized/issues/882
+    private ItemStack findNextItem(ResourceHandler<ItemResource> handler, EnumMap<Direction,Integer> slotMap, Direction dir) {
+        if (handler.size() <= 0) return ItemStack.EMPTY; // https://github.com/TeamPneumatic/pnc-repressurized/issues/882
 
-        if (handler.getStackInSlot(slotMap.getOrDefault(dir, 0)).isEmpty()) {
+        if (IOHelper.getStack(handler, slotMap.getOrDefault(dir, 0)).isEmpty()) {
             slotMap.put(dir, scanForward(handler, slotMap.getOrDefault(dir, 0)));
         }
-        return handler.extractItem(slotMap.getOrDefault(dir, 0), getMaxItems(), true);
+        return IOHelper.extract(handler, slotMap.getOrDefault(dir, 0), getMaxItems(), true);
     }
 
     /**
@@ -251,11 +250,11 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
      * @param slot slot to start at
      * @return the first non-empty slot (but test this slot; if empty, the entire inventory is empty)
      */
-    private int scanForward(IItemHandler handler, int slot) {
-        int limit = handler.getSlots();
+    private int scanForward(ResourceHandler<ItemResource> handler, int slot) {
+        int limit = handler.size();
         for (int i = 0; i < limit; i++) {
             if (++slot >= limit) slot = 0;
-            if (!handler.getStackInSlot(slot).isEmpty()) break;
+            if (!IOHelper.getStack(handler, slot).isEmpty()) break;
         }
         return slot;
     }
@@ -295,7 +294,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -380,7 +379,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
 
     public List<FilterSlot> getFilter() {
         List<FilterSlot> res = new ArrayList<>();
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.size(); i++) {
             if (!inventory.filter[i].isEmpty()) {
                 res.add(new FilterSlot(i, inventory.filter[i].copy()));
             }
@@ -435,7 +434,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         }
     }
 
-    public static IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
+    public static ResourceHandler<ItemResource> deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
         SmartChestItemHandler res = new SmartChestItemHandler(null, CHEST_SIZE);
         res.deserializeNBT(provider, tag);
         return res;
@@ -452,7 +451,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        public int getSlots() {
+        public int size() {
             return Math.min(CHEST_SIZE, lastSlot);
         }
 
@@ -466,7 +465,7 @@ public class SmartChestBlockEntity extends AbstractTickingBlockEntity
         }
 
         void setLastSlot(int lastSlot) {
-            for (int i = lastSlot; i < getSlots(); i++) {
+            for (int i = lastSlot; i < size(); i++) {
                 if (!getStackInSlot(i).isEmpty()) return;
             }
             this.lastSlot = lastSlot;

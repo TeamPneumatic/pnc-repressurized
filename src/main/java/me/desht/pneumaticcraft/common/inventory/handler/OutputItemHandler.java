@@ -17,56 +17,26 @@
 
 package me.desht.pneumaticcraft.common.inventory.handler;
 
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 /**
- * Intended for the (public-facing) output inventory of machines: doesn't allow items to be inserted.
+ * Wraps an item handler, allowing extraction only.
  */
-public class OutputItemHandler implements IItemHandlerModifiable {
-    private final IItemHandlerModifiable wrapped;
-
-    public OutputItemHandler(IItemHandlerModifiable wrapped) {
-        this.wrapped = wrapped;
+public class OutputItemHandler extends DelegatingResourceHandler<ItemResource> {
+    public OutputItemHandler(ResourceHandler<ItemResource> wrapped) {
+        super(wrapped);
     }
 
     @Override
-    public int getSlots() {
-        return wrapped.getSlots();
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-        return wrapped.getStackInSlot(slot);
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        return stack;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        return wrapped.extractItem(slot, amount, simulate);
+    public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+        return 0;
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        return wrapped.getSlotLimit(slot);
-    }
-
-    @Override
-    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-        return wrapped.isItemValid(slot, stack);
-    }
-
-    @Override
-    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        wrapped.setStackInSlot(slot, stack);
+    public int insert(ItemResource resource, int amount, TransactionContext transaction) {
+        return 0;
     }
 }

@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -26,11 +27,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
-import javax.annotation.Nonnull;
 
-public class DroneItemHandler extends ItemStackHandler {
+public class DroneItemHandler extends BaseItemStackHandler {
     private final IDrone holder;
     private int useableSlots;
     private ItemStack prevHeldStack = ItemStack.EMPTY;
@@ -42,41 +43,21 @@ public class DroneItemHandler extends ItemStackHandler {
         this.useableSlots = useableSlots;
     }
 
-    @Nonnull
     @Override
-    public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-        if (slot >= useableSlots) return stack;
-
-        ItemStack res = super.insertItem(slot, stack, simulate);
-        if (res.getCount() != stack.getCount() && !simulate) {
-            copyItemToFakePlayer(slot);
-        }
-        return res;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (slot >= useableSlots) return ItemStack.EMPTY;
-
-        ItemStack res = super.extractItem(slot, amount, simulate);
-        if (!res.isEmpty() && !simulate) {
-            copyItemToFakePlayer(slot);
-        }
-        return res;
+    public int size() {
+        return Math.min(useableSlots, super.size());
     }
 
     @Override
-    public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        if (slot >= useableSlots) return;
+    public void set(int slot, ItemResource resource, int amount) {
+        if (slot < useableSlots) {
+            super.set(slot, resource, amount);
+        }
+    }
 
-        super.setStackInSlot(slot, stack);
+    @Override
+    protected void onContentsChanged(int slot, ItemStack previousContents) {
         copyItemToFakePlayer(slot);
-    }
-
-    @Override
-    public int getSlots() {
-        return Math.min(useableSlots, super.getSlots());
     }
 
     public void setUseableSlots(int useableSlots) {
@@ -93,7 +74,7 @@ public class DroneItemHandler extends ItemStackHandler {
     public void setFakePlayerReady() {
         if (!fakePlayerReady && !holder.getDroneLevel().isClientSide()) {
             fakePlayerReady = true;
-            for (int slot = 0; slot < getSlots(); slot++) {
+            for (int slot = 0; slot < size(); slot++) {
                 copyItemToFakePlayer(slot);
             }
         }
@@ -112,8 +93,8 @@ public class DroneItemHandler extends ItemStackHandler {
             ItemStack stack = fakeInv.getItem(slot);
             if (!stack.isEmpty()) {
                 if (slot < useableSlots) {
-                    // using super method here to avoid unnecessary copy of the item back to the fake player again
-                    super.setStackInSlot(slot, stack);
+                    // setting the stack directly here to avoid unnecessary copy of the item back to the fake player again
+                    stacks.set(slot, stack);
                 } else {
                     Vec3 v = holder.getDronePos();
                     PneumaticCraftUtils.dropItemOnGround(stack, holder.getDroneLevel(), v.x(), v.y(), v.z());
@@ -124,7 +105,7 @@ public class DroneItemHandler extends ItemStackHandler {
     }
 
     /**
-     * Copy item from drone's IItemHandler inventory to the fake player's main inventory
+     * Copy item from drone's ResourceHandler<ItemResource> inventory to the fake player's main inventory
      * Also handle item equipping where appropriate
      *
      * @param slot slot that is being updated

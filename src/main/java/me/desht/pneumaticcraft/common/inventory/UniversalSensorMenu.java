@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.entity.utility.UniversalSensorBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +55,7 @@ public class UniversalSensorMenu extends AbstractPneumaticCraftMenu<UniversalSen
     private void commonInit(Inventory playerInventory) {
         addUpgradeSlots(19, 108);
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 29, 72));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, 29, 72));
 
         addPlayerSlots(playerInventory, 157);
     }

@@ -39,7 +39,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
@@ -66,7 +67,7 @@ public class LogisticsMenu extends AbstractPneumaticCraftMenu<AbstractPneumaticC
             this.itemContainer = false;
         }
         if (logistics != null) {
-            IItemHandler requests = logistics.getItemFilterHandler();
+            ResourceHandler<ItemResource> requests = logistics.getItemFilterHandler();
             for (int y = 0; y < 3; y++) {
                 for (int x = 0; x < 9; x++) {
                     addSlot(logistics.canFilterStack() ?

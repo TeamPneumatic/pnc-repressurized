@@ -18,9 +18,9 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
-public class PneumaticEnergyStorage extends EnergyStorage {
+public class PneumaticEnergyStorage extends SimpleEnergyHandler {
     public PneumaticEnergyStorage(int capacity) {
         super(capacity);
     }
@@ -30,7 +30,7 @@ public class PneumaticEnergyStorage extends EnergyStorage {
     }
 
     public void readFromNBT(CompoundTag tag) {
-        energy = tag.getIntOr("Energy", 0);
+        energy = Math.max(0, tag.getIntOr("Energy", 0));
     }
 
     public void setCapacity(int capacity) {

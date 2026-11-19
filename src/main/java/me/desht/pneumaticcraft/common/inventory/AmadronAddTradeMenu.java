@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IGUIButtonSensitive;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.slot.UnstackablePhantomSlot;
 import me.desht.pneumaticcraft.common.item.AmadronTabletItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
@@ -29,7 +30,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 
@@ -37,7 +37,7 @@ public class AmadronAddTradeMenu extends AbstractPneumaticCraftMenu<AbstractPneu
     public static final int INPUT_SLOT = 0;
     public static final int OUTPUT_SLOT = 1;
 
-    private final ItemStackHandler inv = new ItemStackHandler(2);
+    private final BaseItemStackHandler inv = new BaseItemStackHandler(2);
 
     AmadronAddTradeMenu(int windowId, Inventory playerInventory) {
         super(ModMenuTypes.AMADRON_ADD_TRADE.get(), windowId, playerInventory);

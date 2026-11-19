@@ -64,7 +64,7 @@ public class ProgWidgetDroneConditionEnergy extends ProgWidgetDroneCondition {
 
     @Override
     protected int getCount(IDrone drone, IProgWidget widget) {
-        int energy = drone.getEnergyStorage().getEnergyStored();
+        int energy = drone.getEnergyStorage().getAmountAsInt();
         maybeRecordMeasuredVal(drone, energy);
         return energy;
     }

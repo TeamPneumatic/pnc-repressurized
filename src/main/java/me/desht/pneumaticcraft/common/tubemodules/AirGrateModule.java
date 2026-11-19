@@ -55,9 +55,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
@@ -197,7 +194,7 @@ public class AirGrateModule extends AbstractTubeModule {
     private void tryItemInsertion(ItemEntity entity) {
         ItemStack stack = entity.getItem();
         getItemInsertionCap().ifPresent(handler -> {
-            ItemStack excess = ItemHandlerHelper.insertItem(handler, stack, false);
+            ItemStack excess = IOHelper.insert(handler, stack, false);
             if (excess.isEmpty()) {
                 entity.discard();
             } else {
@@ -208,7 +205,7 @@ public class AirGrateModule extends AbstractTubeModule {
 
     private void tryOrbInsertion(ExperienceOrb entity) {
         getFluidInsertionCap().ifPresent(handler -> {
-            if (PneumaticCraftUtils.fillTankWithOrb(handler, entity, IFluidHandler.FluidAction.EXECUTE)) {
+            if (PneumaticCraftUtils.fillTankWithOrb(handler, entity, false)) {
                 entity.discard();
             }
         });
@@ -239,7 +236,7 @@ public class AirGrateModule extends AbstractTubeModule {
         });
     }
 
-    private Optional<IItemHandler> getItemInsertionCap() {
+    private Optional<ResourceHandler<ItemResource>> getItemInsertionCap() {
         if (itemInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
@@ -249,10 +246,10 @@ public class AirGrateModule extends AbstractTubeModule {
                 }
             }
         }
-        return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.legacy(itemInsertionCache));
+        return itemInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.getCapability(itemInsertionCache));
     }
 
-    private Optional<IFluidHandler> getFluidInsertionCap() {
+    private Optional<ResourceHandler<FluidResource>> getFluidInsertionCap() {
         if (fluidInsertionCache == null && pressureTube.getLevel() instanceof ServerLevel level) {
             for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos neighborPos = pressureTube.getBlockPos().relative(dir);
@@ -262,7 +259,7 @@ public class AirGrateModule extends AbstractTubeModule {
                 }
             }
         }
-        return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.legacyFluid(fluidInsertionCache));
+        return fluidInsertionCache == null ? Optional.empty() : Optional.ofNullable(IOHelper.getCapability(fluidInsertionCache));
     }
 
     private void coolHeatSinks() {

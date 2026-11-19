@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -64,8 +65,8 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
             return 0;
         }
         int count = 0;
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack droneStack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack droneStack = IOHelper.getStack(drone.getInv(), i);
             if (filtering.isItemValidForFilters(droneStack)) {
                 count += droneStack.getCount();
             }

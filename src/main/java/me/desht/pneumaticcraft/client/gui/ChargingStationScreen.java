@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.entity.utility.ChargingStationBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.ChargingStationMenu;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -96,7 +97,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     public void containerTick() {
         super.containerTick();
 
-        ItemStack stack = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        ItemStack stack = IOHelper.getStack(te.getItemHandler(), ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         boolean wasVisible = guiSelectButton.visible;
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible && !wasVisible) {
@@ -138,7 +139,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        ItemStack chargeStack  = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        ItemStack chargeStack  = IOHelper.getStack(te.getItemHandler(), ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && PNCCapabilities.getAirHandler(chargeStack).isEmpty()) {
             // shouldn't ever happen - I can't be bothered to add a translation
             textList.add(Component.literal(ChatFormatting.RED + "Non-pneumatic item in the charge slot!?"));
@@ -148,7 +149,7 @@ public class ChargingStationScreen extends AbstractPneumaticCraftContainerScreen
     @Override
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
-        ItemStack chargeStack  = te.getItemHandler().getStackInSlot(ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
+        ItemStack chargeStack  = IOHelper.getStack(te.getItemHandler(), ChargingStationBlockEntity.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else if (!te.upgradeOnly) {

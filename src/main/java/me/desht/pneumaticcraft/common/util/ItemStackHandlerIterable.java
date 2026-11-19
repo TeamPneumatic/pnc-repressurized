@@ -18,7 +18,8 @@
 package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -27,9 +28,9 @@ import java.util.stream.StreamSupport;
 
 public class ItemStackHandlerIterable implements Iterable<ItemStack>{
 
-    private final IItemHandlerModifiable itemStackHandler;
+    private final ResourceHandler<ItemResource> itemStackHandler;
     
-    public ItemStackHandlerIterable(IItemHandlerModifiable itemStackHandler){
+    public ItemStackHandlerIterable(ResourceHandler<ItemResource> itemStackHandler){
         this.itemStackHandler = itemStackHandler;
     }
     
@@ -40,19 +41,19 @@ public class ItemStackHandlerIterable implements Iterable<ItemStack>{
 
             @Override
             public boolean hasNext() {
-                return curIndex < itemStackHandler.getSlots();
+                return curIndex < itemStackHandler.size();
             }
 
             @Override
             public ItemStack next() {
                 if (!hasNext()) throw new NoSuchElementException();
-                return itemStackHandler.getStackInSlot(curIndex++);
+                return IOHelper.getStack(itemStackHandler, curIndex++);
             }
 
             @Override
             public void remove() {
                 if (curIndex == 0) throw new IllegalStateException("First call next()!");
-                itemStackHandler.setStackInSlot(curIndex - 1, ItemStack.EMPTY);
+                IOHelper.setStack(itemStackHandler, curIndex - 1, ItemStack.EMPTY);
             }
         };
     }

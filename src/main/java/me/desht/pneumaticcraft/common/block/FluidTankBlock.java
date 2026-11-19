@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.core.BlockPos;
@@ -33,7 +33,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -50,10 +52,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
@@ -200,24 +203,12 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
             this.capacity = ((FluidTankBlock) block).size.capacity;
         }
 
-        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
-        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
-//        @Override
-//        public boolean hasCraftingRemainingItem(ItemStack stack) {
-//            // the tank is a container item if it's being used in fluid crafting
-//            // but an empty tank used in crafting is not a container item
-//            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
-//        }
-
-//        @Override
-//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-//            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
-//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-//                return handler.getContainer();
-//            }).orElseThrow(RuntimeException::new);
-//        }
+        // the tank is a container item if it's being used in fluid crafting, but an empty tank used in crafting is not a container item
+        // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+        @Override
+        public @Nullable ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
+            return FluidUtils.getDrainedCraftingRemainder(instance, FluidType.BUCKET_VOLUME, true);
+        }
 
         @Override
         public IFluidItemRenderInfoProvider getFluidItemRenderer() {
@@ -234,8 +225,8 @@ public class FluidTankBlock extends AbstractPneumaticCraftBlock
         }
 
         @Override
-        public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-            return new FluidHandlerItemStack(ModDataComponents.MAIN_TANK, stack, capacity);
+        public ResourceHandler<FluidResource> provideFluidCapability(ItemAccess itemAccess) {
+            return new ItemAccessFluidHandler(itemAccess, ModDataComponents.MAIN_TANK.get(), capacity);
         }
     }
 

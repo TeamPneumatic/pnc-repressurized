@@ -49,12 +49,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -186,7 +186,7 @@ public class ElectrostaticCompressorBlockEntity extends AbstractAirHandlingBlock
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

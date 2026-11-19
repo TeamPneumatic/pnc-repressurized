@@ -14,7 +14,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.Optional;
 import java.util.Set;
@@ -67,7 +68,7 @@ public interface IMiscHelpers {
      * @param provider the lookup provider
      * @return an item handler deserialized by the Smart Chest
      */
-    IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider);
+    ResourceHandler<ItemResource> deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider);
 
     /**
      * Notify tracking clients to recalculate the block shapes of all neighbours of the block at the given world

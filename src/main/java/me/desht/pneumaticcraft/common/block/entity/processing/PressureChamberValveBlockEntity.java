@@ -36,6 +36,8 @@ import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEn
 import me.desht.pneumaticcraft.common.block.entity.IMinWorkingPressure;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.inventory.PressureChamberValveMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -44,9 +46,9 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.SizeLimitedItemHandlerWrapper;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -58,7 +60,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
@@ -77,10 +78,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.RangedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -109,10 +109,10 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
     @GuiSynced
     public float recipePressure;
 
-    private final ItemStackHandler itemsInChamber = new ChamberStackHandler();
-    final ItemStackHandler craftedItems = new OutputStackHandler();
+    private final BaseItemStackHandler itemsInChamber = new ChamberStackHandler();
+    final BaseItemStackHandler craftedItems = new OutputStackHandler();
     @DescSynced
-    final CombinedInvWrapper allItems = new CombinedInvWrapper(itemsInChamber, craftedItems);
+    final IOCombinedHandler<ItemResource> allItems = new IOCombinedHandler<>(slot -> true, slot -> true, itemsInChamber, craftedItems);
 
     public final List<ItemStack> renderedItems = new ArrayList<>(); // list of non-empty stacks from allItems
 
@@ -208,8 +208,8 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
             isSufficientPressureInChamber = false;
             recipePressure = Float.MAX_VALUE;
             applicableRecipes.clear();
-            final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
-            if (h.getSlots() > 0) {
+            final ResourceHandler<ItemResource> h = RangedResourceHandler.of(itemsInChamber, 0, findLastNonEmptySlot(itemsInChamber) + 1);
+            if (h.size() > 0) {
                 ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).map(RecipeHolder::value).forEach(recipe -> {
                     IntCollection slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
@@ -224,12 +224,21 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         }
     }
 
+    private static int findLastNonEmptySlot(ResourceHandler<ItemResource> handler) {
+        for (int i = handler.size() - 1; i >= 0; i--) {
+            if (!handler.getResource(i).isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private boolean coalesceItems() {
         CountedItemStacks count = new CountedItemStacks(itemsInChamber);
         if (!count.canCoalesce()) return false;
 
         NonNullList<ItemStack> coalesced = count.coalesce();
-        for (int i = 0; i < itemsInChamber.getSlots(); i++) {
+        for (int i = 0; i < itemsInChamber.size(); i++) {
             if (i < coalesced.size()) {
                 itemsInChamber.setStackInSlot(i, coalesced.get(i));
             } else {
@@ -407,7 +416,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         if (stacks.isEmpty()) return false;
         for (ItemStack stack : stacks) {
             stack = stack.copy();
-            ItemStack result = ItemHandlerHelper.insertItem(craftedItems, stack, simulate);
+            ItemStack result = IOHelper.insert(craftedItems, stack, simulate);
             if (!result.isEmpty()) return false;
         }
         return true;
@@ -420,7 +429,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
      * @return what could not be inserted
      */
     ItemStack insertItemToChamber(ItemStack stack) {
-        return ItemHandlerHelper.insertItem(itemsInChamber, stack.copy(), false);
+        return IOHelper.insert(itemsInChamber, stack.copy(), false);
     }
 
     @Override
@@ -428,14 +437,14 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         super.loadAdditional(tag, provider);
 
         setupMultiBlock(tag.getIntOr("multiBlockSize", 0), tag.getIntOr("multiBlockX", 0), tag.getIntOr("multiBlockY", 0), tag.getIntOr("multiBlockZ", 0));
-        ItemStackHandler handler = new ItemStackHandler();
+        BaseItemStackHandler handler = new BaseItemStackHandler(1);
         ValueIOBridge.deserialize(handler, provider, tag.getCompoundOrEmpty("itemsInChamber"));
-        for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
+        for (int i = 0; i < handler.size() && i < CHAMBER_INV_SIZE; i++) {
             itemsInChamber.setStackInSlot(i, handler.getStackInSlot(i));
         }
-        ItemStackHandler outHandler = new ItemStackHandler();
+        BaseItemStackHandler outHandler = new BaseItemStackHandler(1);
         ValueIOBridge.deserialize(outHandler, provider, tag.getCompoundOrEmpty("craftedItems"));
-        for (int i = 0; i < outHandler.getSlots() && i < OUTPUT_INV_SIZE; i++) {
+        for (int i = 0; i < outHandler.size() && i < OUTPUT_INV_SIZE; i++) {
             craftedItems.setStackInSlot(i, outHandler.getStackInSlot(i));
         }
 
@@ -549,7 +558,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -701,10 +710,10 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         for (var valve : valveList) {
             if (valve != primaryValve) {
                 var upgradeHandler = valve.getUpgradeHandler();
-                for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                for (int i = 0; i < upgradeHandler.size(); i++) {
                     ItemStack stack = upgradeHandler.getStackInSlot(i);
                     if (!stack.isEmpty()) {
-                        ItemStack excess = ItemHandlerHelper.insertItemStacked(primaryUpgradeHandler, stack, false);
+                        ItemStack excess = IOHelper.insertStacked(primaryUpgradeHandler, stack, false);
                         upgradeHandler.setStackInSlot(i, excess);
                     }
                 }
@@ -725,7 +734,7 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         List<ItemEntity> items = nonNullLevel().getEntitiesOfClass(ItemEntity.class, getChamberAABB(), EntitySelector.ENTITY_STILL_ALIVE);
         for (ItemEntity item : items) {
             ItemStack stack = item.getItem();
-            ItemStack excess = ItemHandlerHelper.insertItem(itemsInChamber, stack, false);
+            ItemStack excess = IOHelper.insert(itemsInChamber, stack, false);
             if (excess.isEmpty()) item.discard();
             else item.setItem(excess);
         }
@@ -744,20 +753,20 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
 
     private void rebuildRenderedItems() {
         renderedItems.clear();
-        for (int i = 0; i < allItems.getSlots(); i++) {
-            if (!allItems.getStackInSlot(i).isEmpty()) {
-                renderedItems.add(allItems.getStackInSlot(i));
+        for (int i = 0; i < allItems.size(); i++) {
+            if (!IOHelper.getStack(allItems, i).isEmpty()) {
+                renderedItems.add(IOHelper.getStack(allItems, i));
             }
         }
     }
 
-    private class ChamberStackHandler extends ItemStackHandler {
+    private class ChamberStackHandler extends BaseItemStackHandler {
         ChamberStackHandler() {
             super(CHAMBER_INV_SIZE);
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
             recipeRecalcNeeded = true;
             if (level != null && level.isClientSide()) {
                 rebuildRenderedItems();
@@ -766,13 +775,13 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
         }
     }
 
-    private class OutputStackHandler extends ItemStackHandler {
+    private class OutputStackHandler extends BaseItemStackHandler {
         OutputStackHandler() {
             super(OUTPUT_INV_SIZE);
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
             if (level != null && level.isClientSide()) {
                 rebuildRenderedItems();
             }

@@ -53,9 +53,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -200,7 +200,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -274,7 +274,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
                 while (count > 0) {
                     int toInsert = Math.min(count, stack.getMaxStackSize());
                     int inserted = IOHelper.getInventoryForBlock(te, d.getOpposite()).map(h -> {
-                        ItemStack excess = ItemHandlerHelper.insertItem(h, stack.copyWithCount(toInsert), false);
+                        ItemStack excess = IOHelper.insert(h, stack.copyWithCount(toInsert), false);
                         return toInsert - excess.getCount();
                     }).orElse(0);
                     if (inserted == 0) break;
@@ -287,7 +287,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         while (count > 0) {
             int size = Math.min(count, stack.getMaxStackSize());
             if (player != null) {
-                ItemHandlerHelper.giveItemToPlayer(player, stack.copyWithCount(size));
+                player.getInventory().placeItemBackInInventory(stack.copyWithCount(size));
             } else {
                 PneumaticCraftUtils.dropItemOnGround(stack.copyWithCount(size), getLevel(), getBlockPos());
             }
@@ -327,7 +327,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
 
         // look in player's inventory
         if (player != null) {
-            found += extractPuzzlePieces(new PlayerMainInvWrapper(player.getInventory()), required, simulate);
+            found += extractPuzzlePieces(PlayerInventoryWrapper.of(player).getMainSlots(), required, simulate);
             if (found >= required) return true;
         }
 
@@ -346,12 +346,12 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     }
 
 
-    private int extractPuzzlePieces(IItemHandler handler, int max, boolean simulate) {
+    private int extractPuzzlePieces(ResourceHandler<ItemResource> handler, int max, boolean simulate) {
         int n = 0;
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stackInSlot = handler.getStackInSlot(i);
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stackInSlot = IOHelper.getStack(handler, i);
             if (stackInSlot.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
-                ItemStack extracted = handler.extractItem(i, Math.min(max - n, stackInSlot.getMaxStackSize()), simulate);
+                ItemStack extracted = IOHelper.extract(handler, i, Math.min(max - n, stackInSlot.getMaxStackSize()), simulate);
                 n += extracted.getCount();
                 if (n >= max) return n;
             }
@@ -484,8 +484,8 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
             if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getLevel().isClientSide()) {
                 tryProgramDrone(null);
             }

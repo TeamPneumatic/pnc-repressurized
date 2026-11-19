@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.inventory;
 
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -24,8 +25,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
@@ -46,8 +47,8 @@ public class InventorySearcherMenu extends AbstractContainerMenu {
         }
     }
 
-    public void init(IItemHandler inv) {
-        addSlot(new SlotItemHandler(inv, 0, 80, 23));
+    public void init(ResourceHandler<ItemResource> inv) {
+        addSlot(new ItemHandlerSlot(inv, 0, 80, 23));
     }
 
     /**

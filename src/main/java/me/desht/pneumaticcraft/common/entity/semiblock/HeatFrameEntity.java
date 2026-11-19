@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.recipes.VanillaRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.machine.HeatFrameCoolingRecipeImpl;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
@@ -47,9 +48,11 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.function.Consumer;
 
@@ -174,7 +177,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (cookingProgress >= 100) {
             IOHelper.getInventoryForBlock(getCachedTileEntity()).ifPresent(handler -> {
                 if (!tryCookSlot(handler, lastValidSlot)) {
-                    for (int i = 0; i < handler.getSlots(); i++) {
+                    for (int i = 0; i < handler.size(); i++) {
                         if (tryCookSlot(handler, i)) {
                             cookingProgress -= 100;
                             break;
@@ -188,18 +191,18 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         return newStatus;
     }
 
-    private boolean tryCookSlot(IItemHandler handler, int slot) {
-        if (slot >= 0 & slot < handler.getSlots()) {
-            ItemStack stack = handler.getStackInSlot(slot);
+    private boolean tryCookSlot(ResourceHandler<ItemResource> handler, int slot) {
+        if (slot >= 0 & slot < handler.size()) {
+            ItemStack stack = IOHelper.getStack(handler, slot);
             if (!stack.isEmpty()) {
                 SingleRecipeInput input = new SingleRecipeInput(stack);
                 return VanillaRecipeCache.SMELTING.getCachedRecipe(level(), input).map(recipe -> {
                     ItemStack result = recipe.assemble(input);
                     if (!result.isEmpty()) {
-                        ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
+                        ItemStack remainder = IOHelper.insert(handler, result, true);
                         if (remainder.isEmpty()) {
-                            handler.extractItem(slot, 1, false);
-                            ItemHandlerHelper.insertItem(handler, result, false);
+                            IOHelper.extract(handler, slot, 1, false);
+                            IOHelper.insert(handler, result, false);
                             lastValidSlot = slot;
                             return true;
                         }
@@ -223,7 +226,7 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         if (coolingProgress >= 100) {
             IOHelper.getInventoryForBlock(getCachedTileEntity()).ifPresent(handler -> {
                 if (!tryCoolSlot(handler, lastValidSlot)) {
-                    for (int i = 0; i < handler.getSlots(); i++) {
+                    for (int i = 0; i < handler.size(); i++) {
                         if (tryCoolSlot(handler, i)) {
                             coolingProgress -= 100;
                             break;
@@ -237,32 +240,31 @@ public class HeatFrameEntity extends AbstractSemiblockEntity {
         return newStatus;
     }
 
-    private boolean tryCoolSlot(IItemHandler handler, int slot) {
-        if (slot >= 0 & slot < handler.getSlots()) {
-            ItemStack stack = handler.getStackInSlot(slot);
+    private boolean tryCoolSlot(ResourceHandler<ItemResource> handler, int slot) {
+        if (slot >= 0 & slot < handler.size()) {
+            ItemStack stack = IOHelper.getStack(handler, slot);
             if (stack.isEmpty()) return false;
 
             return ModRecipeTypes.HEAT_FRAME_COOLING.get().findFirst(level(), r -> r.matches(stack)).map(holder -> {
                 HeatFrameCoolingRecipe recipe = holder.value();
                 ItemStack result = recipe.getOutput().copyWithCount(recipe.calculateOutputQuantity(logic.getTemperature()));
-                boolean spaceForOutput = ItemHandlerHelper.insertItem(handler, result, true).isEmpty();
+                boolean spaceForOutput = IOHelper.insert(handler, result, true).isEmpty();
                 boolean extractedOK = spaceForOutput && recipe.getInput().map(
-                        ingredient -> handler.extractItem(slot, 1, false).getCount() == 1,
+                        ingredient -> IOHelper.extract(handler, slot, 1, false).getCount() == 1,
                         fluidIngredient -> {
                             if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
-                            return IOHelper.getFluidHandlerForItem(stack).map(fluidHandler -> {
-                                int toDrain = fluidIngredient.amount();
-                                if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
-                                    ItemStack containerStack = fluidHandler.getContainer().copy();
-                                    handler.extractItem(slot, 1, false);
-                                    handler.insertItem(slot, containerStack, false);
-                                    return true;
-                                }
-                                return false;
-                            }).orElse(false);
+                            // the item access updates the item in the slot, e.g. water bucket -> empty bucket
+                            ResourceHandler<FluidResource> fluidHandler = ItemAccess.forHandlerIndexStrict(handler, slot).getCapability(Capabilities.Fluid.ITEM);
+                            if (fluidHandler == null) return false;
+                            int toDrain = fluidIngredient.amount();
+                            if (FluidUtils.drain(fluidHandler, toDrain, true).getAmount() == toDrain) {
+                                FluidUtils.drain(fluidHandler, toDrain, false);
+                                return true;
+                            }
+                            return false;
                         });
                 if (extractedOK) {
-                    ItemHandlerHelper.insertItem(handler, result, false);
+                    IOHelper.insert(handler, result, false);
                     lastValidSlot = slot;
                 }
                 return extractedOK;

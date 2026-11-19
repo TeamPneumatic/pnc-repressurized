@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.common.registry.ModRecipeSerializers;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
@@ -37,7 +38,8 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -59,22 +61,22 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public IntCollection findIngredients(@Nonnull IItemHandler chamberHandler) {
+    public IntCollection findIngredients(@Nonnull ResourceHandler<ItemResource> chamberHandler) {
         // found slots will be { enchanted book, enchantable item } in that order
 
         IntList bookSlots = new IntArrayList();
-        for (int i = 0; i < chamberHandler.getSlots(); i++) {
-            ItemStack stack = chamberHandler.getStackInSlot(i);
+        for (int i = 0; i < chamberHandler.size(); i++) {
+            ItemStack stack = IOHelper.getStack(chamberHandler, i);
             if (stack.getItem() == Items.ENCHANTED_BOOK) {
                 bookSlots.add(i);
             }
         }
 
-        for (int i = 0; i < chamberHandler.getSlots(); i++) {
-            ItemStack stack = chamberHandler.getStackInSlot(i);
+        for (int i = 0; i < chamberHandler.size(); i++) {
+            ItemStack stack = IOHelper.getStack(chamberHandler, i);
             if (stack.isEnchantable() || stack.isEnchanted()) {
                 for (int bookSlot : bookSlots) {
-                    ItemStack enchantedBook = chamberHandler.getStackInSlot(bookSlot);
+                    ItemStack enchantedBook = IOHelper.getStack(chamberHandler, bookSlot);
                     if (isApplicable(enchantedBook, stack)) {
                         return IntList.of(bookSlot, i);
                     }
@@ -94,15 +96,15 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate) {
+    public NonNullList<ItemStack> craftRecipe(@Nonnull ResourceHandler<ItemResource> chamberHandler, IntList ingredientSlots, boolean simulate) {
         // note: we need 2 empty slots in the chamber to be able to do this successfully,
         //   and we can't assume that extracting the input items will free up those slots
         if (!PneumaticCraftUtils.ensureSlotsEmpty(chamberHandler, 2)) {
             return NonNullList.create();
         }
 
-        ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.getInt(0));
-        ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.getInt(1)).copyWithCount(1);
+        ItemStack enchantedBook = IOHelper.getStack(chamberHandler, ingredientSlots.getInt(0));
+        ItemStack enchantable = IOHelper.getStack(chamberHandler, ingredientSlots.getInt(1)).copyWithCount(1);
 
         ItemEnchantments.Mutable bookEnchantments = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(enchantedBook));
         Set<Holder<Enchantment>> itemEnchantments = EnchantmentHelper.getEnchantmentsForCrafting(enchantable).keySet();
@@ -133,8 +135,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
             EnchantmentHelper.setEnchantments(newBook, bookEnchantments.toImmutable());
         }
 
-        chamberHandler.extractItem(ingredientSlots.getInt(0), 1, simulate);
-        chamberHandler.extractItem(ingredientSlots.getInt(1), 1, simulate);
+        IOHelper.extract(chamberHandler, ingredientSlots.getInt(0), 1, simulate);
+        IOHelper.extract(chamberHandler, ingredientSlots.getInt(1), 1, simulate);
         return NonNullList.of(ItemStack.EMPTY, newBook, enchantable);
     }
 

@@ -29,7 +29,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
@@ -52,14 +51,14 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
     }
 
     private boolean fillTank(BlockPos pos, boolean simulate) {
-        if (drone.getFluidTank().getFluidAmount() == 0) {
+        if (drone.getFluidTank().getAmountAsInt(0) == 0) {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.emptyDroneTank");
             abort();
             return false;
         } else {
             BlockEntity te = drone.getDroneLevel().getBlockEntity(pos);
             if (te != null) {
-                FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
+                FluidStack exportedFluid = FluidUtils.drain(drone.getFluidTank(), Integer.MAX_VALUE, true);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
                     FillStatus status = FillStatus.NO_HANDLER;
                     for (Direction side : DirectionUtil.VALUES) {
@@ -81,7 +80,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
             if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
                 if (FluidUtils.tryPourOutFluid(drone.getFluidTank(), drone.getDroneLevel(), pos, false, false,
-                        simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
+                        simulate)) {
                     if (!simulate) {
                         decreaseCount(BUCKET_VOLUME);
                     }
@@ -94,13 +93,13 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
     private FillStatus trySide(BlockEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
         return IOHelper.getFluidHandlerForBlock(te, side).map(fluidHandler -> {
-            int filledAmount = fluidHandler.fill(fluidToExport, FluidAction.SIMULATE);
+            int filledAmount = FluidUtils.fill(fluidHandler, fluidToExport, true);
             if (filledAmount > 0) {
                 if (((ICountWidget) progWidget).useCount()) {
                     filledAmount = Math.min(filledAmount, getRemainingCount());
                 }
                 if (!simulate) {
-                    decreaseCount(fluidHandler.fill(drone.getFluidTank().drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
+                    decreaseCount(FluidUtils.fill(fluidHandler, FluidUtils.drain(drone.getFluidTank(), filledAmount, false), false));
                 }
                 return FillStatus.OK;
             }
