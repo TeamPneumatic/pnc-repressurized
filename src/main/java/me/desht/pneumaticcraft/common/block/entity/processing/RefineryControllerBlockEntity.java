@@ -462,8 +462,8 @@ public class RefineryControllerBlockEntity extends AbstractTickingBlockEntity
         }
 
         @Override
-        protected void onContentsChanged(FluidStack prevStack) {
-            // do nothing, this tank is for client sync only
+        protected void markOwnerDirty(BlockEntity be) {
+            // this tank is for client sync only, so it doesn't need saving; it must still sync though
         }
     }
 }

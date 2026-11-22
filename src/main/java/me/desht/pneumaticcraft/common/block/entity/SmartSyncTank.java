@@ -112,9 +112,18 @@ public class SmartSyncTank extends PNCFluidTank {
         BlockEntity be = owner.get();
         if (be == null || be.getLevel() == null || !be.getLevel().isClientSide()) {
             onFluidChange(getFluid());
-            if (be != null && be.getLevel() != null) {
-                be.setChanged();
-            }
+            markOwnerDirty(be);
+        }
+    }
+
+    /**
+     * Called on the server when the tank contents change, after the change has been scheduled for syncing.
+     *
+     * @param be the owning block entity, or null if it's gone
+     */
+    protected void markOwnerDirty(BlockEntity be) {
+        if (be != null && be.getLevel() != null) {
+            be.setChanged();
         }
     }
 
