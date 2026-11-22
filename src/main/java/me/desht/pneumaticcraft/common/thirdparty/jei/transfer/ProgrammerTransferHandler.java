@@ -137,7 +137,7 @@ public class ProgrammerTransferHandler implements IUniversalRecipeTransferHandle
         ProgWidgetItemFilter filterWidget = new ProgWidgetItemFilter();
         if (craftingWidget == null) {
             Rect2i bounds = programmerScreen.getProgrammerBounds();
-            base = programmerScreen.mouseToWidgetCoords(programmerScreen.getGuiLeft() + bounds.getX() + 50, programmerScreen.getGuiTop() + bounds.getY() + 50, filterWidget);
+            base = programmerScreen.mouseToWidgetCoords(programmerScreen.getLeftPos() + bounds.getX() + 50, programmerScreen.getTopPos() + bounds.getY() + 50, filterWidget);
         } else {
             base = new PointXY(craftingWidget.getX() + craftingWidget.getWidth() / 2, craftingWidget.getY());
         }

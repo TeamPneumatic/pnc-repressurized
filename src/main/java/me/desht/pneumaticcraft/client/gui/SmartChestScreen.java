@@ -288,7 +288,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double dirX, double dirY) {
-        Slot s = getSlotUnderMouse();
+        Slot s = getHoveredSlot();
         if (Minecraft.getInstance().hasAltDown() && s != null && s.index < CHEST_SIZE) {
             ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
@@ -310,7 +310,7 @@ public class SmartChestScreen extends AbstractPneumaticCraftContainerScreen<Smar
     @Override
     public boolean keyPressed(KeyEvent event) {
         int keyCode = event.key();
-        Slot s = getSlotUnderMouse();
+        Slot s = getHoveredSlot();
         if (Minecraft.getInstance().hasAltDown() && s != null && s.index < CHEST_SIZE) {
             ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {

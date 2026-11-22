@@ -263,7 +263,7 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
                         .max(Comparator.comparingInt(o -> o)).orElse(0)
         );
         int fh = font.lineHeight + 2;
-        WidgetLabel label = addRenderableWidget(new WidgetLabel(getGuiLeft() + imageWidth - widestRB - 20, y0, xlate("pneumaticcraft.gui.programmer.difficulty")));
+        WidgetLabel label = addRenderableWidget(new WidgetLabel(getLeftPos() + imageWidth - widestRB - 20, y0, xlate("pneumaticcraft.gui.programmer.difficulty")));
         WidgetRadioButton.Builder<DifficultyButton> rbb = WidgetRadioButton.Builder.create();
         for (WidgetDifficulty wd : WidgetDifficulty.values()) {
             y0 += fh;
@@ -483,12 +483,12 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
-        GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, getGuiLeft(), getGuiTop(), 0, imageWidth, imageHeight, 256, 256, 4);
-        GuiUtils.drawPlayerSlots(graphics, getGuiLeft() + menu.slots.get(1).x - 1, getGuiTop() + menu.slots.get(1).y - 1);
+        GuiUtils.drawNineSliced(graphics, Textures.GUI_BLANK_256, getLeftPos(), getTopPos(), 0, imageWidth, imageHeight, 256, 256, 4);
+        GuiUtils.drawPlayerSlots(graphics, getLeftPos() + menu.slots.get(1).x - 1, getTopPos() + menu.slots.get(1).y - 1);
         GuiUtils.drawInsetPanel(graphics,
-                getGuiLeft() + getProgrammerBounds().getX() - 1, getGuiTop() + getProgrammerBounds().getY() - 1,
+                getLeftPos() + getProgrammerBounds().getX() - 1, getTopPos() + getProgrammerBounds().getY() - 1,
                 getProgrammerBounds().getWidth() + 2, getProgrammerBounds().getHeight() + 2);
-        GuiUtils.drawInsetPanel(graphics, getGuiLeft() + menu.slots.get(0).x - 1, getGuiTop() + menu.slots.get(0).y - 1, 18, 18);
+        GuiUtils.drawInsetPanel(graphics, getLeftPos() + menu.slots.get(0).x - 1, getTopPos() + menu.slots.get(0).y - 1, 18, 18);
 
         programmerUnit.render(graphics, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
@@ -497,14 +497,14 @@ public class ProgrammerScreen extends AbstractPneumaticCraftContainerScreen<Prog
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight();
         if (showingWidgetProgress > 0) {
             int width = (int)Mth.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
-            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getGuiLeft() + xRight - width, getGuiTop() + 36, 0,
+            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getLeftPos() + xRight - width, getTopPos() + 36, 0,
                     width, yBottom - 35,
                     256, 128, 2);
             if (showingAllWidgets && draggingWidget != null) {
                 toggleShowWidgets();
             }
         } else {
-            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getGuiLeft() + xRight - 3, getGuiTop() + 36, 0,
+            GuiUtils.drawNineSliced(graphics, Textures.GUI_WIDGET_TRAY, getLeftPos() + xRight - 3, getTopPos() + 36, 0,
                     22, yBottom - 35,
                     256, 128, 2);
         }

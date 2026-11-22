@@ -31,8 +31,8 @@ public class RemoteCheckboxOptionScreen extends AbstractRemoteVariableConfigScre
         @Override
         public WidgetCheckBox createMinecraftWidget(RemoteWidgetCheckbox remoteWidget, AbstractRemoteScreen screen) {
             return new WidgetCheckBox(
-                    remoteWidget.widgetSettings().x() + screen.getGuiLeft(),
-                    remoteWidget.widgetSettings().y() + screen.getGuiTop(),
+                    remoteWidget.widgetSettings().x() + screen.getLeftPos(),
+                    remoteWidget.widgetSettings().y() + screen.getTopPos(),
                     0xFF404040, remoteWidget.widgetSettings().title(),
                     btn -> {
                         if (!remoteWidget.varName().isEmpty()) {

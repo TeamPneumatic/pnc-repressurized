@@ -175,11 +175,11 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
     }
 
     private boolean isInTrayArea(AbstractWidget widget) {
-        return TRAY_AREA.contains(widget.getX() - getGuiLeft(), widget.getY() - getGuiTop());
+        return TRAY_AREA.contains(widget.getX() - getLeftPos(), widget.getY() - getTopPos());
     }
 
     private boolean isInProgrammingArea(AbstractWidget widget) {
-        return PROGRAMMING_AREA.contains(widget.getX() - getGuiLeft(), widget.getY() - getGuiTop());
+        return PROGRAMMING_AREA.contains(widget.getX() - getLeftPos(), widget.getY() - getTopPos());
     }
 
     @Override
@@ -250,7 +250,7 @@ public class RemoteEditorScreen extends AbstractRemoteScreen {
                 widgetMap.remove(draggingMCWidget);
             } else {
                 // dragged to a new position
-                widgetMap.put(draggingMCWidget, draggingRemoteWidget.copyToPos(draggingMCWidget.getX() - getGuiLeft(), draggingMCWidget.getY() - getGuiTop()));
+                widgetMap.put(draggingMCWidget, draggingRemoteWidget.copyToPos(draggingMCWidget.getX() - getLeftPos(), draggingMCWidget.getY() - getTopPos()));
             }
             draggingRemoteWidget = null;
             draggingMCWidget = null;

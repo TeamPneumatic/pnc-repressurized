@@ -67,7 +67,7 @@ public class LogisticsFilterGhost<S extends AbstractLogisticsScreen<T>, T extend
     private record ItemStackTarget(PhantomSlot slot, AbstractLogisticsScreen<?> gui) implements Target<ItemStack> {
         @Override
         public Rect2i getArea() {
-            return new Rect2i(gui.getGuiLeft() + slot.x, gui.getGuiTop() + slot.y, 16, 16);
+            return new Rect2i(gui.getLeftPos() + slot.x, gui.getTopPos() + slot.y, 16, 16);
         }
 
         @Override

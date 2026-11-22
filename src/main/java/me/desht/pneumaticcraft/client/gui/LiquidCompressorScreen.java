@@ -51,7 +51,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
         addRenderableWidget(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
         Pair<Integer, List<Component>> p = ClientUtils.formatFuelList(xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader"),
-                getGuiLeft() - 10,
+                getLeftPos() - 10,
                 fluid -> FuelRegistry.getInstance().getFuelValue(ClientUtils.getClientLevel(), fluid) / 1000,
                 true
         );

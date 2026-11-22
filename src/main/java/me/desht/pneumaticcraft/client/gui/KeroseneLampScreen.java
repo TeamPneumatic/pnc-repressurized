@@ -70,7 +70,7 @@ public class KeroseneLampScreen extends AbstractPneumaticCraftContainerScreen<Ke
     private void populateFuelTab() {
         int div = te.getRange() * te.getRange() * 3;
         Pair<Integer, List<Component>> p = ClientUtils.formatFuelList(xlate("pneumaticcraft.gui.keroseneLamp.fuelsHeader", te.getRange()),
-                getGuiLeft() - 10,
+                getLeftPos() - 10,
                 fluid -> (int)(te.calculateFuelQuality(fluid) * KeroseneLampBlockEntity.TICK_RATE / div),
                 false
         );

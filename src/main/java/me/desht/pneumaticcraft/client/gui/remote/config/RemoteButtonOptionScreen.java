@@ -107,7 +107,7 @@ public class RemoteButtonOptionScreen extends AbstractRemoteVariableConfigScreen
         public WidgetButtonExtended createMinecraftWidget(RemoteWidgetButton remoteWidget, AbstractRemoteScreen screen) {
             WidgetSettings widgetSettings = remoteWidget.widgetSettings();
             return new WidgetButtonExtended(
-                    widgetSettings.x() + screen.getGuiLeft(), widgetSettings.y() + screen.getGuiTop(),
+                    widgetSettings.x() + screen.getLeftPos(), widgetSettings.y() + screen.getTopPos(),
                     widgetSettings.width(), widgetSettings.height(),
                     widgetSettings.title(),
                     btn -> {

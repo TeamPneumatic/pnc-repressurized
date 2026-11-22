@@ -26,8 +26,8 @@ public class RemoteLabelOptionScreen extends AbstractRemoteConfigScreen<RemoteWi
         @Override
         public WidgetLabel createMinecraftWidget(RemoteWidgetLabel remoteWidget, AbstractRemoteScreen screen) {
             return new WidgetLabel(
-                    remoteWidget.widgetSettings().x() + screen.getGuiLeft(),
-                    remoteWidget.widgetSettings().y() + screen.getGuiTop(),
+                    remoteWidget.widgetSettings().x() + screen.getLeftPos(),
+                    remoteWidget.widgetSettings().y() + screen.getTopPos(),
                     remoteWidget.widgetSettings().title()
             ).setTooltipText(remoteWidget.widgetSettings().tooltip());
         }

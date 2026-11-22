@@ -332,7 +332,7 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
     private int calculateAvailableWidth() {
         int availableWidth;
         if (gui instanceof AbstractContainerScreen<?> screen) {
-            availableWidth = Math.min(Math.max(minExpandedWidth, screen.getXSize()), leftSided ? screen.getGuiLeft() : screen.width - (screen.getGuiLeft() + screen.getXSize()));
+            availableWidth = Math.min(Math.max(minExpandedWidth, screen.getImageWidth()), leftSided ? screen.getLeftPos() : screen.width - (screen.getLeftPos() + screen.getImageWidth()));
         } else if (gui instanceof AbstractPneumaticCraftScreen screen) {
             availableWidth = Math.min(Math.max(minExpandedWidth, screen.xSize), leftSided ? screen.guiLeft : screen.xSize - (screen.guiLeft + screen.xSize));
         } else {

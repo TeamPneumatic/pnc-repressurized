@@ -331,7 +331,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
         super.extractBackground(graphics, i, j, partialTicks);
         if (getGuiTexture() != null) {
             int tint = getBackgroundTint().orElse(0xFFFFFFFF);
-            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), getGuiLeft(), getGuiTop(), 0, 0, getXSize(), getYSize(), 256, 256, tint);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getGuiTexture(), getLeftPos(), getTopPos(), 0, 0, getImageWidth(), getImageHeight(), 256, 256, tint);
         }
     }
 
@@ -369,7 +369,7 @@ public abstract class AbstractPneumaticCraftContainerScreen<C extends AbstractPn
     }
 
     protected PointXY getGaugeLocation() {
-        return new PointXY(getGuiLeft() + imageWidth * 3 / 4, getGuiTop() + imageHeight / 4 + 4);
+        return new PointXY(getLeftPos() + imageWidth * 3 / 4, getTopPos() + imageHeight / 4 + 4);
     }
 
     protected int getTitleColor() { return 0x404040; }

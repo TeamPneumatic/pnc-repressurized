@@ -138,8 +138,8 @@ public class GuiUtils {
 
         int x, y;
         if (screen instanceof AbstractContainerScreen<?> a) {
-            x = (a.getXSize() - boxWidth) / 2;
-            y = (a.getYSize() - boxHeight) / 2;
+            x = (a.getImageWidth() - boxWidth) / 2;
+            y = (a.getImageHeight() - boxHeight) / 2;
         } else {
             x = (screen.width - boxWidth) / 2;
             y = (screen.height - boxHeight) / 2;
