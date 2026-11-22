@@ -208,8 +208,10 @@ public abstract class PressureChamberValveBlockEntity extends AbstractAirHandlin
             isSufficientPressureInChamber = false;
             recipePressure = Float.MAX_VALUE;
             applicableRecipes.clear();
-            final ResourceHandler<ItemResource> h = RangedResourceHandler.of(itemsInChamber, 0, findLastNonEmptySlot(itemsInChamber) + 1);
-            if (h.size() > 0) {
+            // RangedResourceHandler doesn't allow an empty range, unlike the old RangedWrapper
+            int end = findLastNonEmptySlot(itemsInChamber) + 1;
+            if (end > 0) {
+                final ResourceHandler<ItemResource> h = RangedResourceHandler.of(itemsInChamber, 0, end);
                 ModRecipeTypes.PRESSURE_CHAMBER.get().stream(level).map(RecipeHolder::value).forEach(recipe -> {
                     IntCollection slots = recipe.findIngredients(h);
                     if (!slots.isEmpty()) {
