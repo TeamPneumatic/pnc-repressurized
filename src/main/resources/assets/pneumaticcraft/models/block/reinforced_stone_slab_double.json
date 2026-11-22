@@ -1,7 +1,0 @@
-{
-    "parent": "block/cube_column",
-    "textures": {
-        "end": "pneumaticcraft:block/reinforced_stone_slab_top",
-        "side": "pneumaticcraft:block/reinforced_stone_slab_side"
-    }
-}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "pneumaticcraft:block/thermopneumatic_processing_plant",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "pneumaticcraft:block/thermopneumatic_processing_plant"
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/thermopneumatic_processing_plant",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/thermopneumatic_processing_plant",
+      "y": 270
+    }
+  }
+}

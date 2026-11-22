@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=east,top_door=false": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 90
+    },
+    "facing=east,top_door=true": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 90
+    },
+    "facing=north,top_door=false": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 180
+    },
+    "facing=north,top_door=true": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 180
+    },
+    "facing=south,top_door=false": {
+      "model": "pneumaticcraft:block/pneumatic_door"
+    },
+    "facing=south,top_door=true": {
+      "model": "pneumaticcraft:block/pneumatic_door_top"
+    },
+    "facing=west,top_door=false": {
+      "model": "pneumaticcraft:block/pneumatic_door",
+      "y": 270
+    },
+    "facing=west,top_door=true": {
+      "model": "pneumaticcraft:block/pneumatic_door_top",
+      "y": 270
+    }
+  }
+}

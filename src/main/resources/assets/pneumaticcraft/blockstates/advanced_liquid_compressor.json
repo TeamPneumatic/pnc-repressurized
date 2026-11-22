@@ -1,8 +1,0 @@
-{
-	"variants": {
-		"facing=north": { "model": "pneumaticcraft:block/advanced_liquid_compressor", "y": 270 },
-		"facing=south": { "model": "pneumaticcraft:block/advanced_liquid_compressor", "y": 90 },
-		"facing=west": { "model": "pneumaticcraft:block/advanced_liquid_compressor", "y": 180 },
-		"facing=east": { "model": "pneumaticcraft:block/advanced_liquid_compressor" }
-	}
-}

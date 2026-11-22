@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "pneumaticcraft:block/compressed_brick_pillar",
+      "x": 270,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "pneumaticcraft:block/compressed_brick_pillar"
+    },
+    "axis=z": {
+      "model": "pneumaticcraft:block/compressed_brick_pillar",
+      "x": 270
+    }
+  }
+}

@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": { "model":  "pneumaticcraft:block/programmable_controller" },
-    "facing=south": { "model":  "pneumaticcraft:block/programmable_controller", "y": 180 },
-    "facing=west": { "model":  "pneumaticcraft:block/programmable_controller", "y": 270 },
-    "facing=east": { "model":  "pneumaticcraft:block/programmable_controller", "y": 90 }
-  }
-}

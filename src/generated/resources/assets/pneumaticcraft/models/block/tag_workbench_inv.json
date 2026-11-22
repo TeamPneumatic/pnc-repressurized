@@ -1,0 +1,8 @@
+{
+  "parent": "pneumaticcraft:block/display_table_inv",
+  "textures": {
+    "particle": "pneumaticcraft:pnc_model/tag_workbench_side",
+    "side": "pneumaticcraft:pnc_model/tag_workbench_side",
+    "top": "pneumaticcraft:pnc_model/tag_workbench_top"
+  }
+}

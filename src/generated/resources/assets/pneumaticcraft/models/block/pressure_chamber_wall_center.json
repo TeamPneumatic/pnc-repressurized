@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "pneumaticcraft:block/pressure_chamber/center"
+  }
+}

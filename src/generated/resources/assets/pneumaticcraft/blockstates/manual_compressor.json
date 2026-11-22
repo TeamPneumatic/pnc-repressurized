@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "pneumaticcraft:block/manual_compressor_base",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "pneumaticcraft:block/manual_compressor_base",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/manual_compressor_base"
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/manual_compressor_base",
+      "y": 90
+    }
+  }
+}

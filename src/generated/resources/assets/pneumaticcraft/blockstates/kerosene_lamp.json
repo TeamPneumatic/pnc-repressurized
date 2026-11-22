@@ -1,0 +1,82 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp",
+        "y": 180
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp",
+        "y": 270
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp"
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp",
+        "y": 90
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp_support_v"
+      },
+      "when": {
+        "connected": "up"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp_support_h",
+        "y": 180
+      },
+      "when": {
+        "connected": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp_support_h",
+        "y": 270
+      },
+      "when": {
+        "connected": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp_support_h"
+      },
+      "when": {
+        "connected": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/kerosene_lamp_support_h",
+        "y": 90
+      },
+      "when": {
+        "connected": "west"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "parent": "neoforge:block/default",
+  "textures": {
+    "bottom": "pneumaticcraft:block/plastic_brick_bottom",
+    "left": "pneumaticcraft:block/plastic_brick_left",
+    "none": "pneumaticcraft:block/plastic_brick_none",
+    "particle": "pneumaticcraft:block/plastic_brick_none",
+    "right": "pneumaticcraft:block/plastic_brick_right",
+    "top": "pneumaticcraft:block/plastic_brick_top"
+  }
+}

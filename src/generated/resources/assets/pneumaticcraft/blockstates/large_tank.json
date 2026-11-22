@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_body_diamond"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_top_diamond"
+      },
+      "when": {
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_bottom_diamond"
+      },
+      "when": {
+        "down": "false"
+      }
+    }
+  ]
+}
