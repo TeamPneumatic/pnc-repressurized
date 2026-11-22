@@ -22,8 +22,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,6 +34,8 @@ import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.apache.commons.lang3.Validate;
 
 import java.util.function.Consumer;
@@ -161,17 +161,19 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
 
     public int countTradesInTank(ResourceHandler<FluidResource> fluidHandler) {
         return resource.right().map(fluid -> {
-            FluidStack searchingFluid = fluid.withAmount(Integer.MAX_VALUE).create();
-            FluidStack extracted = FluidUtils.drain(fluidHandler, searchingFluid, true);
-            return extracted.getAmount() / fluid.amount();
+            // simulated: the transaction is not committed
+            try (Transaction tx = Transaction.openRoot()) {
+                return fluidHandler.extract(FluidResource.of(fluid), Integer.MAX_VALUE, tx) / fluid.amount();
+            }
         }).orElse(0);
     }
 
     public int findSpaceInFluidOutput(ResourceHandler<FluidResource> fluidHandler, int wantedTradeCount) {
         return resource.right().map(fluid -> {
-            FluidStack providingFluid = fluid.withAmount(fluid.amount() * wantedTradeCount).create();
-            int amountFilled = FluidUtils.fill(fluidHandler, providingFluid, true);
-            return amountFilled / fluid.amount();
+            // simulated: the transaction is not committed
+            try (Transaction tx = Transaction.openRoot()) {
+                return fluidHandler.insert(FluidResource.of(fluid), fluid.amount() * wantedTradeCount, tx) / fluid.amount();
+            }
         }).orElse(0);
     }
 
@@ -230,8 +232,8 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
         boolean matchComponents = !item.getComponentsPatch().isEmpty();
         IItemRegistry registry = PneumaticRegistry.getInstance().getItemRegistry();
         return IntStream.range(0, itemHandler.size())
-                .filter(i -> registry.doesItemMatchFilter(item, IOHelper.getStack(itemHandler, i), false, matchComponents, false))
-                .map(i -> IOHelper.getStack(itemHandler, i).getCount())
+                .filter(i -> registry.doesItemMatchFilter(item, ItemUtil.getStack(itemHandler, i), false, matchComponents, false))
+                .map(i -> ItemUtil.getStack(itemHandler, i).getCount())
                 .sum();
     }
 
@@ -248,8 +250,8 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
 
         int remaining = totalItems;
         for (int i = 0; i < itemHandler.size() && remaining > 0; i++) {
-            if (IOHelper.getStack(itemHandler, i).isEmpty() || ItemStack.isSameItemSameComponents(IOHelper.getStack(itemHandler, i), item)) {
-                remaining -= item.getMaxStackSize() - IOHelper.getStack(itemHandler, i).getCount();
+            if (ItemUtil.getStack(itemHandler, i).isEmpty() || ItemStack.isSameItemSameComponents(ItemUtil.getStack(itemHandler, i), item)) {
+                remaining -= item.getMaxStackSize() - ItemUtil.getStack(itemHandler, i).getCount();
             }
         }
         return (totalItems - remaining) / item.getCount();
