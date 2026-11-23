@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:assembly_laser",
   "input": {
     "count": 1,
-    "item": "minecraft:quartz_block"
+    "ingredient": "minecraft:quartz_block"
   },
   "program": "laser",
   "result": {

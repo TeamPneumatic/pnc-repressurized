@@ -19,8 +19,8 @@ public abstract class AbstractRemoteScreen extends AbstractPneumaticCraftContain
     protected final ItemStack remoteItem;
     protected final Map<AbstractWidget, IRemoteWidget> widgetMap = new LinkedHashMap<>();
 
-    public AbstractRemoteScreen(RemoteMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
+    public AbstractRemoteScreen(RemoteMenu container, Inventory inv, Component displayString, int imageWidth, int imageHeight) {
+        super(container, inv, displayString, imageWidth, imageHeight);
 
         remoteItem = inv.player.getItemInHand(container.getHand());
     }

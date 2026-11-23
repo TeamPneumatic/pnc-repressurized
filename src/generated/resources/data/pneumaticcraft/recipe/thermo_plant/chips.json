@@ -3,11 +3,9 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "c:plantoil"
+      "ingredient": "#c:plantoil"
     },
-    "item": {
-      "tag": "c:crops/potato"
-    }
+    "item": "#c:crops/potato"
   },
   "outputs": {
     "item_output": {

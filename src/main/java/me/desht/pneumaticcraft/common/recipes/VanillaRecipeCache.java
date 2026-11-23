@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -58,8 +59,11 @@ public class VanillaRecipeCache<T extends RecipeType<R>, R extends Recipe<C>, C 
         int key = makeKey(inv);
         if (recipeCache.containsKey(key)) {
             return recipeCache.getAndMoveToFirst(key);
+        } else if (!(world instanceof ServerLevel serverLevel)) {
+            // the client doesn't receive vanilla recipes any more; don't cache the miss
+            return Optional.empty();
         } else {
-            Optional<R> newRecipe = world.getRecipeManager().getRecipeFor(type, inv, world).map(RecipeHolder::value);
+            Optional<R> newRecipe = serverLevel.recipeAccess().getRecipeFor(type, inv, serverLevel).map(RecipeHolder::value);
             if (recipeCache.size() == MAX_CACHE_SIZE) {
                 recipeCache.removeLast();
             }

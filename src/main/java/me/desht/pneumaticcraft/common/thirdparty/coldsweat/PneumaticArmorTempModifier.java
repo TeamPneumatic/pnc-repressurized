@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 public class PneumaticArmorTempModifier extends TempModifier {
-    public static final ResourceLocation ID = PneumaticRegistry.RL("air_conditioning");
+    public static final Identifier ID = PneumaticRegistry.RL("air_conditioning");
 
     private static final Map<UUID,Double> lastTemp = new HashMap<>();
     private static final int TICK_INTERVAL = 20;

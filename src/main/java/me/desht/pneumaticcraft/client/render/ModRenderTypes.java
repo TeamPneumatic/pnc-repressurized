@@ -17,213 +17,208 @@
 
 package me.desht.pneumaticcraft.client.render;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.Util;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
+import net.neoforged.neoforge.client.NeoForgeRenderPipelines;
+import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
-import java.util.OptionalDouble;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class ModRenderTypes extends RenderType {
-    public ModRenderTypes(String p_173178_, VertexFormat p_173179_, VertexFormat.Mode p_173180_, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
-        super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
+
+public class ModRenderTypes {
+    private static final DepthStencilState DEPTH_TEST_NO_WRITE = new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false);
+
+    private static final RenderPipeline.Snippet TEXTURED_LIGHTMAP_SNIPPET = RenderPipeline.builder(RenderPipelines.TEXT_SNIPPET, RenderPipelines.FOG_SNIPPET)
+            .withVertexShader("core/rendertype_text")
+            .withFragmentShader("core/rendertype_text")
+            .withSampler("Sampler0")
+            .withSampler("Sampler2")
+            .buildSnippet();
+
+    private static final RenderPipeline.Snippet UNTEXTURED_LIGHTMAP_SNIPPET = RenderPipeline.builder(RenderPipelines.TEXT_SNIPPET, RenderPipelines.FOG_SNIPPET)
+            .withVertexShader(RL("core/position_color_lightmap"))
+            .withFragmentShader(RL("core/position_color_lightmap"))
+            .withSampler("Sampler2")
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS)
+            .withCull(false)
+            .buildSnippet();
+
+    private static final RenderPipeline.Snippet POSITION_COLOR_SNIPPET = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+            .withVertexShader("core/position_color")
+            .withFragmentShader("core/position_color")
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+            .withDepthStencilState(DepthStencilState.DEFAULT)
+            .buildSnippet();
+
+    public static final RenderPipeline TEXTURE_PIPELINE = RenderPipeline.builder(TEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/texture"))
+            .withColorTargetState(ColorTargetState.DEFAULT)
+            .build();
+    public static final RenderPipeline TEXTURE_COLORED_PIPELINE = RenderPipeline.builder(TEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/texture_color"))
+            .build();
+    public static final RenderPipeline TEXTURE_COLORED_NO_DEPTH_PIPELINE = RenderPipeline.builder(TEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/texture_color_no_depth"))
+            .withDepthStencilState(Optional.empty())
+            .build();
+    public static final RenderPipeline UNTEXTURED_QUAD_PIPELINE = RenderPipeline.builder(UNTEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/untextured_quad"))
+            .build();
+    public static final RenderPipeline UNTEXTURED_QUAD_NO_DEPTH_PIPELINE = RenderPipeline.builder(UNTEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/untextured_quad_no_depth"))
+            .withDepthStencilState(Optional.empty())
+            .build();
+    public static final RenderPipeline TARGET_CIRCLE_PIPELINE = RenderPipeline.builder(UNTEXTURED_LIGHTMAP_SNIPPET)
+            .withLocation(RL("pipeline/target_circle"))
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.TRIANGLE_STRIP)
+            .withDepthStencilState(Optional.empty())
+            .build();
+    public static final RenderPipeline BLOCK_FRAME_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/block_frame"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .withCull(false)
+            .withDepthStencilState(Optional.empty())
+            .build();
+    public static final RenderPipeline HILIGHT_FACE_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/hilight_face"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .build();
+    public static final RenderPipeline HILIGHT_FACE_NO_DEPTH_WRITE_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/hilight_face_no_depth_write"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .withDepthStencilState(DEPTH_TEST_NO_WRITE)
+            .build();
+    public static final RenderPipeline HILIGHT_FACE_NO_DEPTH_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/hilight_face_no_depth"))
+            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+            .withDepthStencilState(Optional.empty())
+            .build();
+    public static final RenderPipeline TRIANGLE_FAN_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/triangle_fan"))
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN)
+            .build();
+    public static final RenderPipeline TRIANGLES_PIPELINE = RenderPipeline.builder(POSITION_COLOR_SNIPPET)
+            .withLocation(RL("pipeline/triangles"))
+            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES)
+            .build();
+    public static final RenderPipeline LINES_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+            .withLocation(RL("pipeline/lines"))
+            .build();
+    public static final RenderPipeline LINES_NO_DEPTH_WRITE_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+            .withLocation(RL("pipeline/lines_no_depth_write"))
+            .withDepthStencilState(DEPTH_TEST_NO_WRITE)
+            .build();
+    public static final RenderPipeline LINES_NO_DEPTH_PIPELINE = RenderPipeline.builder(RenderPipelines.LINES_SNIPPET)
+            .withLocation(RL("pipeline/lines_no_depth"))
+            .withDepthStencilState(Optional.empty())
+            .build();
+
+    private static final List<RenderPipeline> PIPELINES = List.of(
+            TEXTURE_PIPELINE, TEXTURE_COLORED_PIPELINE, TEXTURE_COLORED_NO_DEPTH_PIPELINE,
+            UNTEXTURED_QUAD_PIPELINE, UNTEXTURED_QUAD_NO_DEPTH_PIPELINE, TARGET_CIRCLE_PIPELINE,
+            BLOCK_FRAME_PIPELINE, HILIGHT_FACE_PIPELINE, HILIGHT_FACE_NO_DEPTH_WRITE_PIPELINE, HILIGHT_FACE_NO_DEPTH_PIPELINE,
+            TRIANGLE_FAN_PIPELINE, TRIANGLES_PIPELINE,
+            LINES_PIPELINE, LINES_NO_DEPTH_WRITE_PIPELINE, LINES_NO_DEPTH_PIPELINE
+    );
+
+    public static void registerPipelines(RegisterRenderPipelinesEvent event) {
+        PIPELINES.forEach(event::registerPipeline);
     }
 
-    private static final Function<ResourceLocation,RenderType> TEXTURE_RENDER = Util.memoize((rl) -> {
-        RenderStateShard.TextureStateShard textureState = new TextureStateShard(rl, false, false);
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setTextureState(textureState)
-                .setLightmapState(RenderStateShard.LIGHTMAP)
-                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                .createCompositeState(false);
-        return create("texture", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
-                256, false, false, state);
-    });
-    public static RenderType getTextureRender(ResourceLocation texture) {
+    private static RenderType simple(String name, RenderPipeline pipeline) {
+        return RenderType.create(name, RenderSetup.builder(pipeline).createRenderSetup());
+    }
+
+    private static RenderType lightmapped(String name, RenderPipeline pipeline) {
+        return RenderType.create(name, RenderSetup.builder(pipeline).useLightmap().createRenderSetup());
+    }
+
+    private static final Function<Identifier, RenderType> TEXTURE_RENDER = Util.memoize(texture ->
+            RenderType.create("texture", RenderSetup.builder(TEXTURE_PIPELINE)
+                    .withTexture("Sampler0", texture)
+                    .useLightmap()
+                    .bufferSize(RenderType.TRANSIENT_BUFFER_SIZE)
+                    .createRenderSetup()));
+    public static RenderType getTextureRender(Identifier texture) {
         return TEXTURE_RENDER.apply(texture);
     }
 
-    private static final BiFunction<ResourceLocation, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((rl, disableDepthTest) -> {
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setShaderState(RenderStateShard.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
-                .setLightmapState(RenderStateShard.LIGHTMAP)
-                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                .setWriteMaskState(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                .createCompositeState(false);
-        return create("texture_color", DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, VertexFormat.Mode.QUADS,
-                256, false, false, state);
-    });
-    public static RenderType getTextureRenderColored(ResourceLocation texture) {
+    private static final BiFunction<Identifier, Boolean, RenderType> TEXTURE_RENDER_COLORED = Util.memoize((texture, disableDepthTest) ->
+            RenderType.create("texture_color", RenderSetup.builder(disableDepthTest ? TEXTURE_COLORED_NO_DEPTH_PIPELINE : TEXTURE_COLORED_PIPELINE)
+                    .withTexture("Sampler0", texture)
+                    .useLightmap()
+                    .createRenderSetup()));
+    public static RenderType getTextureRenderColored(Identifier texture) {
         return getTextureRenderColored(texture, false);
     }
-    public static RenderType getTextureRenderColored(ResourceLocation texture, boolean disableDepthTest) {
+    public static RenderType getTextureRenderColored(Identifier texture, boolean disableDepthTest) {
         return TEXTURE_RENDER_COLORED.apply(texture, disableDepthTest);
     }
 
-    public static final RenderType UNTEXTURED_QUAD_NO_DEPTH = create("untextured_quad_no_depth", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setTextureState(RenderStateShard.NO_TEXTURE)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+    public static final RenderType UNTEXTURED_QUAD_NO_DEPTH = lightmapped("untextured_quad_no_depth", UNTEXTURED_QUAD_NO_DEPTH_PIPELINE);
 
-    public static final RenderType UNTEXTURED_QUAD = create("untextured_quad", DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.QUADS, 256,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setTextureState(RenderStateShard.NO_TEXTURE)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setDepthTestState(LEQUAL_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_DEPTH_WRITE)
-                    .createCompositeState(false)
-    );
+    public static final RenderType UNTEXTURED_QUAD = lightmapped("untextured_quad", UNTEXTURED_QUAD_PIPELINE);
 
-    public static final RenderType BLOCK_FRAME = create("block_frame",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setTextureState(NO_TEXTURE)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setCullState(NO_CULL)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+    public static final RenderType BLOCK_FRAME = simple("block_frame", BLOCK_FRAME_PIPELINE);
 
-    public static final RenderType BLOCK_TRACKER = create("block_tracker",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setLineState(LineStateShard.DEFAULT_LINE)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                    .setTextureState(NO_TEXTURE)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(NO_LIGHTMAP)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+    public static final RenderType BLOCK_TRACKER = simple("block_tracker", LINES_NO_DEPTH_PIPELINE);
 
-    public static final RenderType TARGET_CIRCLE = create("target_circle",
-            DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, VertexFormat.Mode.TRIANGLE_STRIP, 65536,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RenderStateShard.POSITION_COLOR_LIGHTMAP_SHADER)
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setTextureState(NO_TEXTURE)
-                    .setCullState(NO_CULL)
-                    .setLightmapState(LIGHTMAP)
-                    .setDepthTestState(NO_DEPTH_TEST)
-                    .setWriteMaskState(COLOR_WRITE)
-                    .createCompositeState(false)
-    );
+    public static final RenderType TARGET_CIRCLE = RenderType.create("target_circle", RenderSetup.builder(TARGET_CIRCLE_PIPELINE)
+            .useLightmap()
+            .bufferSize(65536)
+            .createRenderSetup());
 
-    private static final Function<Double,RenderType> LINE_LOOPS = Util.memoize((lineWidth) -> {
-        LineStateShard lineState = new LineStateShard(OptionalDouble.of(lineWidth));
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setLineState(lineState)
-                .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                .setTextureState(RenderStateShard.NO_TEXTURE)
-                .setLightmapState(RenderStateShard.NO_LIGHTMAP)
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setDepthTestState(NO_DEPTH_TEST)
-                .setWriteMaskState(COLOR_WRITE)
-                .setCullState(NO_CULL)
-                .createCompositeState(false);
-        return create("line_loops",
-                DefaultVertexFormat.POSITION_COLOR_NORMAL, VertexFormat.Mode.DEBUG_LINE_STRIP, 256,
-                false, false,
-                state);
-    });
-    public static RenderType getLineLoops(double lineWidth) {
-        return LINE_LOOPS.apply(lineWidth);
-    }
+    /**
+     * Lines drawn without depth testing. Vertices are submitted in pairs (one pair per line segment), and since
+     * line width is now a vertex attribute, each vertex also needs a normal and a line width.
+     */
+    public static final RenderType LINES_NO_DEPTH = simple("pnc_lines_no_depth", LINES_NO_DEPTH_PIPELINE);
 
-    private final static BiFunction<Boolean,Boolean,RenderType> BLOCK_HILIGHT_FACE = Util.memoize((disableDepthTest, disableWriteMask) -> {
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setTextureState(NO_TEXTURE)
-                .setLightmapState(NO_LIGHTMAP)
-                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : LEQUAL_DEPTH_TEST)
-                .setWriteMaskState(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
-                .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                .createCompositeState(false);
-        return create("nav_path_lines",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256,
-                false, false, state);
-    });
+    private final static BiFunction<Boolean, Boolean, RenderType> BLOCK_HILIGHT_FACE = Util.memoize((disableDepthTest, disableWriteMask) ->
+            simple("block_hilight_face", disableDepthTest ? HILIGHT_FACE_NO_DEPTH_PIPELINE :
+                    disableWriteMask ? HILIGHT_FACE_NO_DEPTH_WRITE_PIPELINE : HILIGHT_FACE_PIPELINE));
     public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
         return BLOCK_HILIGHT_FACE.apply(disableDepthTest, disableWriteMask);
     }
 
-    private final static BiFunction<Boolean,Boolean,RenderType> BLOCK_HILIGHT_LINE = Util.memoize((disableDepthTest, disableWriteMask) -> {
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                .setTextureState(NO_TEXTURE)
-                .setDepthTestState(disableDepthTest ? NO_DEPTH_TEST : RenderStateShard.LEQUAL_DEPTH_TEST)
-                .setCullState(NO_CULL)
-                .setLightmapState(NO_LIGHTMAP)
-                .setWriteMaskState(disableWriteMask ? COLOR_WRITE : RenderStateShard.COLOR_DEPTH_WRITE)
-                .setShaderState(RenderStateShard.RENDERTYPE_LINES_SHADER)
-                .createCompositeState(false);
-        return create("block_hilight_line",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.DEBUG_LINES, 256,
-                false, false, state);
-    });
+    private final static BiFunction<Boolean, Boolean, RenderType> BLOCK_HILIGHT_LINE = Util.memoize((disableDepthTest, disableWriteMask) ->
+            simple("block_hilight_line", disableDepthTest ? LINES_NO_DEPTH_PIPELINE :
+                    disableWriteMask ? LINES_NO_DEPTH_WRITE_PIPELINE : LINES_PIPELINE));
     public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
         return BLOCK_HILIGHT_LINE.apply(disableDepthTest, disableWriteMask);
     }
 
-    public static final RenderType TRIANGLE_FAN = create("triangle_fan",
-            DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_FAN, 256,
-            false, false,
-            RenderType.CompositeState.builder()
-                    .setLineState(new LineStateShard(OptionalDouble.of(2.0)))
-                    .setTextureState(NO_TEXTURE)
-                    .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                    .createCompositeState(false)
-    );
-
-    public static final RenderType TRIANGLES = create("triangles",
-                DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES, 256,
-                false, false,
-                RenderType.CompositeState.builder()
-                        .setTextureState(NO_TEXTURE)
-                        .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
-                        .createCompositeState(false)
-    );
-
-    private static final Function<ResourceLocation, RenderType> ARMOR_TRANSLUCENT_NO_CULL = Util.memoize((rl) -> {
-        RenderType.CompositeState state = RenderType.CompositeState.builder()
-                .setShaderState(RenderStateShard.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
-                .setTextureState(new RenderStateShard.TextureStateShard(rl, false, false))
-                .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                .setCullState(NO_CULL)
-                .setLightmapState(LIGHTMAP)
-                .setOverlayState(OVERLAY)
-                .setLayeringState(VIEW_OFFSET_Z_LAYERING)
-                .createCompositeState(true);
-        return create("armor_translucent_no_cull", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS,
-                256, true, false,
-                state);
-    });
-    public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
-        return ARMOR_TRANSLUCENT_NO_CULL.apply(rl);
+    private static final Function<Identifier, RenderType> ENTITY_TRANSLUCENT_CULL = Util.memoize(texture ->
+            RenderType.create("pnc_entity_translucent_cull", RenderSetup.builder(NeoForgeRenderPipelines.ENTITY_TRANSLUCENT_CULL)
+                    .withTexture("Sampler0", texture)
+                    .useLightmap()
+                    .useOverlay()
+                    .affectsCrumbling()
+                    .sortOnUpload()
+                    .setOutline(RenderSetup.OutlineProperty.AFFECTS_OUTLINE)
+                    .createRenderSetup()));
+    /**
+     * Same as the 1.21 vanilla entityTranslucentCull render type, which 26.1 no longer has.
+     */
+    public static RenderType getEntityTranslucentCull(Identifier texture) {
+        return ENTITY_TRANSLUCENT_CULL.apply(texture);
     }
+
+    public static final RenderType TRIANGLE_FAN = simple("triangle_fan", TRIANGLE_FAN_PIPELINE);
+
+    public static final RenderType TRIANGLES = simple("triangles", TRIANGLES_PIPELINE);
 }

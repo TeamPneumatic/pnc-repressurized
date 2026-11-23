@@ -163,7 +163,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
     private static final Codec<BlockState> BLOCKSTATE_STRING_CODEC = Codec.STRING.comapFlatMap(
             string -> {
                 try {
-                    return DataResult.success(BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK.asLookup(), string, false).blockState());
+                    return DataResult.success(BlockStateParser.parseForBlock(BuiltInRegistries.BLOCK, string, false).blockState());
                 } catch (CommandSyntaxException e) {
                     return DataResult.error(() -> "invalid blockstate definition: " + string);
                 }

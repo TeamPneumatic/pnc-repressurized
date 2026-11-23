@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -44,14 +44,14 @@ public class WidgetTooltipArea extends AbstractWidget {
 
 
     @Override
-    public void renderWidget(GuiGraphics matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor matrixStack, int p_render_1_, int p_render_2_, float p_render_3_) {
         if (tooltipSupplier != null) {
             setTooltip(tooltipSupplier.get());
         }
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         // not clickable: any mouse clicks should be passed through to any other widget in this positions
         return false;
     }

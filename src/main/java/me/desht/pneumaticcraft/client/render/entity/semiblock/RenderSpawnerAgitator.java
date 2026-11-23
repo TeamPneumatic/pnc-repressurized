@@ -1,23 +1,18 @@
 package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelSpawnerAgitator;
 import me.desht.pneumaticcraft.common.entity.semiblock.SpawnerAgitatorEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
-import net.minecraft.util.Mth;
+import net.minecraft.util.Unit;
 
-public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEntity> {
-    private static final float BRIGHTNESS = 0.2F;
-
+public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEntity, RenderSemiblockBase.SemiblockRenderState> {
     private final ModelSpawnerAgitator model;
 
     public RenderSpawnerAgitator(EntityRendererProvider.Context ctx) {
@@ -27,24 +22,20 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<SpawnerAgitatorEn
     }
 
     @Override
-    public void render(SpawnerAgitatorEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        float g = 0.1f * Mth.sin((entity.level().getGameTime() + partialTicks) / 12f);
-
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0, 1.5, 0);
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(180F));
-        if (entity.getTimeSinceHit() > 0) {
-            wobble(entity, partialTicks, matrixStackIn);
-        }
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
-        int color = FastColor.ARGB32.color(255, 51, (int) (255 * (0.8f + g)), 51);
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), color);
-        matrixStackIn.popPose();
-
+    public SemiblockRenderState createRenderState() {
+        return new SemiblockRenderState();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SpawnerAgitatorEntity entity) {
-        return Textures.MODEL_SPAWNER_AGITATOR;
+    public void submit(SemiblockRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        poseStack.pushPose();
+        poseStack.translate(0, 1.5, 0);
+        poseStack.mulPose(Axis.XP.rotationDegrees(180F));
+        wobble(state, poseStack);
+        submitNodeCollector.submitModel(model, Unit.INSTANCE, poseStack, model.renderType(Textures.MODEL_SPAWNER_AGITATOR),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+        poseStack.popPose();
+
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
 }

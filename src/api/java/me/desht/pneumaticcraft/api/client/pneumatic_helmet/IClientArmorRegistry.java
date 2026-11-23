@@ -24,7 +24,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -54,7 +54,7 @@ public interface IClientArmorRegistry {
      * @param id the block entry ID
      * @param entry the block track entry ({@link IBlockTrackEntry#getEntryID()} must return the same ID as the {@code id} parameter
      */
-    void registerBlockTrackEntry(ResourceLocation id, Supplier<? extends IBlockTrackEntry> entry);
+    void registerBlockTrackEntry(Identifier id, Supplier<? extends IBlockTrackEntry> entry);
 
     /**
      * Add a message for display in the Pneumatic Helmet HUD display
@@ -110,7 +110,7 @@ public interface IClientArmorRegistry {
      * @param color widget's text color in ARGB format
      * @param onPressed called when the checkbox is toggled
      */
-    ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed);
+    ICheckboxWidget makeKeybindingCheckBox(Identifier upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed);
 
     /**
      * Create a stat panel for display on the Pneumatic Armor HUD.
@@ -135,7 +135,7 @@ public interface IClientArmorRegistry {
      * @param clientHandler the client upgrade handler this panel is associated with
      * @return the stat panel
      */
-    IGuiAnimatedStat makeHUDStatPanel(Component title, ResourceLocation icon, IArmorUpgradeClientHandler<?> clientHandler);
+    IGuiAnimatedStat makeHUDStatPanel(Component title, Identifier icon, IArmorUpgradeClientHandler<?> clientHandler);
 
     /**
      * Create a "Move Stat Screen..." button to allow the stat panel for an upgrade to be moved. Clicking this button

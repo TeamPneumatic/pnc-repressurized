@@ -2,16 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "pneumaticcraft:compressed_stone_slab"
-    }
+    "B": "pneumaticcraft:compressed_stone_slab"
   },
   "pattern": [
     "B",
     "B"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:compressed_stone"
   }
 }

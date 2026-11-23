@@ -18,12 +18,14 @@ import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.*;
+import me.desht.pneumaticcraft.client.model.item.JackhammerDrillBitProperty;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.particle.BulletParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ClientArmorRegistry;
 import me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker.BlockTrackHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.upgrade_handler.*;
+import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.blockentity.*;
@@ -40,11 +42,9 @@ import me.desht.pneumaticcraft.client.render.overlays.PneumaticArmorHUDOverlay;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticElytraLayer;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
-import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
-import me.desht.pneumaticcraft.common.item.DrillBitItem;
-import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.MicromissilesItem;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonUpgradeHandlers;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import net.minecraft.client.model.HumanoidModel;
@@ -53,12 +53,11 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.client.particle.TerrainParticle;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.PlayerModelType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
@@ -67,10 +66,13 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
+import net.neoforged.neoforge.client.event.RegisterRangeSelectItemModelPropertyEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
@@ -84,6 +86,9 @@ public class PneumaticCraftRepressurizedClient {
         modBus.addListener(this::registerParticleFactories);
         modBus.addListener(this::registerRenderers);
         modBus.addListener(this::registerRenderLayers);
+        modBus.addListener(this::registerRenderStateModifiers);
+        modBus.addListener(this::registerItemModelProperties);
+        modBus.addListener(ModRenderTypes::registerPipelines);
         modBus.addListener(this::registerLayerDefinitions);
         modBus.addListener(this::registerKeyMappings);
         modBus.addListener(this::registerScreens);
@@ -93,6 +98,11 @@ public class PneumaticCraftRepressurizedClient {
         NeoForge.EVENT_BUS.register(HUDHandler.getInstance());
         NeoForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         NeoForge.EVENT_BUS.register(KeyHandler.getInstance());
+        NeoForge.EVENT_BUS.addListener(this::onRecipesReceived);
+    }
+
+    private void onRecipesReceived(RecipesReceivedEvent event) {
+        PneumaticCraftRecipeType.setClientRecipeMap(event.getRecipeMap());
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
@@ -131,7 +141,6 @@ public class PneumaticCraftRepressurizedClient {
 
     private void initLate() {
         // stuff to do on the main thread
-        registerItemModelProperties();
 
         // freeze entity & block track handlers before registering client upgrade handlers
         EntityTrackHandler.getInstance().freeze();
@@ -144,11 +153,16 @@ public class PneumaticCraftRepressurizedClient {
     }
 
     private void registerRenderLayers(EntityRenderersEvent.AddLayers event) {
-        for (PlayerSkin.Model skin : event.getSkins()) {
-            if (event.getSkin(skin) instanceof PlayerRenderer pr) {
-                pr.addLayer(new PneumaticElytraLayer<>(pr, event.getEntityModels()));
+        for (PlayerModelType skin : event.getSkins()) {
+            AvatarRenderer<AbstractClientPlayer> renderer = event.getPlayerRenderer(skin);
+            if (renderer != null) {
+                renderer.addLayer(new PneumaticElytraLayer(renderer, event.getEntityModels(), event.getContext().getEquipmentRenderer()));
             }
         }
+    }
+
+    private void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        event.registerAvatarEntityModifier(new PneumaticElytraLayer.StateModifier());
     }
 
     private void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -201,15 +215,8 @@ public class PneumaticCraftRepressurizedClient {
         event.registerLayerDefinition(PNCModelLayers.THERMOSTAT_MODULE, ThermostatRenderer::createBodyLayer);
     }
 
-    private void registerItemModelProperties() {
-        ItemProperties.register(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity, seed) -> {
-            DrillBitItem.DrillBitType type = JackHammerItem.getDrillBit(stack);
-            if (type == DrillBitItem.DrillBitType.NONE) return 0f;
-            if (world == null || !(entity instanceof Player)) return 0.99f;
-            long l = MovingSoundJackhammer.lastJackHammerTime((Player) entity);
-            if (l <= 20) return Mth.sin((world.getGameTime() % 4 / 4f) * 3.141529f);
-            else return 0.99f;
-        });
+    private void registerItemModelProperties(RegisterRangeSelectItemModelPropertyEvent event) {
+        event.register(RL("drill_bit"), JackhammerDrillBitProperty.MAP_CODEC);
     }
 
     private void registerProgWidgetExtraRenderers() {

@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModItems;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.DyeColor;
 
 public class SmoothPlasticBrickBlock extends PlasticBrickBlock {
@@ -15,7 +15,7 @@ public class SmoothPlasticBrickBlock extends PlasticBrickBlock {
         return false;
     }
 
-    public static class SmoothPlasticBrickItem extends BlockItem implements ICustomTooltipName {
+    public static class SmoothPlasticBrickItem extends PNCBlockItem implements ICustomTooltipName {
         public SmoothPlasticBrickItem(SmoothPlasticBrickBlock blockPlasticBrick) {
             super(blockPlasticBrick, ModItems.defaultProps());
         }

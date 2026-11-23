@@ -34,7 +34,7 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -51,11 +51,11 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticProvider {
-    private static final ResourceLocation ID = RL("pneumatic");
+    private static final Identifier ID = RL("pneumatic");
 
     public static class DataProvider implements IServerDataProvider<BlockAccessor> {
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
 
@@ -154,7 +154,7 @@ public class PneumaticProvider {
         }
 
         @Override
-        public ResourceLocation getUid() {
+        public Identifier getUid() {
             return ID;
         }
     }

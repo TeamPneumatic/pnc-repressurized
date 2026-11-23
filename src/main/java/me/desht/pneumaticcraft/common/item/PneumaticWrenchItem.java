@@ -28,11 +28,13 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -40,6 +42,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nullable;
 
 public class PneumaticWrenchItem extends PressurizableItem {
 
@@ -52,7 +56,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
         InteractionHand hand = ctx.getHand();
         Level world = ctx.getLevel();
         BlockPos pos = ctx.getClickedPos();
-        if (!world.isClientSide) {
+        if (!world.isClientSide()) {
             BlockState state = world.getBlockState(pos);
             InteractionResult res = ModdedWrenchUtils.getInstance().onWrenchedPre(ctx, state);
             if (res != InteractionResult.PASS) {
@@ -97,7 +101,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack iStack, Player player, LivingEntity target, InteractionHand hand) {
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             return InteractionResult.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return PNCCapabilities.getAirHandler(iStack).map(h -> {
@@ -119,7 +123,7 @@ public class PneumaticWrenchItem extends PressurizableItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel worldIn, Entity entityIn, @Nullable EquipmentSlot slot) {
         if (entityIn instanceof ServerPlayer sp
                 && stack.getItem() instanceof PneumaticWrenchItem pw
                 && (worldIn.getGameTime() & 0xf) == 0

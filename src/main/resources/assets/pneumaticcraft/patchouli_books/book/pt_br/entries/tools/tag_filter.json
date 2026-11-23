@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "Veja a $(l:machines/tag_workbench)Bancada de Marcação/$. "
+      "text": "Veja a $(l:machines/tag_workbench)Bancada de Trabalho de Marcaçõe/$. "
     }
   ]
 }

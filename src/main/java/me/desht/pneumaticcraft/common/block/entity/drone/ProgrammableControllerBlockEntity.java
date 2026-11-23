@@ -46,6 +46,7 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
 import me.desht.pneumaticcraft.common.util.chunkloading.PlayerLogoutTracker;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -62,19 +63,21 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -109,7 +112,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
     private static final int MAX_ENERGY = 100000;
 
-    public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
+    public static final Set<Identifier> BLACKLISTED_WIDGETS = ImmutableSet.of(
             RL("computer_control"),
             RL("entity_attack"),
             RL("drone_condition_entity"),
@@ -185,11 +188,11 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         NeoForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
-        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
-                Capabilities.ItemHandler.BLOCK, () -> droneItemHandler,
+        itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStackTemplate(ModItems.DRONE.get()),
+                Capabilities.Item.BLOCK, () -> droneItemHandler,
                 SideConfigurator.RelativeFace.TOP, SideConfigurator.RelativeFace.FRONT, SideConfigurator.RelativeFace.BACK, SideConfigurator.RelativeFace.LEFT, SideConfigurator.RelativeFace.RIGHT);
-        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStack(ModItems.NETWORK_API.get()),
-                Capabilities.ItemHandler.BLOCK, () -> inventory,
+        itemHandlerSideConfigurator.registerHandler("programmableInv", new ItemStackTemplate(ModItems.NETWORK_API.get()),
+                Capabilities.Item.BLOCK, () -> inventory,
                 SideConfigurator.RelativeFace.BOTTOM);
         itemHandlerSideConfigurator.setNullFaceHandler("programmableInv");
     }
@@ -216,7 +219,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isClientSide && event.getWorld() == getLevel() && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
+        if (!event.getWorld().isClientSide() && event.getWorld() == getLevel() && event.getSemiblock() instanceof AbstractLogisticsFrameEntity) {
             logisticsManager = null;
         }
     }
@@ -244,7 +247,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.tickClient();
 
         if ((drone == null || !drone.isAlive()) && nonNullLevel().isLoaded(BlockPos.containing(curX, curY, curZ))) {
-            drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel());
+            drone = ModEntityTypes.PROGRAMMABLE_CONTROLLER.get().create(nonNullLevel(), EntitySpawnReason.TRIGGERED);
             if (drone != null) {
                 drone.setController(this);
                 drone.setPos(curX, curY, curZ);
@@ -325,9 +328,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         int cx = (int)curX >> 4;
         int cz = (int)curZ >> 4;
-        return chunkloadSelf && cp.x == worldPosition.getX() >> 4 && cp.z == worldPosition.getZ() >> 4
-                || chunkloadWorkingChunk && !isIdle && cp.x == cx && cp.z == cz
-                || chunkloadWorkingChunk3x3 && !isIdle && cp.x >= cx - 1 && cp.x <= cx + 1 && cp.z >= cz - 1 && cp.z <= cz + 1;
+        return chunkloadSelf && cp.x() == worldPosition.getX() >> 4 && cp.z() == worldPosition.getZ() >> 4
+                || chunkloadWorkingChunk && !isIdle && cp.x() == cx && cp.z() == cz
+                || chunkloadWorkingChunk3x3 && !isIdle && cp.x() >= cx - 1 && cp.x() <= cx + 1 && cp.z() >= cz - 1 && cp.z() <= cz + 1;
     }
 
     private void maybeChargeHeldItem() {
@@ -404,7 +407,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
             shouldUpdateNeighbours = true;
         }
         if (doChunkloadCheck && chunkLoader != null) {
-            chunkLoader.updateLoadedChunks((ServerLevel) level, new ChunkPos(worldPosition));
+            chunkLoader.updateLoadedChunks((ServerLevel) level, ChunkPos.containing(worldPosition));
         }
         setChanged();
     }
@@ -440,7 +443,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        if (getLevel() != null && !getLevel().isClientSide) {
+        if (getLevel() != null && !getLevel().isClientSide()) {
             int oldInvUpgrades = droneItemHandler.getSlots() - 1;
             int newInvUpgrades = Math.min(35, getUpgrades(ModUpgrades.INVENTORY.get()));
             if (oldInvUpgrades != newInvUpgrades) {
@@ -471,15 +474,15 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        tank.readFromNBT(provider, tag.getCompound("tank"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        ValueIOBridge.deserialize(tank, provider, tag.getCompoundOrEmpty("tank"));
 
-        ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
-        ownerName = Component.literal(tag.contains("ownerName") ? tag.getString("ownerName") : FALLBACK_NAME);
+        ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getStringOr("ownerID", "")) : FALLBACK_UUID;
+        ownerName = Component.literal(tag.getStringOr("ownerName", FALLBACK_NAME));
         ownerNameClient = ownerName.getString();
 
         ItemStackHandler tmpInv = new ItemStackHandler();
-        tmpInv.deserializeNBT(provider, tag.getCompound("droneItems"));
+        ValueIOBridge.deserialize(tmpInv, provider, tag.getCompoundOrEmpty("droneItems"));
         droneItemHandler.setUseableSlots(tmpInv.getSlots());
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
@@ -487,13 +490,13 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
 
-        shouldChargeHeldItem = tag.getBoolean("chargeHeld");
+        shouldChargeHeldItem = tag.getBooleanOr("chargeHeld", false);
 
-        variablesNBT = tag.getCompound("variables");
+        variablesNBT = tag.getCompoundOrEmpty("variables");
 
-        chunkloadSelf = tag.getBoolean("chunkload_self");
-        chunkloadWorkingChunk = tag.getBoolean("chunkload_work");
-        chunkloadWorkingChunk3x3 = tag.getBoolean("chunkload_work_3x3");
+        chunkloadSelf = tag.getBooleanOr("chunkload_self", false);
+        chunkloadWorkingChunk = tag.getBooleanOr("chunkload_work", false);
+        chunkloadWorkingChunk3x3 = tag.getBooleanOr("chunkload_work_3x3", false);
     }
 
     @Override
@@ -502,15 +505,13 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         tag.put("Items", inventory.serializeNBT(provider));
 
-        CompoundTag tankTag = new CompoundTag();
-        tank.writeToNBT(provider, tankTag);
-        tag.put("tank", tankTag);
+        tag.put("tank", ValueIOBridge.serialize(tank, provider));
 
         ItemStackHandler handler = new ItemStackHandler(droneItemHandler.getSlots());
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             handler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
         }
-        tag.put("droneItems", handler.serializeNBT(provider));
+        tag.put("droneItems", ValueIOBridge.serialize(handler, provider));
 
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
         if (ownerName != null) tag.putString("ownerName", ownerName.getString());
@@ -544,7 +545,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         chunkLoader = DynamicChunkLoader.forProgrammableController(this);
 
         if (chunkloadSelf) {
-            chunkLoader.updateLoadedChunks((ServerLevel) nonNullLevel(), new ChunkPos(worldPosition));
+            chunkLoader.updateLoadedChunks((ServerLevel) nonNullLevel(), ChunkPos.containing(worldPosition));
         }
     }
 
@@ -665,7 +666,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     public BlockPos getDugPosition() {
-        return level != null && diggingY >= level.getMinBuildHeight() ? new BlockPos(diggingX, diggingY, diggingZ) : null;
+        return level != null && diggingY >= level.getMinY() ? new BlockPos(diggingX, diggingY, diggingZ) : null;
     }
 
     @Override
@@ -736,7 +737,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     @Override
     public Player getOwner() {
         if (ownerID == null) return null;
-        if (nonNullLevel().isClientSide) return ClientUtils.getClientPlayer();
+        if (nonNullLevel().isClientSide()) return ClientUtils.getClientPlayer();
 
         return PneumaticCraftUtils.getPlayerFromId(ownerID);
     }
@@ -764,7 +765,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public DroneAIManager getAIManager() {
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             if (aiManager == null) {
                 aiManager = new DroneAIManager(this, new ArrayList<>());
                 aiManager.dontStopWhenEndReached();
@@ -779,7 +780,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     @Override
     public void updateLabel() {
-        label = aiManager != null ? getAIManager().getLabel() : "Main";
+        label = aiManager != null ? getAIManager().getLabel() : DroneAIManager.LABEL_MAIN;
     }
 
     @Override
@@ -908,7 +909,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
                 if (updateNeighbours) updateNeighbours();
                 isIdle = true;
             }
-            if (getLevel() != null && !getLevel().isClientSide) {
+            if (getLevel() != null && !getLevel().isClientSide()) {
                 aiManager = null;
                 aiManager = getAIManager();
                 aiManager.setWidgets(progWidgets);

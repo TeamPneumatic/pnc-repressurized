@@ -34,12 +34,14 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 
@@ -138,7 +140,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_CRAFTING;
     }
 
@@ -167,15 +169,19 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     public ItemStack getRecipeResult(Level level) {
         CraftingInput grid = getCraftingGrid();
-        return getRecipe(level, grid).map(r -> r.assemble(grid, level.registryAccess())).orElse(ItemStack.EMPTY);
+        return getRecipe(level, grid).map(r -> r.assemble(grid)).orElse(ItemStack.EMPTY);
     }
 
     @Override
     public Optional<CraftingRecipe> getRecipe(Level level, CraftingInput grid) {
         // no caching if using variables, because the item can change at any item
+        if (!(level instanceof ServerLevel serverLevel)) {
+            // TODO 26.1 recipes: the client doesn't receive crafting recipes any more
+            return Optional.empty();
+        }
         return usingVariables ?
-                level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, grid, level).flatMap(holder -> Optional.of(holder.value())) :
-                VanillaRecipeCache.CRAFTING.getCachedRecipe(level, grid);
+                serverLevel.recipeAccess().getRecipeFor(RecipeType.CRAFTING, grid, serverLevel).map(RecipeHolder::value) :
+                VanillaRecipeCache.CRAFTING.getCachedRecipe(serverLevel, grid);
     }
 
     @Override

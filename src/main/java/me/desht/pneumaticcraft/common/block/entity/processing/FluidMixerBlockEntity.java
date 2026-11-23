@@ -33,9 +33,11 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModRecipeTypes;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleTypes;
@@ -124,7 +126,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void tickClient() {
         super.tickClient();
 
-        if (didWork && nonNullLevel().random.nextFloat() < 0.1f) {
+        if (didWork && nonNullLevel().getRandom().nextFloat() < 0.1f) {
             ClientUtils.emitParticles(level, worldPosition, ParticleTypes.RAIN);
         }
     }
@@ -178,14 +180,14 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
 
-        tag.put("Items", outputInv.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(outputInv, provider));
     }
 
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        outputInv.deserializeNBT(provider, tag.getCompound("Items"));
+        ValueIOBridge.deserialize(outputInv, provider, tag.getCompoundOrEmpty("Items"));
     }
 
     @Override
@@ -244,12 +246,12 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
 
     public static void cacheRecipeFluids(List<FluidMixerRecipe> values) {
         for (FluidMixerRecipe recipe : values) {
-            for (FluidStack input1 : recipe.getInput1().getFluids()) {
-                for (FluidStack input2 : recipe.getInput2().getFluids()) {
-                    Set<Fluid> fluidSet1 = FLUID_MATCHES.computeIfAbsent(input1.getFluid(), k -> new HashSet<>());
-                    Set<Fluid> fluidSet2 = FLUID_MATCHES.computeIfAbsent(input2.getFluid(), k -> new HashSet<>());
-                    fluidSet1.add(input2.getFluid());
-                    fluidSet2.add(input1.getFluid());
+            for (Holder<Fluid> input1 : recipe.getInput1().ingredient().fluids()) {
+                for (Holder<Fluid> input2 : recipe.getInput2().ingredient().fluids()) {
+                    Set<Fluid> fluidSet1 = FLUID_MATCHES.computeIfAbsent(input1.value(), k -> new HashSet<>());
+                    Set<Fluid> fluidSet2 = FLUID_MATCHES.computeIfAbsent(input2.value(), k -> new HashSet<>());
+                    fluidSet1.add(input2.value());
+                    fluidSet2.add(input1.value());
                 }
             }
         }
@@ -424,7 +426,7 @@ public class FluidMixerBlockEntity extends AbstractAirHandlingBlockEntity implem
         @Override
         protected void onContentsChanged(FluidStack prevStack) {
             super.onContentsChanged(prevStack);
-            if (getLevel() != null && !getLevel().isClientSide && !FluidStack.isSameFluidSameComponents(prevStack, getFluid())) {
+            if (getLevel() != null && !getLevel().isClientSide() && !FluidStack.isSameFluidSameComponents(prevStack, getFluid())) {
                 searchRecipes = true;
             }
         }

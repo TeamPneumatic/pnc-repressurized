@@ -45,7 +45,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
         super(ModMenuTypes.PROGRAMMER.get(), i, playerInventory, pos);
 
         // server side doesn't care about slot positioning, so doesn't care about screen res either
-        boolean isClient = playerInventory.player.level().isClientSide;
+        boolean isClient = playerInventory.player.level().isClientSide();
         AreaGeometry geometry = isClient ? ProgrammerScreen.calculateAreaBounds() : AreaGeometry.DUMMY;
 
         addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, geometry.x + geometry.width + 24, geometry.y - 8) {
@@ -120,7 +120,7 @@ public class ProgrammerMenu extends AbstractPneumaticCraftMenu<ProgrammerBlockEn
     public void removed(Player playerIn) {
         super.removed(playerIn);
 
-        if (playerIn.level().isClientSide) ProgrammerScreen.onCloseFromContainer();
+        if (playerIn.level().isClientSide()) ProgrammerScreen.onCloseFromContainer();
     }
 
     public record AreaGeometry(int x, int y, int width, int height) {

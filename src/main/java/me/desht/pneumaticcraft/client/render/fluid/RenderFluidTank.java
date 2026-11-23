@@ -25,7 +25,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,8 +59,10 @@ public class RenderFluidTank extends AbstractFluidTER<AbstractFluidTankBlockEnti
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
-            IFluidHandler h = IOHelper.getFluidHandlerForItem(stack).orElseThrow(RuntimeException::new);
-            return List.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE));
+            // TODO 26.1 transfer: item fluid capabilities aren't registered until PR2, so there may be no handler
+            return IOHelper.getFluidHandlerForItem(stack)
+                    .map(h -> List.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
+                    .orElse(List.of());
         }
     }
 

@@ -30,7 +30,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:heat_frame",
-      "text": "Uma $(l:semiblocks/heat_frame)Estrutura de Calor/$ é um dispositivo que pode ser usado para aquecer (ou congelar!) itens em qualquer inventário. Note que Estruturas de Calor não absorverão calor diretamente de uma $(thing)fonte de calor estática/$, mas você pode colocar um $(l:machines/heat_pipe)Tubo de Calor/$ ao lado dela para transmitir o calor."
+      "text": "Uma $(l:semiblocks/heat_frame)Moldura de Calor/$ é um dispositivo que pode ser usado para aquecer (ou congelar!) itens em qualquer inventário. Note que Estruturas de Calor não absorverão calor diretamente de uma $(thing)fonte de calor estática/$, mas você pode colocar um $(l:machines/heat_pipe)Tubo de Calor/$ ao lado dela para transmitir o calor."
     },
     {
       "type": "spotlight",

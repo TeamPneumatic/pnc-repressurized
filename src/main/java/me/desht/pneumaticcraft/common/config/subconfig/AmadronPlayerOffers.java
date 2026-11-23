@@ -24,7 +24,7 @@ import com.google.gson.JsonSyntaxException;
 import me.desht.pneumaticcraft.common.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
             "Stores all the current player-to-player Amadron trades,"
             + "along with stock information, pending payments etc.";
 
-    private final Map<ResourceLocation, AmadronPlayerOffer> playerOffers = new HashMap<>();
+    private final Map<Identifier, AmadronPlayerOffer> playerOffers = new HashMap<>();
 
     private AmadronPlayerOffers() {
         super(false);
@@ -47,7 +47,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
         return "AmadronPlayerOffers";
     }
 
-    public Map<ResourceLocation, AmadronPlayerOffer> getPlayerOffers() {
+    public Map<Identifier, AmadronPlayerOffer> getPlayerOffers() {
         return playerOffers;
     }
 

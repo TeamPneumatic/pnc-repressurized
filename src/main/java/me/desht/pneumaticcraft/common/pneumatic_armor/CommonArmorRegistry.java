@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -48,7 +48,7 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     INSTANCE;
 
     public final Map<Class<? extends Entity>, Supplier<? extends IHackableEntity<?>>> hackableEntities = new ConcurrentHashMap<>();
-    public final Map<ResourceLocation, Supplier<? extends IHackableEntity<?>>> idToEntityHackables = new ConcurrentHashMap<>();
+    public final Map<Identifier, Supplier<? extends IHackableEntity<?>>> idToEntityHackables = new ConcurrentHashMap<>();
     // cached list of entity-type -> list of hacks applicable to this entity type
     // - the first of these hacks for which IHackableEntity#canHack() returns true will be the hack that is used
     private final Multimap<EntityType<?>, IHackableEntity<?>> hackablesByType = ArrayListMultimap.create();
@@ -57,7 +57,7 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     // blocks known from tags are stored separately; they could change during the game if tags are reloaded
     private final Map<Block, Supplier<? extends IHackableBlock>> hackableTaggedBlocks = new ConcurrentHashMap<>();
     private final Map<TagKey<Block>, Supplier<? extends IHackableBlock>> pendingBlockTags = new ConcurrentHashMap<>();
-    private final Map<ResourceLocation, Supplier<? extends IHackableBlock>> idToBlockHackables = new ConcurrentHashMap<>();
+    private final Map<Identifier, Supplier<? extends IHackableBlock>> idToBlockHackables = new ConcurrentHashMap<>();
 
     public static CommonArmorRegistry getInstance() {
         return INSTANCE;
@@ -118,7 +118,7 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
     }
 
     @Override
-    public Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(ResourceLocation id) {
+    public Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(Identifier id) {
         return Optional.ofNullable(ArmorUpgradeRegistry.getInstance().getUpgradeEntry(id));
     }
 
@@ -156,12 +156,12 @@ public enum CommonArmorRegistry implements ICommonArmorRegistry {
                 .orElse(null);
     }
 
-    public Optional<IHackableEntity<?>> getHackableEntityForId(ResourceLocation id) {
+    public Optional<IHackableEntity<?>> getHackableEntityForId(Identifier id) {
         Supplier<? extends IHackableEntity<?>> sup = idToEntityHackables.get(id);
         return sup == null ? Optional.empty() : Optional.ofNullable(sup.get());
     }
 
-    public Optional<IHackableBlock> getHackableBlockForId(ResourceLocation id) {
+    public Optional<IHackableBlock> getHackableBlockForId(Identifier id) {
         Supplier<? extends IHackableBlock> sup = idToBlockHackables.get(id);
         return sup == null ? Optional.empty() : Optional.ofNullable(sup.get());
     }

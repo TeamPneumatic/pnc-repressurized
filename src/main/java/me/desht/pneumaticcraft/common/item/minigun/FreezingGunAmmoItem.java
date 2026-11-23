@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -76,11 +77,11 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     }
 
     private void createFreezeCloud(Minigun minigun, Entity target) {
-        Level world = target.getCommandSenderWorld();
+        Level world = target.level();
         AreaEffectCloud cloud = new AreaEffectCloud(world, target.getX(), target.getY(), target.getZ());
-        cloud.setPotionContents(new PotionContents(Optional.of(Potions.SLOWNESS), Optional.of(0xFF00C0FF), List.of()));
+        cloud.setPotionContents(new PotionContents(Optional.of(Potions.SLOWNESS), Optional.of(0xFF00C0FF), List.of(), Optional.empty()));
         cloud.setOwner(minigun.getPlayer());
-        cloud.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 3));
+        cloud.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 3));
         cloud.addEffect(new MobEffectInstance(MobEffects.WITHER, 20, 1));
         cloud.setRadius(2.0f);
         cloud.setDuration(60);
@@ -94,7 +95,7 @@ public class FreezingGunAmmoItem extends AbstractGunAmmoItem {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockHitResult brtr) {
         Level world = minigun.getWorld();
         BlockPos pos = brtr.getBlockPos();
-        if (!world.dimensionType().ultraWarm() && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
+        if (!world.environmentAttributes().getValue(EnvironmentAttributes.WATER_EVAPORATES, pos) && minigun.dispenserWeightedPercentage(ConfigHelper.common().minigun.freezingAmmoBlockIceChance.get())) {
             BlockPos pos1;
             if (world.getBlockState(pos).getShape(world, pos) == Shapes.block() || brtr.getDirection() != Direction.UP) {
                 pos1 = pos.relative(brtr.getDirection());

@@ -2,35 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "G": {
-      "tag": "c:glass_panes"
-    },
-    "O": {
-      "tag": "c:obsidians"
-    },
-    "S": {
-      "item": "pneumaticcraft:reinforced_brick_slab"
-    },
+    "G": "#c:glass_panes",
+    "O": "#c:obsidians",
+    "S": "pneumaticcraft:reinforced_brick_slab",
     "T": {
-      "type": "neoforge:components",
-      "components": {
-        "minecraft:attribute_modifiers": {
-          "modifiers": []
-        },
-        "minecraft:enchantments": {
-          "levels": {}
-        },
-        "minecraft:lore": [],
-        "minecraft:max_stack_size": 64,
-        "minecraft:rarity": "common",
-        "minecraft:repair_cost": 0
-      },
+      "neoforge:ingredient_type": "neoforge:components",
+      "components": {},
       "items": "pneumaticcraft:small_tank",
       "strict": true
     },
-    "W": {
-      "item": "pneumaticcraft:reinforced_brick_wall"
-    }
+    "W": "pneumaticcraft:reinforced_brick_wall"
   },
   "pattern": [
     "OGO",
@@ -38,7 +19,6 @@
     "SSS"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:etching_tank"
   }
 }

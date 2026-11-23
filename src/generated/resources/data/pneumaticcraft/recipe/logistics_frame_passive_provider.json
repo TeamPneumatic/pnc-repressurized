@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "pneumaticcraft:logistics_core"
-    },
-    "D": {
-      "tag": "c:dyes/red"
-    },
-    "P": {
-      "item": "minecraft:stick"
-    }
+    "C": "pneumaticcraft:logistics_core",
+    "D": "#c:dyes/red",
+    "P": "minecraft:stick"
   },
   "pattern": [
     "PPP",

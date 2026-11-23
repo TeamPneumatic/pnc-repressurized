@@ -24,10 +24,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
@@ -114,16 +115,16 @@ public class WidgetTemperature extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             int x = getX(), y = getY();
 
             // the background frame
-            graphics.blit(Textures.WIDGET_TEMPERATURE, x + 6, y, 6, 0, 7, 50, 18, 50);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_TEMPERATURE, x + 6, y, 6, 0, 7, 50, 18, 50);
 
             // the coloured temperature bar
             int barLength = getYPos(temperature);
-            graphics.blit(Textures.WIDGET_TEMPERATURE, x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_TEMPERATURE, x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
 
             // ticks
             drawTicks(graphics);
@@ -149,7 +150,7 @@ public class WidgetTemperature extends AbstractWidget {
         return c;
     }
 
-    public void drawTicks(GuiGraphics graphics) {
+    public void drawTicks(GuiGraphicsExtractor graphics) {
         Font font = Minecraft.getInstance().font;
         int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
@@ -157,9 +158,9 @@ public class WidgetTemperature extends AbstractWidget {
         while (tickTempC <= totalRange.getMax() - 273) {
             // draw...
             int yOffset = getYPos(tickTempC + 273);
-            graphics.hLine(x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
+            graphics.horizontalLine(x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
             if (yOffset != 0 && yOffset != height - 1) {
-                graphics.hLine(x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
+                graphics.horizontalLine(x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
             }
             if (drawText && n % 2 == 0) { // && (tickInterval > 10 || n > 0)) {
                 Component s = Component.literal(Integer.toString(tickTempC));
@@ -170,22 +171,22 @@ public class WidgetTemperature extends AbstractWidget {
         }
     }
 
-    public void drawOperatingTempMarkers(GuiGraphics graphics) {
+    public void drawOperatingTempMarkers(GuiGraphicsExtractor graphics) {
         if (operatingRange != null) {
             int x = getX(), y = getY();
             if (totalRange.inRange(operatingRange.getMax())) {
                 int yOffset = getYPos(operatingRange.getMax());
-                graphics.hLine(x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
-                graphics.hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                graphics.hLine(x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
-                graphics.hLine(x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
+                graphics.horizontalLine(x + 9, x + 9, y     + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
             }
             if (totalRange.inRange(operatingRange.getMin())) {
                 int yOffset = getYPos(operatingRange.getMin());
-                graphics.hLine(x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
-                graphics.hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                graphics.hLine(x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
-                graphics.hLine(x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
+                graphics.horizontalLine(x + 9, x + 9, y     + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
+                graphics.horizontalLine(x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
             }
         }
     }

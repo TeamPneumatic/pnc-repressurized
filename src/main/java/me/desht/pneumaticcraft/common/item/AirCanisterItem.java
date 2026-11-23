@@ -25,16 +25,21 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
+import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.PneumaticValues.*;
@@ -55,29 +60,27 @@ public class AirCanisterItem extends PressurizableItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack pStack, TooltipContext pContext, List<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
-        super.appendHoverText(pStack, pContext, pTooltipComponents, pTooltipFlag);
+    public void appendHoverText(ItemStack pStack, TooltipContext pContext, TooltipDisplay tooltipDisplay, Consumer<Component> pTooltipComponents, TooltipFlag pTooltipFlag) {
+        super.appendHoverText(pStack, pContext, tooltipDisplay, pTooltipComponents, pTooltipFlag);
 
         MutableComponent c = xlate(pStack.getOrDefault(ModDataComponents.CHARGING_MODE, ChargeMode.NONE).getTranslationKey());
-        pTooltipComponents.add(c.withStyle(ChatFormatting.AQUA));
-        pTooltipComponents.add(xlate("pneumaticcraft.gui.air_canister.charging.sneak_right_click").withStyle(ChatFormatting.GREEN));
+        pTooltipComponents.accept(c.withStyle(ChatFormatting.AQUA));
+        pTooltipComponents.accept(xlate("pneumaticcraft.gui.air_canister.charging.sneak_right_click").withStyle(ChatFormatting.GREEN));
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+    public InteractionResult use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
         ItemStack stack = pPlayer.getItemInHand(pUsedHand);
-        if (!pLevel.isClientSide) {
+        if (!pLevel.isClientSide()) {
             ChargeMode mode = getChargeMode(stack).nextMode();
             pPlayer.getItemInHand(pUsedHand).set(ModDataComponents.CHARGING_MODE, mode);
-            pPlayer.displayClientMessage(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA), true);
+            pPlayer.sendOverlayMessage(xlate(mode.getTranslationKey()).withStyle(ChatFormatting.AQUA));
         }
-        return InteractionResultHolder.sidedSuccess(stack, pLevel.isClientSide);
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
-        if (pEntity.level().isClientSide) return;
-
+    public void inventoryTick(ItemStack pStack, ServerLevel pLevel, Entity pEntity, @Nullable EquipmentSlot pSlot) {
         ChargeMode mode = getChargeMode(pStack);
         if (pEntity instanceof Player player && mode != ChargeMode.NONE && pLevel.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL == 15) {
             PNCCapabilities.getAirHandler(pStack).ifPresent(srcHandler -> {

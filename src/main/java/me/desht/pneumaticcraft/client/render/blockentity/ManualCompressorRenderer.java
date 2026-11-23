@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.compressor.ManualCompressorBlockEntity;
@@ -9,12 +8,16 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<ManualCompressorBlockEntity> {
+public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<ManualCompressorBlockEntity, ManualCompressorRenderer.State> {
     private final ModelPart pump;
     private final ModelPart pumprod;
     private final ModelPart compressor;
@@ -61,32 +64,42 @@ public class ManualCompressorRenderer extends AbstractBlockEntityModelRenderer<M
     }
 
     @Override
-    void renderModel(ManualCompressorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_MANUAL_COMPRESSOR));
+    public State createRenderState() {
+        return new State();
+    }
 
+    @Override
+    public void extractRenderState(ManualCompressorBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        if (blockEntity.getLevel().getGameTime() <= blockEntity.pumpStepStartTick + ManualCompressorBlockEntity.TICKS_PER_PUMP_STEP) {
+            // intermediate offsets of the pump rod during its animation
+            state.pumprodOffset = (float) Mth.lerp(partialTicks, blockEntity.pumprodVerticalOffsetPreviousTick, blockEntity.pumprodVerticalOffsetCurrentTick);
+        } else {
+            // final stationary offset of the pump rod after animation is complete
+            state.pumprodOffset = (float) blockEntity.pumprodVerticalOffsetCurrent;
+        }
+    }
+
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
         // Rotates the pumprod to match the rotation of the compressor
-        matrixStackIn.translate(0, -9 / 16F, 0);
+        poseStack.translate(0, -9 / 16F, 0);
 
-        switch (te.getRotation()) {
-            case NORTH -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(0));
-            case EAST -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(270));
-            case SOUTH -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(180));
-            case WEST -> matrixStackIn.mulPose(Axis.YN.rotationDegrees(90));
+        switch (state.rotation) {
+            case NORTH -> poseStack.mulPose(Axis.YN.rotationDegrees(0));
+            case EAST -> poseStack.mulPose(Axis.YN.rotationDegrees(270));
+            case SOUTH -> poseStack.mulPose(Axis.YN.rotationDegrees(180));
+            case WEST -> poseStack.mulPose(Axis.YN.rotationDegrees(90));
         }
 
-        matrixStackIn.translate(0, 9 / 16F, 0);
+        poseStack.translate(0, 9 / 16F, 0);
+        poseStack.translate(0, state.pumprodOffset / 16F, 0);
 
-        // Renders the intermediate offsets of the pump rod during its animation
-        if (te.getLevel().getGameTime() <= te.pumpStepStartTick + ManualCompressorBlockEntity.TICKS_PER_PUMP_STEP) {
-            double offset = Mth.lerp(partialTicks, te.pumprodVerticalOffsetPreviousTick, te.pumprodVerticalOffsetCurrentTick);
-            matrixStackIn.translate(0, offset / 16F, 0);
-        }
+        submitPart(submitNodeCollector, pumprod, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_MANUAL_COMPRESSOR), state);
+    }
 
-        // Renders the final stationary offset of the pump rod after animation is complete
-        else {
-            matrixStackIn.translate(0, te.pumprodVerticalOffsetCurrent / 16F, 0);
-        }
-
-        pumprod.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    public static class State extends ModelRenderState {
+        float pumprodOffset;
     }
 }

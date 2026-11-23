@@ -55,7 +55,8 @@
         "pneumaticcraft:programming/condition_liquid_inventory",
         "pneumaticcraft:programming/condition_pressure",
         "pneumaticcraft:programming/condition_redstone",
-        "pneumaticcraft:programming/condition_rf"
+        "pneumaticcraft:programming/condition_rf",
+        "pneumaticcraft:programming/condition_dimension"
       ]
     },
     {

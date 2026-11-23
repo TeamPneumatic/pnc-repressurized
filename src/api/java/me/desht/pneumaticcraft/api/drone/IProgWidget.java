@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.DyeColor;
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,7 +50,7 @@ public interface IProgWidget {
 
     int getHeight();
 
-    ResourceLocation getTexture();
+    Identifier getTexture();
 
     @ApiStatus.NonExtendable
     Pair<Float,Float> getMaxUV();
@@ -153,7 +153,7 @@ public interface IProgWidget {
     IProgWidget getParent();
 
     @ApiStatus.NonExtendable
-    ResourceLocation getTypeID();
+    Identifier getTypeID();
 
     @ApiStatus.NonExtendable
     default String getTranslationKey() {

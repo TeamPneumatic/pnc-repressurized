@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "tag": "c:ingots/compressed_iron"
-    },
-    "T": {
-      "item": "pneumaticcraft:pressure_tube"
-    }
+    "I": "#c:ingots/compressed_iron",
+    "T": "pneumaticcraft:pressure_tube"
   },
   "pattern": [
     "III",

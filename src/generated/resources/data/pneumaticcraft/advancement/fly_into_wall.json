@@ -14,7 +14,6 @@
       "translate": "pneumaticcraft.advancement.fly_into_wall.desc"
     },
     "icon": {
-      "count": 1,
       "id": "minecraft:bricks"
     },
     "title": {

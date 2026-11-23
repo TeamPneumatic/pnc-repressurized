@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.overlays;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.StatPanelLayout;
@@ -17,12 +16,11 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.lwjgl.opengl.GL11;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 
 import java.util.List;
 
@@ -31,14 +29,14 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
+public class PneumaticArmorHUDOverlay implements GuiLayer {
     private static final int PROGRESS_BAR_HEIGHT = 17;
 
     private final boolean[] gaveCriticalWarning = new boolean[4];  // per-slot
     private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
 
@@ -48,7 +46,7 @@ public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
         }
 
         Window mw = Minecraft.getInstance().getWindow();
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
 
         boolean anyArmorInInit = false;
@@ -79,36 +77,33 @@ public class PneumaticArmorHUDOverlay implements LayeredDraw.Layer {
         // render every pending message
         HUDHandler.getInstance().renderMessages(graphics, partialTicks);
 
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
 
         // show armor initialisation percentages
         if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                     String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
-                    graphics.drawString(mc.font, text, mw.getGuiScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40, true);
+                    graphics.text(mc.font, text, (int) (mw.getGuiScaledWidth() * 0.75f - 8), 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFFFF40, true);
                 }
             }
         }
     }
 
-    private void renderInitProgressBarForSlot(GuiGraphics graphics, float partialTicks, Window mw, CommonArmorHandler comHudHandler, EquipmentSlot slot, ItemStack armorStack) {
+    private void renderInitProgressBarForSlot(GuiGraphicsExtractor graphics, float partialTicks, Window mw, CommonArmorHandler comHudHandler, EquipmentSlot slot, ItemStack armorStack) {
         if (comHudHandler.isArmorEnabled()) {
             int xLeft = mw.getGuiScaledWidth() / 2;
             int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
             float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
             progress = Math.min(100, progress + partialTicks);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             ProgressBarRenderer.render2d(graphics, mw.getGuiScaledWidth() / 2f, yOffset,
-                    mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
+                    mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1,
                     progress, 0xAAFFC000, 0xAA00FF00);
-            RenderSystem.disableBlend();
-            graphics.renderItem(armorStack, xLeft + 2, yOffset);
+            graphics.item(armorStack, xLeft + 2, yOffset);
         }
     }
 
-    private void renderHUDForSlot(GuiGraphics matrixStack, float partialTicks, Player player, CommonArmorHandler comHudHandler, EquipmentSlot slot) {
+    private void renderHUDForSlot(GuiGraphicsExtractor matrixStack, float partialTicks, Player player, CommonArmorHandler comHudHandler, EquipmentSlot slot) {
         float pressure = comHudHandler.getArmorPressure(slot);
 
         handlePressureWarnings(player, slot, pressure);

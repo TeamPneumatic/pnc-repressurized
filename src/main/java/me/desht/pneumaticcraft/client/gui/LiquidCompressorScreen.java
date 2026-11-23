@@ -31,7 +31,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,7 +51,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
         addRenderableWidget(new WidgetTank(leftPos + getFluidOffset(), topPos + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
         Pair<Integer, List<Component>> p = ClientUtils.formatFuelList(xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader"),
-                getGuiLeft() - 10,
+                getLeftPos() - 10,
                 fluid -> FuelRegistry.getInstance().getFuelValue(ClientUtils.getClientLevel(), fluid) / 1000,
                 true
         );
@@ -89,7 +89,7 @@ public class LiquidCompressorScreen extends AbstractPneumaticCraftContainerScree
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_LIQUID_COMPRESSOR;
     }
 

@@ -30,12 +30,13 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -54,6 +55,8 @@ import java.util.*;
 
 public class DroneAIManager implements IVariableProvider {
     public static final int TICK_RATE = 3;
+    public static final String LABEL_MAIN = "*pneumaticcraft.entityTracker.label.main";
+    public static final String LABEL_STOPPED = "*pneumaticcraft.entityTracker.label.stopped";
 
     private final List<WrappedGoal> goals = new ArrayList<>();
     private final List<WrappedGoal> executingGoals = new ArrayList<>();
@@ -67,7 +70,7 @@ public class DroneAIManager implements IVariableProvider {
     private Goal currentTargetingGoal;
     private boolean stopWhenEndReached;
     private boolean wasAIOveridden;
-    private String currentLabel = "Main"; // Holds the name of the last label that was jumped to.
+    private String currentLabel = LABEL_MAIN; // Holds the name of the last label that was jumped to.
 
     private Map<String, BlockPos> coordinateVariables = new HashMap<>();
     private Map<String, ItemStack> itemVariables = new HashMap<>();
@@ -76,9 +79,9 @@ public class DroneAIManager implements IVariableProvider {
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
     public DroneAIManager(IDroneBase drone) {
-        theProfiler = drone.getDroneLevel().getProfiler();
+        theProfiler = Profiler.get();
         this.drone = drone;
-        if (!drone.getDroneLevel().isClientSide) {
+        if (!drone.getDroneLevel().isClientSide()) {
             // we don't do much clientside, but instances can be created (programmable controller, The One Probe...)
             // don't try to set the widgets clientside because there aren't any and that messes up entity tracker info
             setWidgets(drone.getProgWidgets());
@@ -86,7 +89,7 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public DroneAIManager(IDrone drone, List<IProgWidget> progWidgets) {
-        theProfiler = drone.getDroneLevel().getProfiler();
+        theProfiler = Profiler.get();
         this.drone = drone;
         stopWhenEndReached = true;
         setWidgets(progWidgets);
@@ -163,18 +166,18 @@ public class DroneAIManager implements IVariableProvider {
 
     public void readFromNBT(CompoundTag tag) {
         coordinateVariables.clear();
-        ListTag tagList = tag.getList("coords", Tag.TAG_COMPOUND);
+        ListTag tagList = tag.getListOrEmpty("coords");
         for (int i = 0; i < tagList.size(); i++) {
-            CompoundTag t = tagList.getCompound(i);
+            CompoundTag t = tagList.getCompoundOrEmpty(i);
             BlockPos.CODEC.parse(NbtOps.INSTANCE, t.get("pos"))
-                    .ifSuccess(pos -> coordinateVariables.put(t.getString("key"), pos));
+                    .ifSuccess(pos -> coordinateVariables.put(t.getStringOr("key", ""), pos));
         }
 
-        ListTag tagList2 = tag.getList("items", Tag.TAG_COMPOUND);
+        ListTag tagList2 = tag.getListOrEmpty("items");
         for (int i = 0; i < tagList2.size(); i++) {
-            CompoundTag t = tagList2.getCompound(i);
-            ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompound("item"))
-                    .ifSuccess(stack -> itemVariables.put(t.getString("key"), stack));
+            CompoundTag t = tagList2.getCompoundOrEmpty(i);
+            ItemStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, t.getCompoundOrEmpty("item"))
+                    .ifSuccess(stack -> itemVariables.put(t.getStringOr("key", ""), stack));
         }
     }
 
@@ -256,7 +259,7 @@ public class DroneAIManager implements IVariableProvider {
      * Move execution back to the Start widget, or if we're in a Foreach subroutine, back to the Foreach widget
      */
     private void restartProgram() {
-        setLabel("Main");
+        setLabel(LABEL_MAIN);
         setActiveWidget(jumpBackWidgets.isEmpty() ? startWidget : jumpBackWidgets.pop());
     }
 
@@ -293,7 +296,7 @@ public class DroneAIManager implements IVariableProvider {
             }
             drone.setActiveProgram(widget);
         } else {
-            setLabel("Stopped");
+            setLabel(LABEL_STOPPED);
         }
 
         activeWidget = widget;

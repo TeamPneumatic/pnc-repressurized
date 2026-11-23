@@ -25,13 +25,13 @@ import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicTicking;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatBehaviourHeatFrame extends HeatBehaviour {
-    static final ResourceLocation ID = RL("heat_frame");
+    static final Identifier ID = RL("heat_frame");
 
     private HeatFrameEntity semiBlock;
 
@@ -43,7 +43,7 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

@@ -28,7 +28,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
@@ -43,7 +42,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
@@ -122,7 +121,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         }
 
         ItemStack stack = fakePlayer.getMainHandItem();
-        Level world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.level();
 
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
@@ -137,7 +136,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             InteractionResult ret = stack.onItemUseFirst(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
             if (ret != InteractionResult.PASS) return ret.consumesAction();
 
-            if (stack.isEmpty() || fakePlayer.getCooldowns().isOnCooldown(stack.getItem())) {
+            if (stack.isEmpty() || fakePlayer.getCooldowns().isOnCooldown(stack)) {
                 return false;
             }
 
@@ -152,8 +151,10 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 ItemStack copyBeforeUse = stack.copy();
                 InteractionResult result = stack.useOn(new UseOnContext(fakePlayer, InteractionHand.MAIN_HAND, brtr));
                 if (result == InteractionResult.PASS) {
-                    InteractionResultHolder<ItemStack> rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
-                    fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, rightClickResult.getObject());
+                    InteractionResult rightClickResult = stack.getItem().use(world, fakePlayer, InteractionHand.MAIN_HAND);
+                    if (rightClickResult instanceof InteractionResult.Success success && success.heldItemTransformedTo() != null) {
+                        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, success.heldItemTransformedTo());
+                    }
                 }
                 if (fakePlayer.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) {
                     net.neoforged.neoforge.event.EventHooks.onPlayerDestroyItem(fakePlayer, copyBeforeUse, InteractionHand.MAIN_HAND);
@@ -169,7 +170,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
-        Level world = fakePlayer.getCommandSenderWorld();
+        Level world = fakePlayer.level();
         BlockState state = world.getBlockState(pos);
         BlockHitResult brtr = doTrace(world, pos, fakePlayer);
         if (brtr != null) {

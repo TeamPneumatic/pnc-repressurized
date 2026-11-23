@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.LogisticsModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -12,13 +11,13 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.phys.Vec3;
 
-import static net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+import static net.minecraft.util.LightCoordsUtil.FULL_BRIGHT;
 
-public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModule> {
+public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModule, LogisticsRenderer.State> {
     private final ModelPart base2;
     private final ModelPart shape1;
     private final ModelPart shape2;
@@ -88,30 +87,53 @@ public class LogisticsRenderer extends AbstractTubeModuleRenderer<LogisticsModul
     }
 
     @Override
-    protected void render(LogisticsModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        ModelPart base;
-        if (module.getTicksSinceAction() >= 0) {
-            base = action;
-        } else if (module.getTicksSinceNotEnoughAir() >= 0) {
-            base = notEnoughAir;
-        } else {
-            base = module.hasPower() ? powered : notPowered;
-        }
-
-        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        base.render(matrixStack, builder, FULL_BRIGHT, combinedOverlay, baseColor);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-
-        // the coloured frame
-        int frameColor = FastColor.ARGB32.color(alpha, DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
-        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
-        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
-        shape4.render(matrixStack, builder, combinedLight, combinedOverlay, frameColor);
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    public void extractRenderState(LogisticsModule module, State state, float partialTicks, Vec3 cameraPosition) {
+        super.extractRenderState(module, state, partialTicks, cameraPosition);
+
+        if (module.getTicksSinceAction() >= 0) {
+            state.status = Status.ACTION;
+        } else if (module.getTicksSinceNotEnoughAir() >= 0) {
+            state.status = Status.NOT_ENOUGH_AIR;
+        } else {
+            state.status = module.hasPower() ? Status.POWERED : Status.NOT_POWERED;
+        }
+        state.frameColor = withModuleAlpha(module.isFake(), DyeColor.byId(module.getColorChannel()).getTextureDiffuseColor());
+    }
+
+    @Override
+    protected void submitModel(State state, PoseStack poseStack, ModuleSubmitter submitter) {
+        ModelPart base = switch (state.status) {
+            case ACTION -> action;
+            case NOT_ENOUGH_AIR -> notEnoughAir;
+            case POWERED -> powered;
+            case NOT_POWERED -> notPowered;
+        };
+        submitter.submitPart(base, poseStack, FULL_BRIGHT, submitter.baseColor());
+        submitter.submitPart(base2, poseStack);
+
+        // the coloured frame
+        submitter.submitPart(shape1, poseStack, state.frameColor);
+        submitter.submitPart(shape2, poseStack, state.frameColor);
+        submitter.submitPart(shape3, poseStack, state.frameColor);
+        submitter.submitPart(shape4, poseStack, state.frameColor);
+    }
+
+    @Override
+    protected Identifier getTexture(boolean isUpgraded) {
         return Textures.MODEL_LOGISTICS_MODULE;
+    }
+
+    public static class State extends ModuleRenderState {
+        Status status = Status.NOT_POWERED;
+        int frameColor;
+    }
+
+    enum Status {
+        ACTION, NOT_ENOUGH_AIR, POWERED, NOT_POWERED
     }
 }

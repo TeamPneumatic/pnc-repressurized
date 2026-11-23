@@ -26,7 +26,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.DyeColor;
@@ -88,8 +88,8 @@ public class ModDataComponents {
             = register("amadron_basket", ImmutableBasket.CODEC, ImmutableBasket.STREAM_CODEC);
 
     // Tag Filter
-    public static final Supplier<DataComponentType<List<ResourceLocation>>> TAG_FILTER_KEYS
-            = register("tag_filter_keys", ResourceLocation.CODEC.listOf(), ResourceLocation.STREAM_CODEC.apply(ByteBufCodecs.list()));
+    public static final Supplier<DataComponentType<List<Identifier>>> TAG_FILTER_KEYS
+            = register("tag_filter_keys", Identifier.CODEC.listOf(), Identifier.STREAM_CODEC.apply(ByteBufCodecs.list()));
     // Classify Filter
     public static final Supplier<DataComponentType<ClassifyFilterItem.FilterSettings>> CLASSIFY_FILTER_SETTINGS
             = register("classify_filter_settings", ClassifyFilterItem.FilterSettings.CODEC, ClassifyFilterItem.FilterSettings.STREAM_CODEC);
@@ -239,4 +239,7 @@ public class ModDataComponents {
     // JackHammer stored drill bit
     public static final Supplier<DataComponentType<ItemContainerContents>> JACKHAMMER_DRILL_BIT
             = register("jackhammer_drill_bit", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
+    // JackHammer speed cap toggle
+    public static final Supplier<DataComponentType<Boolean>> JACKHAMMER_SPEED_CAPPED
+            = register("jackhammer_speed_capped", Codec.BOOL, ByteBufCodecs.BOOL);
 }

@@ -3,15 +3,15 @@
   "inputs": [
     {
       "count": 2,
-      "item": "minecraft:redstone_torch"
+      "ingredient": "minecraft:redstone_torch"
     },
     {
       "count": 3,
-      "tag": "pneumaticcraft:wiring"
+      "ingredient": "#pneumaticcraft:wiring"
     },
     {
       "count": 1,
-      "item": "pneumaticcraft:plastic"
+      "ingredient": "pneumaticcraft:plastic"
     }
   ],
   "pressure": 1.5,

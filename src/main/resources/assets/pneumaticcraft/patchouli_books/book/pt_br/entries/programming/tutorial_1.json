@@ -47,7 +47,7 @@
     },
     {
       "type": "text",
-      "text": "Finalmente, pegue um $(l:tools/drone)Drone/$, e certifique-se de que ele foi pressurizado em uma $(l:machines/charging_station)Estação de Carregamento/$. Coloque o item Drone no espaço no canto superior direito da GUI do Programador e clique no botão $(thing)⟶ (exportar)/$ (você pode nomear o Drone se quiser, no campo de texto à esquerda).$(p)Você terá algum feedback audível, e seu Drone estará programado!"
+      "text": "Finalmente, pegue um $(l:tools/drone)Drone/$, e certifique-se de que ele foi pressurizado em uma $(l:machines/charging_station)Estação de Carga/$. Coloque o item Drone no espaço no canto superior direito da GUI do Programador e clique no botão $(thing)⟶ (exportar)/$ (você pode nomear o Drone se quiser, no campo de texto à esquerda).$(p)Você terá algum feedback audível, e seu Drone estará programado!"
     },
     {
       "type": "text",

@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +35,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -93,7 +94,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         SavedData savedData = componentInput.get(ModDataComponents.APHORISM_TILE_DATA);
@@ -151,7 +152,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         this.maxLineWidth = -1; // force recalc
         icons = new ItemStack[textLines.length];
         if (level != null) {
-            if (level.isClientSide) {
+            if (level.isClientSide()) {
                 updateLineMetadata();
             } else {
                 // server
@@ -167,7 +168,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
         for (int i = 0; i < textLines.length; i++) {
             Matcher m = ITEM_PAT.matcher(textLines[i]);
             if (m.matches()) {
-                icons[i] = new ItemStack(BuiltInRegistries.ITEM.get(ResourceLocation.parse(m.group(1))));
+                icons[i] = new ItemStack(BuiltInRegistries.ITEM.getValue(Identifier.parse(m.group(1))));
             } else {
                 icons[i] = ItemStack.EMPTY;
                 if (textLines[i].contains("{redstone}")) {
@@ -187,7 +188,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
 
     public void setBorderColor(int color) {
         this.borderColor = color;
-        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
     }
 
     public int getBorderColor() {
@@ -200,7 +201,7 @@ public class AphorismTileBlockEntity extends AbstractPneumaticCraftBlockEntity {
 
     public void setBackgroundColor(int color) {
         this.backgroundColor = color;
-        if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+        if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
         setChanged();
     }
 

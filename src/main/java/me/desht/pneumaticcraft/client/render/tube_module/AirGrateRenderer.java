@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.tubemodules.AirGrateModule;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -12,10 +11,9 @@ import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
 
-public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule> {
+public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule, AbstractTubeModuleRenderer.ModuleRenderState> {
     private final ModelPart top;
     private final ModelPart side1;
     private final ModelPart side2;
@@ -80,20 +78,24 @@ public class AirGrateRenderer extends AbstractTubeModuleRenderer<AirGrateModule>
 
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_AIR_GRATE_UPGRADED : Textures.MODEL_AIR_GRATE;
     }
 
     @Override
-    protected void render(AirGrateModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int color = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        top.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        side1.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        side2.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        side3.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        side4.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        base1.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        base2.render(matrixStack, builder, combinedLight, combinedOverlay, color);
-        base3.render(matrixStack, builder, combinedLight, combinedOverlay, color);
+    public ModuleRenderState createRenderState() {
+        return new ModuleRenderState();
+    }
+
+    @Override
+    protected void submitModel(ModuleRenderState state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(top, poseStack);
+        submitter.submitPart(side1, poseStack);
+        submitter.submitPart(side2, poseStack);
+        submitter.submitPart(side3, poseStack);
+        submitter.submitPart(side4, poseStack);
+        submitter.submitPart(base1, poseStack);
+        submitter.submitPart(base2, poseStack);
+        submitter.submitPart(base3, poseStack);
     }
 }

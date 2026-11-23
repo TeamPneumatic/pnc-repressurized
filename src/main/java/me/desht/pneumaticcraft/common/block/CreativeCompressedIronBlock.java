@@ -19,11 +19,11 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.block.entity.heat.CreativeCompressedIronBlockEntity;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
@@ -52,7 +52,7 @@ public class CreativeCompressedIronBlock extends AbstractPneumaticCraftBlock
         return new CreativeCompressedIronBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockCreativeCompressedIron extends BlockItem {
+    public static class ItemBlockCreativeCompressedIron extends PNCBlockItem {
         public ItemBlockCreativeCompressedIron(CreativeCompressedIronBlock block) {
             super(block, ModItems.defaultProps().rarity(Rarity.EPIC));
         }

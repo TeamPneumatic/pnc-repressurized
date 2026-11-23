@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.pneumaticcraft.refmap.json",
   "mixins": [
+    "accessors.AbstractArrowAccess",
     "accessors.AbstractFurnaceBlockEntityAccess",
     "accessors.BaseContainerBlockEntityAccess",
     "accessors.BaseSpawnerAccess",
@@ -12,7 +13,6 @@
     "accessors.EntityAccess",
     "accessors.ItemEntityAccess",
     "accessors.MinecartItemAccess",
-    "accessors.MobAccess",
     "accessors.ServerPlayerAccess",
     "accessors.ServerPlayerGameModeAccess",
     "accessors.ShapedRecipeAccess",

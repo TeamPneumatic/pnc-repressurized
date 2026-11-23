@@ -1,9 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "inputs": {
-    "item": {
-      "tag": "c:seeds"
-    }
+    "item": "#c:seeds"
   },
   "outputs": {
     "fluid_output": {

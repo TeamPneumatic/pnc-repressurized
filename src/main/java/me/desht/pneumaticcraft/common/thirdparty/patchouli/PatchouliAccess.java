@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
@@ -90,7 +90,7 @@ public class PatchouliAccess {
         papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // ConfigHelper.common().recipes.enablePneumaticGeneratorRecipe.get() && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
     }
 
-    static boolean openBookEntry(ResourceLocation page) {
+    static boolean openBookEntry(Identifier page) {
         PatchouliAPI.get().openBookEntry(Patchouli.PNC_BOOK, page, 1);
         return Patchouli.PNC_BOOK.equals(PatchouliAPI.get().getOpenBookGui());
     }

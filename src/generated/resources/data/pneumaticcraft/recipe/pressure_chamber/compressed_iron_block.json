@@ -3,13 +3,12 @@
   "inputs": [
     {
       "count": 1,
-      "tag": "c:storage_blocks/iron"
+      "ingredient": "#c:storage_blocks/iron"
     }
   ],
   "pressure": 2.0,
   "results": [
     {
-      "count": 1,
       "id": "pneumaticcraft:compressed_iron_block"
     }
   ]

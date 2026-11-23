@@ -43,16 +43,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.Weight;
-import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -60,6 +60,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import java.util.*;
 
@@ -71,30 +72,30 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltip, TooltipFlag flagIn) {
+        super.appendHoverText(stack, context, tooltipDisplay, tooltip, flagIn);
 
         ISpawnerCoreStats stats = stack.getOrDefault(ModDataComponents.SPAWNER_CORE_STATS, SpawnerCoreStats.EMPTY);
         if (stats.getUnusedPercentage() < 100) {
             stats.getEntities().keySet().stream()
                     .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
-                    .forEach(type -> tooltip.add(Symbols.bullet()
+                    .forEach(type -> tooltip.accept(Symbols.bullet()
                             .append(xlate(type.getDescriptionId()).withStyle(ChatFormatting.YELLOW))
                             .append(": " + stats.getPercentage(type) + "%").withStyle(ChatFormatting.WHITE))
                     );
             if (stats.getUnusedPercentage() > 0) {
-                tooltip.add(Symbols.bullet()
+                tooltip.accept(Symbols.bullet()
                         .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW, ChatFormatting.ITALIC))
                         .append(": " + stats.getUnusedPercentage() + "%").withStyle(ChatFormatting.WHITE));
             }
         } else {
-            tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
+            tooltip.accept(xlate("pneumaticcraft.gui.misc.empty").withStyle(ChatFormatting.YELLOW));
         }
     }
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        if (!context.getLevel().isClientSide) {
+        if (!context.getLevel().isClientSide()) {
             return trySpawnEntity(context) ? InteractionResult.CONSUME : InteractionResult.PASS;
         } else {
             return InteractionResult.SUCCESS;
@@ -115,12 +116,12 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                     ServerLevel serverworld = (ServerLevel)world;
                     CompoundTag nbt = new CompoundTag();
                     nbt.putString("id", regName.toString());
-                    Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
-                        e1.moveTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
+                    Entity entity = EntityType.loadEntityRecursive(nbt, world, EntitySpawnReason.SPAWNER, (e1) -> {
+                        e1.snapTo(vec.x(), vec.y(), vec.z(), e1.getYRot(), e1.getXRot());
                         return e1;
                     });
                     if (entity != null) {
-                        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
+                        entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), world.getRandom().nextFloat() * 360.0F, 0.0F);
                         if (serverworld.tryAddFreshEntityWithPassengers(entity)) {
                             stats.addAmount(type, -1).save(stack);
                             return true;
@@ -214,7 +215,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
                 weightedEntities.add(new WeightedEntity(null, unused));
             }
 
-            return WeightedRandom.getRandomItem(RandomSource.createNewThreadLocalInstance(), weightedEntities)
+            return WeightedRandom.getRandomItem(RandomSource.createThreadLocalInstance(), weightedEntities, WeightedEntity::weight)
                     .map(WeightedEntity::type)
                     .orElse(null);
         }
@@ -224,11 +225,7 @@ public class SpawnerCoreItem extends Item implements ColorHandlers.ITintableItem
             return EMPTY;
         }
 
-        private record WeightedEntity(EntityType<?> type, int weight) implements WeightedEntry {
-            @Override
-            public Weight getWeight() {
-                return Weight.of(weight);
-            }
+        private record WeightedEntity(EntityType<?> type, int weight) {
         }
     }
 

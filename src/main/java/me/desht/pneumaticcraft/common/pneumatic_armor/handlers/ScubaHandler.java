@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -46,7 +46,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final Vector3f BUBBLE_AREA = new Vector3f(1.0f, 1.0f, 1.0f);
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.SCUBA;
     }
 
@@ -68,7 +68,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         Player player = commonArmorHandler.getPlayer();
-        if (!player.level().isClientSide && enabled
+        if (!player.level().isClientSide() && enabled
                 && commonArmorHandler.hasMinPressure(EquipmentSlot.HEAD)
                 && player.getAirSupply() < player.getMaxAirSupply() / 2) {
 

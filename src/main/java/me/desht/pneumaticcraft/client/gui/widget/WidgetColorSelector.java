@@ -17,7 +17,8 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.DyeColor;
@@ -58,17 +59,17 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(graphics, mouseX, mouseY, partialTick);
+    public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractContents(graphics, mouseX, mouseY, partialTick);
 
         int x = getX(), y = getY();
         graphics.fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | color.getTextureDiffuseColor());
-        graphics.hLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
-        graphics.vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
+        graphics.horizontalLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
+        graphics.verticalLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
     }
 
     @Override
-    public void renderAfterEverythingElse(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         if (expanded) {
             int x = getX(), y = getY();
             graphics.fill(x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
@@ -77,19 +78,21 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
                 int dx = x + (color.getId() % 4) * 16;
                 int dy = y - 1 + height + (color.getId() / 4) * 16;
                 graphics.fill(dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | color.getTextureDiffuseColor());
-                graphics.hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
-                graphics.vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
+                graphics.horizontalLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
+                graphics.verticalLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
             }
         }
     }
 
     @Override
-    protected boolean clicked(double mouseX, double mouseY) {
-        return super.clicked(mouseX, mouseY) || expanded && expandedArea.contains((int) mouseX, (int) mouseY);
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return super.isMouseOver(mouseX, mouseY) || expanded && expandedArea.contains((int) mouseX, (int) mouseY);
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         if (mainArea.contains((int) mouseX, (int) mouseY)) {
             expanded = !expanded;
         } else if (expandedArea.contains((int) mouseX, (int) mouseY)) {

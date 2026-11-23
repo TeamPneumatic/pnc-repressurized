@@ -23,7 +23,7 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockAccess;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 public enum SemiblockTracker implements SemiblockAccess {
     INSTANCE;
 
-    private final Map<ResourceLocation, Map<BlockPos, SemiblockCollection>> semiblockMap = new HashMap<>();
+    private final Map<Identifier, Map<BlockPos, SemiblockCollection>> semiblockMap = new HashMap<>();
 
     public static SemiblockTracker getInstance() {
         return INSTANCE;
@@ -135,8 +135,8 @@ public enum SemiblockTracker implements SemiblockAccess {
                 && pos.getZ() >= aabb.minZ() && pos.getZ() <= aabb.maxZ();
     }
 
-    private ResourceLocation getKey(Level world) {
-        return world.dimension().location();
+    private Identifier getKey(Level world) {
+        return world.dimension().identifier();
     }
 
     private static class SemiblockCollection {

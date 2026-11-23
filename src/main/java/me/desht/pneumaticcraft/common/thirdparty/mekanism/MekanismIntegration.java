@@ -30,7 +30,7 @@ import mekanism.api.radiation.IRadiationManager;
 import mekanism.api.radiation.capability.IRadiationShielding;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
@@ -45,9 +45,9 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class MekanismIntegration {
     public static final BlockCapability<IHeatHandler, Direction> CAPABILITY_HEAT_HANDLER
-            = BlockCapability.createSided(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, "heat_handler"), IHeatHandler.class);
+            = BlockCapability.createSided(Identifier.fromNamespaceAndPath(ModIds.MEKANISM, "heat_handler"), IHeatHandler.class);
     public static final ItemCapability<IRadiationShielding,Void> CAPABILITY_RADIATION_SHIELDING
-        = ItemCapability.createVoid(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, "radiation_shielding"), IRadiationShielding.class);
+        = ItemCapability.createVoid(Identifier.fromNamespaceAndPath(ModIds.MEKANISM, "radiation_shielding"), IRadiationShielding.class);
 
     static void mekSetup() {
         RadiationSourceCheck.INSTANCE.registerRadiationSource((registryAccess, dmgSource)
@@ -72,7 +72,7 @@ public class MekanismIntegration {
     }
 
     static void registerMekanismBlockEntityHeat(RegisterCapabilitiesEvent event, String id) {
-        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(ResourceLocation.fromNamespaceAndPath(ModIds.MEKANISM, id));
+        BlockEntityType<?> type = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(Identifier.fromNamespaceAndPath(ModIds.MEKANISM, id));
         if (type != null) {
             event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, type, Mek2PNCHeatAdapter::maybe);
         } else {

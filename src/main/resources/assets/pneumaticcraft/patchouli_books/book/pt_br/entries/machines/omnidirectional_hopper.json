@@ -22,7 +22,7 @@
     {
       "type": "text",
       "title": "Aprimoramento de Rastreador de Entidade",
-      "text": "Se um $(l:base_concepts/upgrades#entity_tracker)Aprimoramento de Rastreador de Entidade/$ for instalado, o funil será capaz de extrair itens de entidades na frente do seu lado de $(9)entrada/$. As entidades podem ser incluídas na lista negra para tal extração, adicionando-as à tag de tipo de entidade $(thing)pneumaticcraft:omnihopper_blacklisted/$; os Aldeões são incluídos na lista negra por padrão, pois podem se tornar uma fonte infinita de itens."
+      "text": "Se um $(l:base_concepts/upgrades#entity_tracker)Aprimoramento de Rastreador de Entidade/$ for instalado, o funil será capaz de extrair itens de entidades na frente do seu lado de $(9)entrada/$. As entidades podem ser incluídas na lista negra para tal extração, adicionando-as à marcação de tipo de entidade $(thing)pneumaticcraft:omnihopper_blacklisted/$; os Aldeões são incluídos na lista negra por padrão, pois podem se tornar uma fonte infinita de itens."
     },
     {
       "type": "crafting",

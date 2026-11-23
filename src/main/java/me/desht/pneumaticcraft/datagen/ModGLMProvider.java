@@ -3,8 +3,8 @@ package me.desht.pneumaticcraft.datagen;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.loot.PNCDungeonLootModifier;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.data.PackOutput;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.neoforged.neoforge.common.data.GlobalLootModifierProvider;
 import net.neoforged.neoforge.common.loot.LootTableIdCondition;
@@ -13,8 +13,8 @@ import org.apache.commons.lang3.Validate;
 import java.util.concurrent.CompletableFuture;
 
 public class ModGLMProvider extends GlobalLootModifierProvider {
-    public ModGLMProvider(DataGenerator gen, CompletableFuture<HolderLookup.Provider> provider) {
-        super(gen.getPackOutput(), provider, Names.MOD_ID);
+    public ModGLMProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> provider) {
+        super(output, provider, Names.MOD_ID);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class ModGLMProvider extends GlobalLootModifierProvider {
         Validate.isTrue(chests.length > 0);
         LootItemCondition.Builder condition = null;
         for (String s : chests) {
-            LootTableIdCondition.Builder b = LootTableIdCondition.builder(ResourceLocation.parse("chests/" + s));
+            LootTableIdCondition.Builder b = LootTableIdCondition.builder(Identifier.parse("chests/" + s));
             condition = condition == null ? b : condition.or(b);
         }
         return condition.build();

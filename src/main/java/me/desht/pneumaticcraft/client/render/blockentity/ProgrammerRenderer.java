@@ -21,41 +21,67 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammerBlockEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEntity> {
+public class ProgrammerRenderer implements BlockEntityRenderer<ProgrammerBlockEntity, ProgrammerRenderer.State> {
+    private final ItemModelResolver itemModelResolver;
+
     public ProgrammerRenderer(BlockEntityRendererProvider.Context ctx) {
+        itemModelResolver = ctx.itemModelResolver();
     }
 
     @Override
-    public void render(ProgrammerBlockEntity te, float pPartialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.nonNullLevel().isLoaded(te.getBlockPos())) return;
+    public State createRenderState() {
+        return new State();
+    }
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0.5, 11/16d, 0.5);
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+    @Override
+    public void extractRenderState(ProgrammerBlockEntity te, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(te, state, partialTicks, cameraPosition, breakProgress);
+
+        state.loaded = te.nonNullLevel().isLoaded(te.getBlockPos());
+        state.rotation = te.getRotation();
+        itemModelResolver.updateForTopItem(state.item, te.displayedStack, ItemDisplayContext.FIXED, te.getLevel(), null, (int) te.getBlockPos().asLong());
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (!state.loaded || state.item.isEmpty()) return;
+
+        poseStack.pushPose();
+        poseStack.translate(0.5, 11/16d, 0.5);
+        RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
 
         // not sure why negative X/Z offsets are needed for east/west rotation, but ok...
-        if (te.getRotation().getAxis() == Direction.Axis.X) {
-            matrixStackIn.translate(-0.345, 0.025, -0.28);
+        if (state.rotation.getAxis() == Direction.Axis.X) {
+            poseStack.translate(-0.345, 0.025, -0.28);
         } else {
-            matrixStackIn.translate(0.345, 0.025, 0.28);
+            poseStack.translate(0.345, 0.025, 0.28);
         }
         // lie the item flat
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(90));
-        matrixStackIn.scale(0.25f, 0.25f, 0.25f);
+        poseStack.mulPose(Axis.XP.rotationDegrees(90));
+        poseStack.scale(0.25f, 0.25f, 0.25f);
 
-        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        BakedModel bakedModel = itemRenderer.getModel(te.displayedStack, Minecraft.getInstance().level, null, 0);
-        itemRenderer.render(te.displayedStack, ItemDisplayContext.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, bakedModel);
+        state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
 
-        matrixStackIn.popPose();
+        poseStack.popPose();
+    }
+
+    public static class State extends BlockEntityRenderState {
+        boolean loaded;
+        Direction rotation = Direction.NORTH;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 }

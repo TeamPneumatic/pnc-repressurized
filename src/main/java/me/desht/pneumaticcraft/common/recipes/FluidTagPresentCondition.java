@@ -20,28 +20,28 @@ package me.desht.pneumaticcraft.common.recipes;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.common.conditions.ICondition;
 
 public class FluidTagPresentCondition implements ICondition {
     public static final MapCodec<FluidTagPresentCondition> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
-                    ResourceLocation.CODEC.fieldOf("tag").forGetter(FluidTagPresentCondition::location)
+                    Identifier.CODEC.fieldOf("tag").forGetter(FluidTagPresentCondition::location)
             ).apply(builder, FluidTagPresentCondition::new)
     );
 
     private final TagKey<Fluid> tagKey;
 
-    public FluidTagPresentCondition(ResourceLocation tagName) {
+    public FluidTagPresentCondition(Identifier tagName) {
         this.tagKey = TagKey.create(Registries.FLUID, tagName);
     }
 
     public FluidTagPresentCondition(String tagName) {
-        this(ResourceLocation.parse(tagName));
+        this(Identifier.parse(tagName));
     }
 
-    private ResourceLocation location() {
+    private Identifier location() {
         return tagKey.location();
     }
 

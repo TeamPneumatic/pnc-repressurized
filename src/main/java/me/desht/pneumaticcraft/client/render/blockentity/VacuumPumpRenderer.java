@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -13,12 +12,17 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumPumpBlockEntity> {
+public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumPumpBlockEntity, VacuumPumpRenderer.State> {
     private static final int BLADE_COUNT = 6;
 
     private static final String BLADE = "blade";
@@ -44,31 +48,38 @@ public class VacuumPumpRenderer extends AbstractBlockEntityModelRenderer<VacuumP
     }
 
     @Override
-    public void renderModel(VacuumPumpBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(Textures.MODEL_VACUUM_PUMP));
-
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
-        matrixStackIn.mulPose(Axis.XP.rotationDegrees(-90));
-
-        renderBlades(te, partialTicks, matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+    public State createRenderState() {
+        return new State();
     }
 
+    @Override
+    public void extractRenderState(VacuumPumpBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-    private void renderBlades(VacuumPumpBlockEntity te, float partialTicks, PoseStack matrixStackIn, VertexConsumer builder, int combinedLightIn, int combinedOverlayIn) {
-        float rotation = Mth.lerp(partialTicks, te.oldRotation, te.rotation) + 1;
+        state.bladeRotation = Mth.lerp(partialTicks, blockEntity.oldRotation, blockEntity.rotation) + 1;
+    }
 
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0, -0.68f, 1f);
-        matrixStackIn.scale(0.8f, 0.8f, 0.8f);
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityTranslucent(Textures.MODEL_VACUUM_PUMP);
+
+        RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
+        poseStack.mulPose(Axis.XP.rotationDegrees(-90));
+
+        poseStack.pushPose();
+        poseStack.translate(0, -0.68f, 1f);
+        poseStack.scale(0.8f, 0.8f, 0.8f);
         for (int i = 0; i < BLADE_COUNT; i++) {
-            matrixStackIn.pushPose();
-            matrixStackIn.mulPose(Axis.YP.rotationDegrees(rotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
-            matrixStackIn.translate(0, 0, 1D / 16D);
-            blade.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(state.bladeRotation * 2 + (i + 0.5F) / BLADE_COUNT * 360));
+            poseStack.translate(0, 0, 1D / 16D);
+            submitPart(submitNodeCollector, blade, poseStack, renderType, state);
+            poseStack.popPose();
         }
-        matrixStackIn.popPose();
+        poseStack.popPose();
+    }
 
-        matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
+    public static class State extends ModelRenderState {
+        float bladeRotation;
     }
 }

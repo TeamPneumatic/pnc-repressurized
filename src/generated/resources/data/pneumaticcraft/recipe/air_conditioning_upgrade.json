@@ -8,21 +8,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "H": {
-      "item": "pneumaticcraft:heat_sink"
-    },
-    "I": {
-      "item": "minecraft:blue_ice"
-    },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "M": {
-      "item": "minecraft:magma_block"
-    },
-    "P": {
-      "item": "pneumaticcraft:heat_pipe"
-    }
+    "H": "pneumaticcraft:heat_sink",
+    "I": "minecraft:blue_ice",
+    "L": "#pneumaticcraft:upgrade_components",
+    "M": "minecraft:magma_block",
+    "P": "pneumaticcraft:heat_pipe"
   },
   "pattern": [
     "LML",
@@ -30,7 +20,6 @@
     "LIL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:air_conditioning_upgrade"
   }
 }

@@ -31,8 +31,11 @@ import me.desht.pneumaticcraft.common.item.minigun.*;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.tubemodules.*;
 import me.desht.pneumaticcraft.common.upgrades.BuiltinUpgrade;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -117,22 +120,22 @@ public class ModItems {
             JackHammerItem::new);
 
     public static final DeferredItem<Item> COMPRESSED_IRON_HELMET = register("compressed_iron_helmet",
-            () -> new CompressedIronArmorItem(ArmorItem.Type.HELMET));
+            () -> new CompressedIronArmorItem(ArmorType.HELMET));
     public static final DeferredItem<Item> COMPRESSED_IRON_CHESTPLATE = register("compressed_iron_chestplate",
-            () -> new CompressedIronArmorItem(ArmorItem.Type.CHESTPLATE));
+            () -> new CompressedIronArmorItem(ArmorType.CHESTPLATE));
     public static final DeferredItem<Item> COMPRESSED_IRON_LEGGINGS = register("compressed_iron_leggings",
-            () -> new CompressedIronArmorItem(ArmorItem.Type.LEGGINGS));
+            () -> new CompressedIronArmorItem(ArmorType.LEGGINGS));
     public static final DeferredItem<Item> COMPRESSED_IRON_BOOTS = register("compressed_iron_boots",
-            () -> new CompressedIronArmorItem(ArmorItem.Type.BOOTS));
+            () -> new CompressedIronArmorItem(ArmorType.BOOTS));
 
     public static final DeferredItem<PneumaticArmorItem> PNEUMATIC_HELMET = register("pneumatic_helmet",
-            () -> new PneumaticArmorItem(ArmorItem.Type.HELMET));
+            () -> new PneumaticArmorItem(ArmorType.HELMET));
     public static final DeferredItem<PneumaticArmorItem> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
-            () -> new PneumaticArmorItem(ArmorItem.Type.CHESTPLATE));
+            () -> new PneumaticArmorItem(ArmorType.CHESTPLATE));
     public static final DeferredItem<PneumaticArmorItem> PNEUMATIC_LEGGINGS = register("pneumatic_leggings",
-            () -> new PneumaticArmorItem(ArmorItem.Type.LEGGINGS));
+            () -> new PneumaticArmorItem(ArmorType.LEGGINGS));
     public static final DeferredItem<PneumaticArmorItem> PNEUMATIC_BOOTS = register("pneumatic_boots",
-            () -> new PneumaticArmorItem(ArmorItem.Type.BOOTS));
+            () -> new PneumaticArmorItem(ArmorType.BOOTS));
 
     public static final DeferredItem<AssemblyProgramItem> ASSEMBLY_PROGRAM_LASER = register(AssemblyRecipe.AssemblyProgramType.LASER);
     public static final DeferredItem<AssemblyProgramItem> ASSEMBLY_PROGRAM_DRILL = register(AssemblyRecipe.AssemblyProgramType.DRILL);
@@ -257,8 +260,22 @@ public class ModItems {
 
     /* -----------------------*/
 
+    // TODO 26.1: item properties must have the item's id set before the item is constructed. The id of the
+    //  item currently being registered by register() / registerBlockItem() is applied here, so that the
+    //  item constructors which create their own properties don't need to change.
+    private static final ThreadLocal<ResourceKey<Item>> REGISTERING_ID = new ThreadLocal<>();
+    private static final ThreadLocal<Boolean> REGISTERING_BLOCK_ITEM = ThreadLocal.withInitial(() -> false);
+
     public static Item.Properties defaultProps() {
-        return new Item.Properties();
+        Item.Properties props = new Item.Properties();
+        ResourceKey<Item> id = REGISTERING_ID.get();
+        if (id != null) {
+            props.setId(id);
+            if (REGISTERING_BLOCK_ITEM.get()) {
+                props.useBlockDescriptionPrefix();
+            }
+        }
+        return props;
     }
 
     public static Item.Properties toolProps() {
@@ -278,7 +295,25 @@ public class ModItems {
     }
 
     public static <T extends Item> DeferredItem<T> register(final String name, final Supplier<T> sup) {
-        return ITEMS.register(name, sup);
+        return ITEMS.register(name, id -> {
+            REGISTERING_ID.set(ResourceKey.create(Registries.ITEM, id));
+            try {
+                return sup.get();
+            } finally {
+                REGISTERING_ID.remove();
+            }
+        });
+    }
+
+    public static <T extends Item> DeferredItem<T> registerBlockItem(final String name, final Supplier<T> sup) {
+        return register(name, () -> {
+            REGISTERING_BLOCK_ITEM.set(true);
+            try {
+                return sup.get();
+            } finally {
+                REGISTERING_BLOCK_ITEM.set(false);
+            }
+        });
     }
 
     private static DeferredItem<NetworkComponentItem> register(final NetworkComponentType type) {

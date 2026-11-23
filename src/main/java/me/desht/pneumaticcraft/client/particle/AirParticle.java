@@ -21,23 +21,24 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 
-public class AirParticle extends TextureSheetParticle {
+public class AirParticle extends SingleQuadParticle {
     private final SpriteSet sprite;
 
     private AirParticle(ClientLevel worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale, SpriteSet sprite) {
-        super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
+        super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, sprite.first());
 
         this.sprite = sprite;
 
         lifetime = 50;
         quadSize = scale;
 
-        xd = xSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
-        yd = ySpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
-        zd = zSpeedIn + worldIn.random.nextDouble() * 0.1 - 0.05;
+        xd = xSpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
+        yd = ySpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
+        zd = zSpeedIn + worldIn.getRandom().nextDouble() * 0.1 - 0.05;
 
         setSpriteFromAge(sprite);
     }
@@ -55,20 +56,20 @@ public class AirParticle extends TextureSheetParticle {
         scale(1.03f);
         alpha *= 0.975f;
 
-        if (level.random.nextInt(10) == 0) {
-            xd += level.random.nextDouble() * 0.08 - 0.04;
+        if (random.nextInt(10) == 0) {
+            xd += random.nextDouble() * 0.08 - 0.04;
         }
-        if (level.random.nextInt(10) == 0) {
-            yd += level.random.nextDouble() * 0.08 - 0.04;
+        if (random.nextInt(10) == 0) {
+            yd += random.nextDouble() * 0.08 - 0.04;
         }
-        if (level.random.nextInt(10) == 0) {
-            yd += level.random.nextDouble() * 0.08 - 0.04;
+        if (random.nextInt(10) == 0) {
+            yd += random.nextDouble() * 0.08 - 0.04;
         }
     }
 
     @Override
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+    protected Layer getLayer() {
+        return Layer.TRANSLUCENT;
     }
 
     public static class Factory implements ParticleProvider<AirParticleData> {
@@ -80,7 +81,7 @@ public class AirParticle extends TextureSheetParticle {
 
         @Nullable
         @Override
-        public Particle createParticle(AirParticleData airParticleData, ClientLevel world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(AirParticleData airParticleData, ClientLevel world, double x, double y, double z, double dx, double dy, double dz, RandomSource random) {
             AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
             p.setAlpha(airParticleData.alpha());
             return p;

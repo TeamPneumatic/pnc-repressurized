@@ -36,10 +36,12 @@ import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.StringFilterEntitySelector;
+import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -163,7 +165,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    protected void applyImplicitComponents(DataComponentInput componentInput) {
+    protected void applyImplicitComponents(DataComponentGetter componentInput) {
         super.applyImplicitComponents(componentInput);
 
         entityFilter = componentInput.getOrDefault(ModDataComponents.ENTITY_FILTER, "@mob");
@@ -191,7 +193,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void onLoad() {
         super.onLoad();
 
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             tileVec = Vec3.atCenterOf(getBlockPos());
             nMufflers = getUpgrades(ModUpgrades.MUFFLER.get());
             updateAmmo();
@@ -219,7 +221,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunSentryTurret(nonNullLevel().isClientSide ? null : getFakePlayer());
+            minigun = new MinigunSentryTurret(nonNullLevel().isClientSide() ? null : getFakePlayer());
             minigun.setWorld(getLevel());
         }
         return minigun;
@@ -232,11 +234,11 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     @Override
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.saveAdditional(tag, provider);
-        tag.put("Items", inventory.serializeNBT(provider));
+        tag.put("Items", ValueIOBridge.serialize(inventory, provider));
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
         if (ownerId != null) {
-            tag.putUUID("ownerId", ownerId);
+            tag.store("ownerId", UUIDUtil.CODEC, ownerId);
         }
     }
 
@@ -244,12 +246,10 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        idleYaw = tag.getFloat("idleYaw");
-        setText(0, tag.getString(NBT_ENTITY_FILTER));
-        if (tag.contains("ownerId")) {
-            ownerId = tag.getUUID("ownerId");
-        }
+        ValueIOBridge.deserialize(inventory, provider, tag.getCompoundOrEmpty("Items"));
+        idleYaw = tag.getFloatOr("idleYaw", 0f);
+        setText(0, tag.getStringOr(NBT_ENTITY_FILTER, ""));
+        tag.read("ownerId", UUIDUtil.CODEC).ifPresent(id -> ownerId = id);
     }
 
     @Override
@@ -296,7 +296,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         if (getLevel() != null) {
             needRangeRecalc();
 
-            if (!getLevel().isClientSide) {
+            if (!getLevel().isClientSide()) {
                 nMufflers = getUpgrades(ModUpgrades.MUFFLER.get());
             }
         }
@@ -339,7 +339,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     @Override
     public void setText(int textFieldID, String text) {
         entityFilter = text;
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             onFilterChanged(text);
             if (minigun != null) minigun.setAttackTarget(null);
         }
@@ -384,7 +384,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 // ony set server-side; BE sync's the activation state to client
                 SentryTurretBlockEntity.this.activated = activated;
             }
@@ -392,7 +392,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
-            if (!world.isClientSide) {
+            if (!world.isClientSide()) {
                 // ony set server-side; BE sync's the activation state to client
                 minigunColorStack = ammo;
             }

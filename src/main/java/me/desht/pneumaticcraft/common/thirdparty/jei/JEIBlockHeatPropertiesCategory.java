@@ -44,7 +44,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
@@ -225,7 +225,7 @@ public class JEIBlockHeatPropertiesCategory extends AbstractPNCCategory<HeatProp
         stack.getItem().appendHoverText(stack, Item.TooltipContext.of(ClientUtils.getClientLevel()), list, ClientUtils.hasShiftDown() ? Default.ADVANCED : Default.NORMAL);
         tooltip.addAll(list);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
-            String regName = PneumaticCraftUtils.getRegistryName(stack.getItem()).map(ResourceLocation::toString).orElse("?");
+            String regName = PneumaticCraftUtils.getRegistryName(stack.getItem()).map(Identifier::toString).orElse("?");
             tooltip.add(Component.literal(regName).withStyle(ChatFormatting.DARK_GRAY));
         }
         tooltip.add(Component.literal(ModNameCache.getModName(stack.getItem())).withStyle(ChatFormatting.BLUE, ChatFormatting.ITALIC));

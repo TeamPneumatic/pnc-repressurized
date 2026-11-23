@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -28,17 +27,19 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,41 +82,38 @@ public class WidgetAmadronOffer extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return subWidgets.stream().anyMatch(w -> w.mouseClicked(mouseX, mouseY, button));
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        return subWidgets.stream().anyMatch(w -> w.mouseClicked(event, doubleClick));
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         Font fr = Minecraft.getInstance().font;
         if (renderBackground) {
-            graphics.blit(Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, Textures.WIDGET_AMADRON_OFFER, getX(), getY(), 0, 0, width, height, 256, 256);
         }
         FormattedCharSequence r = fr.split(offer.getVendorName(), 73).getFirst();
-        graphics.drawString(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
+        graphics.text(fr, r, getX() + 2, getY() + 2, 0xFF000000, false);
         if (shoppingAmount > 0) {
             String str = Integer.toString(shoppingAmount);
-            graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000, false);
+            graphics.text(fr, str, (int) (getX() + 36 - fr.width(str) / 2f), getY() + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000, false);
         }
         if (offer.getStock() >= 0) {
             String str = ChatFormatting.DARK_BLUE.toString() + offer.getStock();
-            graphics.drawString(fr, str, getX() + 36 - fr.width(str) / 2f, getY() + 25, 0xFF000000, false);
+            graphics.text(fr, str, (int) (getX() + 36 - fr.width(str) / 2f), getY() + 25, 0xFF000000, false);
         }
         boolean availableHere = offer.isUsableByPlayer(ClientUtils.getClientPlayer());
         if (offer.isLocationLimited()) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            graphics.blit(availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1, 0, 0, 16, 16);
-            RenderSystem.disableBlend();
+            graphics.blit(RenderPipelines.GUI_TEXTURED, availableHere ? Textures.GUI_OK_LOCATION : Textures.GUI_BAD_LOCATION, getX() + width - 15, getY() - 1, 0, 0, 16, 16, 256, 256);
         }
         if (!canBuy || !availableHere) {
             graphics.fill(getX(), getY(), getX() + width, getY() + height, 0xC0804040);
         }
 
-        subWidgets.forEach(w -> w.render(graphics, mouseX, mouseY, partialTick));
+        subWidgets.forEach(w -> w.extractRenderState(graphics, mouseX, mouseY, partialTick));
 
         if (isHovered && Arrays.stream(tooltipRectangles).noneMatch(rect -> rect.contains(mouseX, mouseY))) {
-            graphics.renderTooltip(Minecraft.getInstance().font, makeTooltip(offer, shoppingAmount), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Minecraft.getInstance().font, makeTooltip(offer, shoppingAmount), Optional.empty(), mouseX, mouseY);
         }
     }
 
@@ -184,7 +182,7 @@ public class WidgetAmadronOffer extends AbstractWidget {
         }
 
         @Override
-        protected boolean isValidClickButton(int pButton) {
+        protected boolean isValidClickButton(MouseButtonInfo buttonInfo) {
             return false;  // not a clickable widget; just for display
         }
     }

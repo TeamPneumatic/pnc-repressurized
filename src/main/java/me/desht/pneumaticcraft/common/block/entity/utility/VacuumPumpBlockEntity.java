@@ -143,8 +143,8 @@ public class VacuumPumpBlockEntity extends AbstractAirHandlingBlockEntity implem
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
-        turning = tag.getBoolean("turning");
+        vacuumHandler.deserializeNBT(tag.getCompoundOrEmpty("vacuum"));
+        turning = tag.getBooleanOr("turning", false);
     }
 
     @Override

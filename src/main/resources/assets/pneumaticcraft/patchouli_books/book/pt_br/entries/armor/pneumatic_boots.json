@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "As $(item)Botas Pneumáticas/$ são uma das quatro peças da $(thing)Armadura Pneumática/$.$(p)As botas fornecem proteção contra quedas embutida a um custo modesto de ar (proporcional ao dano de queda negado).$(p)Você também recebe assistência de degrau de 1 bloco gratuitamente (sem custo de ar). Note que isso é assistência de degrau, não pulo automático, e é um recurso alternável."
+      "text": "As $(item)Botas Pneumáticas/$ são uma das quatro peças da $(thing)Armadura Pneumática/$.$(p)As botas fornecem proteção contra quedas embutida a um custo modesto de ar (proporcional ao dano de queda negado).$(p)Você também recebe Assistência de Passo de 1 bloco gratuitamente (sem custo de ar). Note que isso é Assistência de Passo, não pulo automático, e é um recurso alternável."
     },
     {
       "type": "crafting",
@@ -21,7 +21,7 @@
     {
       "type": "text",
       "title": "Botas a Jato (cont.)",
-      "text": "Quando a melhoria está ativa, simplesmente segure a tecla $(k:pneumaticcraft.boots.jet_boots) para impulsionar na direção em que você está olhando.$(p)$(thing)Botas a Jato/$ são $(bold)grandes/$ consumidoras de ar; é fortemente recomendado adicionar múltiplas $(l:base_concepts/upgrades#volume)Melhorias de Volume/$ às suas botas (e $(l:armor/pneumatic_chestplate)peitoral/$, com $(l:base_concepts/upgrades#charging)Melhorias de Carregamento/).$(p)O uso de uma $(l:machines/aerial_interface)Interface Aérea/$ também é aconselhado quando possível, junto com uma boa infraestrutura de carregamento em sua base."
+      "text": "Quando a melhoria está ativa, simplesmente segure a tecla $(k:pneumaticcraft.boots.jet_boots) para impulsionar na direção em que você está olhando.$(p)$(thing)Botas a Jato/$ são $(bold)grandes/$ consumidoras de ar; é fortemente recomendado adicionar múltiplas $(l:base_concepts/upgrades#volume)Melhorias de Volume/$ às suas botas (e $(l:armor/pneumatic_chestplate)peitoral/$, com $(l:base_concepts/upgrades#charging)Melhoria de Carga/).$(p)O uso de uma $(l:machines/aerial_interface)Interface Aérea/$ também é aconselhado quando possível, junto com uma boa infraestrutura de carregamento em sua base."
     },
     {
       "type": "text",

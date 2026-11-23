@@ -18,11 +18,13 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -76,7 +78,7 @@ public class WidgetList<T> extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         if (visible) {
             drawList(graphics);
 
@@ -146,29 +148,30 @@ public class WidgetList<T> extends AbstractWidget {
         return items.size();
     }
 
-    private void drawList(GuiGraphics graphics) {
+    private void drawList(GuiGraphicsExtractor graphics) {
         Minecraft mc = Minecraft.getInstance();
         int lineHeight = mc.font.lineHeight;
         int lines = height / lineHeight;
 
         int x = getX(), y = getY();
 
-        graphics.pose().pushPose();
+        graphics.pose().pushMatrix();
         graphics.enableScissor(x, y, x + width, y + height);
         if (inverseSelected && selected >= 0) {
             graphics.fill(x, y + lineHeight * selected, x + width, y + lineHeight * (selected + 1), 0xFF000000 | selectedBg);
         }
-        graphics.pose().translate(x, y, 0);
-        graphics.pose().scale(0.75f, 1f, 1f);
+        graphics.pose().translate(x, y);
+        graphics.pose().scale(0.75f, 1f);
         for (int i = 0; i < items.size() && i < lines; i++) {
-            graphics.drawString(mc.font, items.get(i).toString(), 0, i * lineHeight, i == selected ? selectedFg : fgColor, false);
+            graphics.text(mc.font, items.get(i).toString(), 0, i * lineHeight, GuiUtils.textColor(i == selected ? selectedFg : fgColor), false);
         }
         graphics.disableScissor();
-        graphics.pose().popPose();
+        graphics.pose().popMatrix();
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
+        double mouseY = event.y();
         if (active) {
             long now = System.currentTimeMillis();
             int h = Minecraft.getInstance().font.lineHeight;

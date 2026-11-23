@@ -37,7 +37,7 @@ public abstract class AbstractForgeEnergyMenu<T extends AbstractPneumaticCraftBl
     public AbstractForgeEnergyMenu(MenuType type, int i, Inventory playerInventory, BlockPos tilePos) {
         super(type, i, playerInventory, tilePos);
 
-        IEnergyStorage storage = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+        IEnergyStorage storage = blockEntity.getEnergyHandler(null);
         if (storage != null) {
             try {
                 addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));

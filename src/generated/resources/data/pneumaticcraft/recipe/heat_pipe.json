@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "pneumaticcraft:heat_pipe_conductors"
-    },
-    "W": {
-      "item": "pneumaticcraft:thermal_lagging"
-    }
+    "B": "#pneumaticcraft:heat_pipe_conductors",
+    "W": "pneumaticcraft:thermal_lagging"
   },
   "pattern": [
     "WWW",

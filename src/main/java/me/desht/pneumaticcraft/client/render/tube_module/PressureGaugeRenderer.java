@@ -1,11 +1,9 @@
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer3D;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.tube.PressureTubeBlockEntity;
 import me.desht.pneumaticcraft.common.tubemodules.PressureGaugeModule;
@@ -18,14 +16,14 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.world.phys.Vec3;
 
-public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule> {
+public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGaugeModule, PressureGaugeRenderer.State> {
     private static final float GAUGE_SCALE = 0.007f;
     private static final Component BAR = Component.literal("bar");
 
@@ -56,7 +54,7 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
     private static final String GAUGE8 = "gauge8";
 
     public PressureGaugeRenderer(BlockEntityRendererProvider.Context ctx) {
-        font = ctx.getFont();
+        font = ctx.font();
         ModelPart root = ctx.bakeLayer(PNCModelLayers.PRESSURE_GAUGE_MODULE);
         tubeConnector1 = root.getChild(TUBECONNECTOR1);
         tubeConnector2 = root.getChild(TUBECONNECTOR2);
@@ -114,51 +112,77 @@ public class PressureGaugeRenderer extends AbstractTubeModuleRenderer<PressureGa
 
 
     @Override
-    protected void render(PressureGaugeModule module, PoseStack matrixStack, VertexConsumer builder, float partialTicks, int combinedLight, int combinedOverlay, int alpha) {
-        int baseColor = FastColor.ARGB32.color(alpha, 0xFFFFFF);
-        tubeConnector1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        tubeConnector2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        faceplate.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge1.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge2.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge3.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge4.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge5.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge6.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge7.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
-        gauge8.render(matrixStack, builder, combinedLight, combinedOverlay, baseColor);
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    public void renderExtras(PressureGaugeModule module, PoseStack matrixStack, MultiBufferSource buffer, float partialTicks, int combinedLight, int combinedOverlay) {
-        if (module.isFake()) return;
+    public void extractRenderState(PressureGaugeModule module, State state, float partialTicks, Vec3 cameraPosition) {
+        super.extractRenderState(module, state, partialTicks, cameraPosition);
 
-        BlockPos pos = module.getTube().getBlockPos();
-        if (ClientUtils.getClientPlayer().distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
+        state.showDisplay = !module.isFake() && module.getTube().getBlockPos().distToCenterSqr(cameraPosition) <= 256;
+        if (state.showDisplay) {
+            PressureTubeBlockEntity te = module.getTube();
+            state.showGauge = module.shouldShowGauge();
+            state.criticalPressure = te.getCriticalPressure();
+            state.dangerPressure = te.getDangerPressure();
+            state.pressure = te.getPressure();
+        }
+    }
 
-        matrixStack.pushPose();
+    @Override
+    protected void submitModel(State state, PoseStack poseStack, ModuleSubmitter submitter) {
+        submitter.submitPart(tubeConnector1, poseStack);
+        submitter.submitPart(tubeConnector2, poseStack);
+        submitter.submitPart(faceplate, poseStack);
+        submitter.submitPart(gauge1, poseStack);
+        submitter.submitPart(gauge2, poseStack);
+        submitter.submitPart(gauge3, poseStack);
+        submitter.submitPart(gauge4, poseStack);
+        submitter.submitPart(gauge5, poseStack);
+        submitter.submitPart(gauge6, poseStack);
+        submitter.submitPart(gauge7, poseStack);
+        submitter.submitPart(gauge8, poseStack);
+    }
 
-        matrixStack.translate(0.5, 1.5, 0.5);
-        matrixStack.scale(1f, -1f, -1f);
-        RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
-        PressureTubeBlockEntity te = module.getTube();
-        matrixStack.translate(0, 1.01, 0.378);
-        matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
-        matrixStack.mulPose(Axis.YP.rotationDegrees(180));
-        if (module.shouldShowGauge()) {
-            PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
-                    0, te.getPressure(), 0, 0, 0xFF000000);
+    @Override
+    protected void submitExtras(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector) {
+        if (!state.showDisplay) return;
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.5, 1.5, 0.5);
+        poseStack.scale(1f, -1f, -1f);
+        RenderUtils.rotateMatrixForDirection(poseStack, state.direction);
+        poseStack.translate(0, 1.01, 0.378);
+        poseStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        if (state.showGauge) {
+            PressureGaugeRenderer3D.drawPressureGauge(poseStack, submitNodeCollector, -1, state.criticalPressure, state.dangerPressure,
+                    0, state.pressure, 0, 0, 0xFF000000);
         } else {
             // plain text display of bar
-            Component s = Component.literal(PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1));
-            RenderUtils.renderString3d(s, -font.width(s) / 2f, -10, 0x000000, matrixStack, buffer, false, false);
-            RenderUtils.renderString3d(BAR, -font.width(BAR) / 2f, 0, 0x000000, matrixStack, buffer, false, false);
+            Component s = Component.literal(PneumaticCraftUtils.roundNumberTo(state.pressure, 1));
+            submitText(submitNodeCollector, poseStack, s, -font.width(s) / 2f, -10);
+            submitText(submitNodeCollector, poseStack, BAR, -font.width(BAR) / 2f, 0);
         }
-        matrixStack.popPose();
+        poseStack.popPose();
+    }
+
+    private static void submitText(SubmitNodeCollector submitNodeCollector, PoseStack poseStack, Component text, float x, float y) {
+        submitNodeCollector.submitText(poseStack, x, y, text.getVisualOrderText(), false, Font.DisplayMode.NORMAL, LightCoordsUtil.FULL_BRIGHT, 0xFF000000, 0, 0);
     }
 
     @Override
-    protected ResourceLocation getTexture(boolean isUpgraded) {
+    protected Identifier getTexture(boolean isUpgraded) {
         return isUpgraded ? Textures.MODEL_GAUGE_UPGRADED : Textures.MODEL_GAUGE;
+    }
+
+    public static class State extends ModuleRenderState {
+        boolean showDisplay;
+        boolean showGauge;
+        float criticalPressure;
+        float dangerPressure;
+        float pressure;
     }
 }

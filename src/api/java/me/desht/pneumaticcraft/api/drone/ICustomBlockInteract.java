@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.api.drone;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.DyeColor;
 
 /**
@@ -42,7 +42,7 @@ public interface ICustomBlockInteract {
      *
      * @return a resource location for the texture to be used
      */
-    ResourceLocation getTexture();
+    Identifier getTexture();
 
     /**
      * The actual interaction.

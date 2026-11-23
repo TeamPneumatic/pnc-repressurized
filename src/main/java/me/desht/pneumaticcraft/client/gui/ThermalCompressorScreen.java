@@ -28,10 +28,10 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_THERMAL_COMPRESSOR;
     }
 
@@ -153,8 +153,8 @@ public class ThermalCompressorScreen extends AbstractPneumaticCraftContainerScre
         }
 
         @Override
-        public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-            super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+        public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+            super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTicks);
 
             String s = side.toString().substring(0, 1).toUpperCase();
             GuiUtils.drawScaledText(graphics, font, Component.literal(s), getX() + 8, getY() - 4, 0x404040, 0.5f, false);

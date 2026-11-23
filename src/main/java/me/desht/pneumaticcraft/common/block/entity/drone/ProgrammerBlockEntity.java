@@ -34,7 +34,7 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -102,14 +102,14 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
         displayedStack = inventory.getStackInSlot(0);
-        programOnInsert = tag.getBoolean("ProgramOnInsert");
-        history.addAll(tag.getList("history", Tag.TAG_LIST));
+        programOnInsert = tag.getBooleanOr("ProgramOnInsert", false);
+        history.addAll(tag.getListOrEmpty("history"));
         if (history.isEmpty()) {
             history.add(new ListTag());
         }
-        readProgWidgetsFromNBT(tag.getList(IProgrammable.NBT_WIDGETS, Tag.TAG_COMPOUND), provider);
+        readProgWidgetsFromNBT(tag.getListOrEmpty(IProgrammable.NBT_WIDGETS), provider);
     }
 
     @Override
@@ -454,7 +454,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         progWidgets.clear();
         progWidgets.addAll(widgets);
         ProgWidgetUtils.updatePuzzleConnections(progWidgets);
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             setChanged();
             saveToHistory(nonNullLevel().registryAccess());
             syncToClient(player);
@@ -468,7 +468,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
      * @param updatingPlayer the player doing the updating; if non-null, sync packet will not be sent to this player
      */
     private void syncToClient(Player updatingPlayer) {
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             List<ServerPlayer> players = nonNullLevel().getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(5));
             for (ServerPlayer player : players) {
                 if (player != updatingPlayer && player.containerMenu instanceof ProgrammerMenu) {
@@ -486,7 +486,7 @@ public class ProgrammerBlockEntity extends AbstractTickingBlockEntity implements
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getLevel().isClientSide) {
+            if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getLevel().isClientSide()) {
                 tryProgramDrone(null);
             }
             displayedStack = getStackInSlot(slot);

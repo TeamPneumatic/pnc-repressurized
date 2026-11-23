@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.api.upgrade;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -17,7 +17,7 @@ public interface PNCUpgrade {
      * Get the upgrade's unique ID
      * @return the upgrade ID
      */
-    ResourceLocation getId();
+    Identifier getId();
 
     /**
      * A numeric id for the upgrade which is not guaranteed to be persistent across game restarts. Used internally
@@ -52,14 +52,14 @@ public interface PNCUpgrade {
      * @return an item registry name
      * @throws IllegalArgumentException if the tier is less than 1 or greater than the upgrade's max tier
      */
-    ResourceLocation getItemRegistryName(int tier);
+    Identifier getItemRegistryName(int tier);
 
     /**
      * Get the corresponding item registry name for this upgrade, assuming tier 1.
      *
      * @return an item registry name
      */
-    default ResourceLocation getItemRegistryName() {
+    default Identifier getItemRegistryName() {
         return getItemRegistryName(1);
     }
 

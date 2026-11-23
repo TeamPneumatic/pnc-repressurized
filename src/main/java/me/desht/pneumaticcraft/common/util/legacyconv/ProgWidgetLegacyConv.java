@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypePyramid.Pyr
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeSphere.SphereType;
 import me.desht.pneumaticcraft.common.drone.progwidgets.area.AreaTypeTorus.TorusType;
 import me.desht.pneumaticcraft.lib.Log;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.mutable.MutableByte;
 
@@ -59,7 +59,7 @@ public class ProgWidgetLegacyConv {
 
     /**
      * Handle legacy conversion: PNC 1.12.2 and older used a simple (mixed case) widget string
-     * but now ProgWidgets are registry entries and use a ResourceLocation.  Also, convert any
+     * but now ProgWidgets are registry entries and use a Identifier.  Also, convert any
      * Area widgets from the old-style format if necessary.
      *
      * @param json the legacy data to convert
@@ -331,7 +331,7 @@ public class ProgWidgetLegacyConv {
                 Log.error("Legacy import: no area converter found for {}! Substituting 'box'.", oldType);
                 return new AreaTypeBox();
             } else {
-                var s = PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.get(RL(newTypeId));
+                var s = PNCRegistries.AREA_TYPE_SERIALIZER_REGISTRY.getValue(RL(newTypeId));
                 return s != null ? Util.make(s.createDefaultInstance(), t -> t.convertFromLegacy(oldType, subTypeInfo)) : new AreaTypeBox();
             }
         }

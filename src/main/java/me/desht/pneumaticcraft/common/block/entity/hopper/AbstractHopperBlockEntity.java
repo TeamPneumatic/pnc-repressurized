@@ -156,9 +156,9 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
         super.loadAdditional(tag, provider);
 
         if (tag.contains("leaveMaterial")) {
-            leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
+            leaveMaterialCount = (byte)(tag.getBooleanOr("leaveMaterial", false) ? 1 : 0);
         } else {
-            leaveMaterialCount = tag.getInt("leaveMaterialCount");
+            leaveMaterialCount = tag.getIntOr("leaveMaterialCount", 0);
         }
     }
 
@@ -189,7 +189,7 @@ public abstract class AbstractHopperBlockEntity<T extends BlockEntity & IRedston
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
-        if (level != null && !level.isClientSide) {
+        if (level != null && !level.isClientSide()) {
             isCreative = getUpgrades(ModUpgrades.CREATIVE.get()) > 0;
         }
     }

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pneumaticcraft:item/plastic_brick_blue",
+    "tints": [
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 0
+      }
+    ]
+  }
+}

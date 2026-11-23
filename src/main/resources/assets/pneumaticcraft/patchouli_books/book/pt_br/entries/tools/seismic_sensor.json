@@ -6,11 +6,11 @@
   "pages": [
     {
       "type": "text",
-      "text": "Um Sensor Sísmico é um item de início de jogo usado para rastrear $(l:base_concepts/oil)Petróleo/$. Ao contrário da maioria das ferramentas, o sensor não requer $(l:base_concepts/pressure)pressão/$ para operar. Quando $(thing)clicado com o botão direito/$, ele mostrará se Petróleo foi encontrado ou não em algum lugar diretamente abaixo do bloco em que o sensor foi clicado."
+      "text": "Um Sensor Sísmico é um item de início de jogo usado para rastrear $(l:base_concepts/oil)Óleo/$. Ao contrário da maioria das ferramentas, o sensor não requer $(l:base_concepts/pressure)pressão/$ para operar. Quando $(thing)clicado com o botão direito/$, ele mostrará se Óleo foi encontrado ou não em algum lugar diretamente abaixo do bloco em que o sensor foi clicado."
     },
     {
       "type": "text",
-      "text": "Um Sensor Sísmico pode ter dois resultados:$(p)$(#008)  Nenhum Petróleo encontrado./$$(p)Nenhum Petróleo foi encontrado logo abaixo deste bloco. Continue procurando.$(p)$(#008)  Petróleo encontrado <distance>m abaixo. Contém cerca de <amount> baldes de Petróleo./$$(p)Petróleo encontrado! O bloco clicado seria um lugar adequado para colocar um $(l:machines/gas_lift)Elevador de Gás/$ para bombear o Petróleo para fora."
+      "text": "Um Sensor Sísmico pode ter dois resultados:$(p)$(#008)  Nenhum Óleo encontrado./$$(p)Nenhum Óleo foi encontrado logo abaixo deste bloco. Continue procurando.$(p)$(#008)  Óleo encontrado <distance>m abaixo. Contém cerca de <amount> baldes de Óleo./$$(p)Óleo encontrado! O bloco clicado seria um lugar adequado para colocar um $(l:machines/gas_lift)Elevador a Gás/$ para bombear o Óleo para fora."
     },
     {
       "type": "crafting",

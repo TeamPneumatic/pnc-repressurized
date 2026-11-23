@@ -56,6 +56,6 @@ public class TubeJunctionBlockEntity extends AbstractAirHandlingBlockEntity {
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        tube2Handler.deserializeNBT(tag.getCompound("tube2"));
+        tube2Handler.deserializeNBT(tag.getCompoundOrEmpty("tube2"));
     }
 }

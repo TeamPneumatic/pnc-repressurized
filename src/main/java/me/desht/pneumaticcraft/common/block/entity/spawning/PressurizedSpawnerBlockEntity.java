@@ -38,9 +38,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -90,9 +90,9 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
 
         if (running) {
             Level level = nonNullLevel();
-            double x = (double)worldPosition.getX() + level.random.nextDouble();
-            double y = (double)worldPosition.getY() + level.random.nextDouble();
-            double z = (double)worldPosition.getZ() + level.random.nextDouble();
+            double x = (double)worldPosition.getX() + level.getRandom().nextDouble();
+            double y = (double)worldPosition.getY() + level.getRandom().nextDouble();
+            double z = (double)worldPosition.getZ() + level.getRandom().nextDouble();
             level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
             level.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
         }
@@ -129,16 +129,16 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
         EntityType<?> type = stats.pickEntity(true);
         if (type != null && level instanceof ServerLevel serverLevel) {
             int spawnRange = getRange();
-            double x = (double)worldPosition.getX() + (serverLevel.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
-            double y = worldPosition.getY() + serverLevel.random.nextInt(3) - 1;
-            double z = (double)worldPosition.getZ() + (serverLevel.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
+            double x = (double)worldPosition.getX() + (serverLevel.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D;
+            double y = worldPosition.getY() + serverLevel.getRandom().nextInt(3) - 1;
+            double z = (double)worldPosition.getZ() + (serverLevel.getRandom().nextDouble() - level.getRandom().nextDouble()) * (double)spawnRange + 0.5D;
             if (serverLevel.noCollision(type.getSpawnAABB(x, y, z))) {
-                Entity entity = type.create(serverLevel);
+                Entity entity = type.create(serverLevel, EntitySpawnReason.SPAWNER);
                 if (!(entity instanceof Mob mobentity)) return false;
                 int entityCount = serverLevel.getEntitiesOfClass(Mob.class, rangeManager.getExtentsAsAABB()).size();
                 if (entityCount >= MAX_NEARBY_ENTITIES) return false;
-                entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                EventHooks.finalizeMobSpawnSpawner(mobentity, serverLevel, serverLevel.getCurrentDifficultyAt(getPosition()), MobSpawnType.SPAWNER, null, this, true);
+                entity.snapTo(x, y, z, level.getRandom().nextFloat() * 360.0F, 0.0F);
+                EventHooks.finalizeMobSpawnSpawner(mobentity, serverLevel, serverLevel.getCurrentDifficultyAt(getPosition()), EntitySpawnReason.SPAWNER, null, this, true);
                 if (!serverLevel.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(LevelEvent.PARTICLES_MOBBLOCK_SPAWN, worldPosition, 0);
                 mobentity.spawnAnim();
@@ -193,7 +193,7 @@ public class PressurizedSpawnerBlockEntity extends AbstractAirHandlingBlockEntit
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Inventory"));
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Inventory"));
     }
 
     public AABB getRenderBoundingBox() {

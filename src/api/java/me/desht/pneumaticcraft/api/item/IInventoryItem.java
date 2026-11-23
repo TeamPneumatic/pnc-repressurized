@@ -58,6 +58,6 @@ public interface IInventoryItem {
      * @param curStacks a list of stacks to fill
      */
     static void getStacks(ItemContainerContents contents, List<ItemStack> curStacks) {
-        contents.stream().forEach(curStacks::add);
+        contents.allItemsCopyStream().forEach(curStacks::add);
     }
 }

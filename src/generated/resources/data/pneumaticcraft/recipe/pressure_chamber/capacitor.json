@@ -3,21 +3,20 @@
   "inputs": [
     {
       "count": 2,
-      "tag": "pneumaticcraft:wiring"
+      "ingredient": "#pneumaticcraft:wiring"
     },
     {
       "count": 1,
-      "tag": "c:slimeballs"
+      "ingredient": "#c:slime_balls"
     },
     {
       "count": 1,
-      "item": "pneumaticcraft:plastic"
+      "ingredient": "pneumaticcraft:plastic"
     }
   ],
   "pressure": 1.0,
   "results": [
     {
-      "count": 1,
       "id": "pneumaticcraft:capacitor"
     }
   ]

@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "E": {
-      "item": "minecraft:ender_eye"
-    },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    }
+    "C": "pneumaticcraft:printed_circuit_board",
+    "E": "minecraft:ender_eye",
+    "L": "#pneumaticcraft:upgrade_components"
   },
   "pattern": [
     "LCL",
@@ -18,7 +12,6 @@
     "LCL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:chunkloader_upgrade"
   }
 }

@@ -1,12 +1,12 @@
 {
-  "name": "Elevador de Gás",
+  "name": "Elevador a Gás",
   "icon": "pneumaticcraft:gas_lift",
   "category": "pneumaticcraft:machines",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
       "type": "text",
-      "text": "Um $(item)Elevador de Gás/$ é basicamente uma bomba. Ele usa $(l:base_concepts/pressure)pressão/$ para diminuir a densidade de um fluido e forçá-lo para cima.$(p)Quando pressurizado, ele extrai $(l:components/drill_pipe)Tubos de Perfuração/$ (que você deve fornecer) para baixo até atingir qualquer bloco de fluido, momento em que ele irá bombeá-lo. Isso o torna perfeito para $(l:base_concepts/oil)extração de Óleo/$, pois o Óleo pode estar profundamente abaixo da terra."
+      "text": "Um $(item)Elevador a Gás/$ é basicamente uma bomba. Ele usa $(l:base_concepts/pressure)pressão/$ para diminuir a densidade de um fluido e forçá-lo para cima.$(p)Quando pressurizado, ele extrai $(l:components/drill_pipe)Tubos de Perfuração/$ (que você deve fornecer) para baixo até atingir qualquer bloco de fluido, momento em que ele irá bombeá-lo. Isso o torna perfeito para $(l:base_concepts/oil)extração de Óleo/$, pois o Óleo pode estar profundamente abaixo da terra."
     },
     {
       "type": "text",
@@ -15,15 +15,15 @@
     {
       "type": "text",
       "title": "Aba de Modos",
-      "text": "O Elevador de Gás pode ser alternado para um dos 3 modos:$(li)$(#00f)Bombear e permitir tanque vazio/$ extrui Tubos de Perfuração, bombeando fluidos quando os encontra.$(li)$(#00f)Bombear e deixar fluido no filtro/$ faz o mesmo acima, mas sempre manterá 1000mB de fluido no tanque. Isso é útil ao bombear por um fluido específico, para garantir que nenhum outro fluido será bombeado."
+      "text": "O Elevador a Gás pode ser alternado para um dos 3 modos:$(li)$(#00f)Bombear e permitir tanque vazio/$ extrui Tubos de Perfuração, bombeando fluidos quando os encontra.$(li)$(#00f)Bombear e deixar fluido no filtro/$ faz o mesmo acima, mas sempre manterá 1000mB de fluido no tanque. Isso é útil ao bombear por um fluido específico, para garantir que nenhum outro fluido será bombeado."
     },
     {
       "type": "text",
-      "text": "$(li)$(#00f)Retratar Tubos de Perfuração/$ fará com que o $(thing)Elevador de Gás/$ pare de bombear e retraia qualquer Tubo de Perfuração que tenha extrudido de volta para seu inventário."
+      "text": "$(li)$(#00f)Retratar Tubos de Perfuração/$ fará com que o $(thing)Elevador a Gás/$ pare de bombear e retraia qualquer Tubo de Perfuração que tenha extrudido de volta para seu inventário."
     },
     {
       "type": "crafting",
-      "text": "Fabricando um Elevador de Gás",
+      "text": "Fabricando um Elevador a Gás",
       "recipe": "pneumaticcraft:gas_lift"
     }
   ]

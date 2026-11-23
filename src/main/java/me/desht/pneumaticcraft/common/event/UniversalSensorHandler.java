@@ -48,7 +48,7 @@ public class UniversalSensorHandler {
     }
 
     private void sendEventToSensors(Level level, Event event) {
-        if (!level.isClientSide) {
+        if (!level.isClientSide()) {
             for (UniversalSensorBlockEntity sensor : GlobalBlockEntityCacheManager.getInstance(level).getUniversalSensors()) {
                 sensor.onEvent(event);
             }

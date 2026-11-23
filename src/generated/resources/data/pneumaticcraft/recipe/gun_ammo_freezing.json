@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "1": {
-      "item": "minecraft:ice"
-    },
-    "2": {
-      "item": "minecraft:ice"
-    },
-    "A": {
-      "item": "pneumaticcraft:gun_ammo"
-    },
-    "C": {
-      "tag": "c:ingots/compressed_iron"
-    }
+    "1": "minecraft:ice",
+    "2": "minecraft:ice",
+    "A": "pneumaticcraft:gun_ammo",
+    "C": "#c:ingots/compressed_iron"
   },
   "pattern": [
     " A ",
@@ -21,7 +13,6 @@
     "C2C"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:gun_ammo_freezing"
   }
 }

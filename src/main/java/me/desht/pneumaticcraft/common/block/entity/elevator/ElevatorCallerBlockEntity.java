@@ -36,6 +36,7 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     private int thisFloor;
     private boolean emittingRedstone;
     private boolean shouldUpdateNeighbors;
+    private int elevatorButtonRefreshDelay = -1;
     private BlockState camoState;
     private final RedstoneController<ElevatorCallerBlockEntity> rsController = new RedstoneController<>(this);
 
@@ -59,9 +60,21 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     public void tickCommonPre() {
         super.tickCommonPre();
 
+        if (elevatorButtonRefreshDelay >= 0 && elevatorButtonRefreshDelay-- == 0) {
+            ElevatorCallerBlock.updateElevatorButtons(nonNullLevel(), worldPosition);
+        }
         if (shouldUpdateNeighbors) {
             updateNeighbours();
             shouldUpdateNeighbors = false;
+        }
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+
+        if (getLevel() != null && !getLevel().isClientSide()) {
+            elevatorButtonRefreshDelay = 4;
         }
     }
 
@@ -72,9 +85,9 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     @Override
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
-        emittingRedstone = tag.getBoolean("emittingRedstone");
-        thisFloor = tag.getInt("thisFloor");
-        shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
+        emittingRedstone = tag.getBooleanOr("emittingRedstone", false);
+        thisFloor = tag.getIntOr("thisFloor", 0);
+        shouldUpdateNeighbors = tag.getBooleanOr("shouldUpdateNeighbors", false);
     }
 
     @Override
@@ -88,10 +101,10 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
-        int floorAmount = tag.getInt("floors");
+        int floorAmount = tag.getIntOr("floors", 0);
         floors = new ElevatorButton[floorAmount];
         for (int i = 0; i < floorAmount; i++) {
-            floors[i] = new ElevatorButton(tag.getCompound("floor" + i));
+            floors[i] = new ElevatorButton(tag.getCompoundOrEmpty("floor" + i));
         }
         camoState = CamouflageableBlockEntity.readCamo(tag);
     }
@@ -107,9 +120,9 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public void onNeighborBlockUpdate(BlockPos fromPos) {
+    public void onNeighborBlockUpdate() {
         boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
-        super.onNeighborBlockUpdate(fromPos);
+        super.onNeighborBlockUpdate();
         if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
             ElevatorCallerBlock.setSurroundingElevators(getLevel(), getBlockPos(), thisFloor);
         }
@@ -164,16 +177,16 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
         }
 
         ElevatorButton(CompoundTag tag) {
-            this.posX = tag.getFloat("posX");
-            this.posY = tag.getFloat("posY");
-            this.width = tag.getFloat("width");
-            this.height = tag.getFloat("height");
-            this.buttonText = tag.getString("buttonText");
-            this.floorNumber = tag.getInt("floorNumber");
-            this.floorHeight = tag.getInt("floorHeight");
-            this.red = tag.getFloat("red");
-            this.green = tag.getFloat("green");
-            this.blue = tag.getFloat("blue");
+            this.posX = tag.getFloatOr("posX", 0f);
+            this.posY = tag.getFloatOr("posY", 0f);
+            this.width = tag.getFloatOr("width", 0f);
+            this.height = tag.getFloatOr("height", 0f);
+            this.buttonText = tag.getStringOr("buttonText", "");
+            this.floorNumber = tag.getIntOr("floorNumber", 0);
+            this.floorHeight = tag.getIntOr("floorHeight", 0);
+            this.red = tag.getFloatOr("red", 0f);
+            this.green = tag.getFloatOr("green", 0f);
+            this.blue = tag.getFloatOr("blue", 0f);
         }
 
         void setColor(float red, float green, float blue) {

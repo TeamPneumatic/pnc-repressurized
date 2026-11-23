@@ -35,7 +35,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -313,7 +313,7 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     @Override
-    public void clicked(int slotId, int dragType, ClickType clickType, Player player) {
+    public void clicked(int slotId, int dragType, ContainerInput clickType, Player player) {
         Slot slot = slotId < 0 ? null : slots.get(slotId);
         if (slot instanceof IPhantomSlot) {
             slotClickPhantom(slot, dragType, clickType, player);
@@ -323,15 +323,15 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
     }
 
     @Nonnull
-    private ItemStack slotClickPhantom(Slot slot, int dragType, ClickType clickType, Player player) {
+    private ItemStack slotClickPhantom(Slot slot, int dragType, ContainerInput clickType, Player player) {
         ItemStack stack = ItemStack.EMPTY;
 
-        if (clickType == ClickType.CLONE && dragType == 2) {
+        if (clickType == ContainerInput.CLONE && dragType == 2) {
             // middle-click: clear slot
             if (((IPhantomSlot) slot).canAdjust()) {
                 slot.set(ItemStack.EMPTY);
             }
-        } else if ((clickType == ClickType.PICKUP || clickType == ClickType.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
+        } else if ((clickType == ContainerInput.PICKUP || clickType == ContainerInput.QUICK_MOVE) && (dragType == 0 || dragType == 1)) {
             // left or right-click...
             slot.setChanged();
             ItemStack stackSlot = slot.getItem();
@@ -360,19 +360,19 @@ public abstract class AbstractPneumaticCraftMenu<T extends AbstractPneumaticCraf
         return !(stack1.isEmpty() || stack2.isEmpty()) && ItemStack.isSameItemSameComponents(stack1, stack2);
     }
 
-    private void adjustPhantomSlot(Slot slot, ClickType clickType, int dragType) {
+    private void adjustPhantomSlot(Slot slot, ContainerInput clickType, int dragType) {
         if (!((IPhantomSlot) slot).canAdjust()) {
             return;
         }
         ItemStack stackSlot = slot.getItem().copy();
         if (dragType == 1) {
-            if (clickType == ClickType.QUICK_MOVE) {
+            if (clickType == ContainerInput.QUICK_MOVE) {
                 stackSlot.setCount(Math.min(stackSlot.getCount() * 2, slot.getMaxStackSize())); // shift-r-click: double stack size
             } else {
                 stackSlot.setCount(Math.min(stackSlot.getCount() + 1, slot.getMaxStackSize())); // r-click: increase stack size
             }
         } else if (dragType == 0) {
-            if (clickType == ClickType.QUICK_MOVE) {
+            if (clickType == ContainerInput.QUICK_MOVE) {
                 stackSlot.setCount(stackSlot.getCount() / 2); // shift-l-click: half stack size
             } else {
                 stackSlot.shrink(1); // l-click: decrease stack size

@@ -42,7 +42,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHan
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -183,7 +183,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     }
 
     @Override
-    public void render2D(GuiGraphics graphics, float partialTicks, boolean armorPieceHasPressure) {
+    public void render2D(GuiGraphicsExtractor graphics, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -195,7 +195,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             pressureButtons.clear();
             for (EquipmentSlot slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                ItemStack stack = ArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
+                ItemStack stack = ArmorMainScreen.getArmorStack(slot);
                 WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18,
                         Component.empty())
                         .setVisible(false).setRenderStacks(stack);

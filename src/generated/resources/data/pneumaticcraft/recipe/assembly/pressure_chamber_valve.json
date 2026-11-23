@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:assembly_drill",
   "input": {
     "count": 1,
-    "item": "pneumaticcraft:compressed_iron_block"
+    "ingredient": "pneumaticcraft:compressed_iron_block"
   },
   "program": "drill",
   "result": {

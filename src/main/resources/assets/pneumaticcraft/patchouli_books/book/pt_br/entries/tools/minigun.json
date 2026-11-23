@@ -11,7 +11,7 @@
     {
       "type": "text",
       "title": "Melhorando",
-      "text": "Muitos recursos (velocidade de giro, alcance, chance de proc de poção...) da $(item)Minigun/$ são melhoráveis em uma $(l:machines/charging_station)Estação de Carregamento/$.$(p)A documentação completa sobre cada melhoria e seus efeitos está disponível na interface de melhoria da Estação de Carregamento."
+      "text": "Muitos recursos (velocidade de giro, alcance, chance de proc de poção...) da $(item)Minigun/$ são melhoráveis em uma $(l:machines/charging_station)Estação de Carga/$.$(p)A documentação completa sobre cada melhoria e seus efeitos está disponível na interface de melhoria da Estação de Carga."
     },
     {
       "type": "crafting",

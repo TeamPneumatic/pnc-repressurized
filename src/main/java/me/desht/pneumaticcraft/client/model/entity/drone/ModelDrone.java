@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.client.model.entity.drone;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
+import me.desht.pneumaticcraft.client.render.entity.drone.DroneRenderState;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -10,10 +8,8 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.util.Mth;
 
-public class ModelDrone extends EntityModel<AbstractDroneEntity> {
-    private final ModelPart drone;
+public class ModelDrone extends EntityModel<DroneRenderState> {
     private final ModelPart prop_1;
     private final ModelPart prop_2;
     private final ModelPart prop_3;
@@ -44,7 +40,9 @@ public class ModelDrone extends EntityModel<AbstractDroneEntity> {
     private static final String BLADE10_CONNECTION_R1 = "blade10_connection_r1";
 
     public ModelDrone(ModelPart root) {
-        drone = root.getChild(DRONE);
+        super(root);
+
+        ModelPart drone = root.getChild(DRONE);
         prop_1 = drone.getChild(NORTH_WEST_WING).getChild(PROP_1);
         prop_2 = drone.getChild(SOUTH_WEST_WING).getChild(PROP_2);
         prop_3 = drone.getChild(SOUTH_EAST_WING).getChild(PROP_3);
@@ -153,20 +151,12 @@ public class ModelDrone extends EntityModel<AbstractDroneEntity> {
     }
 
     @Override
-    public void setupAnim(AbstractDroneEntity drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
+    public void setupAnim(DroneRenderState state) {
+        super.setupAnim(state);
 
-    @Override
-    public void renderToBuffer(PoseStack matrixStackIn, VertexConsumer bufferIn, int packedLightIn, int packedOverlayIn, int color) {
-        drone.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn);
-    }
-
-    @Override
-    public void prepareMobModel(AbstractDroneEntity drone, float par2, float par3, float partialTicks) {
-        float propRotation = Mth.lerp(partialTicks, drone.oldPropRotation, drone.propRotation);
-        prop_1.yRot = propRotation;
-        prop_2.yRot = propRotation;
-        prop_3.yRot = -propRotation;
-        prop_4.yRot = -propRotation;
+        prop_1.yRot = state.propRotation;
+        prop_2.yRot = state.propRotation;
+        prop_3.yRot = -state.propRotation;
+        prop_4.yRot = -state.propRotation;
     }
 }

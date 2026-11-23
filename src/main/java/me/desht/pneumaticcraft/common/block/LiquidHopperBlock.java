@@ -23,13 +23,13 @@ import me.desht.pneumaticcraft.client.render.fluid.RenderLiquidHopper;
 import me.desht.pneumaticcraft.common.block.entity.hopper.LiquidHopperBlockEntity;
 import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
+import me.desht.pneumaticcraft.common.item.PNCBlockItem;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,27 +50,29 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
         return new LiquidHopperBlockEntity(pPos, pState);
     }
 
-    public static class ItemBlockLiquidHopper extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
+    public static class ItemBlockLiquidHopper extends PNCBlockItem implements ColorHandlers.ITintableItem, IFluidRendered, IFluidCapProvider {
         Lazy<RenderLiquidHopper.ItemRenderInfoProvider> renderInfoProvider = Lazy.of(RenderLiquidHopper.ItemRenderInfoProvider::new);
 
         public ItemBlockLiquidHopper(Block block) {
             super(block, ModItems.defaultProps());
         }
 
-        @Override
-        public boolean hasCraftingRemainingItem(ItemStack stack) {
-            return true;
-        }
+        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
+        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
+//        @Override
+//        public boolean hasCraftingRemainingItem(ItemStack stack) {
+//            return true;
+//        }
 
-        @Override
-        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
-                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-                return handler.getContainer().copy();
-            }).orElseThrow(RuntimeException::new);
-        }
+//        @Override
+//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
+//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
+//            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
+//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
+//                return handler.getContainer().copy();
+//            }).orElseThrow(RuntimeException::new);
+//        }
 
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {

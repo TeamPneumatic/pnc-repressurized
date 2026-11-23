@@ -17,7 +17,6 @@
 
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.misc.Symbols;
@@ -28,6 +27,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
 import me.desht.pneumaticcraft.client.render.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -35,13 +35,13 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
+import org.joml.Matrix3x2fStack;
 
 import java.util.*;
 
@@ -111,7 +111,7 @@ public class ProgrammerWidgetAreaRenderer {
         return screen instanceof ProgrammerScreen || screen instanceof ArmorMainScreen;
     }
 
-    public void renderForeground(GuiGraphics graphics, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
+    public void renderForeground(GuiGraphicsExtractor graphics, int x, int y, IProgWidget tooltipExcludingWidget, Font font) {
         if (shouldRenderExtraInfo()) {
             int idx = getHoveredWidgetIndex(x, y);
             if (idx >= 0) {
@@ -125,7 +125,7 @@ public class ProgrammerWidgetAreaRenderer {
                         addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", ChatFormatting.YELLOW);
                     addAdditionalInfoToTooltip(progWidget, tooltip);
                     if (!tooltip.isEmpty()) {
-                        graphics.renderTooltip(font, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
+                        graphics.setTooltipForNextFrame(font, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
                     }
                 }
             }
@@ -161,7 +161,7 @@ public class ProgrammerWidgetAreaRenderer {
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().options.advancedItemTooltips) {
             PneumaticCraftUtils.getRegistryName(PNCRegistries.PROG_WIDGETS_REGISTRY, widget.getType())
-                            .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
+                    .ifPresent(regName -> tooltip.add(Component.literal(regName.toString()).withStyle(ChatFormatting.DARK_GRAY)));
         }
     }
 
@@ -183,33 +183,33 @@ public class ProgrammerWidgetAreaRenderer {
         }
     }
 
-    public void render(GuiGraphics graphics, int x, int y, boolean showFlow, boolean showInfo) {
+    public void render(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean showFlow, boolean showInfo) {
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
             float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
-            translatedX += shift * (x - translatedX) / prevScale;
-            translatedY += shift * (y - translatedY) / prevScale;
+            translatedX += shift * (mouseX - translatedX) / prevScale;
+            translatedY += shift * (mouseY - translatedY) / prevScale;
         }
         lastZoom = scaleScroll.getState();
 
         graphics.enableScissor(guiLeft + startX, guiTop + startY, guiLeft + startX + areaWidth, guiTop + startY + areaHeight);
 
-        PoseStack poseStack = graphics.pose();
+        Matrix3x2fStack poseStack = graphics.pose();
 
-        poseStack.pushPose();
-        poseStack.translate(translatedX, translatedY, 0);
+        poseStack.pushMatrix();
+        poseStack.translate((float) translatedX, (float) translatedY);
 
         float scale = getScale();
-        poseStack.scale(scale, scale, 1);
+        poseStack.scale(scale, scale);
 
-        if (showFlow) showFlow(graphics);
+        if (showFlow) showFlow(graphics, mouseX, mouseY);
 
         for (IProgWidget widget : progWidgets) {
-            poseStack.pushPose();
-            poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            poseStack.scale(0.5f, 0.5f, 1.0f);
+            poseStack.pushMatrix();
+            poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop);
+            poseStack.scale(0.5f, 0.5f);
             ProgWidgetRenderer.renderProgWidget2d(graphics, widget);
-            poseStack.popPose();
+            poseStack.popMatrix();
         }
 
         if (widgetErrors.size() == progWidgets.size() && widgetWarnings.size() == progWidgets.size()) {
@@ -226,16 +226,16 @@ public class ProgrammerWidgetAreaRenderer {
 
         if (showInfo && shouldRenderExtraInfo()) {
             for (IProgWidget widget : progWidgets) {
-                poseStack.pushPose();
-                poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                poseStack.scale(0.5f, 0.5f, 1.0f);
+                poseStack.pushMatrix();
+                poseStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop);
+                poseStack.scale(0.5f, 0.5f);
                 ProgWidgetRenderer.doItemRendering2d(graphics, widget);
                 ProgWidgetRenderer.doExtraRendering2d(graphics, widget);
-                poseStack.popPose();
+                poseStack.popMatrix();
             }
         }
 
-        poseStack.popPose();
+        poseStack.popMatrix();
 
         graphics.disableScissor();
     }
@@ -253,32 +253,30 @@ public class ProgrammerWidgetAreaRenderer {
         return scaleScroll.mouseScrolled(mouseX, mouseY, dirX, dirY);
     }
 
-    protected void renderAdditionally(GuiGraphics graphics) {
+    protected void renderAdditionally(GuiGraphicsExtractor graphics) {
         // nothing; to be overridden
     }
 
-    protected void drawBorder(GuiGraphics graphics, IProgWidget widget, int color) {
+    protected void drawBorder(GuiGraphicsExtractor graphics, IProgWidget widget, int color) {
         drawBorder(graphics, widget, color, 0);
     }
 
-    protected void drawBorder(GuiGraphics graphics, IProgWidget widget, int color, int inset) {
+    protected void drawBorder(GuiGraphicsExtractor graphics, IProgWidget widget, int color, int inset) {
         int inset2 = inset + inset;
-        graphics.pose().pushPose();
-        graphics.pose().translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        graphics.pose().scale(0.5f, 0.5f, 1f);
-        graphics.renderOutline(inset, inset, widget.getWidth() - inset2, widget.getHeight() - inset2, color);
-        graphics.pose().popPose();
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(widget.getX() + guiLeft, widget.getY() + guiTop);
+        graphics.pose().scale(0.5f, 0.5f);
+        graphics.outline(inset, inset, widget.getWidth() - inset2, widget.getHeight() - inset2, color);
+        graphics.pose().popMatrix();
     }
 
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
-    private void showFlow(GuiGraphics graphics) {
-        RenderSystem.lineWidth(1);
+    private void showFlow(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        float lineWidth = GuiVertexRenderState.pixels(3f);
 
-        RenderSystem.setShader(GameRenderer::getPositionShader);
-        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION);
-
+        IProgWidget hovered = getHoveredWidget(mouseX, mouseY);
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
         for (IProgWidget w : progWidgets) {
             if (w instanceof ILabel l) {
@@ -286,34 +284,45 @@ public class ProgrammerWidgetAreaRenderer {
             }
         }
 
-        Matrix4f posMat = graphics.pose().last().pose();
+        float pt = 0.125f + (Minecraft.getInstance().level.getGameTime() % 30 + Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaTicks()) / 40f;
+
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump jump) {
                 for (String jumpLocation : jump.getPossibleJumpLocations()) {
-                    for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, Collections.emptyList())) {
+                    for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, List.of())) {
                         int x1 = widget.getX() + widget.getWidth() / 4;
                         int y1 = widget.getY() + widget.getHeight() / 4;
                         int x2 = labelWidget.getX() + labelWidget.getWidth() / 4;
                         int y2 = labelWidget.getY() + labelWidget.getHeight() / 4;
-                        float midX = (x2 + x1) / 2F;
-                        float midY = (y2 + y1) / 2F;
-                        wr.addVertex(posMat,guiLeft + x1, guiTop + y1, 0.0f);
-                        wr.addVertex(posMat,guiLeft + x2, guiTop + y2, 0.0f);
-                        Vec3 arrowVec = new Vec3(x1 - x2, y1 - y2, 0).normalize();
-                        arrowVec = new Vec3(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
-                        arrowVec = arrowVec.yRot(ARROW_ANGLE);
-                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
-                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
-                        arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
-                        wr.addVertex(posMat,guiLeft + midX, guiTop + midY, 0.0f);
-                        wr.addVertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f);
+                        float angle = (float) Mth.atan2(y2 - y1, x2 - x1);
+                        int len = (int) Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+
+                        boolean highlight = widget == hovered || labelWidget == hovered;
+                        float arrowPos = len * (highlight ? pt : 0.5f);
+                        int colorHi = highlight ? 0xFF00FF00 : 0xFFFFFFFF;
+                        int colorLo = highlight ? 0xFF008000 : 0xFF606060;
+
+                        graphics.pose().pushMatrix();
+                        graphics.pose().translate(guiLeft + x1, guiTop + y1);
+                        graphics.pose().rotate(angle);
+
+                        GuiVertexRenderState.submit(graphics, wr -> {
+                            for (int i = 0; i < 2; i++) {
+                                int color = i == 0 ? colorHi : colorLo;
+                                float yOff = i == 0 ? 0f : 0.13f;
+                                wr.line(0f, yOff, len, yOff, lineWidth, color);
+
+                                Vec3 arrowVec = new Vec3(-ARROW_SIZE, 0, 0);
+                                arrowVec = arrowVec.yRot(ARROW_ANGLE);
+                                wr.line(arrowPos, yOff, arrowPos + (float) arrowVec.x, (float) arrowVec.z + yOff, lineWidth, color);
+                                arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
+                                wr.line(arrowPos, yOff, arrowPos + (float) arrowVec.x, (float) arrowVec.z + yOff, lineWidth, color);
+                            }
+                        });
+                        graphics.pose().popMatrix();
                     }
                 }
             }
-        }
-        MeshData meshData = wr.build();
-        if (meshData != null) {
-            BufferUploader.drawWithShader(meshData);
         }
     }
 

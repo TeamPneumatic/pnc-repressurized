@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "c:glass_panes"
-    },
-    "D": {
-      "tag": "c:dyes/gray"
-    },
-    "G": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    },
-    "P": {
-      "item": "pneumaticcraft:printed_circuit_board"
-    },
-    "T": {
-      "item": "pneumaticcraft:turbine_rotor"
-    }
+    "B": "#c:glass_panes",
+    "D": "#c:dyes/gray",
+    "G": "#pneumaticcraft:plastic_sheets",
+    "P": "pneumaticcraft:printed_circuit_board",
+    "T": "pneumaticcraft:turbine_rotor"
   },
   "pattern": [
     "DBD",
@@ -24,7 +14,6 @@
     "G G"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:security_station"
   }
 }

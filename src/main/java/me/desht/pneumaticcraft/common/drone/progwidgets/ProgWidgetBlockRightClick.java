@@ -32,7 +32,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
@@ -73,7 +73,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return Textures.PROG_WIDGET_BLOCK_RIGHT_CLICK;
     }
 

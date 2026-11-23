@@ -25,7 +25,7 @@ import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -39,7 +39,7 @@ import java.util.Stack;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
-    static final ResourceLocation ID = RL("custom_transition");
+    static final Identifier ID = RL("custom_transition");
 
     private HeatPropertiesRecipe heatEntry;
 
@@ -52,7 +52,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     }
 
     @Override
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return ID;
     }
 

@@ -28,7 +28,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,7 +45,7 @@ public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     private static final Map<UUID,Vec3> MOVE_MAP = new HashMap<>();
 
     @Override
-    public ResourceLocation getID() {
+    public Identifier getID() {
         return BuiltinArmorUpgrades.RUN_SPEED;
     }
 
@@ -71,7 +71,7 @@ public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
         double speedBoost = getSpeedBoostFromLegs(commonArmorHandler);
         if (speedBoost == 0) return;
 
-        if (player.level().isClientSide) {
+        if (player.level().isClientSide()) {
             // doing this client-side only appears to be effective
             if (player.zza > 0) {
                 JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
@@ -83,7 +83,7 @@ public class RunSpeedHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
                 }
             }
         }
-        if (!player.level().isClientSide && speedBoost > 0) {
+        if (!player.level().isClientSide() && speedBoost > 0) {
             Vec3 prev = MOVE_MAP.get(player.getUUID());
             boolean moved = prev != null && (Math.abs(player.getX() - prev.x) > 0.0001 || Math.abs(player.getZ() - prev.z) > 0.0001);
             if (moved && player.onGround() && !player.isInWater()) {

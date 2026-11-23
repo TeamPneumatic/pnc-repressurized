@@ -18,7 +18,6 @@
       "translate": "pneumaticcraft.advancement.speed_upgrade.desc"
     },
     "icon": {
-      "count": 1,
       "id": "pneumaticcraft:speed_upgrade"
     },
     "title": {

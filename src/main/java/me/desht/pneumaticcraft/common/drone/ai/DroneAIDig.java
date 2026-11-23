@@ -126,7 +126,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 Direction face = progWidget instanceof ProgWidgetDig dig ? dig.getDigSide() : Direction.UP;
                 PlayerInteractEvent.LeftClickBlock event = CommonHooks.onLeftClickBlock(drone.getFakePlayer(), pos, face, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK);
                 if (!event.isCanceled()) {
-                    int limit = drone.getDroneLevel().getMaxBuildHeight();
+                    int limit = drone.getDroneLevel().getMaxY() + 1;
                     manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, face, limit, 0);
                     manager.handleBlockBreakAction(pos, ServerboundPlayerActionPacket.Action.STOP_DESTROY_BLOCK, face, limit, 1);
                     drone.setDugBlock(pos, face);

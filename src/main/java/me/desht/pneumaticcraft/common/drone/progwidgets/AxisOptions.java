@@ -67,9 +67,9 @@ public class AxisOptions {
     }
 
     public void readFromNBT(CompoundTag nbt, boolean def) {
-        setCheck(Direction.Axis.X, nbt.contains("checkX") ? nbt.getBoolean("checkX") : def);
-        setCheck(Direction.Axis.Y, nbt.contains("checkY") ? nbt.getBoolean("checkY") : def);
-        setCheck(Direction.Axis.Z, nbt.contains("checkZ") ? nbt.getBoolean("checkZ") : def);
+        setCheck(Direction.Axis.X, nbt.getBooleanOr("checkX", def));
+        setCheck(Direction.Axis.Y, nbt.getBooleanOr("checkY", def));
+        setCheck(Direction.Axis.Z, nbt.getBooleanOr("checkZ", def));
     }
 
     public AxisOptions copy() {

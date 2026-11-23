@@ -88,7 +88,6 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
      */
     private void selectTarget() {
         ClientUtils.getClientPlayer().closeContainer();
-        mc.setWindowActive(true);
         coordHandler.isListeningToCoordTrackerSetting = true;
         HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.settingCoord"),
                 Collections.singletonList(xlate("pneumaticcraft.armor.message.coordinateTracker.rightClickToSet")),
@@ -97,7 +96,6 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
 
     private void navigateToSurface() {
         ClientUtils.getClientPlayer().closeContainer();
-        mc.setWindowActive(true);
         switch (coordHandler.navigateToSurface(ClientUtils.getClientPlayer())) {
             case EASY_PATH -> HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), 90, DEFAULT_MESSAGE_BGCOLOR));
             case DRONE_PATH -> HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), 90, 0x7044AA00));

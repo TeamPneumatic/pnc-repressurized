@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "item": "pneumaticcraft:reinforced_bricks"
-    }
+    "I": "pneumaticcraft:reinforced_bricks"
   },
   "pattern": [
     "III",

@@ -19,12 +19,15 @@ package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class RingEntity extends Entity {
@@ -57,8 +60,8 @@ public class RingEntity extends Entity {
         setXRot((float) (Math.atan2(dy, f) * 180.0D / Math.PI));
         yRotO = getYRot();
         xRotO = getXRot();
-        noCulling = true;
-        if (par1World.isClientSide) {
+        // TODO 26.1 render: Entity#noCulling is gone; the ring renderer should override affectedByCulling() to return false
+        if (par1World.isClientSide()) {
             setViewScale(10.0D);
         }
     }
@@ -110,11 +113,16 @@ public class RingEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(ValueInput input) {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void addAdditionalSaveData(ValueOutput output) {
+    }
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+        return false;
     }
 
 }

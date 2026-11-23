@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "S": {
-      "item": "pneumaticcraft:compressed_stone"
-    }
+    "S": "pneumaticcraft:compressed_stone"
   },
   "pattern": [
     "SS",

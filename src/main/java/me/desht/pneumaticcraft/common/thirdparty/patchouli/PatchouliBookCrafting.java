@@ -18,12 +18,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import vazkii.patchouli.api.PatchouliAPI;
 
 public class PatchouliBookCrafting {
-    private static final ResourceLocation BOOK_ID = PneumaticRegistry.RL("book");
+    private static final Identifier BOOK_ID = PneumaticRegistry.RL("book");
 
     public static ItemStack makeGuideBook() {
         return PatchouliAPI.get().getBookStack(BOOK_ID);

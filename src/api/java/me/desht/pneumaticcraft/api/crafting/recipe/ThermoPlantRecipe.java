@@ -24,8 +24,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStackTemplate;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.Nullable;
 
@@ -138,7 +140,7 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     public record Inputs(Optional<SizedFluidIngredient> inputFluid, Optional<Ingredient> inputItem) {
         public static final Codec<Inputs> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                SizedFluidIngredient.FLAT_CODEC.optionalFieldOf("fluid")
+                SizedFluidIngredient.CODEC.optionalFieldOf("fluid")
                         .forGetter(Inputs::inputFluid),
                 Ingredient.CODEC.optionalFieldOf("item")
                         .forGetter(Inputs::inputItem)
@@ -154,18 +156,22 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
         }
     }
 
-    public record Outputs(FluidStack outputFluid, ItemStack outputItem) {
+    public record Outputs(Optional<FluidStackTemplate> outputFluid, Optional<ItemStackTemplate> outputItem) {
         public static final Codec<Outputs> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                FluidStack.CODEC.optionalFieldOf("fluid_output", FluidStack.EMPTY)
+                FluidStackTemplate.CODEC.optionalFieldOf("fluid_output")
                         .forGetter(Outputs::outputFluid),
-                ItemStack.CODEC.optionalFieldOf("item_output", ItemStack.EMPTY)
+                ItemStackTemplate.CODEC.optionalFieldOf("item_output")
                         .forGetter(Outputs::outputItem)
         ).apply(builder, Outputs::new));
         public static StreamCodec<RegistryFriendlyByteBuf, Outputs> STREAM_CODEC = StreamCodec.composite(
-                FluidStack.OPTIONAL_STREAM_CODEC, Outputs::outputFluid,
-                ItemStack.OPTIONAL_STREAM_CODEC, Outputs::outputItem,
+                ByteBufCodecs.optional(FluidStackTemplate.STREAM_CODEC), Outputs::outputFluid,
+                ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC), Outputs::outputItem,
                 Outputs::new
         );
+
+        public static Outputs of(@Nullable FluidStackTemplate outputFluid, @Nullable ItemStackTemplate outputItem) {
+            return new Outputs(Optional.ofNullable(outputFluid), Optional.ofNullable(outputItem));
+        }
     }
 
 }

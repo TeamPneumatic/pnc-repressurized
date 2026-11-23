@@ -3,13 +3,12 @@
   "inputs": [
     {
       "count": 1,
-      "tag": "c:ingots/iron"
+      "ingredient": "#c:ingots/iron"
     }
   ],
   "pressure": 2.0,
   "results": [
     {
-      "count": 1,
       "id": "pneumaticcraft:ingot_iron_compressed"
     }
   ]

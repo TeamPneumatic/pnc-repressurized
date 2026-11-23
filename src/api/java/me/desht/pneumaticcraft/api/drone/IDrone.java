@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.api.drone;
 
 import me.desht.pneumaticcraft.api.drone.debug.IDroneDebugger;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -296,4 +297,10 @@ public interface IDrone {
     }
 
     float getDronePressure();
+
+    static Component getLabelAsComponent(String label) {
+        return label.startsWith("*") ?
+                Component.translatable(label.substring(1)).withStyle(ChatFormatting.ITALIC) :
+                Component.literal(label);
+    }
 }

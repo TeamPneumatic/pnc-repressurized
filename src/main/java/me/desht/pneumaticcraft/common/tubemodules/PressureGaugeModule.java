@@ -108,6 +108,6 @@ public class PressureGaugeModule extends AbstractRedstoneEmittingModule {
     @Override
     public void readFromNBT(CompoundTag tag) {
         super.readFromNBT(tag);
-        hideGauge = tag.getBoolean("hideGauge");
+        hideGauge = tag.getBooleanOr("hideGauge", false);
     }
 }

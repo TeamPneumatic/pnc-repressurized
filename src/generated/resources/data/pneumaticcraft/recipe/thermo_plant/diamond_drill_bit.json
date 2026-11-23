@@ -4,15 +4,12 @@
   "inputs": {
     "fluid": {
       "amount": 8000,
-      "tag": "c:lubricant"
+      "ingredient": "#c:lubricant"
     },
-    "item": {
-      "tag": "c:storage_blocks/diamond"
-    }
+    "item": "#c:storage_blocks/diamond"
   },
   "outputs": {
     "item_output": {
-      "count": 1,
       "id": "pneumaticcraft:drill_bit_diamond"
     }
   },

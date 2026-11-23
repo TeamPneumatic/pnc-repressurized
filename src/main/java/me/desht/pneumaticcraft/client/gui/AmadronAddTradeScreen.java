@@ -38,11 +38,12 @@ import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,10 +74,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     private boolean openingSubGUI = false;
 
     public AmadronAddTradeScreen(AmadronAddTradeMenu container, Inventory inv, Component displayString) {
-        super(container, inv, displayString);
-
-        imageWidth = 183;
-        imageHeight = 202;
+        super(container, inv, displayString, 183, 202);
     }
 
     @Override
@@ -176,7 +174,8 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             removed();
             return true;
@@ -199,9 +198,9 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
         }
 
         if (getFocused() instanceof WidgetTextField tf) {
-            return tf.keyPressed(keyCode, scanCode, modifiers) || tf.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
+            return tf.keyPressed(event) || tf.canConsumeInput() || super.keyPressed(event);
         } else {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+            return super.keyPressed(event);
         }
     }
 
@@ -211,7 +210,7 @@ public class AmadronAddTradeScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    protected ResourceLocation getGuiTexture() {
+    protected Identifier getGuiTexture() {
         return Textures.GUI_AMADRON_ADD_TRADE;
     }
 

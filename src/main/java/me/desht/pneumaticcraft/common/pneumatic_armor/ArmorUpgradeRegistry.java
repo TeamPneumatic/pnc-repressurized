@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BuiltinArmorUpgrades;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.apache.commons.lang3.Validate;
 
@@ -36,7 +36,7 @@ public enum ArmorUpgradeRegistry {
     INSTANCE;
 
     private final List<List<IArmorUpgradeHandler<?>>> upgradeHandlers;
-    private final Map<ResourceLocation, IArmorUpgradeHandler<?>> byID = new ConcurrentHashMap<>();
+    private final Map<Identifier, IArmorUpgradeHandler<?>> byID = new ConcurrentHashMap<>();
     private boolean isFrozen = false;
 
     private final List<String> knownUpgradeIds = new ArrayList<>();
@@ -72,7 +72,7 @@ public enum ArmorUpgradeRegistry {
         return upgradeHandlers.get(slotType.getIndex());
     }
 
-    public IArmorUpgradeHandler<?> getUpgradeEntry(ResourceLocation upgradeID) {
+    public IArmorUpgradeHandler<?> getUpgradeEntry(Identifier upgradeID) {
         if (upgradeID == null) return null;
         return byID.get(upgradeID);
     }
@@ -110,7 +110,7 @@ public enum ArmorUpgradeRegistry {
         return Collections.unmodifiableList(knownUpgradeIds);
     }
 
-    private int compareHandlerID(ResourceLocation id1, ResourceLocation id2) {
+    private int compareHandlerID(Identifier id1, Identifier id2) {
         // special case: core components always first
         if (id1.equals(BuiltinArmorUpgrades.CORE_COMPONENTS)) return -1;
         // special case: PNC handler come before 3rd party handlers

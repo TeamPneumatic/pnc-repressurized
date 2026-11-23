@@ -25,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,14 +53,14 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
     public void writeToPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.writeToPacket(tag, provider);
 
-        tag.put("Item", displayedStack.saveOptional(provider));
+        tag.store("Item", ItemStack.OPTIONAL_CODEC, provider.createSerializationContext(NbtOps.INSTANCE), displayedStack);
     }
 
     @Override
     public void readFromPacket(CompoundTag tag, HolderLookup.Provider provider) {
         super.readFromPacket(tag, provider);
 
-        displayedStack = ItemStack.parseOptional(provider, tag.getCompound("Item"));
+        displayedStack = tag.read("Item", ItemStack.OPTIONAL_CODEC, provider.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
         inventory.initStack(displayedStack);
     }
 
@@ -79,7 +80,7 @@ public class DisplayTableBlockEntity extends AbstractPneumaticCraftBlockEntity i
 
             if (slot == 0) {
                 displayedStack = getStackInSlot(0);
-                if (!nonNullLevel().isClientSide) sendDescriptionPacket();
+                if (!nonNullLevel().isClientSide()) sendDescriptionPacket();
             }
         }
 

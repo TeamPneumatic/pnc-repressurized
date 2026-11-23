@@ -48,7 +48,7 @@ public class LogisticsConfiguratorItem extends PressurizableItem {
         BlockPos pos = ctx.getClickedPos();
         Direction side = ctx.getClickedFace();
 
-        if (world.isClientSide) {
+        if (world.isClientSide()) {
             return InteractionResult.SUCCESS;
         }
 

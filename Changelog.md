@@ -6,9 +6,71 @@ Changes are in reverse chronological order; newest changes at the top.
 
 # Minecraft 1.21.1
 
+## [8.2.25]
+
+### Fixed
+* Fixed `IClientRegistry#drawPressureGauge` drawing a gauge with an invisible needle (thanks @Loulouw)
+
+## [8.2.24]
+
+### Changed
+* Updated to latest Cold Sweat block heat API
+  * This will work on Cold Sweat 2.4.3 and later
+
+### Fixed
+* More secure server-side handling for block data requests from the Pneumatic Helmet block tracker module
+* Added a defensive null-check in DroneFakePlayer (drone should never normally be null, but mixins in other mods can cause issues...)
+* Fixed a few more hardcoded translations
+* Fixed crash if using Pneumatic Helmet to hack a block which gets broken mid-hack
+
+## [8.2.23]
+
+### Fixed
+* Fixed NPE in Security Station
+  * Could not reproduce this, but appears to sometimes occur if GUI is closed while reboot in progress?
+
+## [8.2.22]
+
+### Fixed
+* Fixed PNC machine blocks dropping contents/upgrades when assembled into a Sable sublevel
+
+## [8.2.21]
+
+### Added
+* The Liquid Hopper can now absorb Experience Orbs with a Dispenser Upgrade installed, converting them to Memory Essence fluid
+* The Programmer GUI now highlights connection lines between jump & label widgets when they're hovered
+* Added a toggle button to the Jackhammer GUI to prevent insta-break of blocks
+  * Useful if you have a fast drill bit and many speed upgrades, to prevent acccidents in your base...
+* The Elytra Upgrade in the Pneumatic Chestplate no longer activates when tapping Space if you are currently in Jet Boots builder mode
+* Sculk Sensors now detect player movement when off the ground using Jet Boots
+* Sculk Sensors can now be hacked with the Pneumatic Armor, disabling them for 10 seconds
+* Added a Condition: Dimension programming widget for Drones
+  * Allows Drones to detect what dimension they're in and branch in their program accordingly
+  * Drones which do not have a Condition: Dimension widget in their program may no longer change dimension e.g. via Nether portal
+* Significant internal Elevator rework which fixes a number of issues - thanks @FireController#1847
+
+### Changed
+* Updated `pt_br` translation - thanks @PrincessStellar
+* Added `fr_fr` translation - thanks @programgames
+
+### Fixed
+* Fixed bug causing Thermopneumatic Processing Plant to sometimes not require pressure for recipes that should require it
+* Fixed a Thermopneumatic Processing Plant JEI issue when recipe input/output fluid amounts differ by a factor of >64
+* Hopefully fixed an occasional crash in drone pathfinding
+
+## [8.2.20]
+
+### Fixed
+* Fixed a drone patfhfinding bug causing drones to get stuck in areas with tricky pathfinding (e.g. dense tree growth)
+* Fixed tube module connection caching bug causing issue with redstone modules in particular not updating after a world reload
+* Fixed bug with tube modules not correctly syncing to client if too far from the client player
+* Hopefully fixed bug causing Pneumatic Armor to sometimes re-init itself on dimension change or when a Curios inventory is open
+* Disabled caching of item handler for Aerial Interface curios slots access
+  * Curios inventories can dynamically resize and caching those could lead to crashes
+
 ## [8.2.19]
 
-### Fixes
+### Fixed
 * Fixed a couple of item dupe issues with the Solar Compressor
   * Solar Compressors are no longer waterloggable, or movable with pistons (even with Quark installed)
 * Fixed Refinery GUI showing incorrect number of exposed faces (wasn't taking the controller block into account)

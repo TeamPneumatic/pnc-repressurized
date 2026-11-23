@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,7 +46,9 @@ public class DroneRedstoneEmitterBlock extends AirBlock implements PneumaticCraf
 
     @Override
     public int getSignal(BlockState state, BlockGetter blockAccess, BlockPos pos, Direction side) {
-        return PneumaticCraftUtils.getBlockEntityAt(blockAccess, pos, DroneRedstoneEmitterBlockEntity.class)
+        if (!(blockAccess instanceof LevelReader reader)) return 0;
+
+        return PneumaticCraftUtils.getBlockEntityAt(reader, pos, DroneRedstoneEmitterBlockEntity.class)
                 .map(be -> be.getSignalLevel(side))
                 .orElse(0);
     }

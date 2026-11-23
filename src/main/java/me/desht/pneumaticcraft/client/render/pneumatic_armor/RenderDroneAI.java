@@ -100,7 +100,7 @@ public class RenderDroneAI {
                 matrixStack.translate(x, y + 0.5, z);
                 matrixStack.scale(0.01f, 0.01f, 0.01f);
                 matrixStack.mulPose(Axis.XP.rotationDegrees(180));
-                matrixStack.mulPose(Axis.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().yRot()));
                 ProgWidgetRenderer.renderProgWidget3d(matrixStack, buffer, activeWidget);
                 matrixStack.popPose();
             }

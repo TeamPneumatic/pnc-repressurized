@@ -18,18 +18,16 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.client.util.GuiVertexRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,15 +58,15 @@ public class WidgetRadioButton extends PNCWidget<WidgetRadioButton> {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         int x = getX(), y = getY();
         drawCircle(graphics, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, active ? 0xFFA0A0A0 : 0xFF999999);
         drawCircle(graphics, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, active ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
             drawCircle(graphics, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, active ? 0xFF00C000 : 0xFFAAAAAA);
         }
-        graphics.drawString(fontRenderer, getMessage(), x + 1 + BUTTON_WIDTH,
-                y + BUTTON_HEIGHT / 2 - fontRenderer.lineHeight / 2, active ? color : 0xFF888888, false);
+        graphics.text(fontRenderer, getMessage(), x + 1 + BUTTON_WIDTH,
+                y + BUTTON_HEIGHT / 2 - fontRenderer.lineHeight / 2, GuiUtils.textColor(active ? color : 0xFF888888), false);
     }
 
     public boolean isChecked() {
@@ -82,24 +80,22 @@ public class WidgetRadioButton extends PNCWidget<WidgetRadioButton> {
 
     private static final float N_POINTS = 12f;
 
-    private void drawCircle(GuiGraphics graphics, float x, float y, float radius, int color) {
-        int[] cols = RenderUtils.decomposeColor(color);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        BufferBuilder wr = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f posMat = graphics.pose().last().pose();
-        for (int i = 0; i < N_POINTS; i++) {
-            float sin = Mth.sin(i / N_POINTS * (float) Math.PI * 2f);
-            float cos = Mth.cos(i / N_POINTS * (float) Math.PI * 2f);
-            wr.addVertex(posMat, x + sin * radius, y + cos * radius, 0f).setColor(cols[1], cols[2], cols[3], cols[0]);
-        }
-        BufferUploader.drawWithShader(wr.buildOrThrow());
-        RenderSystem.disableBlend();
+    private void drawCircle(GuiGraphicsExtractor graphics, float x, float y, float radius, int color) {
+        GuiVertexRenderState.submit(graphics, wr -> {
+            // triangle fan from the first point on the circle
+            float x0 = x + Mth.sin(0f) * radius, y0 = y + Mth.cos(0f) * radius;
+            for (int i = 1; i < N_POINTS - 1; i++) {
+                float sin1 = Mth.sin(i / N_POINTS * (float) Math.PI * 2f);
+                float cos1 = Mth.cos(i / N_POINTS * (float) Math.PI * 2f);
+                float sin2 = Mth.sin((i + 1) / N_POINTS * (float) Math.PI * 2f);
+                float cos2 = Mth.cos((i + 1) / N_POINTS * (float) Math.PI * 2f);
+                wr.triangle(x0, y0, color, x + sin1 * radius, y + cos1 * radius, color, x + sin2 * radius, y + cos2 * radius, color);
+            }
+        });
     }
 
     @Override
-    public void onClick(double mouseX, double mouseY, int button) {
+    public void onClick(MouseButtonEvent event, boolean doubleClick) {
         if (active && !checked) {
             for (WidgetRadioButton radioButton : otherChoices) {
                 radioButton.checked = false;

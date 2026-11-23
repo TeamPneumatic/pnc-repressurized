@@ -5,13 +5,13 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EntityType;
 
 import java.util.Map;
 
 public class MinecartLaunching {
-    private static final Map<ResourceLocation, EntityType<?>> launchMap = Maps.newHashMap();
+    private static final Map<Identifier, EntityType<?>> launchMap = Maps.newHashMap();
 
     public static void registerMinecartLaunchBehaviour() {
         // Adds botania minecarts to launch map
@@ -29,8 +29,8 @@ public class MinecartLaunching {
      * @param itemIDString item ID of item/entity to add to launch map
      */
     private static void register(String itemIDString) {
-        ResourceLocation itemId = ResourceLocation.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
-        ResourceLocation entityId = ResourceLocation.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
+        Identifier itemId = Identifier.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
+        Identifier entityId = Identifier.fromNamespaceAndPath(ModIds.BOTANIA, itemIDString);
         BuiltInRegistries.ENTITY_TYPE.getOptional(entityId).ifPresent(entityType -> launchMap.put(itemId, entityType));
     }
 }

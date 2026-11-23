@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "item": "minecraft:black_wool"
-    },
-    "L": {
-      "tag": "pneumaticcraft:upgrade_components"
-    },
-    "X": {
-      "tag": "pneumaticcraft:plastic_sheets"
-    }
+    "C": "minecraft:black_wool",
+    "L": "#pneumaticcraft:upgrade_components",
+    "X": "#pneumaticcraft:plastic_sheets"
   },
   "pattern": [
     "LXL",
@@ -18,7 +12,6 @@
     "LXL"
   ],
   "result": {
-    "count": 1,
     "id": "pneumaticcraft:flippers_upgrade"
   }
 }

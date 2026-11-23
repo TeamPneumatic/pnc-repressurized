@@ -131,7 +131,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
         oldOutputProgress = outputProgress;
         PressureChamberValveBlockEntity core = getPrimaryValve();
 
-        if (!nonNullLevel().isClientSide) {
+        if (!nonNullLevel().isClientSide()) {
             doorSpeed = getSpeedMultiplierFromUpgrades();
 
             int itemCount = inventory.getStackInSlot(0).getCount();
@@ -188,7 +188,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
             isOpeningOutput = false;
         }
 
-        if (nonNullLevel().isClientSide && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
+        if (nonNullLevel().isClientSide() && soundTimer++ >= MIN_SOUND_INTERVAL && (wasOpeningI != isOpeningInput || wasOpeningO != isOpeningOutput)) {
             nonNullLevel().playLocalSound(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, ModSounds.INTERFACE_DOOR.get(), SoundSource.BLOCKS, 0.5F, 1.0F, true);
             soundTimer = 0;
         }
@@ -293,11 +293,11 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
         super.loadAdditional(tag, provider);
 
-        inventory.deserializeNBT(provider, tag.getCompound("Items"));
-        outputProgress = tag.getFloat("outputProgress");
-        inputProgress = tag.getFloat("inputProgress");
-        interfaceMode = InterfaceDirection.values()[tag.getInt("interfaceMode")];
-        exportAny = tag.getBoolean("exportAny");
+        inventory.deserializeNBT(provider, tag.getCompoundOrEmpty("Items"));
+        outputProgress = tag.getFloatOr("outputProgress", 0f);
+        inputProgress = tag.getFloatOr("inputProgress", 0f);
+        interfaceMode = InterfaceDirection.values()[tag.getIntOr("interfaceMode", 0)];
+        exportAny = tag.getBooleanOr("exportAny", false);
     }
 
     @Override

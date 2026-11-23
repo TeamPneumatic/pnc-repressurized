@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
@@ -80,13 +81,13 @@ public class PNCFluidTank implements IFluidHandler, IFluidTank {
     }
 
     public PNCFluidTank readFromNBT(HolderLookup.Provider provider, CompoundTag nbt) {
-        FluidStack fluid = FluidStack.parseOptional(provider, nbt);
+        FluidStack fluid = FluidStack.OPTIONAL_CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), nbt).result().orElse(FluidStack.EMPTY);
         setFluid(fluid);
         return this;
     }
 
     public Tag writeToNBT(HolderLookup.Provider provider) {
-        return fluidStack.saveOptional(provider);
+        return FluidStack.OPTIONAL_CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), fluidStack).getOrThrow();
     }
 
     @Override

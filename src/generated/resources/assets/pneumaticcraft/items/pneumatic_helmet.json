@@ -1,0 +1,20 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "pneumaticcraft:item/pneumatic_helmet",
+    "tints": [
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 0
+      },
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 1
+      },
+      {
+        "type": "pneumaticcraft:tintable",
+        "tint_index": 2
+      }
+    ]
+  }
+}

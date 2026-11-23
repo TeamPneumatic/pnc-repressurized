@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.tubemodules.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.upgrades.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.Reflections;
@@ -59,11 +60,14 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
@@ -87,6 +91,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.addListener(this::serverStarted);
         forgeBus.addListener(this::serverStopping);
         forgeBus.addListener(this::addReloadListeners);
+        forgeBus.addListener(OnDatapackSyncEvent.class, PneumaticCraftRecipeType::onDatapackSync);
         forgeBus.addListener(this::registerCommands);
         forgeBus.register(new MiscEventHandler());
         forgeBus.register(new AmadronEventListener());
@@ -115,7 +120,7 @@ public class PneumaticCraftRepressurized {
     private void thirdPartyPreInit() {
         ModList.get().getModContainerById(Names.MOD_ID).ifPresent(pncMod -> {
             ThirdPartyManager.instance().preInit(pncMod.getEventBus());
-            if (FMLEnvironment.dist.isClient()) {
+            if (FMLEnvironment.getDist().isClient()) {
                 ThirdPartyManager.instance().clientPreInit(pncMod.getEventBus());
             }
         });
@@ -143,7 +148,7 @@ public class PneumaticCraftRepressurized {
         ModCriterionTriggers.CRITERION_TRIGGERS.register(modBus);
         ModDataComponents.COMPONENTS.register(modBus);
         ModAttachmentTypes.ATTACHMENT_TYPES.register(modBus);
-        ModArmorMaterials.ARMOR_MATERIALS.register(modBus);
+        ModGameEvents.GAME_EVENTS.register(modBus);
 
         // custom registries
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
@@ -177,8 +182,8 @@ public class PneumaticCraftRepressurized {
         });
     }
 
-    private void addReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
+    private void addReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(RL("recipe_caches"), PneumaticCraftRecipeType.getCacheReloadListener());
     }
 
     private void registerCommands(RegisterCommandsEvent event) {
@@ -190,10 +195,11 @@ public class PneumaticCraftRepressurized {
     }
 
     private void serverStopping(ServerStoppingEvent event) {
+        ModuleNetworkManager.clear();
+
         AmadronOfferManager.getInstance().saveAll();
 
         // if we're on single-player, reset is needed here to stop world-specific configs crossing worlds
         AuxConfigHandler.clearPerWorldConfigs();
     }
-
 }

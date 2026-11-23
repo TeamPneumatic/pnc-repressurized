@@ -1,22 +1,22 @@
 package me.desht.pneumaticcraft.client.render.entity.semiblock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.model.entity.semiblocks.ModelLogisticsFrame;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.Unit;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsFrameEntity> {
+public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsFrameEntity, RenderLogisticsFrame.State> {
     private final ModelLogisticsFrame model;
 
     public RenderLogisticsFrame(EntityRendererProvider.Context ctx) {
@@ -26,53 +26,71 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsF
     }
 
     @Override
-    public void render(AbstractLogisticsFrameEntity entity, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        float alpha = entity.getAlpha() / 255F;
-        if (alpha == 0f) return;
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (entity.isAir()) {
+    @Override
+    public void extractRenderState(AbstractLogisticsFrameEntity entity, State state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+
+        state.alpha = entity.getAlpha();
+        state.air = entity.isAir();
+        state.side = entity.getSide();
+        state.texture = entity.getTexture();
+        state.lightCoords = kludgeLightingLevel(entity, state.lightCoords);
+        state.renderOffset = getRenderOffset(entity);
+    }
+
+    @Override
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.alpha == 0 || state.air) {
             return;
         }
 
-        matrixStackIn.pushPose();
+        poseStack.pushPose();
 
-        if (entity.getTimeSinceHit() > 0) {
-            wobble(entity, partialTicks, matrixStackIn);
-        }
+        wobble(state, poseStack);
 
-        Direction side = entity.getSide();
-        matrixStackIn.translate(0, side.getAxis() == Direction.Axis.Y ? 0.5 : -0.5, 0);
+        Direction side = state.side;
+        poseStack.translate(0, side.getAxis() == Direction.Axis.Y ? 0.5 : -0.5, 0);
         switch (side) {
             case UP:
-                matrixStackIn.mulPose(Axis.ZP.rotationDegrees(90));
-                matrixStackIn.translate(0, -1, 0);
+                poseStack.mulPose(Axis.ZP.rotationDegrees(90));
+                poseStack.translate(0, -1, 0);
                 break;
             case DOWN:
-                matrixStackIn.mulPose(Axis.ZP.rotationDegrees(-90));
-                matrixStackIn.translate(0, -1, 0);
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-90));
+                poseStack.translate(0, -1, 0);
                 break;
             case NORTH:
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(90));
                 break;
             case SOUTH:
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(-90));
+                poseStack.mulPose(Axis.YP.rotationDegrees(-90));
                 break;
             case WEST:
-                matrixStackIn.mulPose(Axis.YP.rotationDegrees(180));
+                poseStack.mulPose(Axis.YP.rotationDegrees(180));
                 break;
             case EAST:
                 break;
         }
 
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)));
-        int color = FastColor.ARGB32.color((int) (255 * alpha), 255, 255, 255);
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), color);
+        int color = ARGB.color(state.alpha, 255, 255, 255);
+        submitNodeCollector.submitModel(model, Unit.INSTANCE, poseStack, model.renderType(state.texture),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, color, null, state.outlineColor, null);
 
-        matrixStackIn.popPose();
+        poseStack.popPose();
+
+        super.submit(state, poseStack, submitNodeCollector, camera);
     }
 
     @Override
-    public Vec3 getRenderOffset(AbstractLogisticsFrameEntity entityIn, float partialTicks) {
+    public Vec3 getRenderOffset(State state) {
+        return state.renderOffset;
+    }
+
+    private static Vec3 getRenderOffset(AbstractLogisticsFrameEntity entityIn) {
         VoxelShape shape = entityIn.getBlockState().getShape(entityIn.getWorld(), entityIn.getBlockPos());
         double yOff = (shape.max(Direction.Axis.Y) - shape.min(Direction.Axis.Y)) / 2.0;
         return switch (entityIn.getSide()) {
@@ -85,8 +103,11 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<AbstractLogisticsF
         };
     }
 
-    @Override
-    public ResourceLocation getTextureLocation(AbstractLogisticsFrameEntity entityLogisticsFrame) {
-        return entityLogisticsFrame.getTexture();
+    public static class State extends SemiblockRenderState {
+        int alpha;
+        boolean air;
+        Direction side = Direction.UP;
+        Identifier texture;
+        Vec3 renderOffset = Vec3.ZERO;
     }
 }

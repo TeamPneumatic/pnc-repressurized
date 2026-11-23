@@ -39,6 +39,11 @@
       "text": "There are a couple of other little tricks to be aware of:$(li)Right-clicking a Drone with a $(l:tools/gps_tool)GPS Tool/$ makes it go to the GPS Tool's stored blockpos; may be useful to test Drone pathing.$(li)Hacking a Drone (using the $(l:base_concepts/upgrades#security)Security Upgrade/$ in the Pneumatic Helmet) makes it suspend its program and come to you; useful if its program has left it in a hard-to-reach spot. Hacking it again will resume the program."
     },
     {
+      "type": "text",
+      "title": "Changing Dimensions",
+      "text": "By default, drones cannot change dimension, e.g. by going through a Nether portal. This is because drone programs use block coordinates which would not normally make sense in a different dimension. However, by including a $(l:programming/condition_dimension)Condition: Dimension/$ widget in your program, drones gain the ability to switch dimension.$(p)It's important to note that you still need to write your program to support multiple dimensions, i.e. sections of your program which branch off the dimension widget must be using different coordinate spaces."
+    },
+    {
       "type": "crafting",
       "text": "Crafting a Drone",
       "recipe": "pneumaticcraft:drone"

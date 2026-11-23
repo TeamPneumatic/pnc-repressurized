@@ -1,5 +1,6 @@
 {
   "textures": {
+    "particle": "#pipe",
     "pipe": "pneumaticcraft:pnc_model/pressure_tube"
   },
   "elements": [

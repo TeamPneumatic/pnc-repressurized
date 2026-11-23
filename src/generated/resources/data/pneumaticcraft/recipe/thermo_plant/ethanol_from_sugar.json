@@ -4,11 +4,9 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "pneumaticcraft:yeast_culture"
+      "ingredient": "#pneumaticcraft:yeast_culture"
     },
-    "item": {
-      "item": "minecraft:sugar"
-    }
+    "item": "minecraft:sugar"
   },
   "outputs": {
     "fluid_output": {

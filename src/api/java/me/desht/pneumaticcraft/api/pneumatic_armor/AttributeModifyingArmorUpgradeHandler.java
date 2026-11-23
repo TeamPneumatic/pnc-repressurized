@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import net.minecraft.core.Holder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -28,7 +28,7 @@ public abstract class AttributeModifyingArmorUpgradeHandler<T extends IArmorExte
     /**
      * {@return the attribute modifier ID; by default the armor upgrade ID is used}
      */
-    protected ResourceLocation getModifierId() {
+    protected Identifier getModifierId() {
         return getID();
     }
 

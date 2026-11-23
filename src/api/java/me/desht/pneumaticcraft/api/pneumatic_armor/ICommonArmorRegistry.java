@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableBlock;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -127,5 +127,5 @@ public interface ICommonArmorRegistry {
      * @param id the ID of the upgrade to retrieve
      * @return the upgrade optional, or {@code Optional.empty()} if the ID is not known
      */
-    Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(ResourceLocation id);
+    Optional<IArmorUpgradeHandler<?>> getArmorUpgradeHandler(Identifier id);
 }

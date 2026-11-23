@@ -38,7 +38,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -90,7 +90,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     private Vector3f makeTumbleVec(Level world, LivingEntity thrower) {
         if (thrower != null) {
             return thrower.getLookAngle().cross(Y_POS).toVector3f();
-        } else if (world != null && world.isClientSide) {
+        } else if (world != null && world.isClientSide()) {
             return ClientUtils.getOptionalClientPlayer()
                     .map(p -> p.getLookAngle().cross(Y_POS).toVector3f())
                     .orElse(null);
@@ -135,7 +135,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
         super.tick();  // handles nearly all the in-flight logic
 
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
             if (!onGround() && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
                 dropAsItem();
@@ -146,7 +146,7 @@ public class TumblingBlockEntity extends ThrowableProjectile {
 
     @Override
     protected void onHit(HitResult result) {
-        if (!level().isClientSide) {
+        if (!level().isClientSide()) {
             discard();
             if (result.getType() == HitResult.Type.BLOCK) {
                 if (!tryPlaceAsBlock((BlockHitResult) result)) {
@@ -181,8 +181,8 @@ public class TumblingBlockEntity extends ThrowableProjectile {
     }
 
     private void dropAsItem() {
-        if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            spawnAtLocation(getStack().copy(), 0.0F);
+        if (this.level() instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.ENTITY_DROPS)) {
+            spawnAtLocation(serverLevel, getStack().copy());
         }
     }
 

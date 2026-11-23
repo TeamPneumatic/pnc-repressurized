@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.compressor.SolarCompressorBlockEntity;
@@ -9,11 +8,16 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.attribute.EnvironmentAttributes;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<SolarCompressorBlockEntity> {
+public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<SolarCompressorBlockEntity, SolarCompressorRenderer.State> {
     private final ModelPart panels;
     private final ModelPart support;
     private final ModelPart base;
@@ -50,29 +54,43 @@ public class SolarCompressorRenderer extends AbstractBlockEntityModelRenderer<So
     }
 
     @Override
-    void renderModel(SolarCompressorBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_SOLAR_COMPRESSOR));
+    public State createRenderState() {
+        return new State();
+    }
 
-        if (!te.isBounding(te)) {
-            float panelAngle = (180F / (float) Math.PI) * te.getLevel().getSunAngle(te.getLevel().getDayTime());
+    @Override
+    public void extractRenderState(SolarCompressorBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
+        state.bounding = blockEntity.isBounding(blockEntity);
+        state.panelAngle = blockEntity.getLevel().environmentAttributes().getValue(EnvironmentAttributes.SUN_ANGLE, blockEntity.getBlockPos());
+    }
+
+    @Override
+    void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (!state.bounding) {
             // Translates panels to origin to rotate
-            matrixStackIn.translate(0, -6 / 16F, 0);
+            poseStack.translate(0, -6 / 16F, 0);
 
             // Rotates panel with sun during the day
-            if (panelAngle < 90 || panelAngle > 270) {
-                matrixStackIn.mulPose(Axis.ZN.rotationDegrees(panelAngle));
+            if (state.panelAngle < 90 || state.panelAngle > 270) {
+                poseStack.mulPose(Axis.ZN.rotationDegrees(state.panelAngle));
             }
 
             // Returns panel to default position
             else {
-                matrixStackIn.mulPose(Axis.ZN.rotationDegrees(90 - (panelAngle - 90)));
+                poseStack.mulPose(Axis.ZN.rotationDegrees(90 - (state.panelAngle - 90)));
             }
 
             // Translates panels back to original position after rotation
-            matrixStackIn.translate(0, 6 / 16F, 0);
+            poseStack.translate(0, 6 / 16F, 0);
 
-            panels.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            submitPart(submitNodeCollector, panels, poseStack, RenderTypes.entityCutoutCull(Textures.MODEL_SOLAR_COMPRESSOR), state);
         }
+    }
+
+    public static class State extends ModelRenderState {
+        boolean bounding;
+        float panelAngle;
     }
 }

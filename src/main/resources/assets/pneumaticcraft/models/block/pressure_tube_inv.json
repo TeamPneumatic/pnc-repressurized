@@ -1,4 +1,5 @@
 {
+	"textures": {"particle": "#pipe"},
 	"credit": "Made with Blockbench",
 	"render_type": "cutout",
 	"elements": [

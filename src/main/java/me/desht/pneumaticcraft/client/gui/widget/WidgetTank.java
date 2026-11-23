@@ -20,9 +20,9 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.Rect2i;
@@ -73,20 +73,17 @@ public class WidgetTank extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int x = getX(), y = getY();
         GuiUtils.drawFluid(graphics, new Rect2i(x, y, width, height), getFluid(), getTank());
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 300);
         for (int i = 3; i < height - 1; i += 4) {
             int width = (i - 3) % 20 == 0 ? 16 : 2;
             graphics.fill(x, y + i, x + width, y + i + 1, 0xFF2F2F2F);
         }
-        graphics.pose().popPose();
 
         if (isHovered) {
-            graphics.renderTooltip(Minecraft.getInstance().font, makeTooltip(), Optional.empty(), mouseX, mouseY);
+            graphics.setTooltipForNextFrame(Minecraft.getInstance().font, makeTooltip(), Optional.empty(), mouseX, mouseY);
         }
     }
 

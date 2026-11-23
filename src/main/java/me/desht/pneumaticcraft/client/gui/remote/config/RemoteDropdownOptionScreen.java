@@ -87,8 +87,8 @@ public class RemoteDropdownOptionScreen extends AbstractRemoteVariableConfigScre
         @Override
         public WidgetComboBox createMinecraftWidget(RemoteWidgetDropdown remoteWidget, AbstractRemoteScreen screen) {
             WidgetComboBox res = new WidgetComboBox(Minecraft.getInstance().font,
-                    remoteWidget.widgetSettings().x() + screen.getGuiLeft(),
-                    remoteWidget.widgetSettings().y() + screen.getGuiTop(),
+                    remoteWidget.widgetSettings().x() + screen.getLeftPos(),
+                    remoteWidget.widgetSettings().y() + screen.getTopPos(),
                     remoteWidget.widgetSettings().width(), Minecraft.getInstance().font.lineHeight + 3,
                     btn -> {
                         if (btn.getSelectedElementIndex() >= 0 && !remoteWidget.varName().isEmpty()) {

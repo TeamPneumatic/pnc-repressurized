@@ -1,26 +1,15 @@
 package me.desht.pneumaticcraft.client.model.entity.semiblocks;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import me.desht.pneumaticcraft.common.entity.semiblock.CropSupportEntity;
-import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class ModelCropSupport extends EntityModel<CropSupportEntity> {
-    private final ModelPart stick1;
-    private final ModelPart stick2;
-    private final ModelPart stick3;
-    private final ModelPart stick4;
-    private final ModelPart stick5;
-    private final ModelPart stick6;
-    private final ModelPart stick7;
-    private final ModelPart stick8;
-
+public class ModelCropSupport extends Model.Simple {
     private static final String STICK1 = "stick1";
     private static final String STICK2 = "stick2";
     private static final String STICK3 = "stick3";
@@ -33,14 +22,7 @@ public class ModelCropSupport extends EntityModel<CropSupportEntity> {
     private static final String STICK8_R1 = "stick8_r1";
 
     public ModelCropSupport(ModelPart root) {
-        stick1 = root.getChild(STICK1);
-        stick2 = root.getChild(STICK2);
-        stick3 = root.getChild(STICK3);
-        stick4 = root.getChild(STICK4);
-        stick5 = root.getChild(STICK5);
-        stick6 = root.getChild(STICK6);
-        stick7 = root.getChild(STICK7);
-        stick8 = root.getChild(STICK8);
+        super(root, RenderTypes::entityCutoutCull);
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -85,28 +67,5 @@ public class ModelCropSupport extends EntityModel<CropSupportEntity> {
                 PartPose.offsetAndRotation(0.0F, 0.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 16);
-    }
-
-
-    @Override
-    public void setupAnim(CropSupportEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack matrixStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        stick1.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick2.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick3.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick4.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick5.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick6.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick7.render(matrixStack, buffer, packedLight, packedOverlay);
-        stick8.render(matrixStack, buffer, packedLight, packedOverlay);
-    }
-
-    public void setRotationAngle(ModelPart modelRenderer, float x, float y, float z) {
-        modelRenderer.xRot = x;
-        modelRenderer.yRot = y;
-        modelRenderer.zRot = z;
     }
 }

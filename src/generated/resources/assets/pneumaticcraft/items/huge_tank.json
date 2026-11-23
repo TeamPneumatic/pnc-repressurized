@@ -1,0 +1,18 @@
+{
+  "model": {
+    "type": "minecraft:composite",
+    "models": [
+      {
+        "type": "minecraft:model",
+        "model": "pneumaticcraft:block/fluid_tank_inv_netherite"
+      },
+      {
+        "type": "minecraft:special",
+        "base": "pneumaticcraft:block/fluid_tank_inv_netherite",
+        "model": {
+          "type": "pneumaticcraft:fluid_container_item"
+        }
+      }
+    ]
+  }
+}

@@ -1,5 +1,0 @@
-{
-  "parent": "neoforge:item/bucket",
-  "loader": "neoforge:fluid_container",
-  "fluid": "pneumaticcraft:kerosene"
-}

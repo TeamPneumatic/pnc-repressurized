@@ -18,7 +18,6 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.block.entity.elevator.ElevatorBaseBlockEntity;
@@ -29,16 +28,20 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import org.jspecify.annotations.Nullable;
 
-public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity> {
+public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<ElevatorBaseBlockEntity, ElevatorBaseRenderer.State> {
     private static final float FACTOR = 9F / 16;
     private static final int[] SHADE = new int[] { 0xFFFFFFFF, 0xFFD8D8D8, 0xFFC0C0C0, 0xFF8C8C8C };
 
@@ -88,58 +91,78 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-
     @Override
-    public void renderModel(ElevatorBaseBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.extension == 0) return;
-
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ELEVATOR));
-
-        double extension = Mth.lerp(partialTicks, te.oldExtension, te.extension);
-        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole4, 0, extension);
-        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole3, 1, extension);
-        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole2, 2, extension);
-        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole1, 3, extension);
-
-        floor.render(matrixStackIn, builder, te.lightAbove, combinedOverlayIn);
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    protected void renderExtras(ElevatorBaseBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.fakeFloorTextureUV != null && te.fakeFloorTextureUV.length == 4) {
-            matrixStack.pushPose();
-            double extension = Mth.lerp(partialTicks, te.oldExtension, te.extension);
-            matrixStack.translate(0, extension + 1.0005f, 0);
-            VertexConsumer builder = iRenderTypeBuffer.getBuffer(ModRenderTypes.getTextureRender(TextureAtlas.LOCATION_BLOCKS));
-            float uMin = te.fakeFloorTextureUV[0];
-            float vMin = te.fakeFloorTextureUV[1];
-            float uMax = te.fakeFloorTextureUV[2];
-            float vMax = te.fakeFloorTextureUV[3];
-            Matrix4f posMat = matrixStack.last().pose();
-            builder.addVertex(posMat,0, 0, 1).setColor(te.fakeFloorTextureTint)
-                    .setUv(uMin, vMax).setLight(te.lightAbove);
-            builder.addVertex(posMat,1, 0, 1).setColor(te.fakeFloorTextureTint)
-                    .setUv(uMax, vMax).setLight(te.lightAbove);
-            builder.addVertex(posMat,1, 0, 0).setColor(te.fakeFloorTextureTint)
-                    .setUv(uMax, vMin).setLight(te.lightAbove);
-            builder.addVertex(posMat,0, 0, 0).setColor(te.fakeFloorTextureTint)
-                    .setUv(uMin, vMin).setLight(te.lightAbove);
-            matrixStack.popPose();
+    public void extractRenderState(ElevatorBaseBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+
+        state.extension = Mth.lerp(partialTicks, blockEntity.oldExtension, blockEntity.extension);
+        state.lightAbove = blockEntity.lightAbove;
+        state.fakeFloorTextureUV = blockEntity.fakeFloorTextureUV != null && blockEntity.fakeFloorTextureUV.length == 4 ?
+                blockEntity.fakeFloorTextureUV.clone() : null;
+        state.fakeFloorTextureTint = blockEntity.fakeFloorTextureTint;
+    }
+
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (state.extension == 0) return;
+
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_ELEVATOR);
+
+        submitPole(poseStack, submitNodeCollector, renderType, state, pole4, 0);
+        submitPole(poseStack, submitNodeCollector, renderType, state, pole3, 1);
+        submitPole(poseStack, submitNodeCollector, renderType, state, pole2, 2);
+        submitPole(poseStack, submitNodeCollector, renderType, state, pole1, 3);
+
+        submitPart(submitNodeCollector, floor, poseStack, renderType, state.lightAbove, -1, state);
+    }
+
+    @Override
+    protected void submitExtras(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        float[] uv = state.fakeFloorTextureUV;
+        if (uv != null) {
+            poseStack.pushPose();
+            poseStack.translate(0, state.extension + 1.0005f, 0);
+            float uMin = uv[0];
+            float vMin = uv[1];
+            float uMax = uv[2];
+            float vMax = uv[3];
+            int tint = state.fakeFloorTextureTint;
+            int light = state.lightAbove;
+            submitNodeCollector.submitCustomGeometry(poseStack, ModRenderTypes.getTextureRender(TextureAtlas.LOCATION_BLOCKS), (pose, builder) -> {
+                Matrix4f posMat = pose.pose();
+                builder.addVertex(posMat,0, 0, 1).setColor(tint).setUv(uMin, vMax).setLight(light);
+                builder.addVertex(posMat,1, 0, 1).setColor(tint).setUv(uMax, vMax).setLight(light);
+                builder.addVertex(posMat,1, 0, 0).setColor(tint).setUv(uMax, vMin).setLight(light);
+                builder.addVertex(posMat,0, 0, 0).setColor(tint).setUv(uMin, vMin).setLight(light);
+            });
+            poseStack.popPose();
         }
     }
 
-    private void renderPole(PoseStack matrixStackIn, VertexConsumer builder, int combinedLightIn, int combinedOverlayIn, ModelPart pole, int idx, double extension) {
-        matrixStackIn.translate(0, -extension / 4, 0);
-        matrixStackIn.pushPose();
-        matrixStackIn.translate(0, FACTOR, 0);
-        matrixStackIn.scale(1, (float) (extension * 16 / 14 / 4), 1);
-        matrixStackIn.translate(0, -FACTOR, 0);
-        pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx]);
-        matrixStackIn.popPose();
+    private void submitPole(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, RenderType renderType, State state, ModelPart pole, int idx) {
+        poseStack.translate(0, -state.extension / 4, 0);
+        poseStack.pushPose();
+        poseStack.translate(0, FACTOR, 0);
+        poseStack.scale(1, (float) (state.extension * 16 / 14 / 4), 1);
+        poseStack.translate(0, -FACTOR, 0);
+        submitPart(submitNodeCollector, pole, poseStack, renderType, state.lightAbove, SHADE[idx], state);
+        poseStack.popPose();
+    }
+
+    public static class State extends ModelRenderState {
+        double extension;
+        int lightAbove;
+        float @Nullable [] fakeFloorTextureUV;
+        int fakeFloorTextureTint;
     }
 
     @Override
-    public boolean shouldRenderOffScreen(ElevatorBaseBlockEntity te) {
+    public boolean shouldRenderOffScreen() {
         return true;  // since this can get very tall
     }
 
@@ -152,6 +175,6 @@ public class ElevatorBaseRenderer extends AbstractBlockEntityModelRenderer<Eleva
 
     @Override
     public AABB getRenderBoundingBox(ElevatorBaseBlockEntity blockEntity) {
-        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.extension);
+        return super.getRenderBoundingBox(blockEntity).inflate(blockEntity.getRenderExtension() + 1);
     }
 }

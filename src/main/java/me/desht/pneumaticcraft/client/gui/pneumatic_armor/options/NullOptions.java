@@ -21,7 +21,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.MutableComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -61,11 +61,11 @@ public class NullOptions implements IOptionPage {
     }
 
     @Override
-    public void renderPre(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPre(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
     }
 
     @Override
-    public void renderPost(GuiGraphics graphics, int x, int y, float partialTicks) {
+    public void renderPost(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
     }
 
     @Override

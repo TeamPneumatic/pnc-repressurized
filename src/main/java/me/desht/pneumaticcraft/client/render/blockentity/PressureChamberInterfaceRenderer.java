@@ -1,29 +1,32 @@
 package me.desht.pneumaticcraft.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemDisplayContext;
 
 import static me.desht.pneumaticcraft.common.block.entity.processing.PressureChamberInterfaceBlockEntity.MAX_PROGRESS;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 
-public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity> {
+public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRenderer<PressureChamberInterfaceBlockEntity, PressureChamberInterfaceRenderer.State> {
 
     private final ModelPart inputLeft;
     private final ModelPart inputRight;
@@ -89,71 +92,85 @@ public class PressureChamberInterfaceRenderer extends AbstractBlockEntityModelRe
         return LayerDefinition.create(meshdefinition, 32, 32);
     }
 
+    @Override
+    public State createRenderState() {
+        return new State();
+    }
 
     @Override
-    public void renderModel(PressureChamberInterfaceBlockEntity te, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        VertexConsumer builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
+    public void extractRenderState(PressureChamberInterfaceBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
+        state.inputProgress = Mth.lerp(partialTicks, blockEntity.oldInputProgress, blockEntity.inputProgress) / MAX_PROGRESS;
+        state.outputProgress = Mth.lerp(partialTicks, blockEntity.oldOutputProgress, blockEntity.outputProgress) / MAX_PROGRESS;
+        itemModelResolver.updateForTopItem(state.item, blockEntity.getStackInInterface(), ItemDisplayContext.GROUND, blockEntity.getLevel(), null, (int) blockEntity.getBlockPos().asLong());
+    }
 
-        float inputProgress = Mth.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
-        float outputProgress = Mth.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
+    @Override
+    public void submitModel(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        RenderType renderType = RenderTypes.entityCutoutCull(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE);
+
+        RenderUtils.rotateMatrixForDirection(poseStack, state.rotation);
+
+        float inputProgress = state.inputProgress;
+        float outputProgress = state.outputProgress;
         if (inputProgress <= 1f) {
-            // REMOVED:           matrixStackIn.scale(1F - inputProgress, 1, 1);
-            matrixStackIn.pushPose();
-            matrixStackIn.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
-            inputLeft.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
+            submitPart(submitNodeCollector, inputLeft, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate((-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
-            inputRight.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate((-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
+            submitPart(submitNodeCollector, inputRight, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, (1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
-            inputBottom.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0, (1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
+            submitPart(submitNodeCollector, inputBottom, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, (-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
-            inputTop.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0, (-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
+            submitPart(submitNodeCollector, inputTop, poseStack, renderType, state);
+            poseStack.popPose();
         }
         if (outputProgress < 1f) {
-            matrixStackIn.pushPose();
-            matrixStackIn.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
-            outputLeft.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
+            submitPart(submitNodeCollector, outputLeft, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate((-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
-            outputRight.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate((-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
+            submitPart(submitNodeCollector, outputRight, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, (1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
-            outputBottom.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0, (1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
+            submitPart(submitNodeCollector, outputBottom, poseStack, renderType, state);
+            poseStack.popPose();
 
-            matrixStackIn.pushPose();
-            matrixStackIn.translate(0, (-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
-            outputTop.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.popPose();
+            poseStack.pushPose();
+            poseStack.translate(0, (-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
+            submitPart(submitNodeCollector, outputTop, poseStack, renderType, state);
+            poseStack.popPose();
         }
     }
 
     @Override
-    protected void renderExtras(PressureChamberInterfaceBlockEntity te, float partialTicks, PoseStack matrixStack, MultiBufferSource buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getStackInInterface().isEmpty()) {
-            matrixStack.pushPose();
-
-            matrixStack.translate(0.5, 0.5, 0.5);
-            ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            BakedModel bakedModel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null, 0);
-            itemRenderer.render(te.getStackInInterface(), ItemDisplayContext.GROUND, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, bakedModel);
-
-            matrixStack.popPose();
+    protected void submitExtras(State state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+        if (!state.item.isEmpty()) {
+            poseStack.pushPose();
+            poseStack.translate(0.5, 0.5, 0.5);
+            state.item.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
         }
+    }
+
+    public static class State extends ModelRenderState {
+        float inputProgress;
+        float outputProgress;
+        final ItemStackRenderState item = new ItemStackRenderState();
     }
 }

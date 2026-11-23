@@ -6,14 +6,13 @@
   },
   "input1": {
     "amount": 25,
-    "tag": "c:plantoil"
+    "ingredient": "#c:plantoil"
   },
   "input2": {
     "amount": 25,
-    "tag": "c:ethanol"
+    "ingredient": "#c:ethanol"
   },
   "item_output": {
-    "count": 1,
     "id": "pneumaticcraft:glycerol"
   },
   "pressure": 2.0,

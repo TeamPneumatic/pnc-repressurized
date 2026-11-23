@@ -3,7 +3,7 @@
   "inputs": [
     {
       "count": 1,
-      "tag": "c:crops/wheat"
+      "ingredient": "#c:crops/wheat"
     }
   ],
   "pressure": 1.5,

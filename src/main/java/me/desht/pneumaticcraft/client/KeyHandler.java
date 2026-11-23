@@ -18,7 +18,7 @@
 package me.desht.pneumaticcraft.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.client.PNCKeyCategories;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -60,17 +60,17 @@ public enum KeyHandler {
         registerKeyListener(HUDHandler.getInstance());
 
         keybindOpenOptions = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_U, PNCKeyCategories.MAIN));
         keybindHack = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_H, PNCKeyCategories.MAIN));
         keybindDebuggingDrone = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.NONE, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, PNCKeyCategories.MAIN));
         keybindKick = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_X, PNCKeyCategories.MAIN));
         keybindLauncher = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.CONTROL, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_C, PNCKeyCategories.MAIN));
         keybindJetBoots = addKnownMapping(new KeyMapping(KeyHandler.DESCRIPTION_JET_BOOTS, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_SPACE, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
+                KeyModifier.NONE, InputConstants.Type.KEYSYM,  GLFW.GLFW_KEY_SPACE, PNCKeyCategories.MAIN));
     }
 
     private KeyMapping addKnownMapping(KeyMapping key) {
@@ -79,19 +79,22 @@ public enum KeyHandler {
     }
 
     public void registerKeyMappings(RegisterKeyMappingsEvent event) {
+        event.registerCategory(PNCKeyCategories.MAIN);
+        event.registerCategory(PNCKeyCategories.UPGRADE_TOGGLES);
+        event.registerCategory(PNCKeyCategories.BLOCK_TRACKER);
         knownKeyMappings.forEach(event::register);
     }
 
     @SubscribeEvent
     public void onKey(InputEvent.Key event) {
-        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.PRESS) {
             knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
         }
     }
 
     @SubscribeEvent
     public void onMouse(InputEvent.MouseButton.Post event) {
-        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.RELEASE) {
+        if (Minecraft.getInstance().screen == null && event.getAction() == InputConstants.PRESS) {
             knownKeyMappings.stream().filter(KeyMapping::consumeClick).forEach(this::dispatchInput);
         }
     }

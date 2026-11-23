@@ -19,7 +19,7 @@ package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.AbstractPersistentEntityHack;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,14 +28,14 @@ import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackableEnderman extends AbstractPersistentEntityHack<EnderMan> {
-    private static final ResourceLocation ID = RL("enderman");
+    private static final Identifier ID = RL("enderman");
 
     public HackableEnderman() {
         super(StockHackTypes.STOP_TELEPORT);
     }
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 

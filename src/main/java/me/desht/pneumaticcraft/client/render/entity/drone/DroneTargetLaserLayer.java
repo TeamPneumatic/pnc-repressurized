@@ -18,36 +18,31 @@
 package me.desht.pneumaticcraft.client.render.entity.drone;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
-import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.drone.AbstractDroneEntity;
-import me.desht.pneumaticcraft.common.entity.drone.DroneEntity;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 
-public class DroneTargetLaserLayer extends RenderLayer<AbstractDroneEntity, ModelDrone> {
-    DroneTargetLaserLayer(RenderDrone rendererer) {
+public class DroneTargetLaserLayer extends RenderLayer<DroneRenderState, ModelDrone> {
+    DroneTargetLaserLayer(RenderLayerParent<DroneRenderState, ModelDrone> rendererer) {
         super(rendererer);
     }
 
     @Override
-    public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, AbstractDroneEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (entitylivingbaseIn instanceof DroneEntity drone) {
-            ProgressingLine targetLine = drone.getTargetLine();
-            ProgressingLine oldTargetLine = drone.getOldTargetLine();
-            if (targetLine != null && oldTargetLine != null) {
-                matrixStackIn.pushPose();
-                matrixStackIn.mulPose(Axis.XP.rotationDegrees(180));
-                matrixStackIn.translate(0, -1.5, 0);
-                matrixStackIn.scale(2f, 2f, 2f);
-                VertexConsumer builder = bufferIn.getBuffer(RenderType.LINES);
-                RenderUtils.renderProgressingLine3d(oldTargetLine, targetLine, partialTicks, matrixStackIn, builder, 0xFFFF0000);
-                matrixStackIn.popPose();
-            }
+    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, DroneRenderState state, float yRot, float xRot) {
+        float[] line = state.targetLine;
+        if (line != null) {
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.XP.rotationDegrees(180));
+            poseStack.translate(0, -1.5, 0);
+            poseStack.scale(2f, 2f, 2f);
+            float lineWidth = RenderUtils.defaultLineWidth();
+            submitNodeCollector.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, builder) ->
+                    RenderUtils.normalLine(builder, pose, line[0], line[1], line[2], line[3], line[4], line[5], 1f, 1f, 0f, 0f, lineWidth));
+            poseStack.popPose();
         }
     }
 }

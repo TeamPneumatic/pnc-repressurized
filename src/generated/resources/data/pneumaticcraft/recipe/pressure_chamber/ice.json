@@ -3,13 +3,12 @@
   "inputs": [
     {
       "count": 4,
-      "item": "minecraft:snow_block"
+      "ingredient": "minecraft:snow_block"
     }
   ],
   "pressure": 1.5,
   "results": [
     {
-      "count": 1,
       "id": "minecraft:ice"
     }
   ]

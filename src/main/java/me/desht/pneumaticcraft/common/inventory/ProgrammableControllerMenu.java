@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -43,7 +42,7 @@ public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<Progr
 
         addPlayerSlots(playerInventory, 84);
 
-        IEnergyStorage storage = blockEntity.getLevel().getCapability(Capabilities.EnergyStorage.BLOCK, blockEntity.getBlockPos(), blockEntity.getBlockState(), blockEntity, null);
+        IEnergyStorage storage = blockEntity.getEnergyHandler(null);
         if (storage != null) {
             try {
                 addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));

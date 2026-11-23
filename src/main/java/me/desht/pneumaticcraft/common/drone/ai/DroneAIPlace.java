@@ -133,7 +133,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
                 }
             }
             if (!l.isEmpty()) {
-                return l.get(drone.getDroneLevel().random.nextInt(l.size()));
+                return l.get(drone.getDroneLevel().getRandom().nextInt(l.size()));
             }
         } else {
             for (int i = 0; i < inv.getSlots(); i++) {

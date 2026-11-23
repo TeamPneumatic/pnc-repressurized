@@ -34,8 +34,11 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import io.netty.buffer.ByteBuf;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -46,14 +49,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import org.joml.Vector3f;
 
 @EventBusSubscriber(modid = PneumaticRegistry.MOD_ID)
 public class NetworkHandler {
     private static final String PROTOCOL_VERSION = "1";
+
+    /**
+     * ByteBufCodecs.VECTOR3F is typed as the read-only Vector3fc in 26.1; PNC packets carry a mutable Vector3f
+     */
+    public static final StreamCodec<ByteBuf, Vector3f> VECTOR3F = ByteBufCodecs.VECTOR3F.map(Vector3f::new, v -> v);
 
 	@SubscribeEvent
 	public static void register(final RegisterPayloadHandlersEvent event) {
@@ -128,13 +138,13 @@ public class NetworkHandler {
 		
 		// misc bi-directional
 		registrar.playBidirectional(PacketAphorismTileUpdate.TYPE, PacketAphorismTileUpdate.STREAM_CODEC,
-				PacketAphorismTileUpdate::handle);
+				PacketAphorismTileUpdate::handle, PacketAphorismTileUpdate::handle);
 		registrar.playBidirectional(PacketSetGlobalVariable.TYPE, PacketSetGlobalVariable.STREAM_CODEC,
-				PacketSetGlobalVariable::handle);
+				PacketSetGlobalVariable::handle, PacketSetGlobalVariable::handle);
 		registrar.playBidirectional(PacketSyncSemiblock.TYPE, PacketSyncSemiblock.STREAM_CODEC,
-				PacketSyncSemiblock::handle);
+				PacketSyncSemiblock::handle, PacketSyncSemiblock::handle);
 		registrar.playBidirectional(PacketSyncSmartChest.TYPE, PacketSyncSmartChest.STREAM_CODEC,
-				PacketSyncSmartChest::handle);
+				PacketSyncSmartChest::handle, PacketSyncSmartChest::handle);
 
 		// tube modules
 		registrar.playToServer(PacketUpdatePressureModule.TYPE, PacketUpdatePressureModule.STREAM_CODEC,
@@ -156,7 +166,7 @@ public class NetworkHandler {
 
 		// amadron
 		registrar.playBidirectional(PacketSyncAmadronOffers.TYPE, PacketSyncAmadronOffers.STREAM_CODEC,
-				PacketSyncAmadronOffers::handle);
+				PacketSyncAmadronOffers::handle, PacketSyncAmadronOffers::handle);
 		registrar.playToClient(PacketAmadronOrderResponse.TYPE, PacketAmadronOrderResponse.STREAM_CODEC,
 				PacketAmadronOrderResponse::handle);
 		registrar.playToServer(PacketAmadronOrderUpdate.TYPE, PacketAmadronOrderUpdate.STREAM_CODEC,
@@ -168,13 +178,13 @@ public class NetworkHandler {
 		registrar.playToClient(PacketAmadronTradeRemoved.TYPE, PacketAmadronTradeRemoved.STREAM_CODEC,
 				PacketAmadronTradeRemoved::handle);
 		registrar.playBidirectional(PacketAmadronTradeAddCustom.TYPE, PacketAmadronTradeAddCustom.STREAM_CODEC,
-				PacketAmadronTradeAddCustom::handle);
+				PacketAmadronTradeAddCustom::handle, PacketAmadronTradeAddCustom::handle);
 
 		// hacking
 		registrar.playBidirectional(PacketHackingBlockStart.TYPE, PacketHackingBlockStart.STREAM_CODEC,
-				PacketHackingBlockStart::handle);
+				PacketHackingBlockStart::handle, PacketHackingBlockStart::handle);
 		registrar.playBidirectional(PacketHackingEntityStart.TYPE, PacketHackingEntityStart.STREAM_CODEC,
-				PacketHackingEntityStart::handle);
+				PacketHackingEntityStart::handle, PacketHackingEntityStart::handle);
 		registrar.playToClient(PacketHackingBlockFinish.TYPE, PacketHackingBlockFinish.STREAM_CODEC,
 				PacketHackingBlockFinish::handle);
 		registrar.playToClient(PacketHackingEntityFinish.TYPE, PacketHackingEntityFinish.STREAM_CODEC,
@@ -186,7 +196,7 @@ public class NetworkHandler {
 
 		// pneumatic armor
 		registrar.playBidirectional(PacketToggleArmorFeature.TYPE, PacketToggleArmorFeature.STREAM_CODEC,
-				PacketToggleArmorFeature::handle);
+				PacketToggleArmorFeature::handle, PacketToggleArmorFeature::handle);
 		registrar.playToServer(PacketToggleArmorFeatureBulk.TYPE, PacketToggleArmorFeatureBulk.STREAM_CODEC,
 				PacketToggleArmorFeatureBulk::handle);
 		registrar.playToServer(PacketPneumaticKick.TYPE, PacketPneumaticKick.STREAM_CODEC,
@@ -214,7 +224,7 @@ public class NetworkHandler {
 		registrar.playToClient(PacketShowWireframe.TYPE, PacketShowWireframe.STREAM_CODEC,
 				PacketShowWireframe::handle);
 		registrar.playBidirectional(PacketProgrammerSync.TYPE, PacketProgrammerSync.STREAM_CODEC,
-				 PacketProgrammerSync::handle);
+				PacketProgrammerSync::handle, PacketProgrammerSync::handle);
 	}
 
     public static void sendToAll(CustomPacketPayload message) {
@@ -231,7 +241,7 @@ public class NetworkHandler {
 
 	public static void sendToAllTracking(CustomPacketPayload message, Level level, BlockPos pos) {
 		if (level instanceof ServerLevel serverLevel) {
-			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(pos), message);
+			PacketDistributor.sendToPlayersTrackingChunk(serverLevel, ChunkPos.containing(pos), message);
 		}
 	}
 
@@ -246,7 +256,7 @@ public class NetworkHandler {
     }
 
     public static void sendToServer(CustomPacketPayload message) {
-		PacketDistributor.sendToServer(message);
+		ClientPacketDistributor.sendToServer(message);
     }
 
 	/**
@@ -261,7 +271,7 @@ public class NetworkHandler {
 				sendToAll(packet);
 			} else {
 				for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-					if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
+					if (!player.level().getServer().isSingleplayerOwner(player.nameAndId())) {
 						sendToPlayer(packet, player);
 					}
 				}
@@ -275,7 +285,7 @@ public class NetworkHandler {
 	 * @param packet the packet to send
 	 */
 	public static void sendNonLocal(ServerPlayer player, CustomPacketPayload packet) {
-		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
+		if (!player.level().getServer().isSingleplayerOwner(player.nameAndId())) {
 			sendToPlayer(packet, player);
 		}
 	}

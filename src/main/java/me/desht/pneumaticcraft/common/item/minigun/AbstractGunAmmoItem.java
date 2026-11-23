@@ -26,16 +26,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -43,12 +45,7 @@ public abstract class AbstractGunAmmoItem extends Item {
     public AbstractGunAmmoItem() {
         // note: max uses (MAX_DAMAGE component) for each ammo type is set in config, which isn't available at this point
         //       hence the arbitrary durability value, which is overridden by getMaxDamage() for each ammo type
-        super(ModItems.defaultProps().setNoRepair().durability(2000));
-    }
-
-    @Override
-    public int getEnchantmentValue(ItemStack stack) {
-        return 9;
+        super(ModItems.defaultProps().setNoCombineRepair().durability(2000).enchantable(9));
     }
 
     /**
@@ -109,9 +106,9 @@ public abstract class AbstractGunAmmoItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> infoList, TooltipFlag extraInfo) {
-        infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
-        super.appendHoverText(stack, context, infoList, extraInfo);
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> infoList, TooltipFlag extraInfo) {
+        infoList.accept(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamageValue(), stack.getMaxDamage()));
+        super.appendHoverText(stack, context, tooltipDisplay, infoList, extraInfo);
     }
 
     /**
@@ -127,7 +124,7 @@ public abstract class AbstractGunAmmoItem extends Item {
         int times = 1;
         int nSpeed = minigun.getUpgrades(ModUpgrades.SPEED.get());
         for (int i = 0; i < nSpeed; i++) {
-            if (minigun.getWorld().random.nextInt(100) < 20) times++;
+            if (minigun.getWorld().getRandom().nextInt(100) < 20) times++;
         }
 
         double dmgMult = getDamageMultiplier(target, ammo);

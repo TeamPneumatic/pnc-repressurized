@@ -18,11 +18,12 @@
 package me.desht.pneumaticcraft.common.hacking.entity;
 
 import me.desht.pneumaticcraft.api.pneumatic_armor.hacking.IHackableEntity;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.decoration.Painting;
-import net.minecraft.world.entity.decoration.PaintingVariant;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.decoration.painting.Painting;
+import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,10 +34,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackablePainting implements IHackableEntity<Painting> {
 
-    private static final ResourceLocation ID = RL("painting");
+    private static final Identifier ID = RL("painting");
 
     @Override
-    public ResourceLocation getHackableId() {
+    public Identifier getHackableId() {
         return ID;
     }
 
@@ -65,9 +66,9 @@ public class HackablePainting implements IHackableEntity<Painting> {
     public void onHackFinished(Painting entity, Player player) {
         PaintingVariant art = entity.getVariant().value();
 
-        var candidates = entity.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).holders()
+        var candidates = entity.registryAccess().lookupOrThrow(Registries.PAINTING_VARIANT).listElements()
                 .filter(h -> h.value().height() == art.height() && h.value().width() == art.width())
                 .toList();
-        entity.setVariant(candidates.get(entity.level().random.nextInt(candidates.size())));
+        entity.setComponent(DataComponents.PAINTING_VARIANT, candidates.get(entity.level().getRandom().nextInt(candidates.size())));
     }
 }

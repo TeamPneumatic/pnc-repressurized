@@ -3,11 +3,9 @@
   "inputs": {
     "fluid": {
       "amount": 1000,
-      "fluid": "minecraft:water"
+      "ingredient": "minecraft:water"
     },
-    "item": {
-      "item": "minecraft:lapis_lazuli"
-    }
+    "item": "minecraft:lapis_lazuli"
   },
   "outputs": {
     "item_output": {

@@ -18,19 +18,7 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
-import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
-import me.desht.pneumaticcraft.common.thirdparty.coldsweat.ColdSweat;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
-import me.desht.pneumaticcraft.common.thirdparty.create.Create;
-import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
-import me.desht.pneumaticcraft.common.thirdparty.ffs.FTBFilterSystem;
-import me.desht.pneumaticcraft.common.thirdparty.ftbteams.FTBTeams;
-import me.desht.pneumaticcraft.common.thirdparty.gamestages.Gamestages;
-import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
-import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
-import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
-import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.neoforged.bus.api.IEventBus;
@@ -67,24 +55,36 @@ public enum ThirdPartyManager {
     private void discoverMods() {
         Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
-            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft::new);
             thirdPartyClasses.put(ModIds.WAILA, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
-            thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
-            thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
-            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
             thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, ImmersiveEngineering::new);
-            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, ImmersiveEngineering::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.MEKANISM, Mekanism::new);
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore::new);
             thirdPartyClasses.put(ModIds.CRAFTTWEAKER, () -> IMPLICIT_INIT);
-            thirdPartyClasses.put(ModIds.GAMESTAGES, Gamestages::new);
-            thirdPartyClasses.put(ModIds.CREATE, Create::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.GAMESTAGES, Gamestages::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.CREATE, Create::new);
             thirdPartyClasses.put(ModIds.FUSION, Fusion::new);
-            thirdPartyClasses.put(ModIds.FFS, FTBFilterSystem::new);
-            thirdPartyClasses.put(ModIds.FTB_TEAMS, FTBTeams::new);
-            thirdPartyClasses.put(ModIds.COLD_SWEAT, ColdSweat::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.FFS, FTBFilterSystem::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.FTB_TEAMS, FTBTeams::new);
+            // TODO 26.1 integration
+//          thirdPartyClasses.put(ModIds.COLD_SWEAT, ColdSweat::new);
 
             // these were supported in 1.12.2 and may or may not come back...
 

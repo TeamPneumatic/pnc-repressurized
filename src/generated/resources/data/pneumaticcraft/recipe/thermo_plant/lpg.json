@@ -3,9 +3,8 @@
   "inputs": {
     "fluid": {
       "amount": 100,
-      "tag": "c:gasoline"
-    },
-    "item": []
+      "ingredient": "#c:gasoline"
+    }
   },
   "outputs": {
     "fluid_output": {
