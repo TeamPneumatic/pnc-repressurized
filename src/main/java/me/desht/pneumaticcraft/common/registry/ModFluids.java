@@ -35,8 +35,8 @@ public class ModFluids {
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, Names.MOD_ID);
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.FLUID_TYPES, Names.MOD_ID);
 
-    public static final Supplier<FluidType> OIL_FLUID_TYPE = registerFluidType("oil",
-            standardProps(800, 20000));
+    public static final Supplier<FluidType> OIL_FLUID_TYPE = FLUID_TYPES.register("oil",
+            () -> new FluidOil.OilFluidType(standardProps(800, 20000)));
     public static final Supplier<FluidType> BIODIESEL_FLUID_TYPE = registerFluidType("biodiesel",
             standardProps(880, 4000));
     public static final Supplier<FluidType> DIESEL_FLUID_TYPE = registerFluidType("diesel",

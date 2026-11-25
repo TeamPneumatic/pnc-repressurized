@@ -22,9 +22,9 @@ import me.desht.pneumaticcraft.common.registry.ModFluids;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 
 public abstract class FluidOil {
     public static final PNCFluidRenderProps RENDER_PROPS = PNCFluidRenderProps.texture("oil");
@@ -39,15 +39,27 @@ public abstract class FluidOil {
         public Source() {
             super(props());
         }
+    }
+
+    public static class Flowing extends BaseFlowingFluid.Flowing {
+        public Flowing() {
+            super(props());
+        }
+    }
+
+    public static class OilFluidType extends FluidType {
+        public OilFluidType(Properties properties) {
+            super(properties);
+        }
 
         @Override
-        public boolean move(FluidState state, LivingEntity entity, Vec3 movementVector, double gravity) {
+        public boolean move(LivingEntity entity, Vec3 movementVector, double gravity) {
             // based on lava movement
             double y = entity.getY();
             boolean falling = entity.getDeltaMovement().y <= 0.0D;
             entity.moveRelative(0.02F, movementVector);
             entity.move(MoverType.SELF, entity.getDeltaMovement());
-            if (entity.getFluidTypeHeight(getFluidType()) <= entity.getFluidJumpThreshold()) {
+            if (entity.getFluidTypeHeight(this) <= entity.getFluidJumpThreshold()) {
                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(0.5D, 0.8D, 0.5D));
                 Vec3 fallingMovement = entity.getFluidFallingAdjustedMovement(gravity, falling, entity.getDeltaMovement());
                 entity.setDeltaMovement(fallingMovement);
@@ -64,12 +76,6 @@ public abstract class FluidOil {
                 entity.setDeltaMovement(delta.x, 0.3D, delta.z);
             }
             return true;
-        }
-    }
-
-    public static class Flowing extends BaseFlowingFluid.Flowing {
-        public Flowing() {
-            super(props());
         }
     }
 }
