@@ -1,8 +1,0 @@
-{
-  "multipart": [
-    { "when":  { "ne":  "false" }, "apply": { "model": "pneumaticcraft:block/elevator_frame_single", "y":  90 } },
-    { "when":  { "nw":  "false" }, "apply": { "model": "pneumaticcraft:block/elevator_frame_single" } },
-    { "when":  { "sw":  "false" }, "apply": { "model": "pneumaticcraft:block/elevator_frame_single", "y":  270 } },
-    { "when":  { "se":  "false" }, "apply": { "model": "pneumaticcraft:block/elevator_frame_single", "y":  180 } }
-  ]
-}

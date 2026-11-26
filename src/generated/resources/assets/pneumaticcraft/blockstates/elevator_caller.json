@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "pneumaticcraft:block/elevator_caller",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "pneumaticcraft:block/elevator_caller",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/elevator_caller"
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/elevator_caller",
+      "y": 90
+    }
+  }
+}

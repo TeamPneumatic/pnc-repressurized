@@ -1,0 +1,31 @@
+{
+  "variants": {
+    "bounding=false,facing=east": {
+      "model": "pneumaticcraft:block/solar_compressor_base",
+      "y": 90
+    },
+    "bounding=false,facing=north": {
+      "model": "pneumaticcraft:block/solar_compressor_base"
+    },
+    "bounding=false,facing=south": {
+      "model": "pneumaticcraft:block/solar_compressor_base",
+      "y": 180
+    },
+    "bounding=false,facing=west": {
+      "model": "pneumaticcraft:block/solar_compressor_base",
+      "y": 270
+    },
+    "bounding=true,facing=east": {
+      "model": "pneumaticcraft:block/solar_compressor_bounding"
+    },
+    "bounding=true,facing=north": {
+      "model": "pneumaticcraft:block/solar_compressor_bounding"
+    },
+    "bounding=true,facing=south": {
+      "model": "pneumaticcraft:block/solar_compressor_bounding"
+    },
+    "bounding=true,facing=west": {
+      "model": "pneumaticcraft:block/solar_compressor_bounding"
+    }
+  }
+}

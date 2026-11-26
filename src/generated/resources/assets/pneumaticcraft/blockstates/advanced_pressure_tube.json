@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "type": "pneumaticcraft:pressure_tube",
+      "prefix": "advanced"
+    }
+  }
+}

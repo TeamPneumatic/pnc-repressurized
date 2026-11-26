@@ -1,0 +1,44 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/universal_sensor"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/assembly_connector_edge",
+        "y": 270
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/assembly_connector_edge",
+        "y": 90
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/assembly_connector_edge",
+        "y": 180
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/assembly_connector_edge"
+      },
+      "when": {
+        "east": "true"
+      }
+    }
+  ]
+}

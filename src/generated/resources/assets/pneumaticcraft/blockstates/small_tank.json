@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_body_iron"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_top_iron"
+      },
+      "when": {
+        "up": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/fluid_tank_bottom_iron"
+      },
+      "when": {
+        "down": "false"
+      }
+    }
+  ]
+}

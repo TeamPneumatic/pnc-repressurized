@@ -1,0 +1,78 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/uv_light_box",
+        "y": 270
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/uv_light_box"
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/uv_light_box",
+        "y": 90
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/uv_light_box",
+        "y": 180
+      },
+      "when": {
+        "facing": "west"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pcb",
+        "y": 270
+      },
+      "when": {
+        "facing": "north",
+        "loaded": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pcb"
+      },
+      "when": {
+        "facing": "east",
+        "loaded": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pcb",
+        "y": 90
+      },
+      "when": {
+        "facing": "south",
+        "loaded": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pcb",
+        "y": 180
+      },
+      "when": {
+        "facing": "west",
+        "loaded": "true"
+      }
+    }
+  ]
+}

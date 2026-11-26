@@ -1,8 +1,0 @@
-{
-    "parent": "block/slab",
-    "textures": {
-        "bottom": "pneumaticcraft:block/compressed_bricks",
-        "top": "pneumaticcraft:block/compressed_bricks",
-        "side": "pneumaticcraft:block/compressed_bricks"
-    }
-}

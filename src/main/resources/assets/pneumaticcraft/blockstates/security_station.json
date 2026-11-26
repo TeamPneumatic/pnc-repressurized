@@ -1,8 +1,0 @@
-{
-	"variants": {
-		"facing=north": { "model": "pneumaticcraft:block/security_station", "y":  180 },
-		"facing=south": { "model": "pneumaticcraft:block/security_station" },
-		"facing=west": { "model": "pneumaticcraft:block/security_station", "y": 90 },
-		"facing=east": { "model": "pneumaticcraft:block/security_station", "y": 270 }
-	}
-}

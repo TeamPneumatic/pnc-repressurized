@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "pneumaticcraft:block/generic/bottom_panel",
+    "east": "pneumaticcraft:block/generic/side_panel",
+    "north": "pneumaticcraft:block/programmable_controller_front",
+    "particle": "pneumaticcraft:block/programmable_controller_front",
+    "south": "pneumaticcraft:block/generic/side_panel",
+    "up": "pneumaticcraft:block/programmable_controller_top",
+    "west": "pneumaticcraft:block/generic/side_panel"
+  }
+}

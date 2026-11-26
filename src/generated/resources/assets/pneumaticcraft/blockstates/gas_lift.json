@@ -1,0 +1,61 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/gas_lift"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/assembly_connector"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pressure_tube_connected"
+      },
+      "when": {
+        "up": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pressure_tube_connected",
+        "x": 90
+      },
+      "when": {
+        "north": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pressure_tube_connected",
+        "x": 90,
+        "y": 180
+      },
+      "when": {
+        "south": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pressure_tube_connected",
+        "x": 90,
+        "y": 270
+      },
+      "when": {
+        "west": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "pneumaticcraft:block/pressure_tube_connected",
+        "x": 90,
+        "y": 90
+      },
+      "when": {
+        "east": "true"
+      }
+    }
+  ]
+}

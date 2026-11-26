@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "pneumaticcraft:block/reinforced_brick_tile",
+    "side": "pneumaticcraft:block/reinforced_stone_slab_side",
+    "top": "pneumaticcraft:block/reinforced_brick_tile"
+  }
+}

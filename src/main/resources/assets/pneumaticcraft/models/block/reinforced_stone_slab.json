@@ -1,8 +1,0 @@
-{
-    "parent": "block/slab",
-    "textures": {
-        "bottom": "pneumaticcraft:block/reinforced_brick_tile",
-        "top": "pneumaticcraft:block/reinforced_brick_tile",
-        "side": "pneumaticcraft:block/reinforced_stone_slab_side"
-    }
-}

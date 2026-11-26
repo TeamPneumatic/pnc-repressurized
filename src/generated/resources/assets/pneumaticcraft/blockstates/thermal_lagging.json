@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "pneumaticcraft:block/thermal_lagging",
+      "x": 270
+    },
+    "facing=east": {
+      "model": "pneumaticcraft:block/thermal_lagging",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "pneumaticcraft:block/thermal_lagging",
+      "y": 180
+    },
+    "facing=south": {
+      "model": "pneumaticcraft:block/thermal_lagging"
+    },
+    "facing=up": {
+      "model": "pneumaticcraft:block/thermal_lagging",
+      "x": 90
+    },
+    "facing=west": {
+      "model": "pneumaticcraft:block/thermal_lagging",
+      "y": 90
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "variants": {
+    "active=false,facing=down": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "x": 180
+    },
+    "active=false,facing=east": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "x": 90,
+      "y": 90
+    },
+    "active=false,facing=north": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "x": 90
+    },
+    "active=false,facing=south": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "x": 90,
+      "y": 180
+    },
+    "active=false,facing=up": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off"
+    },
+    "active=false,facing=west": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_off",
+      "x": 90,
+      "y": 270
+    },
+    "active=true,facing=down": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on",
+      "x": 180
+    },
+    "active=true,facing=east": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on",
+      "x": 90,
+      "y": 90
+    },
+    "active=true,facing=north": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on",
+      "x": 90
+    },
+    "active=true,facing=south": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on",
+      "x": 90,
+      "y": 180
+    },
+    "active=true,facing=up": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on"
+    },
+    "active=true,facing=west": {
+      "model": "pneumaticcraft:block/pneumatic_dynamo_on",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

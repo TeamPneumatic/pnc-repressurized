@@ -1,9 +1,0 @@
-{
-  "multipart": [
-    { "apply": { "model": "pneumaticcraft:block/assembly_controller" } },
-    { "when":  {"north": true }, "apply": { "model": "pneumaticcraft:block/assembly_connector_edge", "y": 270 }},
-    { "when":  {"south": true }, "apply": { "model": "pneumaticcraft:block/assembly_connector_edge", "y": 90 }},
-    { "when":  {"west": true }, "apply": { "model": "pneumaticcraft:block/assembly_connector_edge", "y": 180 }},
-    { "when":  {"east": true }, "apply": { "model": "pneumaticcraft:block/assembly_connector_edge" }}
-  ]
-}
