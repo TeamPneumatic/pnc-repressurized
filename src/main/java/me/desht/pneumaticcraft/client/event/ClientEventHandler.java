@@ -41,6 +41,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.BlockPos;
@@ -141,14 +142,22 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void guiContainerForeground(ContainerScreenEvent.Render.Foreground event) {
+    public static void guiContainerForeground(ScreenEvent.Render.Foreground event) {
+        if (!(event.getScreen() instanceof AbstractContainerScreen<?> container)) {
+            return;
+        }
+
+        // this event isn't translated to the container's position, unlike the old ContainerScreenEvent.Render.Foreground
+        GuiGraphicsExtractor graphics = event.getGuiGraphics();
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(container.getLeftPos(), container.getTopPos());
+
         // general extra rendering
-        if (event.getContainerScreen() instanceof IExtraGuiHandling e) {
+        if (container instanceof IExtraGuiHandling e) {
             e.drawExtras(event);
         }
 
         // custom durability bars
-        AbstractContainerScreen<?> container = event.getContainerScreen();
         for (Slot s : container.getMenu().slots) {
             if (s.getItem().getItem() instanceof ICustomDurabilityBar custom) {
                 if (custom.shouldShowCustomDurabilityBar(s.getItem())) {
@@ -158,13 +167,15 @@ public class ClientEventHandler {
                     int col = custom.getCustomDurabilityColour(s.getItem());
                     int yOff = custom.isShowingOtherBar(s.getItem()) ? 0 : 1;
                     if (yOff == 1) {
-                        event.getGuiGraphics().fill(x + 2, y + 14, x + 2 + width, y + 15, 0xFF282828);
+                        graphics.fill(x + 2, y + 14, x + 2 + width, y + 15, 0xFF282828);
                     }
-                    event.getGuiGraphics().fill(x + 2, y + 12 + yOff, x + 15, y + 13 + yOff, 0xFF000000);
-                    event.getGuiGraphics().fill(x + 2, y + 12 + yOff, x + 2 + width, y + 13 + yOff, 0xFF000000 | col);
+                    graphics.fill(x + 2, y + 12 + yOff, x + 15, y + 13 + yOff, 0xFF000000);
+                    graphics.fill(x + 2, y + 12 + yOff, x + 2 + width, y + 13 + yOff, 0xFF000000 | col);
                 }
             }
         }
+
+        graphics.pose().popMatrix();
     }
 
     @SubscribeEvent

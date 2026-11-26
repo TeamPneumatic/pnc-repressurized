@@ -29,7 +29,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.client.event.ContainerScreenEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -70,7 +70,7 @@ public class MinigunMagazineScreen extends AbstractPneumaticCraftContainerScreen
     }
 
     @Override
-    public void drawExtras(ContainerScreenEvent.Render.Foreground event) {
+    public void drawExtras(ScreenEvent.Render.Foreground event) {
         if (lockedSlot >= 0) {
             // highlight the locked slot with a semitransparent green tint
             int minX = 26 + (lockedSlot % 2) * 18;

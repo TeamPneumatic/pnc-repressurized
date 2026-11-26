@@ -127,8 +127,6 @@ public class NetworkHandler {
 				PacketDebugBlock::handle);
 		registrar.playToClient(PacketPlayMovingSound.TYPE, PacketPlayMovingSound.STREAM_CODEC,
 				PacketPlayMovingSound::handle);
-		registrar.playToClient(PacketNotifyBlockUpdate.TYPE, PacketNotifyBlockUpdate.STREAM_CODEC,
-				PacketNotifyBlockUpdate::handle);
 		registrar.playToClient(PacketMinigunStop.TYPE, PacketMinigunStop.STREAM_CODEC,
 				PacketMinigunStop::handle);
 		registrar.playToClient(PacketClearRecipeCache.TYPE, PacketClearRecipeCache.STREAM_CODEC,
