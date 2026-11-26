@@ -485,10 +485,16 @@ public class WidgetAnimatedStat extends AbstractWidget implements IGuiAnimatedSt
                 graphics.text(fontRenderer, line, renderX, renderY, GuiUtils.textColor(foregroundColor), dropShadows.get(i));
             }
 
-            // Set up necessary translations so subwidgets render in the right place
+            // Sub-widget positions are relative to the stat. Widget tooltips are positioned with the mouse coords
+            //  passed in (not the pose), so the widgets are moved to screen coords while they're rendered, and get
+            //  the real mouse position; hovering works out the same as with relative coords.
             graphics.pose().pushMatrix();
-            graphics.pose().translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10));
-            subWidgets.forEach(widget -> widget.extractRenderState(graphics, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
+            graphics.pose().translate(leftSided ? widgetOffsetLeft : widgetOffsetRight, titleYoffset - 10);
+            for (AbstractWidget widget : subWidgets) {
+                widget.setPosition(widget.getX() + renderBaseX, widget.getY() + renderAffectedY);
+                widget.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+                widget.setPosition(widget.getX() - renderBaseX, widget.getY() - renderAffectedY);
+            }
             graphics.pose().popMatrix();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
