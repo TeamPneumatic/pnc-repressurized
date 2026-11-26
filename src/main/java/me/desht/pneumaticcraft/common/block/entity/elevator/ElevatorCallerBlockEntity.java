@@ -28,7 +28,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implements CamouflageableBlockEntity, IRedstoneControl<ElevatorCallerBlockEntity> {
@@ -129,7 +130,7 @@ public class ElevatorCallerBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return null;
     }
 

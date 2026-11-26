@@ -51,8 +51,9 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -136,12 +137,12 @@ public class AmadronTabletItem extends PressurizableItem
         }
     }
 
-    public static Optional<IItemHandler> getItemCapability(ItemStack tablet) {
+    public static Optional<ResourceHandler<ItemResource>> getItemCapability(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
             BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
-                Optional<IItemHandler> cap = IOHelper.getInventoryForBlock(te, dir);
+                Optional<ResourceHandler<ItemResource>> cap = IOHelper.getInventoryForBlock(te, dir);
                 if (cap.isPresent()) return cap;
             }
         }
@@ -160,12 +161,12 @@ public class AmadronTabletItem extends PressurizableItem
         }
     }
 
-    public static Optional<IFluidHandler> getFluidCapability(ItemStack tablet) {
+    public static Optional<ResourceHandler<FluidResource>> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
             BlockEntity te = GlobalPosHelper.getTileEntity(pos);
             for (Direction dir : DirectionUtil.VALUES) {
-                Optional<IFluidHandler> cap = IOHelper.getFluidHandlerForBlock(te, dir);
+                Optional<ResourceHandler<FluidResource>> cap = IOHelper.getFluidHandlerForBlock(te, dir);
                 if (cap.isPresent()) return cap;
             }
         }

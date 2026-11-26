@@ -17,6 +17,9 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -28,7 +31,7 @@ import java.lang.annotation.Target;
  * fields.
  * <p>
  * Supported field types are int, float, double, boolean, String, int[], float[], double[], boolean[] and String[], as
- * well as ItemStack, FluidTank and ItemStackHandler and their corresponding arrays.
+ * well as ItemStack, PNCFluidTank and BaseItemStackHandler and their corresponding arrays.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

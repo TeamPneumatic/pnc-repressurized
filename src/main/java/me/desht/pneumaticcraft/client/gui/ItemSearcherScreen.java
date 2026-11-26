@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.ArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ItemSearcherMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -48,8 +49,8 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag.Default;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
@@ -68,7 +69,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     private static List<SearchEntry> cachedSearchEntries;
 
-    private final ItemStackHandler inventory = new ItemStackHandler(49);  // 6 * 8 slots, plus the selected item
+    private final BaseItemStackHandler inventory = new BaseItemStackHandler(49);  // 6 * 8 slots, plus the selected item
     private final Screen parentScreen;
     // Amount scrolled in Creative mode inventory (0 = top, 1 = bottom)
     private double currentScroll;
@@ -276,7 +277,7 @@ public class ItemSearcherScreen extends AbstractContainerScreen<ItemSearcherMenu
 
     }
 
-    public IItemHandlerModifiable getInventory() {
+    public ResourceHandler<ItemResource> getInventory() {
         return inventory;
     }
     

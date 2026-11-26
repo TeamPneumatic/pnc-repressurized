@@ -36,9 +36,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,7 +78,7 @@ public interface IDrone {
      *
      * @return a fluid tank
      */
-    FluidTank getFluidTank();
+    FluidStacksResourceHandler getFluidTank();
 
     /**
      * Get the drone's energy storage.  Note that this is also accessible via the
@@ -85,7 +86,7 @@ public interface IDrone {
      *
      * @return an energy storage
      */
-    IEnergyStorage getEnergyStorage();
+    EnergyHandler getEnergyStorage();
 
     /**
      * Get the drone's inventory.  Note that this is also accessible via the
@@ -93,7 +94,7 @@ public interface IDrone {
      *
      * @return an inventory
      */
-    IItemHandlerModifiable getInv();
+    ResourceHandler<ItemResource> getInv();
 
     /**
      * Get the drone's exact position.

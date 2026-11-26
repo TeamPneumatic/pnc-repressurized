@@ -31,8 +31,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidStackTemplate;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.apache.commons.lang3.Validate;
 
 import java.util.function.Consumer;
@@ -148,27 +151,29 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
         );
     }
 
-    public int countTradesInInventory(IItemHandler inv) {
+    public int countTradesInInventory(ResourceHandler<ItemResource> inv) {
         return resource.left().map(item -> countItemsInHandler(item.create(), inv) / item.count()).orElse(0);
     }
 
-    public int findSpaceInItemOutput(IItemHandler inv, int wantedTradeCount) {
+    public int findSpaceInItemOutput(ResourceHandler<ItemResource> inv, int wantedTradeCount) {
         return resource.left().map(item -> Math.min(wantedTradeCount, findSpaceInHandler(item.create(), wantedTradeCount, inv))).orElse(0);
     }
 
-    public int countTradesInTank(IFluidHandler fluidHandler) {
+    public int countTradesInTank(ResourceHandler<FluidResource> fluidHandler) {
         return resource.right().map(fluid -> {
-            FluidStack searchingFluid = fluid.withAmount(Integer.MAX_VALUE).create();
-            FluidStack extracted = fluidHandler.drain(searchingFluid, IFluidHandler.FluidAction.SIMULATE);
-            return extracted.getAmount() / fluid.amount();
+            // simulated: the transaction is not committed
+            try (Transaction tx = Transaction.openRoot()) {
+                return fluidHandler.extract(FluidResource.of(fluid), Integer.MAX_VALUE, tx) / fluid.amount();
+            }
         }).orElse(0);
     }
 
-    public int findSpaceInFluidOutput(IFluidHandler fluidHandler, int wantedTradeCount) {
+    public int findSpaceInFluidOutput(ResourceHandler<FluidResource> fluidHandler, int wantedTradeCount) {
         return resource.right().map(fluid -> {
-            FluidStack providingFluid = fluid.withAmount(fluid.amount() * wantedTradeCount).create();
-            int amountFilled = fluidHandler.fill(providingFluid, IFluidHandler.FluidAction.SIMULATE);
-            return amountFilled / fluid.amount();
+            // simulated: the transaction is not committed
+            try (Transaction tx = Transaction.openRoot()) {
+                return fluidHandler.insert(FluidResource.of(fluid), fluid.amount() * wantedTradeCount, tx) / fluid.amount();
+            }
         }).orElse(0);
     }
 
@@ -223,12 +228,12 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
      * @param itemHandler the item handler
      * @return the total number of matching items
      */
-    private static int countItemsInHandler(ItemStack item, IItemHandler itemHandler) {
+    private static int countItemsInHandler(ItemStack item, ResourceHandler<ItemResource> itemHandler) {
         boolean matchComponents = !item.getComponentsPatch().isEmpty();
         IItemRegistry registry = PneumaticRegistry.getInstance().getItemRegistry();
-        return IntStream.range(0, itemHandler.getSlots())
-                .filter(i -> registry.doesItemMatchFilter(item, itemHandler.getStackInSlot(i), false, matchComponents, false))
-                .map(i -> itemHandler.getStackInSlot(i).getCount())
+        return IntStream.range(0, itemHandler.size())
+                .filter(i -> registry.doesItemMatchFilter(item, ItemUtil.getStack(itemHandler, i), false, matchComponents, false))
+                .map(i -> ItemUtil.getStack(itemHandler, i).getCount())
                 .sum();
     }
 
@@ -240,13 +245,13 @@ public record AmadronTradeResource(Either<ItemStackTemplate,FluidStackTemplate> 
      * @param itemHandler the item handler
      * @return the number of times the stack can actually be inserted
      */
-    private static int findSpaceInHandler(ItemStack item, int multiplier, IItemHandler itemHandler) {
+    private static int findSpaceInHandler(ItemStack item, int multiplier, ResourceHandler<ItemResource> itemHandler) {
         final int totalItems = item.getCount() * multiplier;
 
         int remaining = totalItems;
-        for (int i = 0; i < itemHandler.getSlots() && remaining > 0; i++) {
-            if (itemHandler.getStackInSlot(i).isEmpty() || ItemStack.isSameItemSameComponents(itemHandler.getStackInSlot(i), item)) {
-                remaining -= item.getMaxStackSize() - itemHandler.getStackInSlot(i).getCount();
+        for (int i = 0; i < itemHandler.size() && remaining > 0; i++) {
+            if (ItemUtil.getStack(itemHandler, i).isEmpty() || ItemStack.isSameItemSameComponents(ItemUtil.getStack(itemHandler, i), item)) {
+                remaining -= item.getMaxStackSize() - ItemUtil.getStack(itemHandler, i).getCount();
             }
         }
         return (totalItems - remaining) / item.getCount();

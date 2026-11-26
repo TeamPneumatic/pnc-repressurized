@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.FluxCompressorMenu;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -39,7 +40,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 import javax.annotation.Nullable;
 
@@ -76,7 +77,7 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+    public EnergyHandler getEnergyHandler(@Nullable Direction dir) {
         return dir == getRotation() ? null : energy;
     }
 
@@ -96,7 +97,7 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
             rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
         }
         boolean newEnabled = false;
-        if (rsController.shouldRun() && energy.getEnergyStored() >= rfPerTick) {
+        if (rsController.shouldRun() && energy.getAmountAsInt() >= rfPerTick) {
             airBuffer += airPerTick;
             if (airBuffer >= 1f) {
                 int toAdd = (int) airBuffer;
@@ -104,7 +105,7 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
                 airBuffer -= toAdd;
                 heatExchanger.addHeat(toAdd / 20d);
             }
-            energy.extractEnergy(rfPerTick, false);
+            IOHelper.extractEnergy(energy, rfPerTick, false);
             newEnabled = true;
         }
         if ((level.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
@@ -148,7 +149,7 @@ public class FluxCompressorBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     public int getInfoEnergyStored() {
-        return energy.getEnergyStored();
+        return energy.getAmountAsInt();
     }
 
     public float getAirRate() {

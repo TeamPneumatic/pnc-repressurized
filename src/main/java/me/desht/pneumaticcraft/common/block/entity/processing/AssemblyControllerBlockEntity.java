@@ -28,7 +28,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -43,8 +42,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -54,7 +53,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     private static final int PROGRAM_SLOT = 0;
     private static final int INVENTORY_SIZE = 1;
 
-    private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final BaseItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.isEmpty() || itemStack.getItem() instanceof AssemblyProgramItem;
@@ -82,7 +81,7 @@ public class AssemblyControllerBlockEntity extends AbstractAirHandlingBlockEntit
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

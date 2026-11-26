@@ -18,20 +18,20 @@
 package me.desht.pneumaticcraft.common.block.entity;
 
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import static net.neoforged.neoforge.fluids.FluidType.BUCKET_VOLUME;
 
 public interface IAutoFluidEjecting {
     default void autoExportFluid(AbstractPneumaticCraftBlockEntity te) {
         IOHelper.getFluidHandlerForBlock(te).ifPresent(handler -> {
-            FluidStack toDrain = handler.drain(BUCKET_VOLUME, FluidAction.SIMULATE);
+            FluidStack toDrain = FluidUtils.drain(handler, BUCKET_VOLUME, true);
             if (!toDrain.isEmpty()) {
                 te.getUpgradeCache().getEjectDirection().ifPresentOrElse(
                         ejectDir -> {
@@ -47,11 +47,11 @@ public interface IAutoFluidEjecting {
         });
     }
 
-    default int tryEjectLiquid(AbstractPneumaticCraftBlockEntity te, IFluidHandler handler, Direction dir, int amount) {
+    default int tryEjectLiquid(AbstractPneumaticCraftBlockEntity te, ResourceHandler<FluidResource> handler, Direction dir, int amount) {
         BlockEntity teNeighbour = te.getCachedNeighbor(dir);
         if (teNeighbour != null) {
             return IOHelper.getFluidHandlerForBlock(teNeighbour, dir.getOpposite()).map(destHandler -> {
-                FluidStack fluidStack = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);
+                FluidStack fluidStack = FluidUtils.transfer(handler, destHandler, amount, false);
                 return fluidStack.getAmount();
             }).orElse(0);
         }

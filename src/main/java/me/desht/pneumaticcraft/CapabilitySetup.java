@@ -3,17 +3,18 @@ package me.desht.pneumaticcraft;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.block.entity.AbstractAirHandlingBlockEntity;
+import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.block.entity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
+import me.desht.pneumaticcraft.common.item.IFluidCapProvider;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 
 import java.util.List;
 
@@ -28,23 +29,20 @@ public class CapabilitySetup {
                 ModEntityTypes.AMADRONE
         ).forEach(d -> {
             event.registerEntity(PNCCapabilities.AIR_HANDLER_ENTITY, d.get(), (drone, ctx) -> drone.getAirHandler());
-            // TODO 26.1 transfer: export as ResourceHandler/EnergyHandler (PR2)
-//            event.registerEntity(Capabilities.ItemHandler.ENTITY, d.get(), (drone, ctx) -> drone.getDroneItemHandler());
-//            event.registerEntity(Capabilities.FluidHandler.ENTITY, d.get(), (drone, ctx) -> drone.getFluidTank());
-//            event.registerEntity(Capabilities.EnergyStorage.ENTITY, d.get(), (drone, ctx) -> drone.getEnergyStorage());
+            event.registerEntity(Capabilities.Item.ENTITY, d.get(), (drone, ctx) -> drone.getDroneItemHandler());
+            event.registerEntity(Capabilities.Fluid.ENTITY, d.get(), (drone, ctx) -> drone.getFluidTank());
+            event.registerEntity(Capabilities.Energy.ENTITY, d.get(), (drone, ctx) -> drone.getEnergyStorage());
         });
 
         event.registerEntity(PNCCapabilities.HEAT_EXCHANGER_ENTITY, ModEntityTypes.HEAT_FRAME.get(), (frame, ctx) -> frame.getHeatExchangerLogic());
 
         event.registerEntity(PNCCapabilities.ENTITY_AUTOMATION, EntityType.PLAYER, (player, dir) -> {
             if (dir == null) {
-                return new PlayerInvWrapper(player.getInventory());
+                return PlayerInventoryWrapper.of(player);
             } else if (dir.getAxis().isVertical()) {
-                return new PlayerMainInvWrapper(player.getInventory());
-            } else if (dir.getAxis().isHorizontal()) {
-                return new PlayerArmorInvWrapper(player.getInventory());
+                return PlayerInventoryWrapper.of(player).getMainSlots();
             } else {
-                return null;
+                return PlayerInventoryWrapper.of(player).getArmorSlots();
             }
         });
 
@@ -55,20 +53,12 @@ public class CapabilitySetup {
         //  and return null when it doesn't have the capability, which is the same as not registering it.
         ModBlockEntityTypes.BLOCK_ENTITY_TYPES.getEntries().forEach(holder -> {
             BlockEntityType<?> type = holder.get();
-            // TODO 26.1 transfer: PNC's item/fluid/energy handlers still implement the legacy interfaces and
-            //  can't be registered for the new Capabilities.Item/Fluid/Energy; exported in PR2
-//            if (pncBE.hasItemCapability()) {
-//                event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, pncBE.getType(),
-//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getItemHandler(dir) : null);
-//            }
-//            if (pncBE.hasFluidCapability()) {
-//                event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, pncBE.getType(),
-//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getFluidHandler(dir) : null);
-//            }
-//            if (pncBE.hasEnergyCapability()) {
-//                event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, pncBE.getType(),
-//                        (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be ? be.getEnergyHandler(dir) : null);
-//            }
+            event.registerBlockEntity(Capabilities.Item.BLOCK, type,
+                    (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be && be.hasItemCapability() ? be.getItemHandler(dir) : null);
+            event.registerBlockEntity(Capabilities.Fluid.BLOCK, type,
+                    (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be && be.hasFluidCapability() ? be.getFluidHandler(dir) : null);
+            event.registerBlockEntity(Capabilities.Energy.BLOCK, type,
+                    (object, dir) -> object instanceof AbstractPneumaticCraftBlockEntity be && be.hasEnergyCapability() ? be.getEnergyHandler(dir) : null);
             event.registerBlockEntity(PNCCapabilities.HEAT_EXCHANGER_BLOCK, type,
                     (object, dir) -> object instanceof IHeatExchangingTE heat ? heat.getHeatExchanger(dir) : null);
             event.registerBlockEntity(PNCCapabilities.AIR_HANDLER_MACHINE, type,
@@ -80,10 +70,9 @@ public class CapabilitySetup {
             if (entry.get() instanceof IPressurizableItem) {
                 event.registerItem(PNCCapabilities.AIR_HANDLER_ITEM, (stack, ctx) -> new AirHandlerItemStack(stack), entry.get());
             }
-            // TODO 26.1 transfer: item fluid handlers are exported in PR2
-//            if (entry.get() instanceof IFluidCapProvider f) {
-//                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> f.provideFluidCapability(stack), entry.get());
-//            }
+            if (entry.get() instanceof IFluidCapProvider f) {
+                event.registerItem(Capabilities.Fluid.ITEM, (stack, access) -> f.provideFluidCapability(access), entry.get());
+            }
         });
     }
 }

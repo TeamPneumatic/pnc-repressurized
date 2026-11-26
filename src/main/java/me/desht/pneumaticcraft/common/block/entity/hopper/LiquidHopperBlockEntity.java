@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.block.entity.RedstoneController;
 import me.desht.pneumaticcraft.common.block.entity.SmartSyncTank;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.inventory.LiquidHopperMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
@@ -43,18 +44,16 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.*;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -66,8 +65,8 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     @DescSynced
     @GuiSynced
     private final HopperTank tank = new HopperTank(PneumaticValues.NORMAL_TANK_CAPACITY);
-    private final WrappedFluidTank inputWrapper = new WrappedFluidTank(tank, true);
-    private final WrappedFluidTank outputWrapper = new WrappedFluidTank(tank, false);
+    private final ResourceHandler<FluidResource> inputWrapper = new IOCombinedHandler<>(t -> true, t -> false, tank);  // fill only
+    private final ResourceHandler<FluidResource> outputWrapper = new IOCombinedHandler<>(t -> false, t -> true, tank);  // drain only
     @GuiSynced
     private final RedstoneController<LiquidHopperBlockEntity> rsController = new RedstoneController<>(this);
 
@@ -92,7 +91,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         if (dir == inputDir) {
             return inputWrapper;
         } else if (dir == getRotation()) {
@@ -126,7 +125,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         if (getUpgrades(ModUpgrades.CREATIVE.get()) > 0) {
             FluidStack fluidStack = tank.getFluid();
             if (!fluidStack.isEmpty() && fluidStack.getAmount() < PneumaticValues.NORMAL_TANK_CAPACITY) {
-                tank.fill(new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), FluidAction.EXECUTE);
+                FluidUtils.fill(tank, new FluidStack(fluidStack.getFluid(), PneumaticValues.NORMAL_TANK_CAPACITY), false);
             }
         }
     }
@@ -138,17 +137,17 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         Direction dir = getRotation();
 
         // try to fill any neighbouring fluid-accepting block entity
-        IFluidHandler dstHandler = IOHelper.legacyFluid(getOutputCache());
+        ResourceHandler<FluidResource> dstHandler = IOHelper.getCapability(getOutputCache());
         if (dstHandler != null) {
             int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
-            FluidStack transferred = FluidUtil.tryFluidTransfer(dstHandler, tank, amount, true);
+            FluidStack transferred = FluidUtils.transfer(tank, dstHandler, amount, false);
             return !transferred.isEmpty();
         } else if (getUpgrades(ModUpgrades.ENTITY_TRACKER.get()) > 0) {
             for (Entity e : cachedOutputEntities) {
                 if (!e.isAlive()) continue;
                 FluidStack transferred = IOHelper.getFluidHandlerForEntity(e, getRotation().getOpposite()).map(h -> {
                     int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
-                    return FluidUtil.tryFluidTransfer(h, tank, amount, true);
+                    return FluidUtils.transfer(tank, h, amount, false);
                 }).orElse(FluidStack.EMPTY);
                 if (!transferred.isEmpty()) return true;
             }
@@ -157,11 +156,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         // try to fill any fluid-handling items in front of the output
         for (Entity e : cachedOutputEntities) {
             if (e.isAlive() && e instanceof ItemEntity entity) {
-                int maxFill = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
-                FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxFill, null, true);
-                if (res.success) {
-                    entity.setItem(res.result);
-                }
+                FluidUtils.transferWithItemEntity(entity, tank, maxItems * 100, true);
                 if (tank.isEmpty()) break;
             }
         }
@@ -169,7 +164,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         // try to pour fluid into the world
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0
                 && tank.getFluidAmount() >= leaveMaterialCount + FluidType.BUCKET_VOLUME) {
-            return FluidUtils.tryPourOutFluid(outputWrapper, nonNullLevel(), getBlockPos().relative(dir), false, false, FluidAction.EXECUTE);
+            return FluidUtils.tryPourOutFluid(outputWrapper, nonNullLevel(), getBlockPos().relative(dir), false, false, false);
         }
 
         return false;
@@ -177,13 +172,13 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
     @Override
     protected boolean doImport(int maxItems) {
-        IFluidHandler srcHandler = IOHelper.legacyFluid(getInputCache());
+        ResourceHandler<FluidResource> srcHandler = IOHelper.getCapability(getInputCache());
         if (srcHandler != null) {
-            FluidStack fluid = srcHandler.drain(maxItems * 100, FluidAction.SIMULATE);
+            FluidStack fluid = FluidUtils.drain(srcHandler, maxItems * 100, true);
             if (!fluid.isEmpty()) {
-                int filledFluid = tank.fill(fluid, FluidAction.EXECUTE);
+                int filledFluid = FluidUtils.fill(tank, fluid, false);
                 if (filledFluid > 0) {
-                    srcHandler.drain(filledFluid, FluidAction.EXECUTE);
+                    FluidUtils.drain(srcHandler, filledFluid, false);
                     return true;
                 }
             }
@@ -192,7 +187,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
             for (Entity e : cachedInputEntities) {
                 if (!e.isAlive()) continue;
                 FluidStack transferred = IOHelper.getFluidHandlerForEntity(e, inputDir.getOpposite())
-                        .map(h -> FluidUtil.tryFluidTransfer(tank, h, maxItems * 100, true))
+                        .map(h -> FluidUtils.transfer(h, tank, maxItems * 100, false))
                         .orElse(FluidStack.EMPTY);
                 if (!transferred.isEmpty()) return true;
             }
@@ -201,15 +196,10 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         for (Entity e : cachedInputEntities) {
             if (e.isAlive()) {
                 if (e instanceof ItemEntity entity) {
-                    // special case: buckets can only drain 1000 mB at a time
-                    int max = entity.getItem().getItem() instanceof BucketItem ? FluidType.BUCKET_VOLUME : maxItems * 100;
-                    FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
-                    if (res.success) {
-                        entity.setItem(res.result);
-                    }
+                    FluidUtils.transferWithItemEntity(entity, tank, maxItems * 100, false);
                     if (tank.getFluidAmount() >= tank.getCapacity()) break;
                 } else if (e instanceof ExperienceOrb orb && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
-                    if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, FluidAction.EXECUTE)) {
+                    if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(tank, orb, false)) {
                         orb.discard();
                     }
                 }
@@ -218,7 +208,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
 
         if (ConfigHelper.common().machines.liquidHopperDispenser.get() && getUpgrades(ModUpgrades.DISPENSER.get()) > 0) {
             BlockPos neighborPos = getBlockPos().relative(inputDir);
-            return !FluidUtils.tryPickupFluid(inputWrapper, nonNullLevel(), neighborPos, false, FluidAction.EXECUTE).isEmpty();
+            return !FluidUtils.tryPickupFluid(inputWrapper, nonNullLevel(), neighborPos, false, false).isEmpty();
         }
 
         return false;
@@ -255,7 +245,7 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -288,90 +278,22 @@ public class LiquidHopperBlockEntity extends AbstractHopperBlockEntity<LiquidHop
         }
 
         @Override
-        public int fill(FluidStack resource, FluidAction doFill) {
-            int filled = super.fill(resource, doFill);
+        public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            int filled = super.insert(index, resource, amount, transaction);
             if (isCreative && getFluidAmount() > 0 && getFluid().getFluid() == resource.getFluid()) {
-                return resource.getAmount();   // acts like an infinite fluid sink
+                return amount;   // acts like an infinite fluid sink
             } else {
                 return filled;
             }
         }
 
         @Override
-        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            return super.drain(resource, isCreative ? FluidAction.SIMULATE : doDrain);
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            return super.drain(maxDrain, isCreative ? FluidAction.SIMULATE : doDrain);
-        }
-    }
-
-    class WrappedFluidTank implements IFluidTank, IFluidHandler {
-        private final IFluidTank wrappedTank;
-        private final boolean inbound;
-
-        WrappedFluidTank(IFluidTank wrappedTank, boolean inbound) {
-            // inbound == true: fill *only*, inbound == false: drain *only*
-            this.wrappedTank = wrappedTank;
-            this.inbound = inbound;
-        }
-
-        @Override
-        public FluidStack getFluid() {
-            return wrappedTank.getFluid();
-        }
-
-        @Override
-        public int getFluidAmount() {
-            return wrappedTank.getFluidAmount();
-        }
-
-        @Override
-        public int getCapacity() {
-            return wrappedTank.getCapacity();
-        }
-
-        @Override
-        public boolean isFluidValid(FluidStack stack) {
-            return wrappedTank.isFluidValid(stack);
-        }
-
-        @Override
-        public int getTanks() {
-            return 1;
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return wrappedTank.getFluid();
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return wrappedTank.getCapacity();
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return wrappedTank.isFluidValid(stack);
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction doFill) {
-            return inbound ? wrappedTank.fill(resource, doFill) : 0;
-        }
-
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            return inbound ? FluidStack.EMPTY : tank.drain(resource, doDrain);
-        }
-
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            return inbound ? FluidStack.EMPTY : wrappedTank.drain(maxDrain, doDrain);
+        public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            if (isCreative) {
+                // acts like an infinite fluid source
+                return resource.matches(getFluid()) ? Math.min(amount, getFluidAmount()) : 0;
+            }
+            return super.extract(index, resource, amount, transaction);
         }
     }
 }

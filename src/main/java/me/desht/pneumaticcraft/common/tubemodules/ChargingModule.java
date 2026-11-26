@@ -27,7 +27,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.Optional;
 
@@ -54,8 +55,8 @@ public class ChargingModule extends AbstractTubeModule {
             int advMul = pressureTube instanceof AdvancedPressureTubeBlockEntity ? 4 : 1;
             int transferLimit = 8 * PneumaticValues.CHARGING_STATION_CHARGE_RATE * (upgraded ? 10 : 1) * advMul;
             PNCCapabilities.getAirHandler(pressureTube).ifPresent(airHandler -> {
-                for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
-                    ItemStack chargedItem = itemHandler.getStackInSlot(slot);
+                for (int slot = 0; slot < itemHandler.size(); slot++) {
+                    ItemStack chargedItem = IOHelper.getStack(itemHandler, slot);
                     if (chargedItem.getCount() != 1) continue;
                     PNCCapabilities.getAirHandler(chargedItem).ifPresent(airHandlerItem -> {
                         float itemPressure = airHandlerItem.getPressure();
@@ -82,7 +83,7 @@ public class ChargingModule extends AbstractTubeModule {
         });
     }
 
-    private Optional<IItemHandler> getConnectedInventory() {
+    private Optional<ResourceHandler<ItemResource>> getConnectedInventory() {
         if (neighbourTE == null || neighbourTE.isRemoved()) {
             neighbourTE = pressureTube.nonNullLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
         }

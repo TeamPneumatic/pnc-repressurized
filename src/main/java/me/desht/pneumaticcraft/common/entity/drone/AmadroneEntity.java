@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.registry.ModEntityTypes;
@@ -40,7 +41,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.neoforged.neoforge.items.ItemStackHandler;
 import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
@@ -89,7 +89,7 @@ public class AmadroneEntity extends DroneEntity {
     private static ItemStack getAmadroneStack() {
         if (amadroneStack.isEmpty()) {
             amadroneStack = new ItemStack(ModItems.DRONE.get());
-            ItemStackHandler upgradeInv = new ItemStackHandler(9);
+            BaseItemStackHandler upgradeInv = new BaseItemStackHandler(9);
             upgradeInv.setStackInSlot(0, ModUpgrades.SPEED.get().getItemStack(10));
             upgradeInv.setStackInSlot(1, ModUpgrades.INVENTORY.get().getItemStack(35));
             upgradeInv.setStackInSlot(2, ModUpgrades.ITEM_LIFE.get().getItemStack(10));

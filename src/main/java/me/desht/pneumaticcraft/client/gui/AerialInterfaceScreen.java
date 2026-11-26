@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockE
 import me.desht.pneumaticcraft.common.block.entity.utility.AerialInterfaceBlockEntity.OperatingProblem;
 import me.desht.pneumaticcraft.common.inventory.AerialInterfaceMenu;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -44,7 +45,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -155,7 +155,7 @@ public class AerialInterfaceScreen extends AbstractPneumaticCraftContainerScreen
                 availableXp.get(te.curXPFluidIndex) : Fluids.EMPTY;
         if (fluid != Fluids.EMPTY) {
             FluidStack fluidStack = new FluidStack(fluid, 1000);
-            xpButton.setRenderStacks(FluidUtil.getFilledBucket(fluidStack));
+            xpButton.setRenderStacks(FluidUtils.createFluidContainingItem(Items.BUCKET, fluidStack));
             String modName = ModNameCache.getModName(fluid);
             xpButton.setTooltip(Tooltip.create(fluidStack.getHoverName().copy().append("\n")
                     .append(Component.literal(modName).withStyle(ChatFormatting.ITALIC, ChatFormatting.BLUE))));

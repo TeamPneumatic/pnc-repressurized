@@ -36,6 +36,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -45,10 +46,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -147,9 +149,10 @@ public enum AmadronOfferManager {
     }
 
     private void maybeNotifyPlayerOfUpdates(Player player) {
-        CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.getInventory()), new PlayerOffhandInvWrapper(player.getInventory()));
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (inv.getStackInSlot(i).getItem() instanceof AmadronTabletItem) {
+        PlayerInventoryWrapper wrapper = PlayerInventoryWrapper.of(player);
+        ResourceHandler<ItemResource> inv = new CombinedResourceHandler<>(wrapper.getMainSlots(), wrapper.getHandSlot(InteractionHand.OFF_HAND));
+        for (int i = 0; i < inv.size(); i++) {
+            if (inv.getResource(i).getItem() instanceof AmadronTabletItem) {
                 player.sendSystemMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"));
                 break;
             }

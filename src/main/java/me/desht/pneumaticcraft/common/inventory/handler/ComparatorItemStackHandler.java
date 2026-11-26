@@ -19,11 +19,12 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
 
 /**
- * An ItemStackHandler which also supports comparator signal level calculation.
+ * An BaseItemStackHandler which also supports comparator signal level calculation.
  * Smart enough to only recalculate the signal when the contents have changed.
  */
 public class ComparatorItemStackHandler extends BaseItemStackHandler {
@@ -34,9 +35,9 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
+    protected void onContentsChanged(int slot, ItemStack previousContents) {
         signalLevel = -1;
-        super.onContentsChanged(slot);
+        super.onContentsChanged(slot, previousContents);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
      */
     public int getComparatorValue() {
         if (signalLevel < 0) {
-            signalLevel = ItemHandlerHelper.calcRedstoneFromInventory(this);
+            signalLevel = ResourceHandlerUtil.getRedstoneSignalFromResourceHandler(this);
         }
         return signalLevel;
     }

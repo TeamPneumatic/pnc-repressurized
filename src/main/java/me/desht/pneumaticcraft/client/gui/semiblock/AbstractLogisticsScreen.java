@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -228,7 +229,7 @@ public class AbstractLogisticsScreen<L extends AbstractLogisticsFrameEntity> ext
             syncToServer();
             return;
         } else if (IOHelper.getFluidHandlerForItem(menu.getCarried()).isPresent()) {
-            FluidStack f = IOHelper.getFluidHandlerForItem(menu.getCarried()).orElseThrow().getFluidInTank(0);
+            FluidStack f = FluidUtils.getFluid(IOHelper.getFluidHandlerForItem(menu.getCarried()).orElseThrow(), 0);
             logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : f.copyWithAmount(1000));
             widget.setFluid(f.getFluid());
             syncToServer();

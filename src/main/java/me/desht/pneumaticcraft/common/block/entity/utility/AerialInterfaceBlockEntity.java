@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.*;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -50,6 +51,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -69,17 +71,20 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerArmorInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
-import net.neoforged.neoforge.items.wrapper.PlayerOffhandInvWrapper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.PlayerInventoryWrapper;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.transaction.RootCommitJournal;
+import net.neoforged.neoforge.transfer.transaction.SnapshotJournal;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -129,7 +134,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     @GuiSynced
     public OperatingProblem operatingProblem = OperatingProblem.OK;
 
-    private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
+    private final SideConfigurator<ResourceHandler<ItemResource>> itemHandlerSideConfigurator;
 
     private final PlayerExperienceHandler playerExperienceHandler = new PlayerExperienceHandler();
     private final PlayerFoodHandler playerFoodHandler = new PlayerFoodHandler();
@@ -351,17 +356,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return dispenserUpgradeInserted ? playerFoodHandler : itemHandlerSideConfigurator.getHandler(dir);
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return dispenserUpgradeInserted && curXpFluid != Fluids.EMPTY ? playerExperienceHandler : null;
     }
 
     @Override
-    public IEnergyStorage getEnergyHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public EnergyHandler getEnergyHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return energyStorage;
     }
 
@@ -399,7 +404,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private void scanForChargeableItems(Player player) {
-        if (energyStorage.getEnergyStored() == 0) return;
+        if (energyStorage.getAmountAsInt() == 0) return;
 
         chargeableSlots.clear();
         Inventory inv = player.getInventory();
@@ -411,17 +416,17 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     private void supplyEnergyToPlayer(Player player) {
-        if (energyStorage.getEnergyStored() > 0) {
+        if (energyStorage.getAmountAsInt() > 0) {
             Inventory inv = player.getInventory();
             for (int slot : chargeableSlots) {
                 ItemStack stack = inv.getItem(slot);
                 int energyLeft = IOHelper.getEnergyStorageForItem(stack).map(receivingStorage -> {
-                    int stored = energyStorage.getEnergyStored();
+                    int stored = energyStorage.getAmountAsInt();
                     if (stored > 0) {
-                        energyStorage.extractEnergy(receivingStorage.receiveEnergy(Math.min(stored, RF_PER_TICK), false), false);
+                        IOHelper.extractEnergy(energyStorage, IOHelper.insertEnergy(receivingStorage, Math.min(stored, RF_PER_TICK), false), false);
                     }
-                    return energyStorage.getEnergyStored();
-                }).orElse(energyStorage.getEnergyStored());
+                    return energyStorage.getAmountAsInt();
+                }).orElse(energyStorage.getAmountAsInt());
                 if (energyLeft == 0) break;
             }
 
@@ -468,8 +473,8 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         return operatingProblem == OperatingProblem.OK && getPressure() >= getMinWorkingPressure();
     }
 
-    private abstract class PlayerInvHandler implements IItemHandler {
-        IItemHandler cached = null;
+    private abstract class PlayerInvHandler implements ResourceHandler<ItemResource> {
+        ResourceHandler<ItemResource> cached = null;
 
         /**
          * Force a recache of the item handler wrappers for the various player inventory parts.
@@ -479,7 +484,7 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             cached = null;
         }
 
-        IItemHandler getCachedHandler(Player p, Function<Inventory,IItemHandler> f) {
+        ResourceHandler<ItemResource> getCachedHandler(Player p, Function<Inventory,ResourceHandler<ItemResource>> f) {
             if (cached == null) cached = f.apply(p.getInventory());
             return cached;
         }
@@ -489,143 +494,153 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
          * @return an item handler for the appropriate part of the player's inventory
          * @param player the player
          */
-        protected abstract IItemHandler getInvWrapper(@Nonnull Player player);
+        protected abstract ResourceHandler<ItemResource> getInvWrapper(@Nonnull Player player);
 
-        @Override
-        public int getSlots() {
-            return getPlayer()
-                    .filter(p -> aiCanOperate())
-                    .map(p -> getInvWrapper(p).getSlots())
-                    .orElse(0);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack getStackInSlot(int slot) {
-            return getPlayer()
-                    .filter(p -> aiCanOperate())
-                    .map(p -> getInvWrapper(p).getStackInSlot(slot))
-                    .orElse(ItemStack.EMPTY);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return getPlayer()
-                    .filter(p -> aiCanOperate())
-                    .map(p -> getInvWrapper(p).insertItem(slot, stack, simulate))
-                    .orElse(stack);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return getPlayer()
-                    .filter(p -> aiCanOperate())
-                    .map(p -> getInvWrapper(p).extractItem(slot, amount, simulate))
-                    .orElse(ItemStack.EMPTY);
+        private Optional<ResourceHandler<ItemResource>> getOperatingWrapper() {
+            return getPlayer().filter(p -> aiCanOperate()).map(this::getInvWrapper);
         }
 
         @Override
-        public int getSlotLimit(int slot) {
-            return getPlayer()
-                    .filter(p -> aiCanOperate())
-                    .map(p -> getInvWrapper(p).getSlotLimit(slot))
-                    .orElse(1);
+        public int size() {
+            return getOperatingWrapper().map(ResourceHandler::size).orElse(0);
         }
 
         @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        public ItemResource getResource(int index) {
+            return getOperatingWrapper().map(h -> h.getResource(index)).orElse(ItemResource.EMPTY);
+        }
+
+        @Override
+        public long getAmountAsLong(int index) {
+            return getOperatingWrapper().map(h -> h.getAmountAsLong(index)).orElse(0L);
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            return getOperatingWrapper().map(h -> h.getCapacityAsLong(index, resource)).orElse(1L);
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
             return aiCanOperate();
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            return getOperatingWrapper().map(h -> h.insert(index, resource, amount, transaction)).orElse(0);
+        }
+
+        @Override
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            return getOperatingWrapper().map(h -> h.extract(index, resource, amount, transaction)).orElse(0);
         }
     }
 
     private class PlayerMainInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, PlayerMainInvWrapper::new);
+        protected ResourceHandler<ItemResource> getInvWrapper(Player player) {
+            return getCachedHandler(player, inv -> PlayerInventoryWrapper.of(inv).getMainSlots());
         }
     }
 
     private class PlayerArmorInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, PlayerArmorInvWrapper::new);
+        protected ResourceHandler<ItemResource> getInvWrapper(Player player) {
+            return getCachedHandler(player, inv -> PlayerInventoryWrapper.of(inv).getArmorSlots());
         }
 
-        @Nonnull
         @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            ItemStack stack = getStackInSlot(slot);
-            return EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ?
-                    ItemStack.EMPTY :
-                    super.extractItem(slot, amount, simulate);
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            return EnchantmentHelper.has(resource.toStack(), EnchantmentEffectComponents.PREVENT_ARMOR_CHANGE) ?
+                    0 :
+                    super.extract(index, resource, amount, transaction);
         }
     }
 
     private class PlayerOffhandInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, PlayerOffhandInvWrapper::new);
+        protected ResourceHandler<ItemResource> getInvWrapper(Player player) {
+            return getCachedHandler(player, inv -> PlayerInventoryWrapper.of(inv).getHandSlot(InteractionHand.OFF_HAND));
         }
     }
 
     private class PlayerEnderInvHandler extends PlayerInvHandler {
         @Override
-        protected IItemHandler getInvWrapper(Player player) {
-            return getCachedHandler(player, p -> new InvWrapper(p.player.getEnderChestInventory()));
+        protected ResourceHandler<ItemResource> getInvWrapper(Player player) {
+            return getCachedHandler(player, inv -> VanillaContainerWrapper.of(inv.player.getEnderChestInventory()));
         }
     }
 
     // TODO 26.1 integration: Curios
 //    private class PlayerCuriosHandler extends PlayerInvHandler {
 //        @Override
-//        protected IItemHandler getInvWrapper(Player player) {
+//        protected ResourceHandler<ItemResource> getInvWrapper(Player player) {
 //            // do not cache curios handlers because they can change size dynamically
 //            return CuriosUtils.makeCombinedInvWrapper(player);
 //        }
 //    }
 
-    private class PlayerFoodHandler implements IItemHandler {
+    private class PlayerFoodHandler implements ResourceHandler<ItemResource> {
         @Override
-        public int getSlots() {
+        public int size() {
             return 1;
         }
 
-        @Nonnull
         @Override
-        public ItemStack getStackInSlot(int slot) {
-            return ItemStack.EMPTY;
+        public ItemResource getResource(int index) {
+            return ItemResource.EMPTY;
         }
 
-        @Nonnull
         @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!aiCanOperate()) return stack;
+        public long getAmountAsLong(int index) {
+            return 0;
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, ItemResource resource) {
+            return 64;
+        }
+
+        @Override
+        public boolean isValid(int index, ItemResource resource) {
+            return getFoodValue(resource.toStack()) > 0;
+        }
+
+        @Override
+        public int insert(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+            if (!aiCanOperate()) return 0;
 
             return getPlayer().map(player -> {
+                ItemStack stack = resource.toStack(amount);
                 if (getFoodValue(stack) <= 0 || !okToFeed(stack, player)) {
-                    return stack;
+                    return 0;
                 }
+                // only actually feed the player if the transaction is committed
+                new RootCommitJournal(() -> feed(player, stack)).updateSnapshots(transaction);
+                return amount;
+            }).orElse(0);
+        }
 
-                if (simulate) return ItemStack.EMPTY;
-
-                int startValue = stack.getCount();
-                ItemStack remainingItem = stack;
-                ItemStack copy = stack.copy();
-                while (stack.getCount() > 0) {
-                    remainingItem = stack.finishUsingItem(player.level(), player);
-                    remainingItem = EventHooks.onItemUseFinish(player, stack, 0, remainingItem);
-                    if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
-                        if (!player.getInventory().add(remainingItem) && remainingItem.getCount() > 0) {
-                            player.drop(remainingItem, false);
-                        }
+        private void feed(Player player, ItemStack stack) {
+            int startValue = stack.getCount();
+            ItemStack remainingItem = stack;
+            ItemStack copy = stack.copy();
+            while (stack.getCount() > 0) {
+                remainingItem = stack.finishUsingItem(player.level(), player);
+                remainingItem = EventHooks.onItemUseFinish(player, stack, 0, remainingItem);
+                if (remainingItem.getCount() > 0 && (remainingItem != stack || remainingItem.getCount() != startValue)) {
+                    if (!player.getInventory().add(remainingItem) && remainingItem.getCount() > 0) {
+                        player.drop(remainingItem, false);
                     }
-                    player.sendOverlayMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()));
-                    if (stack.getCount() == startValue) break;
                 }
-                return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;
-            }).orElse(stack);
+                player.sendOverlayMessage(Component.translatable("pneumaticcraft.gui.aerial_interface.fedItem", copy.getHoverName()));
+                if (stack.getCount() == startValue) break;
+            }
+            // anything which couldn't be eaten goes to the player
+            if (remainingItem == stack && !stack.isEmpty() && !player.getInventory().add(stack)) {
+                player.drop(stack, false);
+            }
         }
 
         private boolean okToFeed(@Nonnull ItemStack stack, Player player) {
@@ -641,20 +656,9 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
             };
         }
 
-        @Nonnull
         @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return 64;
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return getFoodValue(stack) > 0;
+        public int extract(int index, ItemResource resource, int amount, TransactionContext transaction) {
+            return 0;
         }
 
         private int getFoodValue(ItemStack stack) {
@@ -663,39 +667,51 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
     }
 
-    private class PlayerExperienceHandler implements IFluidHandler {
+    private class PlayerExperienceHandler implements ResourceHandler<FluidResource> {
+        // XP points to be added to (or removed from, if negative) the player when the current transaction is committed
+        private final XpJournal xpJournal = new XpJournal();
+
+        private int getPlayerXP(Player player) {
+            return EnchantmentUtils.getPlayerXP(player) + xpJournal.pending;
+        }
+
         @Override
-        public int getTanks() {
+        public int size() {
             return 1;
         }
 
-        @Nonnull
         @Override
-        public FluidStack getFluidInTank(int tank) {
-            if (curXpFluid != Fluids.EMPTY) {
-                return getPlayer().map(p -> new FluidStack(curXpFluid, EnchantmentUtils.getPlayerXP(p) * curXpRatio))
-                        .orElse(FluidStack.EMPTY);
-            }
-            return FluidStack.EMPTY;
+        public FluidResource getResource(int index) {
+            return curXpFluid != Fluids.EMPTY && getAmountAsLong(index) > 0 ? FluidResource.of(curXpFluid) : FluidResource.EMPTY;
         }
 
         @Override
-        public int getTankCapacity(int tank) {
+        public long getAmountAsLong(int index) {
+            if (curXpFluid != Fluids.EMPTY) {
+                return getPlayer().map(p -> (long) getPlayerXP(p) * curXpRatio).orElse(0L);
+            }
+            return 0;
+        }
+
+        @Override
+        public long getCapacityAsLong(int index, FluidResource resource) {
             return Integer.MAX_VALUE;
         }
 
         @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return curXpFluid != Fluids.EMPTY && stack.getFluid() == curXpFluid;
+        public boolean isValid(int index, FluidResource resource) {
+            return curXpFluid != Fluids.EMPTY && resource.getFluid() == curXpFluid;
         }
 
         @Override
-        public int fill(FluidStack resource, FluidAction doFill) {
+        public int insert(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
             return getPlayer().map(player -> {
                 if (curXpRatio != 0 && canFill(resource.getFluid())) {
-                    int pointsAdded = resource.getAmount() / curXpRatio;
-                    if (doFill.execute()) {
-                        player.giveExperiencePoints(pointsAdded);
+                    int pointsAdded = amount / curXpRatio;
+                    if (pointsAdded > 0) {
+                        xpJournal.updateSnapshots(transaction);
+                        xpJournal.pending += pointsAdded;
                     }
                     return pointsAdded * curXpRatio;
                 } else {
@@ -711,21 +727,46 @@ public class AerialInterfaceBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         @Override
-        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
+        public int extract(int index, FluidResource resource, int amount, TransactionContext transaction) {
+            TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
             return getPlayer().map(player -> {
-                if (curXpRatio != 0 && dispenserUpgradeInserted && aiCanOperate()) {
-                    int pointsDrained = Math.min(EnchantmentUtils.getPlayerXP(player), resource.getAmount() / curXpRatio);
-                    if (doDrain.execute()) EnchantmentUtils.addPlayerXP(player, -pointsDrained);
-                    return new FluidStack(resource.getFluid(), pointsDrained * curXpRatio);
+                if (curXpRatio != 0 && dispenserUpgradeInserted && aiCanOperate() && resource.getFluid() == curXpFluid) {
+                    int pointsDrained = Math.min(getPlayerXP(player), amount / curXpRatio);
+                    if (pointsDrained > 0) {
+                        xpJournal.updateSnapshots(transaction);
+                        xpJournal.pending -= pointsDrained;
+                    }
+                    return pointsDrained * curXpRatio;
                 }
-                return FluidStack.EMPTY;
-            }).orElse(FluidStack.EMPTY);
+                return 0;
+            }).orElse(0);
         }
 
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            if (curXpFluid == Fluids.EMPTY) return FluidStack.EMPTY;
-            return drain(new FluidStack(curXpFluid, maxDrain), doDrain);
+        private class XpJournal extends SnapshotJournal<Integer> {
+            private int pending = 0;
+
+            @Override
+            protected Integer createSnapshot() {
+                return pending;
+            }
+
+            @Override
+            protected void revertToSnapshot(Integer snapshot) {
+                pending = snapshot;
+            }
+
+            @Override
+            protected void onRootCommit(Integer originalState) {
+                int delta = pending;
+                pending = 0;
+                getPlayer().ifPresent(player -> {
+                    if (delta > 0) {
+                        player.giveExperiencePoints(delta);
+                    } else if (delta < 0) {
+                        EnchantmentUtils.addPlayerXP(player, delta);
+                    }
+                });
+            }
         }
     }
 

@@ -20,7 +20,7 @@ package me.desht.pneumaticcraft.common.util;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -33,15 +33,17 @@ import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 import net.neoforged.neoforge.capabilities.ItemCapability;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.DelegatingResourceHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
 import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandlerUtil;
+import net.neoforged.neoforge.transfer.StacksResourceHandler;
 import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemUtil;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
@@ -87,196 +89,63 @@ public class IOHelper {
         UP_TO
     }
 
-    public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te, Direction facing) {
-        // TODO 26.1 transfer: PNC block entities aren't exposed via Capabilities.Item.BLOCK until PR2,
-        //  so query their legacy handler directly for now
-        if (te instanceof AbstractPneumaticCraftBlockEntity pncBE && pncBE.hasItemCapability()) {
-            return Optional.ofNullable(pncBE.getItemHandler(facing));
-        }
-        return getCap(te, Capabilities.Item.BLOCK, facing).map(IItemHandler::of);
+    public static Optional<ResourceHandler<ItemResource>> getInventoryForBlock(BlockEntity te, Direction facing) {
+        return getCap(te, Capabilities.Item.BLOCK, facing);
     }
 
-    public static Optional<IItemHandler> getInventoryForBlock(BlockEntity te) {
+    public static Optional<ResourceHandler<ItemResource>> getInventoryForBlock(BlockEntity te) {
         return getInventoryForBlock(te, null);
     }
 
-    public static Optional<IItemHandler> getSidedInventoryForEntity(Entity entity, Direction dir) {
-        IItemHandler handler = entity.getCapability(PNCCapabilities.ENTITY_AUTOMATION, dir);
+    public static Optional<ResourceHandler<ItemResource>> getSidedInventoryForEntity(Entity entity, Direction dir) {
+        ResourceHandler<ItemResource> handler = entity.getCapability(PNCCapabilities.ENTITY_AUTOMATION, dir);
         if (handler == null) {
-            ResourceHandler<ItemResource> resourceHandler = entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, dir);
-            if (resourceHandler == null) {
-                resourceHandler = entity.getCapability(Capabilities.Item.ENTITY, null);
-            }
-            handler = resourceHandler == null ? null : IItemHandler.of(resourceHandler);
+            handler = entity.getCapability(Capabilities.Item.ENTITY_AUTOMATION, dir);
+        }
+        if (handler == null) {
+            handler = entity.getCapability(Capabilities.Item.ENTITY, null);
         }
         return Optional.ofNullable(handler);
     }
 
-    public static Optional<IItemHandler> getInventoryForEntity(Entity entity) {
-        return Optional.ofNullable(entity.getCapability(Capabilities.Item.ENTITY, null)).map(IItemHandler::of);
+    public static Optional<ResourceHandler<ItemResource>> getInventoryForEntity(Entity entity) {
+        return Optional.ofNullable(entity.getCapability(Capabilities.Item.ENTITY, null));
     }
 
-    public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te, Direction facing) {
-        // TODO 26.1 transfer: as above, for Capabilities.Fluid.BLOCK
-        if (te instanceof AbstractPneumaticCraftBlockEntity pncBE && pncBE.hasFluidCapability()) {
-            return Optional.ofNullable(pncBE.getFluidHandler(facing));
-        }
-        return getCap(te, Capabilities.Fluid.BLOCK, facing).map(IFluidHandler::of);
+    public static Optional<ResourceHandler<FluidResource>> getFluidHandlerForBlock(BlockEntity te, Direction facing) {
+        return getCap(te, Capabilities.Fluid.BLOCK, facing);
     }
 
-    public static Optional<IFluidHandler> getFluidHandlerForBlock(BlockEntity te) {
+    public static Optional<ResourceHandler<FluidResource>> getFluidHandlerForBlock(BlockEntity te) {
         return getFluidHandlerForBlock(te, null);
     }
 
-    public static Optional<IFluidHandlerItem> getFluidHandlerForItem(ItemStack stack) {
-        return Optional.ofNullable(LegacyFluidHandlerItem.of(stack));
-    }
-
-    public static Optional<IFluidHandler> getFluidHandlerForEntity(Entity entity, Direction dir) {
-        return Optional.ofNullable(entity.getCapability(Capabilities.Fluid.ENTITY, dir)).map(IFluidHandler::of);
-    }
-
-    public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te, Direction side) {
-        return getCap(te, Capabilities.Energy.BLOCK, side).map(IEnergyStorage::of);
-    }
-
-    public static Optional<IEnergyStorage> getEnergyStorageForBlock(BlockEntity te) {
-        return getCap(te, Capabilities.Energy.BLOCK, null).map(IEnergyStorage::of);
-    }
-
-    public static Optional<IEnergyStorage> getEnergyStorageForItem(ItemStack item) {
-        return item.isEmpty() ? Optional.empty() : Optional.ofNullable(ItemAccess.forStack(item).getCapability(Capabilities.Energy.ITEM)).map(IEnergyStorage::of);
-    }
-
     /**
-     * Extract a specific number of the given item from the given item handler
+     * Get a fluid handler for an item stack. The stack itself is never modified; if the handler needs to change the
+     * item (e.g. filling an empty bucket), the change is lost. Use this for read-only queries; to actually move
+     * fluid, use an {@link ItemAccess} which can hold the modified item, e.g. {@link ItemAccess#forHandlerIndex}.
      *
-     * @param handler the item handler
-     * @param requestedStack the item to search for, including the number of items; this stack is not modified
-     * @param countType how to interpret the item count of requestedStack
-     * @param simulate true if extraction should only be simulated
-     * @param matchNBT if true, require an exact match of item NBT
-     *
-     * @return the extracted item stack, or ItemStack.EMPTY if nothing was extracted
+     * @param stack the item stack
+     * @return the fluid handler, if any
      */
-    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, ExtractCount countType, boolean simulate, boolean matchNBT) {
-        if (requestedStack.isEmpty()) return requestedStack;
-
-        if (handler != null) {
-            int itemsFound = 0;
-            IntList slotsOfInterest = new IntArrayList();
-            for (int slot = 0; slot < handler.getSlots() && itemsFound < requestedStack.getCount(); slot++) {
-                ItemStack stack = handler.getStackInSlot(slot);
-                if (!stack.isEmpty() && matchStacks(stack, requestedStack, matchNBT)) {
-                    if (countType == ExtractCount.FIRST_MATCHING) {
-                        return handler.extractItem(slot, Math.min(requestedStack.getCount(), stack.getCount()), simulate);
-                    }
-                    itemsFound += stack.getCount();
-                    slotsOfInterest.add(slot);
-                }
-            }
-            if (countType == ExtractCount.UP_TO || itemsFound >= requestedStack.getCount()) {
-                ItemStack exportedStack = ItemStack.EMPTY;
-                int itemsNeeded = requestedStack.getCount();
-                int totalExtracted = 0;
-                for (int slot : slotsOfInterest) {
-                    ItemStack stack = handler.getStackInSlot(slot);
-                    if (matchStacks(stack, requestedStack, matchNBT)) {
-                        int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
-                        if (itemsSubtracted > 0) {
-                            exportedStack = stack;
-                        }
-                        itemsNeeded -= itemsSubtracted;
-                        ItemStack extracted = handler.extractItem(slot, itemsSubtracted, simulate);
-                        totalExtracted += extracted.getCount();
-                    }
-                }
-                exportedStack = exportedStack.copy();
-                exportedStack.setCount(totalExtracted);
-                return exportedStack;
-            }
-        }
-        return ItemStack.EMPTY;
+    public static Optional<ResourceHandler<FluidResource>> getFluidHandlerForItem(ItemStack stack) {
+        return stack.isEmpty() ? Optional.empty() : Optional.ofNullable(ItemAccess.forStack(stack).getCapability(Capabilities.Fluid.ITEM));
     }
 
-    private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean matchNBT) {
-        return matchNBT ? ItemStack.isSameItemSameComponents(stack1, stack2) : ItemStack.isSameItem(stack1, stack2);
+    public static Optional<ResourceHandler<FluidResource>> getFluidHandlerForEntity(Entity entity, Direction dir) {
+        return Optional.ofNullable(entity.getCapability(Capabilities.Fluid.ENTITY, dir));
     }
 
-    @Nonnull
-    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, boolean simulate) {
-        for (Direction side : Direction.values()) {
-            ItemStack inserted = getInventoryForBlock(tile, side)
-                    .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack.copy(), simulate))
-                    .orElse(ItemStack.EMPTY);
-            if (inserted.getCount() < itemStack.getCount()) return inserted;
-        }
-        return itemStack;
+    public static Optional<EnergyHandler> getEnergyStorageForBlock(BlockEntity te, Direction side) {
+        return getCap(te, Capabilities.Energy.BLOCK, side);
     }
 
-    @Nonnull
-    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
-        return getInventoryForBlock(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
+    public static Optional<EnergyHandler> getEnergyStorageForBlock(BlockEntity te) {
+        return getCap(te, Capabilities.Energy.BLOCK, null);
     }
 
-    /**
-     * Try to transfer a single item between two item handlers
-     *
-     * @param input the input handler
-     * @param output the output handler
-     * @return true if an item was transferred
-     */
-    public static boolean transferOneItem(IItemHandler input, IItemHandler output) {
-        if (input == null || output == null) return false;
-
-        for (int i = 0; i < input.getSlots(); i++) {
-            ItemStack extracted = input.extractItem(i, 1, true);
-            if (!extracted.isEmpty()) {
-                if (ItemHandlerHelper.insertItemStacked(output, extracted, false).isEmpty()) {
-                    input.extractItem(i, 1, false);
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Insert an item into an item handler, dropping any excess in the world
-     * @param world the world
-     * @param stack the stack to insert
-     * @param handler the item handler
-     * @param dropPos position to drop excess items at
-     * @param simulate true if only simulating (excess will not be dropped)
-     */
-    public static void insertOrDrop(Level world, ItemStack stack, IItemHandler handler, Vec3 dropPos, boolean simulate) {
-        ItemStack remainder = ItemHandlerHelper.insertItem(handler, stack, simulate);
-        if (!remainder.isEmpty() && !simulate) {
-            ItemEntity item = new ItemEntity(world, dropPos.x(), dropPos.y(), dropPos.z(), remainder);
-            world.addFreshEntity(item);
-        }
-    }
-
-    /**
-     * Count the number of items in the given handler which match the given predicate
-     * @param cap the item handler capability
-     * @param pred a matching predicate
-     * @return the number of matching items
-     */
-    public static int countItems(IItemHandler cap, Predicate<ItemStack> pred) {
-        return IntStream.range(0, cap.getSlots())
-                .filter(i -> pred.test(cap.getStackInSlot(i)))
-                .map(i -> cap.getStackInSlot(i).getCount())
-                .sum();
-    }
-
-
-
-    public static <T> Optional<T> getCap(BlockEntity te, BlockCapability<T,Direction> cap, Direction face) {
-        return te == null || te.getLevel() == null ?
-                Optional.empty() :
-                Optional.ofNullable(te.getLevel().getCapability(cap, te.getBlockPos(), te.getBlockState(), te, face));
+    public static Optional<EnergyHandler> getEnergyStorageForItem(ItemStack item) {
+        return item.isEmpty() ? Optional.empty() : Optional.ofNullable(ItemAccess.forStack(item).getCapability(Capabilities.Energy.ITEM));
     }
 
     public static <T> Optional<T> getCap(ItemStack stack, ItemCapability<T, Void> cap) {
@@ -292,17 +161,278 @@ public class IOHelper {
     }
 
     /**
-     * TODO 26.1 transfer: temporary bridge from the transfer API to the legacy handler interfaces
+     * Get the stack in a slot of an item handler. For PNC's own item handlers ({@link BaseItemStackHandler}), this is
+     * the stored stack itself, like the legacy {@code ItemStackHandler#getStackInSlot()}: code which modifies it
+     * directly (e.g. drone AI) relies on that. For any other handler, it's a copy.
+     *
+     * @param handler the item handler
+     * @param slot the slot
+     * @return the stack in the slot
      */
-    @Nullable
-    public static IItemHandler legacy(@Nullable BlockCapabilityCache<ResourceHandler<ItemResource>, Direction> cache) {
-        ResourceHandler<ItemResource> handler = cache == null ? null : cache.getCapability();
-        return handler == null ? null : IItemHandler.of(handler);
+    public static ItemStack getStack(ResourceHandler<ItemResource> handler, int slot) {
+        return handler instanceof BaseItemStackHandler b ? b.getStackInSlot(slot) : ItemUtil.getStack(handler, slot);
     }
 
+    /**
+     * Directly set the stack in a slot of an item handler, bypassing any insertion rules.
+     *
+     * @param handler the item handler, which must be directly modifiable (see {@link #modifierFor(ResourceHandler)})
+     * @param slot the slot
+     * @param stack the new stack
+     */
+    public static void setStack(ResourceHandler<ItemResource> handler, int slot, ItemStack stack) {
+        modifierFor(handler).set(slot, ItemResource.of(stack), stack.getCount());
+    }
+
+    /**
+     * Get a modifier which can directly set the contents of an item handler.
+     *
+     * @param handler a {@link StacksResourceHandler}, an {@link IndexModifier}, or a {@link DelegatingResourceHandler}
+     *                which wraps either of those
+     * @return the modifier
+     * @throws IllegalArgumentException if the handler can't be modified directly
+     */
+    @SuppressWarnings("unchecked")
+    public static IndexModifier<ItemResource> modifierFor(ResourceHandler<ItemResource> handler) {
+        if (handler instanceof IndexModifier<?> m) {
+            return (IndexModifier<ItemResource>) m;
+        } else if (handler instanceof StacksResourceHandler<?, ?> stacks) {
+            return ((StacksResourceHandler<ItemStack, ItemResource>) stacks)::set;
+        } else if (handler instanceof DelegatingResourceHandler<ItemResource> delegating) {
+            return modifierFor(delegating.getDelegate());
+        }
+        throw new IllegalArgumentException("item handler can't be modified directly: " + handler);
+    }
+
+    /**
+     * Insert an item stack into a specific slot of an item handler.
+     *
+     * @param handler the item handler
+     * @param slot the slot
+     * @param stack the stack to insert; not modified
+     * @param simulate true to only simulate the insertion
+     * @return the items which could not be inserted
+     */
+    public static ItemStack insert(ResourceHandler<ItemResource> handler, int slot, ItemStack stack, boolean simulate) {
+        return ItemUtil.insertItemReturnRemaining(handler, slot, stack, simulate, null);
+    }
+
+    /**
+     * Insert an item stack into an item handler, trying each slot in turn.
+     *
+     * @param handler the item handler
+     * @param stack the stack to insert; not modified
+     * @param simulate true to only simulate the insertion
+     * @return the items which could not be inserted
+     */
+    public static ItemStack insert(@Nullable ResourceHandler<ItemResource> handler, ItemStack stack, boolean simulate) {
+        if (handler == null) return stack;
+        return ItemUtil.insertItemReturnRemaining(handler, stack, simulate, null);
+    }
+
+    /**
+     * Insert an item stack into an item handler, preferring slots which already contain the item.
+     *
+     * @param handler the item handler
+     * @param stack the stack to insert; not modified
+     * @param simulate true to only simulate the insertion
+     * @return the items which could not be inserted
+     */
+    public static ItemStack insertStacked(@Nullable ResourceHandler<ItemResource> handler, ItemStack stack, boolean simulate) {
+        if (handler == null || stack.isEmpty()) return stack;
+        try (Transaction tx = Transaction.openRoot()) {
+            int inserted = ResourceHandlerUtil.insertStacking(handler, ItemResource.of(stack), stack.getCount(), tx);
+            if (!simulate) tx.commit();
+            return stack.copyWithCount(stack.getCount() - inserted);
+        }
+    }
+
+    /**
+     * Extract items from a specific slot of an item handler.
+     *
+     * @param handler the item handler
+     * @param slot the slot
+     * @param amount the maximum number of items to extract
+     * @param simulate true to only simulate the extraction
+     * @return the extracted items
+     */
+    public static ItemStack extract(ResourceHandler<ItemResource> handler, int slot, int amount, boolean simulate) {
+        ItemResource resource = handler.getResource(slot);
+        if (resource.isEmpty() || amount <= 0) return ItemStack.EMPTY;
+        try (Transaction tx = Transaction.openRoot()) {
+            int extracted = handler.extract(slot, resource, amount, tx);
+            if (!simulate) tx.commit();
+            return resource.toStack(extracted);
+        }
+    }
+
+    /**
+     * Extract a specific number of the given item from the given item handler
+     *
+     * @param handler the item handler
+     * @param requestedStack the item to search for, including the number of items; this stack is not modified
+     * @param countType how to interpret the item count of requestedStack
+     * @param simulate true if extraction should only be simulated
+     * @param matchNBT if true, require an exact match of item NBT
+     *
+     * @return the extracted item stack, or ItemStack.EMPTY if nothing was extracted
+     */
+    public static ItemStack extract(ResourceHandler<ItemResource> handler, ItemStack requestedStack, ExtractCount countType, boolean simulate, boolean matchNBT) {
+        if (requestedStack.isEmpty()) return requestedStack;
+
+        if (handler != null) {
+            int itemsFound = 0;
+            IntList slotsOfInterest = new IntArrayList();
+            for (int slot = 0; slot < handler.size() && itemsFound < requestedStack.getCount(); slot++) {
+                ItemResource resource = handler.getResource(slot);
+                if (!resource.isEmpty() && matchStacks(resource, requestedStack, matchNBT)) {
+                    int count = handler.getAmountAsInt(slot);
+                    if (countType == ExtractCount.FIRST_MATCHING) {
+                        return extract(handler, slot, Math.min(requestedStack.getCount(), count), simulate);
+                    }
+                    itemsFound += count;
+                    slotsOfInterest.add(slot);
+                }
+            }
+            if (countType == ExtractCount.UP_TO || itemsFound >= requestedStack.getCount()) {
+                ItemResource exported = ItemResource.EMPTY;
+                int itemsNeeded = requestedStack.getCount();
+                int totalExtracted = 0;
+                try (Transaction tx = Transaction.openRoot()) {
+                    for (int slot : slotsOfInterest) {
+                        ItemResource resource = handler.getResource(slot);
+                        if (!resource.isEmpty() && matchStacks(resource, requestedStack, matchNBT)) {
+                            int itemsSubtracted = Math.min(itemsNeeded, handler.getAmountAsInt(slot));
+                            if (itemsSubtracted > 0) {
+                                exported = resource;
+                            }
+                            itemsNeeded -= itemsSubtracted;
+                            if (itemsSubtracted > 0) {
+                                totalExtracted += handler.extract(slot, resource, itemsSubtracted, tx);
+                            }
+                        }
+                    }
+                    if (!simulate) tx.commit();
+                }
+                return exported.toStack(totalExtracted);
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static boolean matchStacks(ItemResource resource, ItemStack stack, boolean matchNBT) {
+        return matchNBT ? resource.matches(stack) : resource.is(stack.getItem());
+    }
+
+    @Nonnull
+    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, boolean simulate) {
+        for (Direction side : Direction.values()) {
+            ItemStack inserted = getInventoryForBlock(tile, side)
+                    .map(handler -> insert(handler, itemStack, simulate))
+                    .orElse(ItemStack.EMPTY);
+            if (inserted.getCount() < itemStack.getCount()) return inserted;
+        }
+        return itemStack;
+    }
+
+    @Nonnull
+    public static ItemStack insert(BlockEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
+        return getInventoryForBlock(tile, side).map(handler -> insert(handler, itemStack, simulate)).orElse(itemStack);
+    }
+
+    /**
+     * Try to transfer a single item between two item handlers
+     *
+     * @param input the input handler
+     * @param output the output handler
+     * @return true if an item was transferred
+     */
+    public static boolean transferOneItem(ResourceHandler<ItemResource> input, ResourceHandler<ItemResource> output) {
+        if (input == null || output == null) return false;
+
+        try (Transaction tx = Transaction.openRoot()) {
+            if (ResourceHandlerUtil.moveStacking(input, output, r -> true, 1, tx) == 1) {
+                tx.commit();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Insert an item into an item handler, dropping any excess in the world
+     * @param world the world
+     * @param stack the stack to insert
+     * @param handler the item handler
+     * @param dropPos position to drop excess items at
+     * @param simulate true if only simulating (excess will not be dropped)
+     */
+    public static void insertOrDrop(Level world, ItemStack stack, ResourceHandler<ItemResource> handler, Vec3 dropPos, boolean simulate) {
+        ItemStack remainder = insert(handler, stack, simulate);
+        if (!remainder.isEmpty() && !simulate) {
+            ItemEntity item = new ItemEntity(world, dropPos.x(), dropPos.y(), dropPos.z(), remainder);
+            world.addFreshEntity(item);
+        }
+    }
+
+    /**
+     * Count the number of items in the given handler which match the given predicate
+     * @param cap the item handler capability
+     * @param pred a matching predicate
+     * @return the number of matching items
+     */
+    public static int countItems(ResourceHandler<ItemResource> cap, Predicate<ItemStack> pred) {
+        return IntStream.range(0, cap.size())
+                .filter(i -> !cap.getResource(i).isEmpty() && pred.test(getStack(cap, i)))
+                .map(cap::getAmountAsInt)
+                .sum();
+    }
+
+    /**
+     * Insert energy into an energy handler.
+     *
+     * @param handler the energy handler
+     * @param amount the amount to insert
+     * @param simulate true to only simulate the insertion
+     * @return the amount inserted
+     */
+    public static int insertEnergy(@Nullable EnergyHandler handler, int amount, boolean simulate) {
+        if (handler == null || amount <= 0) return 0;
+        try (Transaction tx = Transaction.openRoot()) {
+            int inserted = handler.insert(amount, tx);
+            if (!simulate) tx.commit();
+            return inserted;
+        }
+    }
+
+    /**
+     * Extract energy from an energy handler.
+     *
+     * @param handler the energy handler
+     * @param amount the amount to extract
+     * @param simulate true to only simulate the extraction
+     * @return the amount extracted
+     */
+    public static int extractEnergy(@Nullable EnergyHandler handler, int amount, boolean simulate) {
+        if (handler == null || amount <= 0) return 0;
+        try (Transaction tx = Transaction.openRoot()) {
+            int extracted = handler.extract(amount, tx);
+            if (!simulate) tx.commit();
+            return extracted;
+        }
+    }
+
+    /**
+     * {@return the capability from a capability cache, or null if there's no cache or no capability}
+     */
     @Nullable
-    public static IFluidHandler legacyFluid(@Nullable BlockCapabilityCache<ResourceHandler<FluidResource>, Direction> cache) {
-        ResourceHandler<FluidResource> handler = cache == null ? null : cache.getCapability();
-        return handler == null ? null : IFluidHandler.of(handler);
+    public static <T> T getCapability(@Nullable BlockCapabilityCache<T, Direction> cache) {
+        return cache == null ? null : cache.getCapability();
+    }
+
+    public static <T> Optional<T> getCap(BlockEntity te, BlockCapability<T,Direction> cap, Direction face) {
+        return te == null || te.getLevel() == null ?
+                Optional.empty() :
+                Optional.ofNullable(te.getLevel().getCapability(cap, te.getBlockPos(), te.getBlockState(), te, face));
     }
 }

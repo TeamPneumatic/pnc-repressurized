@@ -48,7 +48,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -72,8 +71,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -293,7 +292,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
                     BlockEntity te = getLevel().getBlockEntity(pos);
                     if (te == null) continue;
                     boolean inserted = IOHelper.getInventoryForBlock(te, entry.getValue()).map(inv -> {
-                        ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
+                        ItemStack remainder = IOHelper.insert(inv, item.getItem(), false);
                         if (!remainder.isEmpty()) {
                             item.setItem(remainder);
                             insertingInventoryHasSpace = false;
@@ -550,8 +549,8 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
             if (slot == GPS_SLOT) {
                 gpsSlotChanged = true;
             }
@@ -596,7 +595,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
 
         BlockEntity te = nonNullLevel().getBlockEntity(lastInsertingInventory);
         return IOHelper.getInventoryForBlock(te, lastInsertingInventorySide).map(inv -> {
-            ItemStack remainder = ItemHandlerHelper.insertItem(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
+            ItemStack remainder = IOHelper.insert(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
             insertingInventoryHasSpace = remainder.isEmpty();
             return insertingInventoryHasSpace;
         }).orElseGet(() -> {
@@ -637,7 +636,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
 
                 // Split stack only for items that are consumed when dispensed (not micromissiles)
                 else if (!(launchedEntity instanceof MicromissileEntity)) {
-                    itemHandler.extractItem(CANNON_SLOT, 1, false);
+                    IOHelper.extract(itemHandler, CANNON_SLOT, 1, false);
                 }
             } else if (launchedEntity instanceof ServerPlayer serverPlayer) {
                 if (serverPlayer.connection.isAcceptingMessages()) {
@@ -768,7 +767,7 @@ public class AirCannonBlockEntity extends AbstractAirHandlingBlockEntity
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

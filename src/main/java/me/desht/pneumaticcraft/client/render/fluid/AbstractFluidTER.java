@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.FluidModel;
@@ -37,7 +38,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
@@ -74,7 +74,7 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
     }
 
     public static void renderFluid(VertexConsumer builder, TankRenderInfo tankRenderInfo, Matrix4f posMat, int combinedLight, int combinedOverlay) {
-        IFluidTank tank = tankRenderInfo.getTank();
+        PNCFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
         Fluid fluid = tank.getFluid().getFluid();
@@ -159,7 +159,7 @@ public abstract class AbstractFluidTER<T extends AbstractPneumaticCraftBlockEnti
         }
     }
 
-     private static AABB getRenderBounds(IFluidTank tank, AABB tankBounds) {
+     private static AABB getRenderBounds(PNCFluidTank tank, AABB tankBounds) {
         float percent = (float) tank.getFluidAmount() / (float) tank.getCapacity();
 
         double tankHeight = tankBounds.maxY - tankBounds.minY;

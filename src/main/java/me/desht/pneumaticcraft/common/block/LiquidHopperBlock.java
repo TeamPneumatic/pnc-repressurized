@@ -28,17 +28,23 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.upgrades.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.Lazy;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.access.ItemAccess;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.ItemAccessFluidHandler;
+
+import javax.annotation.Nullable;
 
 public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements PneumaticCraftEntityBlock {
     public LiquidHopperBlock(Properties props) {
@@ -57,22 +63,11 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
             super(block, ModItems.defaultProps());
         }
 
-        // TODO 26.1 transfer: the crafting remainder is now IItemExtension#getCraftingRemainder(ItemInstance),
-        //  returning an ItemStackTemplate; port together with the fluid item handlers (PR2)
-//        @Override
-//        public boolean hasCraftingRemainingItem(ItemStack stack) {
-//            return true;
-//        }
-
-//        @Override
-//        public ItemStack getCraftingRemainingItem(ItemStack itemStack) {
-//            boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-//            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
-//                // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
-//                handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-//                return handler.getContainer().copy();
-//            }).orElseThrow(RuntimeException::new);
-//        }
+        // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
+        @Override
+        public @Nullable ItemStackTemplate getCraftingRemainder(ItemInstance instance) {
+            return FluidUtils.getDrainedCraftingRemainder(instance, FluidType.BUCKET_VOLUME, false);
+        }
 
         @Override
         public int getTintColor(ItemStack stack, int tintIndex) {
@@ -86,8 +81,8 @@ public class LiquidHopperBlock extends OmnidirectionalHopperBlock implements Pne
         }
 
         @Override
-        public IFluidHandlerItem provideFluidCapability(ItemStack stack) {
-            return new FluidHandlerItemStack(ModDataComponents.MAIN_TANK, stack, PneumaticValues.NORMAL_TANK_CAPACITY);
+        public ResourceHandler<FluidResource> provideFluidCapability(ItemAccess itemAccess) {
+            return new ItemAccessFluidHandler(itemAccess, ModDataComponents.MAIN_TANK.get(), PneumaticValues.NORMAL_TANK_CAPACITY);
         }
     }
 }

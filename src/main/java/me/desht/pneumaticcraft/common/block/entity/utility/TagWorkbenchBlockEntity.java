@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.inventory.TagWorkbenchMenu;
 import me.desht.pneumaticcraft.common.item.TagFilterItem;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModItems;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -37,7 +38,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +62,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -73,7 +75,7 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
             if (!inventory.getStackInSlot(OUTPUT_SLOT).isEmpty()) {
                 outputStack = inventory.getStackInSlot(OUTPUT_SLOT);
             } else if (!inventory.getStackInSlot(PAPER_SLOT).isEmpty()) {
-                inventory.extractItem(PAPER_SLOT, 1, false);
+                IOHelper.extract(inventory, PAPER_SLOT, 1, false);
                 outputStack = new ItemStack(ModItems.TAG_FILTER.get());
             }
             if (!outputStack.isEmpty()) {
@@ -149,8 +151,8 @@ public class TagWorkbenchBlockEntity extends DisplayTableBlockEntity implements 
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
 
             if (slot == 1) {
                 outputItemId = Item.getId(getStackInSlot(1).getItem());

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.misc.Symbols;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
 import me.desht.pneumaticcraft.common.inventory.LogisticsMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockItem;
 import me.desht.pneumaticcraft.common.util.FluidFilter;
@@ -45,7 +46,6 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,10 +105,10 @@ public abstract class AbstractLogisticsFrameItem extends SemiblockItem {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "itemWhitelist" : "itemBlacklist"))
                         .append(":").withStyle(ChatFormatting.YELLOW));
 
-                ItemStackHandler handler = new ItemStackHandler();
+                BaseItemStackHandler handler = new BaseItemStackHandler(1);
                 ValueIOBridge.deserialize(handler, provider, tag.getCompoundOrEmpty(AbstractLogisticsFrameEntity.NBT_ITEM_FILTERS));
                 List<ItemStack> stacks = new ArrayList<>();
-                for (int i = 0; i < handler.getSlots(); i++) {
+                for (int i = 0; i < handler.size(); i++) {
                     if (!handler.getStackInSlot(i).isEmpty()) stacks.add(handler.getStackInSlot(i));
                 }
                 int tooltipSize = curInfo.size();

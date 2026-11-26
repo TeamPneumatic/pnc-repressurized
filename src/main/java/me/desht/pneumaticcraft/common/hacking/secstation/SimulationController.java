@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.inventory.SecurityStationHackingMenu;
 import me.desht.pneumaticcraft.common.item.NetworkComponentItem.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationUpdate;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -66,9 +67,9 @@ public class SimulationController implements ISimulationController {
         this.aiSimulation = new HackSimulation(this, te.findComponent(NetworkComponentType.DIAGNOSTIC_SUBROUTINE),
                 BlockEntityConstants.NETWORK_AI_BRIDGE_SPEED, HackingSide.AI);
 
-        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
-            this.playerSimulation.addNode(i, te.getItemHandler().getStackInSlot(i));
-            this.aiSimulation.addNode(i, te.getItemHandler().getStackInSlot(i));
+        for (int i = 0; i < te.getItemHandler().size(); i++) {
+            this.playerSimulation.addNode(i, IOHelper.getStack(te.getItemHandler(), i));
+            this.aiSimulation.addNode(i, IOHelper.getStack(te.getItemHandler(), i));
         }
 
         this.justTesting = justTesting;
@@ -107,8 +108,8 @@ public class SimulationController implements ISimulationController {
         HackSimulation.STREAM_CODEC.encode(buffer, aiSimulation);
 
         List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
-        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
-            ItemStack stack = te.getItemHandler().getStackInSlot(i);
+        for (int i = 0; i < te.getItemHandler().size(); i++) {
+            ItemStack stack = IOHelper.getStack(te.getItemHandler(), i);
             if (!stack.isEmpty()) {
                 nodes.add(Pair.of(i, stack));
             }

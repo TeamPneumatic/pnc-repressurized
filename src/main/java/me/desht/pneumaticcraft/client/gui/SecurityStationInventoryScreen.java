@@ -35,6 +35,7 @@ import me.desht.pneumaticcraft.common.inventory.SecurityStationMainMenu;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -112,8 +113,8 @@ public class SecurityStationInventoryScreen extends AbstractPneumaticCraftContai
         hackRenderer = new HackSimulationRenderer(leftPos + 25, topPos + 27, 18);
         hackSimulation = HackSimulation.dummySimulation();
         hackSimulation.wakeUp();
-        for (int i = 0; i < te.getItemHandler().getSlots(); i++) {
-            hackSimulation.addNode(i, te.getItemHandler().getStackInSlot(i));
+        for (int i = 0; i < te.getItemHandler().size(); i++) {
+            hackSimulation.addNode(i, IOHelper.getStack(te.getItemHandler(), i));
         }
     }
 

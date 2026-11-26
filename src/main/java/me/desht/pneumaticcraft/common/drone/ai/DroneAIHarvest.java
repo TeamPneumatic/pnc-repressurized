@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
 import me.desht.pneumaticcraft.api.registry.PNCRegistries;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IToolUser;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -97,8 +98,8 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     }
 
     private Consumer<Player> getDamageableHoe() {
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             HoeHandler handler = PNCRegistries.HOE_HANDLER_REGISTRY.stream()
                     .filter(hoeHandler -> hoeHandler.test(stack))
                     .findFirst().orElse(null);

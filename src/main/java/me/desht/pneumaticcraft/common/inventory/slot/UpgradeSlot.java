@@ -21,11 +21,11 @@ import me.desht.pneumaticcraft.api.upgrade.PNCUpgrade;
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
 import me.desht.pneumaticcraft.common.upgrades.ApplicableUpgradesDB;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 
-public class UpgradeSlot extends SlotItemHandler {
+public class UpgradeSlot extends ItemHandlerSlot {
     private final AbstractPneumaticCraftBlockEntity te;
 
     public UpgradeSlot(AbstractPneumaticCraftBlockEntity te, int index, int xPosition, int yPosition) {
@@ -35,7 +35,7 @@ public class UpgradeSlot extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(@Nonnull ItemStack stack) {
-        return getItemHandler().isItemValid(getSlotIndex(), stack);
+        return getItemHandler().isValid(getSlotIndex(), ItemResource.of(stack));
     }
 
     @Override

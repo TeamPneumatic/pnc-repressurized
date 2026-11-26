@@ -19,7 +19,8 @@ package me.desht.pneumaticcraft.common.util;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public class CountedFluidStacks extends Object2IntOpenCustomHashMap<FluidStack> {
     private static class FluidStackHashingStrategy implements Strategy<FluidStack> {
@@ -39,11 +40,11 @@ public class CountedFluidStacks extends Object2IntOpenCustomHashMap<FluidStack> 
         super(new FluidStackHashingStrategy());
     }
 
-    public CountedFluidStacks(IFluidHandler handler) {
-        super(handler.getTanks(), new FluidStackHashingStrategy());
+    public CountedFluidStacks(ResourceHandler<FluidResource> handler) {
+        super(handler.size(), new FluidStackHashingStrategy());
 
-        for (int i = 0; i < handler.getTanks(); i++) {
-            FluidStack stack = handler.getFluidInTank(i);
+        for (int i = 0; i < handler.size(); i++) {
+            FluidStack stack = FluidUtils.getFluid(handler, i);
             if (!stack.isEmpty()) {
                 int seenAlready = getInt(stack);
                 put(stack, seenAlready + stack.getAmount());

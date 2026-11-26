@@ -26,8 +26,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 public class DroneEntityAIInventoryImport extends DroneAIImportExportBase<ProgWidgetInventoryBase> {
 
@@ -57,12 +57,12 @@ public class DroneEntityAIInventoryImport extends DroneAIImportExportBase<ProgWi
         return imported;
     }
 
-    private boolean tryImport(IItemHandler inv, BlockPos pos, boolean simulate) {
-        for (int i = 0; i < inv.getSlots(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+    private boolean tryImport(ResourceHandler<ItemResource> inv, BlockPos pos, boolean simulate) {
+        for (int i = 0; i < inv.size(); i++) {
+            ItemStack stack = IOHelper.getStack(inv, i);
             if (!stack.isEmpty()) {
                 if (progWidget.isItemValidForFilters(stack)) {
-                    ItemStack importedStack = inv.extractItem(i, stack.getCount(), true);
+                    ItemStack importedStack = IOHelper.extract(inv, i, stack.getCount(), true);
                     if (importedStack.isEmpty()) {
                         continue;
                     }
@@ -70,10 +70,10 @@ public class DroneEntityAIInventoryImport extends DroneAIImportExportBase<ProgWi
                     if (progWidget.useCount()) {
                         importedStack.setCount(Math.min(importedStack.getCount(), getRemainingCount()));
                     }
-                    ItemStack remainder = ItemHandlerHelper.insertItem(drone.getInv(), importedStack, simulate);
+                    ItemStack remainder = IOHelper.insert(drone.getInv(), importedStack, simulate);
                     int removedItems = importedStack.getCount() - remainder.getCount();
                     if (!simulate) {
-                        inv.extractItem(i, removedItems, false);
+                        IOHelper.extract(inv, i, removedItems, false);
                         decreaseCount(removedItems);
                         drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_INV);
                         if (progWidget.useCount() && getRemainingCount() <= 0) {

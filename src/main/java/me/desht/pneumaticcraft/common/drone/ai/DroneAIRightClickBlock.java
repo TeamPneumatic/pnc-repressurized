@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.drone.IDroneBase;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
@@ -69,8 +70,8 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         if (progWidget.isItemFilterEmpty()) return true;
         switch (clickType) {
             case CLICK_ITEM -> {
-                for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                    if (progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(i))) return true;
+                for (int i = 0; i < drone.getInv().size(); i++) {
+                    if (progWidget.isItemValidForFilters(IOHelper.getStack(drone.getInv(), i))) return true;
                 }
                 return false;
             }
@@ -93,7 +94,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             }
 
             // Copy mainhand item back from fake player inv to slot 0 of drone's inventory (which always exists)
-            drone.getInv().setStackInSlot(0, drone.getFakePlayer().getMainHandItem());
+            IOHelper.setStack(drone.getInv(), 0, drone.getFakePlayer().getMainHandItem());
 
             // Fake player's inventory may have been modified by the right-click action
             // Copy the rest of the fake player's inventory back to the drone's actual inventory,
@@ -116,7 +117,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
 
     private boolean rightClickItem(FakePlayer fakePlayer, BlockPos pos) {
         // if necessary, find a filter-matching item in the inventory, and swap it into slot 0 (drone's held item)
-        if (!progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(0)) && !trySwapItem()) {
+        if (!progWidget.isItemValidForFilters(IOHelper.getStack(drone.getInv(), 0)) && !trySwapItem()) {
             return false;
         }
 
@@ -194,11 +195,11 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private boolean trySwapItem() {
-        for (int i = 1; i < drone.getInv().getSlots(); i++) {
-            if (progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(i))) {
-                ItemStack tmp = drone.getInv().getStackInSlot(i);
-                drone.getInv().setStackInSlot(i, drone.getInv().getStackInSlot(0));
-                drone.getInv().setStackInSlot(0, tmp);
+        for (int i = 1; i < drone.getInv().size(); i++) {
+            if (progWidget.isItemValidForFilters(IOHelper.getStack(drone.getInv(), i))) {
+                ItemStack tmp = IOHelper.getStack(drone.getInv(), i);
+                IOHelper.setStack(drone.getInv(), i, IOHelper.getStack(drone.getInv(), 0));
+                IOHelper.setStack(drone.getInv(), 0, tmp);
                 return true;
             }
         }

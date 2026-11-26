@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.thirdparty.ae2;
 
+
 public class AE2RequesterIntegration /*implements IGridBlock, IGridHost, ICraftingProvider, ICraftingWatcherHost,
         IStackWatcherHost, ICellContainer, IGridTickable, IMEInventoryHandler<IAEItemStack> */
 {
@@ -234,7 +235,7 @@ public class AE2RequesterIntegration /*implements IGridBlock, IGridHost, ICrafti
 //        }
 //    }
 //
-//    private IItemHandlerModifiable getFilters() {
+//    private ResourceHandler<ItemResource> getFilters() {
 //        return logisticsRequester.getItemFilterHandler();
 //    }
 //

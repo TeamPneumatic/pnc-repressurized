@@ -60,15 +60,15 @@ public class SmartSyncTank extends PNCFluidTank {
         if (te != null) {
             if (te.getLevel().isClientSide()) {
                 if (ClientUtils.isGuiOpen(te)) {
-                    super.setFluid(syncedFluidStackGui);
+                    setFluid(syncedFluidStackGui);
                 } else {
                     int currAmount = getFluidAmount();
                     FluidStack tgt = syncedFluidStackDesc;
                     int delta = tgt.getAmount() - currAmount;
                     if (delta != 0) {
                         int newAmount = Math.abs(delta) < capacity / 200 ? tgt.getAmount() : currAmount + delta / 20;
-                        Fluid newFluid = fluidStack.isEmpty() ? tgt.getFluid() : fluidStack.getFluid();
-                        super.setFluid(new FluidStack(newFluid, newAmount));
+                        Fluid newFluid = getFluid().isEmpty() ? tgt.getFluid() : getFluid().getFluid();
+                        setFluid(new FluidStack(newFluid, newAmount));
                     }
                 }
             } else {
@@ -108,45 +108,23 @@ public class SmartSyncTank extends PNCFluidTank {
     }
 
     @Override
-    public int fill(FluidStack resource, FluidAction action) {
-        int filled = super.fill(resource, action);
-        if (filled != 0 && action.execute()) {
-            onFluidChange(getFluid());
-        }
-        return filled;
-    }
-
-    @Override
-    public FluidStack drain(FluidStack resource, FluidAction action) {
-        FluidStack drained = super.drain(resource, action);
-        if (!drained.isEmpty() && action.execute()) {
-            onFluidChange(getFluid());
-        }
-        return drained;
-    }
-
-    @Override
-    public FluidStack drain(int maxDrain, FluidAction action) {
-        FluidStack drained = super.drain(maxDrain, action);
-        if (!drained.isEmpty() && action.execute()) {
-            onFluidChange(getFluid());
-        }
-        return drained;
-    }
-
-    @Override
     protected void onContentsChanged(FluidStack prevStack) {
         BlockEntity be = owner.get();
-        if (be != null && be.getLevel() != null && !be.getLevel().isClientSide()) {
-            be.setChanged();
+        if (be == null || be.getLevel() == null || !be.getLevel().isClientSide()) {
+            onFluidChange(getFluid());
+            markOwnerDirty(be);
         }
     }
 
-    @Override
-    public void setFluid(FluidStack stack) {
-        onFluidChange(stack);
-
-        super.setFluid(stack);
+    /**
+     * Called on the server when the tank contents change, after the change has been scheduled for syncing.
+     *
+     * @param be the owning block entity, or null if it's gone
+     */
+    protected void markOwnerDirty(BlockEntity be) {
+        if (be != null && be.getLevel() != null) {
+            be.setChanged();
+        }
     }
 
     @Override
@@ -154,7 +132,7 @@ public class SmartSyncTank extends PNCFluidTank {
         super.loadFromContent(contents);
 
         pending = true;
-        syncedFluidStackGui = fluidStack.copy();
+        syncedFluidStackGui = getFluid().copy();
 
     }
 }

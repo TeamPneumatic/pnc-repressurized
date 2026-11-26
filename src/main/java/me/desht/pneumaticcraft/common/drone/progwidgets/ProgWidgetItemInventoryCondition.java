@@ -35,7 +35,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +79,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
 
                 // item handlers won't typically override hashCode/equals, but this should be OK: we just
                 // want a set of distinct item handler objects, which Object#hashCode() should give us
-                Set<IItemHandler> handlers = new HashSet<>();
+                Set<ResourceHandler<ItemResource>> handlers = new HashSet<>();
                 for (Direction dir : DirectionUtil.VALUES) {
                     if (((ISidedWidget) progWidget).isSideSelected(dir)) {
                         IOHelper.getInventoryForBlock(te, dir).ifPresent(handlers::add);
@@ -86,9 +87,9 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                 }
 
                 int count = 0;
-                for (IItemHandler handler : handlers) {
-                    for (int i = 0; i < handler.getSlots(); i++) {
-                        ItemStack stack = handler.getStackInSlot(i);
+                for (ResourceHandler<ItemResource> handler : handlers) {
+                    for (int i = 0; i < handler.size(); i++) {
+                        ItemStack stack = IOHelper.getStack(handler, i);
                         if (progWidget.isItemValidForFilters(stack)) {
                             count += stack.getCount();
                         }

@@ -93,8 +93,8 @@ public class DroneAICrafting extends Goal {
             ItemStack recipeStack = craftingGrid.getItem(i);
             if (!recipeStack.isEmpty()) {
                 List<ItemStack> equivalents = new ArrayList<>();
-                for (int j = 0; j < drone.getInv().getSlots(); j++) {
-                    ItemStack droneStack = drone.getInv().getStackInSlot(j);
+                for (int j = 0; j < drone.getInv().size(); j++) {
+                    ItemStack droneStack = IOHelper.getStack(drone.getInv(), j);
                     if (!droneStack.isEmpty() && (droneStack.getItem() == recipeStack.getItem() || ItemTagMatcher.matchTags(droneStack, recipeStack))) {
                         equivalents.add(droneStack);
                     }
@@ -151,10 +151,10 @@ public class DroneAICrafting extends Goal {
             }
         }
 
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             if (stack.getCount() <= 0) {
-                drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                IOHelper.setStack(drone.getInv(), i, ItemStack.EMPTY);
             }
         }
 

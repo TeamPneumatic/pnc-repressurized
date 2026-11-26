@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.entity.compressor.AirCompressorBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.ChatFormatting;
@@ -71,7 +72,7 @@ public class AirCompressorScreen extends AbstractPneumaticCraftContainerScreen<A
     @Override
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
-        if (te.burnTime <= te.curFuelUsage && te.getItemHandler().getStackInSlot(0).getBurnTime(RecipeType.SMELTING, te.nonNullLevel().fuelValues()) <= 0) {
+        if (te.burnTime <= te.curFuelUsage && IOHelper.getStack(te.getItemHandler(), 0).getBurnTime(RecipeType.SMELTING, te.nonNullLevel().fuelValues()) <= 0) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airCompressor.noFuel"));
         }
 

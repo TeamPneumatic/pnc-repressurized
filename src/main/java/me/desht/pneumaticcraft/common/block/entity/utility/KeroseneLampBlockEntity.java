@@ -32,6 +32,8 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
@@ -60,11 +62,10 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,8 +115,8 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
         @Override
         protected void onContentsChanged(FluidStack prevStack) {
             super.onContentsChanged(prevStack);
-            if (prevStack.getFluid() != fluidStack.getFluid()) {
-                fuelQuality = calculateFuelQuality(fluidStack.getFluid());
+            if (prevStack.getFluid() != getFluid().getFluid()) {
+                fuelQuality = calculateFuelQuality(getFluid().getFluid());
             }
         }
     };
@@ -123,10 +124,10 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     @DescSynced
     private float fuelQuality = -1f; // the quality (burn time) of the liquid currently in the tank
 
-    private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
+    private final BaseItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || FluidUtil.getFluidHandler(itemStack).isPresent();
+            return itemStack.isEmpty() || IOHelper.getFluidHandlerForItem(itemStack).isPresent();
         }
     };
 
@@ -191,7 +192,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     private void useFuel() {
         if (fuelQuality == 0f) return; // tank is empty or a non-burnable liquid in the tank
         fuel -= rangeSq * 3f;
-        while (fuel <= 0 && !tank.drain(1, IFluidHandler.FluidAction.EXECUTE).isEmpty()) {
+        while (fuel <= 0 && !FluidUtils.drain(tank, 1, false).isEmpty()) {
             fuel += fuelQuality;
         }
         if (fuel < 0f) fuel = 0f;
@@ -348,7 +349,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return inventory;
     }
 
@@ -369,7 +370,7 @@ public class KeroseneLampBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return tank;
     }
 

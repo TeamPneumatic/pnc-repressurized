@@ -38,7 +38,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.common.Tags;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.function.Predicate;
@@ -78,7 +79,7 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
                     IOHelper.getInventoryForBlock(te).ifPresent(handler -> {
                         Pair<Integer,Integer> range = getInvRange(state, handler);
                         for (int i = range.getLeft(); i < range.getRight(); i++) {
-                            inv.add(handler.extractItem(i, Integer.MAX_VALUE, false));
+                            inv.add(IOHelper.extract(handler, i, Integer.MAX_VALUE, false));
                         }
                     });
                 }
@@ -93,10 +94,10 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
 
                 // 3. fill the upgraded chest with the copied inventory
                 PneumaticCraftUtils.getBlockEntityAt(world, pos, AbstractPneumaticCraftBlockEntity.class).ifPresent(teRC -> {
-                    IItemHandler chestInv = teRC.getItemHandler();
+                    ResourceHandler<ItemResource> chestInv = teRC.getItemHandler();
                     for (int i = 0; i < inv.size(); i++) {
-                        if (i < chestInv.getSlots()) {
-                            chestInv.insertItem(i, inv.get(i), false);
+                        if (i < chestInv.size()) {
+                            IOHelper.insert(chestInv, i, inv.get(i), false);
                         } else {
                             // just in case...
                             PneumaticCraftUtils.dropItemOnGround(inv.get(i), world, pos.relative(context.getClickedFace()));
@@ -113,16 +114,16 @@ public abstract class AbstractChestUpgradeKitItem extends Item {
         return InteractionResult.FAIL;
     }
 
-    private Pair<Integer,Integer> getInvRange(BlockState state, IItemHandler handler) {
+    private Pair<Integer,Integer> getInvRange(BlockState state, ResourceHandler<ItemResource> handler) {
         if (state.getBlock() == Blocks.CHEST && state.hasProperty(ChestBlock.TYPE)) {
             // special case for (possibly double) vanilla chests
             return switch (state.getValue(ChestBlock.TYPE)) {
-                case RIGHT -> Pair.of(0, handler.getSlots() / 2);
-                case LEFT -> Pair.of(handler.getSlots() / 2, handler.getSlots());
-                case SINGLE -> Pair.of(0, handler.getSlots());
+                case RIGHT -> Pair.of(0, handler.size() / 2);
+                case LEFT -> Pair.of(handler.size() / 2, handler.size());
+                case SINGLE -> Pair.of(0, handler.size());
             };
         }
-        return Pair.of(0, handler.getSlots());
+        return Pair.of(0, handler.size());
     }
 
     public static class Reinforced extends AbstractChestUpgradeKitItem {

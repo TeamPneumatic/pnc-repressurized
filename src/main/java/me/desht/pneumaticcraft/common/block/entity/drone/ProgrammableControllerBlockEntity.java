@@ -45,6 +45,7 @@ import me.desht.pneumaticcraft.common.registry.*;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
@@ -89,13 +90,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
 
@@ -127,7 +125,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
 
-    private final FluidTank tank = new FluidTank(16000);
+    private final PNCFluidTank tank = new PNCFluidTank(16000);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(MAX_ENERGY);
 
@@ -140,7 +138,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     private DroneFakePlayer fakePlayer;
     private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
-    private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
+    private final SideConfigurator<ResourceHandler<ItemResource>> itemHandlerSideConfigurator;
     private CompoundTag variablesNBT = null;  // pending variable data to add to ai manager
 
     @DescSynced
@@ -208,12 +206,12 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return tank;
     }
 
     @Override
-    public IEnergyStorage getEnergyHandler(@Nullable Direction dir) {
+    public EnergyHandler getEnergyHandler(@Nullable Direction dir) {
         return energy;
     }
 
@@ -338,10 +336,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         ItemStack held = droneItemHandler.getStackInSlot(0);
 
-        if (energy.getEnergyStored() > 100) {
+        if (energy.getAmountAsInt() > 100) {
             IOHelper.getEnergyStorageForItem(held).ifPresent(handler -> {
-                if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 250) {
-                    handler.receiveEnergy(energy.extractEnergy(250, false), false);
+                if (handler.getCapacityAsInt() - handler.getAmountAsInt() > 250) {
+                    IOHelper.insertEnergy(handler, IOHelper.extractEnergy(energy, 250, false), false);
                 }
             });
         }
@@ -413,7 +411,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandlerSideConfigurator.getHandler(dir);
     }
 
@@ -444,7 +442,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         super.onUpgradesChanged();
 
         if (getLevel() != null && !getLevel().isClientSide()) {
-            int oldInvUpgrades = droneItemHandler.getSlots() - 1;
+            int oldInvUpgrades = droneItemHandler.size() - 1;
             int newInvUpgrades = Math.min(35, getUpgrades(ModUpgrades.INVENTORY.get()));
             if (oldInvUpgrades != newInvUpgrades) {
                 resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
@@ -481,9 +479,9 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         ownerName = Component.literal(tag.getStringOr("ownerName", FALLBACK_NAME));
         ownerNameClient = ownerName.getString();
 
-        ItemStackHandler tmpInv = new ItemStackHandler();
+        BaseItemStackHandler tmpInv = new BaseItemStackHandler(1);
         ValueIOBridge.deserialize(tmpInv, provider, tag.getCompoundOrEmpty("droneItems"));
-        droneItemHandler.setUseableSlots(tmpInv.getSlots());
+        droneItemHandler.setUseableSlots(tmpInv.size());
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
 
         energy.readFromNBT(tag);
@@ -507,8 +505,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         tag.put("tank", ValueIOBridge.serialize(tank, provider));
 
-        ItemStackHandler handler = new ItemStackHandler(droneItemHandler.getSlots());
-        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+        BaseItemStackHandler handler = new BaseItemStackHandler(droneItemHandler.size());
+        for (int i = 0; i < droneItemHandler.size(); i++) {
             handler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
         }
         tag.put("droneItems", ValueIOBridge.serialize(handler, provider));
@@ -537,7 +535,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
 
         droneItemHandler.setFakePlayerReady();
 
-        inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
+        inventory.onContentsChanged(0, ItemStack.EMPTY);  // force initial read of any installed drone/network api
         curX = targetX = getBlockPos().getX() + 0.5;
         curY = targetY = getBlockPos().getY() + 1.0;
         curZ = targetZ = getBlockPos().getZ() + 0.5;
@@ -564,17 +562,17 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     }
 
     @Override
-    public FluidTank getFluidTank() {
+    public PNCFluidTank getFluidTank() {
         return tank;
     }
 
     @Override
-    public IEnergyStorage getEnergyStorage() {
+    public EnergyHandler getEnergyStorage() {
         return energy;
     }
 
     @Override
-    public IItemHandlerModifiable getInv() {
+    public ResourceHandler<ItemResource> getInv() {
         return droneItemHandler;
     }
 
@@ -632,7 +630,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
         super.getContentsToDrop(drops);
 
-        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+        for (int i = 0; i < droneItemHandler.size(); i++) {
             if (!fakePlayer.getInventory().getItem(i).isEmpty()) {
                 drops.add(fakePlayer.getInventory().getItem(i).copy());
             }
@@ -746,10 +744,10 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
     public void overload(String msgKey, Object... params) {
         // insert the programmable item (drone or api) into a chest on a "programmable" side
         // or failing that, drop it in-world on top of the PC
-        ItemStack stack = inventory.extractItem(0, 1, false);
+        ItemStack stack = IOHelper.extract(inventory, 0, 1, false);
         if (stack.getCount() == 1) {
             boolean inserted = findEjectionDest()
-                    .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
+                    .map(h -> IOHelper.insert(h, stack, false).isEmpty())
                     .orElse(false);
             if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, level, worldPosition.above());
             nonNullLevel().playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundSource.BLOCKS, 1f, 1f);
@@ -865,7 +863,7 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         return chunkloadWorkingChunk3x3;
     }
 
-    private Optional<IItemHandler> findEjectionDest() {
+    private Optional<ResourceHandler<ItemResource>> findEjectionDest() {
         Direction dir = null;
         for (Direction d : DirectionUtil.VALUES) {
             if (IOHelper.getInventoryForBlock(this, d).map(h -> h == inventory).orElse(false)) {
@@ -886,8 +884,8 @@ public class ProgrammableControllerBlockEntity extends AbstractAirHandlingBlockE
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
             ItemStack stack = getStackInSlot(slot);
             progWidgets.clear();
             if (!stack.isEmpty() && isProgrammableAndValidForDrone(ProgrammableControllerBlockEntity.this, stack)) {

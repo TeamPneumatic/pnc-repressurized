@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.api.drone.IProgWidget;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.drone.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -120,7 +121,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     public IProgWidget getOutputWidget(IDrone drone, List<IProgWidget> allWidgets) {
         if (!variable.isEmpty()) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
-            aiManager.setItemStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
+            aiManager.setItemStack(variable, filter != null ? filter.getFilter() : IOHelper.getStack(drone.getInv(), 0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
     }

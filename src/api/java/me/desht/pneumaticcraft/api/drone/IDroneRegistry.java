@@ -24,6 +24,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.Optional;
 
@@ -82,8 +84,8 @@ public interface IDroneRegistry {
     PathfinderMob retrieveItemsAmazonStyle(GlobalPos globalPos, ItemStack... queriedStacks);
 
     /**
-     * Similar to deliverItemsAmazonStyle, but with Fluids. Will spawn in a Drone that will fill an IFluidHandler at the
-     * given block position. If the fluid doesn't fit or there isn't a IFluidHandler, the fluid <em>will be lost</em>.
+     * Similar to deliverItemsAmazonStyle, but with Fluids. Will spawn in a Drone that will fill an ResourceHandler<FluidResource> at the
+     * given block position. If the fluid doesn't fit or there isn't a ResourceHandler<FluidResource>, the fluid <em>will be lost</em>.
      *
      * @param globalPos global position to deliver the fluid to
      * @param deliveredFluid the fluid to deliver
@@ -94,7 +96,7 @@ public interface IDroneRegistry {
     PathfinderMob deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid);
 
     /**
-     * The opposite of deliverFluidAmazonStyle. Will retrieve the queried fluid from an IFluidHandler at the specified location.
+     * The opposite of deliverFluidAmazonStyle. Will retrieve the queried fluid from an ResourceHandler<FluidResource> at the specified location.
      *
      * @param globalPos global block position to retrieve fluid from
      * @param queriedFluid the fluid to retrieve

@@ -55,9 +55,9 @@ public class RenderSearchItemBlock {
                 int itemCount = 0;
                 Item searchedItem = PneumaticArmorItem.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlot.HEAD));
                 if (searchedItem != null) {
-                    for (int l = 0; l < handler.getSlots(); l++) {
-                        if (!handler.getStackInSlot(l).isEmpty()) {
-                            itemCount += getSearchedItemCount(handler.getStackInSlot(l), searchedItem);
+                    for (int l = 0; l < handler.size(); l++) {
+                        if (!IOHelper.getStack(handler, l).isEmpty()) {
+                            itemCount += getSearchedItemCount(IOHelper.getStack(handler, l), searchedItem);
                         }
                     }
                 }

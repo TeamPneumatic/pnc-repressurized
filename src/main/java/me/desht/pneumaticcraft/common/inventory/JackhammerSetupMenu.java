@@ -18,6 +18,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.AbstractPneumaticCraftBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.item.DrillBitItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem;
 import me.desht.pneumaticcraft.common.item.JackHammerItem.DigMode;
@@ -30,7 +31,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nonnull;
 
@@ -97,7 +97,7 @@ public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneu
         return hand;
     }
 
-    private static class SlotDrillBit extends SlotItemHandler {
+    private static class SlotDrillBit extends ItemHandlerSlot {
         public SlotDrillBit(JackHammerItem.DrillBitHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }
@@ -118,7 +118,7 @@ public class JackhammerSetupMenu extends AbstractPneumaticCraftMenu<AbstractPneu
         }
     }
 
-    private static class SlotEnchantmentHandler extends SlotItemHandler {
+    private static class SlotEnchantmentHandler extends ItemHandlerSlot {
         public SlotEnchantmentHandler(JackHammerItem.EnchantmentHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }

@@ -49,9 +49,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.Objects;
@@ -214,9 +215,9 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     }
 
     private void importFromChamber(PressureChamberValveBlockEntity core) {
-        IItemHandler chamberHandler = exportAny ? core.allItems : core.craftedItems;
-        for (int i = 0; i < chamberHandler.getSlots(); i++) {
-            ItemStack chamberStack = chamberHandler.getStackInSlot(i);
+        ResourceHandler<ItemResource> chamberHandler = exportAny ? core.allItems : core.craftedItems;
+        for (int i = 0; i < chamberHandler.size(); i++) {
+            ItemStack chamberStack = IOHelper.getStack(chamberHandler, i);
             if (chamberStack.isEmpty()) {
                 continue;
             }
@@ -229,14 +230,14 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
                     int transferredItems = Math.min(chamberStack.getCount(), maxAllowedItems);
                     if (transferredItems > 0) {
                         ItemStack toTransferStack = chamberStack.copy().split(transferredItems);
-                        ItemStack excess = inventory.insertItem(0, toTransferStack, true);
+                        ItemStack excess = IOHelper.insert(inventory, 0, toTransferStack, true);
                         if (excess.getCount() < toTransferStack.getCount()) {
                             // we can transfer at least some of the items
                             transferredItems = toTransferStack.getCount() - excess.getCount();
                             core.addAir((coreAirHandler.getAir() > 0 ? -1 : 1) * transferredItems * PneumaticValues.USAGE_CHAMBER_INTERFACE);
                             toTransferStack.setCount(transferredItems);
-                            inventory.insertItem(0, toTransferStack, false);
-                            chamberHandler.extractItem(i, transferredItems, false);
+                            IOHelper.insert(inventory, 0, toTransferStack, false);
+                            IOHelper.extract(chamberHandler, i, transferredItems, false);
                         }
                     }
                 }
@@ -317,7 +318,7 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -341,16 +342,14 @@ public class PressureChamberInterfaceBlockEntity extends PressureChamberWallBloc
             super(PressureChamberInterfaceBlockEntity.this, INVENTORY_SIZE);
         }
 
-        @Nonnull
         @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return inputProgress == MAX_PROGRESS && isValidItem(stack) ? super.insertItem(slot, stack, simulate) : stack;
+        public int insert(int slot, ItemResource resource, int amount, TransactionContext transaction) {
+            return inputProgress == MAX_PROGRESS && isValidItem(resource.toStack()) ? super.insert(slot, resource, amount, transaction) : 0;
         }
 
-        @Nonnull
         @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return outputProgress == MAX_PROGRESS ? super.extractItem(slot, amount, simulate) : ItemStack.EMPTY;
+        public int extract(int slot, ItemResource resource, int amount, TransactionContext transaction) {
+            return outputProgress == MAX_PROGRESS ? super.extract(slot, resource, amount, transaction) : 0;
         }
 
         private boolean isValidItem(ItemStack stack) {

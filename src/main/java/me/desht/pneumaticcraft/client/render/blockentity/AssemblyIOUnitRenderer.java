@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverri
 import me.desht.pneumaticcraft.client.ClientRegistryImpl;
 import me.desht.pneumaticcraft.client.model.PNCModelLayers;
 import me.desht.pneumaticcraft.common.block.entity.processing.AssemblyIOUnitBlockEntity;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -146,7 +147,7 @@ public class AssemblyIOUnitRenderer extends AbstractAssemblyRenderer<AssemblyIOU
     public void extractRenderState(AssemblyIOUnitBlockEntity blockEntity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
         super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 
-        ItemStack heldStack = blockEntity.getItemHandler(null).getStackInSlot(0);
+        ItemStack heldStack = IOHelper.getStack(blockEntity.getItemHandler(null), 0);
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(Mth.lerp(partialTicks, blockEntity.oldClawProgress, blockEntity.clawProgress), heldStack);
         state.texture = getTexture(blockEntity);
         state.heldStack = heldStack.copy();

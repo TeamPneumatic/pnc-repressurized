@@ -44,6 +44,7 @@ import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.drone.progwidgets.ProgWidgetLogistics;
 import me.desht.pneumaticcraft.common.drone.progwidgets.SavedDroneProgram;
 import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEntity;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.DroneItem;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -61,7 +62,9 @@ import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.common.upgrades.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.common.util.chunkloading.DynamicChunkLoader;
@@ -82,7 +85,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -135,16 +137,14 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.transfer.fluid.FluidUtil;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -192,11 +192,11 @@ public class DroneEntity extends AbstractDroneEntity implements
 
     private final EntityDroneItemHandler droneItemHandler = new EntityDroneItemHandler(this);
 
-    private final FluidTank fluidTank = new FluidTank(Integer.MAX_VALUE);
+    private final PNCFluidTank fluidTank = new PNCFluidTank(Integer.MAX_VALUE);
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
 
-    private final ItemStackHandler upgradeInventory = new ItemStackHandler(9);
+    private final BaseItemStackHandler upgradeInventory = new BaseItemStackHandler(9);
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     private BasicAirHandler airHandler;
@@ -922,8 +922,8 @@ public class DroneEntity extends AbstractDroneEntity implements
         } else if (IOHelper.getFluidHandlerForItem(stack).isPresent()) {
             if (player.level().isClientSide()) return InteractionResult.SUCCESS;
             return IOHelper.getFluidHandlerForItem(stack).map(handler -> {
-                if (handler.getFluidInTank(0).isEmpty()) {
-                    boolean ok = player.level().isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
+                if (FluidUtils.getFluid(handler, 0).isEmpty()) {
+                    boolean ok = player.level().isClientSide() || FluidUtil.interactWithFluidHandler(player, hand, null, fluidTank, null);
                     return ok ? InteractionResult.CONSUME : InteractionResult.PASS;
                 } else {
                     return InteractionResult.PASS;
@@ -997,7 +997,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     @Override
     protected void dropEquipment(ServerLevel level) {
         boolean wrenchedByOwner = wrenchedBy != null && wrenchedBy.equals(ownerUUID);
-        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+        for (int i = 0; i < droneItemHandler.size(); i++) {
             ItemStack stack = droneItemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 if (wrenchedByOwner || !EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
@@ -1151,7 +1151,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         tag.put("variables", aiManager.writeToNBT(new CompoundTag()));
         if (deployPos != null) tag.store("deployPos", BlockPos.CODEC, deployPos);
 
-        ItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new ItemStackHandler(droneItemHandler.getSlots()));
+        BaseItemStackHandler tmpHandler = PneumaticCraftUtils.copyItemHandler(droneItemHandler, new BaseItemStackHandler(droneItemHandler.size()));
         tag.put("Inventory", ValueIOBridge.serialize(tmpHandler, registryAccess()));
         tag.put("upgrades", ValueIOBridge.serialize(upgradeInventory, registryAccess()));
 
@@ -1196,7 +1196,7 @@ public class DroneEntity extends AbstractDroneEntity implements
         carriedEntityAIdisabled = tag.getBooleanOr("carriedEntityAIdisabled", false);
         deployPos = tag.read("deployPos", BlockPos.CODEC).orElse(null);
 
-        ItemStackHandler tmpInv = new ItemStackHandler();
+        BaseItemStackHandler tmpInv = new BaseItemStackHandler(1);
         ValueIOBridge.deserialize(tmpInv, registryAccess(), tag.getCompoundOrEmpty("Inventory"));
         droneItemHandler.setUseableSlots(1 + getUpgrades(ModUpgrades.INVENTORY.get()));
         PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
@@ -1301,7 +1301,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public IItemHandlerModifiable getInv() {
+    public ResourceHandler<ItemResource> getInv() {
         return droneItemHandler;
     }
 
@@ -1444,12 +1444,12 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public FluidTank getFluidTank() {
+    public PNCFluidTank getFluidTank() {
         return fluidTank;
     }
 
     @Override
-    public IEnergyStorage getEnergyStorage() {
+    public EnergyHandler getEnergyStorage() {
         return energy;
     }
 
@@ -1579,7 +1579,7 @@ public class DroneEntity extends AbstractDroneEntity implements
      * @return a slot number, or -1 if no ammo
      */
     public int getSlotForAmmo() {
-        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+        for (int i = 0; i < droneItemHandler.size(); i++) {
             if (droneItemHandler.getStackInSlot(i).getItem() instanceof AbstractGunAmmoItem) {
                 return i;
             }
@@ -1656,7 +1656,7 @@ public class DroneEntity extends AbstractDroneEntity implements
     }
 
     @Override
-    public IItemHandler getUpgradeHandler() {
+    public ResourceHandler<ItemResource> getUpgradeHandler() {
         return upgradeInventory;
     }
 

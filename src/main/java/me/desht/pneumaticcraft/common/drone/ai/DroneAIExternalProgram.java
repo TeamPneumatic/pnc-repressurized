@@ -31,7 +31,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,10 +81,10 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
         return IOHelper.getInventoryForBlock(drone.getDroneLevel().getBlockEntity(pos)).map(this::handleInv).orElse(false);
     }
 
-    private boolean handleInv(IItemHandler inv) {
+    private boolean handleInv(ResourceHandler<ItemResource> inv) {
         if (curProgramHash != 0) {
-            if (curSlot < inv.getSlots()) {
-                ItemStack stack = inv.getStackInSlot(curSlot);
+            if (curSlot < inv.size()) {
+                ItemStack stack = IOHelper.getStack(inv, curSlot);
                 if (curProgramHash == ItemStack.hashItemAndComponents(stack)) {
                     subAI.onUpdateTasks();
                     if (subAI.isIdling() || isRunningSameProgram(subAI.getCurrentGoal())) {
@@ -101,8 +102,8 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
             }
             return true;
         } else {
-            while (curSlot < inv.getSlots()) {
-                ItemStack stack = inv.getStackInSlot(curSlot);
+            while (curSlot < inv.size()) {
+                ItemStack stack = IOHelper.getStack(inv, curSlot);
                 if (stack.getItem() instanceof IProgrammable programmable) {
                     if (programmable.canProgram(stack) && programmable.usesPieces(stack)) {
                         List<IProgWidget> widgets = SavedDroneProgram.loadProgWidgets(stack);

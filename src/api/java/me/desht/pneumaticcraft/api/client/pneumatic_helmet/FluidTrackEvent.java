@@ -22,7 +22,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
@@ -42,12 +41,11 @@ public class FluidTrackEvent extends Event implements ICancellableEvent {
         this.te = te;
     }
 
-    public IFluidHandler getFluidHandler() {
+    public ResourceHandler<FluidResource> getFluidHandler() {
         return getFluidHandler(null);
     }
 
-    public IFluidHandler getFluidHandler(Direction face) {
-        ResourceHandler<FluidResource> handler = te.getLevel().getCapability(Capabilities.Fluid.BLOCK, te.getBlockPos(), te.getBlockState(), te, face);
-        return handler == null ? null : IFluidHandler.of(handler);
+    public ResourceHandler<FluidResource> getFluidHandler(Direction face) {
+        return te.getLevel().getCapability(Capabilities.Fluid.BLOCK, te.getBlockPos(), te.getBlockState(), te, face);
     }
 }

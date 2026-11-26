@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.inventory.RefineryMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.IOCombinedHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
@@ -37,11 +38,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
-    private final IFluidHandler wrappedTank = new TankWrapper(outputTank);
+    private final ResourceHandler<FluidResource> wrappedTank = new IOCombinedHandler<>(tank -> false, tank -> true, outputTank);  // only for draining
     private final RedstoneController<RefineryOutputBlockEntity> rsController = new RedstoneController<>(this);
 
     public RefineryOutputBlockEntity(BlockPos pos, BlockState state) {
@@ -73,7 +73,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@Nullable Direction dir) {
         return dir == Direction.DOWN ? outputTank : wrappedTank;
     }
 
@@ -106,7 +106,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 
@@ -142,7 +142,7 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
         return Optional.ofNullable(controllerTE);
     }
 
-    public IFluidTank getOutputTank() {
+    public PNCFluidTank getOutputTank() {
         return outputTank;
     }
 
@@ -151,43 +151,4 @@ public class RefineryOutputBlockEntity extends AbstractTickingBlockEntity implem
         return heatExchanger;
     }
 
-    private record TankWrapper(SmartSyncTank wrapped) implements IFluidHandler {
-        @Override
-        public int getTanks() {
-            return wrapped.getTanks();
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack getFluidInTank(int tank) {
-            return wrapped.getFluidInTank(tank);
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return wrapped.getTankCapacity(tank);
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
-            return wrapped.isFluidValid(tank, stack);
-        }
-
-        @Override
-        public int fill(FluidStack resource, FluidAction action) {
-            return 0;  // this tank is only for draining
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(FluidStack resource, FluidAction action) {
-            return wrapped.drain(resource, action);
-        }
-
-        @Nonnull
-        @Override
-        public FluidStack drain(int maxDrain, FluidAction action) {
-            return wrapped.drain(maxDrain, action);
-        }
-    }
 }

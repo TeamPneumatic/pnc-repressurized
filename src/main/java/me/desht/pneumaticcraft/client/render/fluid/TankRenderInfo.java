@@ -17,21 +17,20 @@
 
 package me.desht.pneumaticcraft.client.render.fluid;
 
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.core.Direction;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import java.util.BitSet;
 
 public class TankRenderInfo {
-    private final IFluidTank tank;
+    private final PNCFluidTank tank;
     private final AABB bounds;
     private final BitSet faces = new BitSet(6);
 
     public TankRenderInfo(FluidStack stack, int capacity, AABB bounds, Direction... renderFaces) {
-        FluidTank tank = new FluidTank(capacity);
+        PNCFluidTank tank = new PNCFluidTank(capacity);
         tank.setFluid(stack.copy());
         this.tank = tank;
         this.bounds = bounds;
@@ -44,7 +43,7 @@ public class TankRenderInfo {
         }
     }
 
-    public TankRenderInfo(IFluidTank tank, AABB bounds, Direction... renderFaces) {
+    public TankRenderInfo(PNCFluidTank tank, AABB bounds, Direction... renderFaces) {
         this(tank.getFluid(), tank.getCapacity(), bounds, renderFaces);
     }
 
@@ -57,7 +56,7 @@ public class TankRenderInfo {
         return faces.get(face.get3DDataValue());
     }
 
-    public IFluidTank getTank() {
+    public PNCFluidTank getTank() {
         return tank;
     }
 

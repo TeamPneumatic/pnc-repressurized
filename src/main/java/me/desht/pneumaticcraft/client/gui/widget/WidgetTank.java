@@ -19,6 +19,8 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
@@ -30,9 +32,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -47,9 +46,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * https://github.com/Qmunity/BluePower/blob/FluidCrafting/src/main/java/com/bluepowermod/client/gui/widget/WidgetTank.java
  */
 public class WidgetTank extends AbstractWidget {
-    private final IFluidTank tank;
+    private final PNCFluidTank tank;
 
-    public WidgetTank(int x, int y, IFluidTank tank) {
+    public WidgetTank(int x, int y, PNCFluidTank tank) {
         super(x, y, 16, 64, Component.empty());
         this.tank = tank;
     }
@@ -68,8 +67,8 @@ public class WidgetTank extends AbstractWidget {
         this.tank = makeTank(stack, capacity);
     }
 
-    private static FluidTank makeTank(FluidStack stack, int capacity) {
-        return Util.make(new FluidTank(capacity), tank -> tank.fill(stack, IFluidHandler.FluidAction.EXECUTE));
+    private static PNCFluidTank makeTank(FluidStack stack, int capacity) {
+        return Util.make(new PNCFluidTank(capacity), tank -> FluidUtils.fill(tank, stack, false));
     }
 
     @Override
@@ -106,18 +105,18 @@ public class WidgetTank extends AbstractWidget {
         return tank.getFluid();
     }
 
-    public IFluidTank getTank() {
+    public PNCFluidTank getTank() {
         return tank;
     }
 
     public void setFluid(FluidStack fluidStack) {
         if (fluidStack.getFluid() != tank.getFluid().getFluid()) {
-            tank.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);
-            tank.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+            FluidUtils.drain(tank, Integer.MAX_VALUE, false);
+            FluidUtils.fill(tank, fluidStack, false);
         } else if (fluidStack.getAmount() > tank.getFluidAmount()) {
-            tank.fill(new FluidStack(fluidStack.getFluid(), fluidStack.getAmount() - tank.getFluidAmount()), IFluidHandler.FluidAction.EXECUTE);
+            FluidUtils.fill(tank, new FluidStack(fluidStack.getFluid(), fluidStack.getAmount() - tank.getFluidAmount()), false);
         } else if (fluidStack.getAmount() < tank.getFluidAmount()) {
-            tank.drain(tank.getFluidAmount() - fluidStack.getAmount(), IFluidHandler.FluidAction.EXECUTE);
+            FluidUtils.drain(tank, tank.getFluidAmount() - fluidStack.getAmount(), false);
         }
     }
 

@@ -26,6 +26,8 @@ import me.desht.pneumaticcraft.common.inventory.AirCompressorMenu;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -43,8 +45,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.FluidUtil;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 
@@ -107,7 +109,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
                 if (fuelStack.getCraftingRemainder() != null) {
                     itemHandler.setStackInSlot(FUEL_SLOT, PneumaticCraftUtils.getCraftingRemainder(fuelStack));
                 } else {
-                    itemHandler.extractItem(FUEL_SLOT, 1, false);
+                    IOHelper.extract(itemHandler, FUEL_SLOT, 1, false);
                 }
             }
         }
@@ -189,7 +191,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 
@@ -223,7 +225,7 @@ public class AirCompressorBlockEntity extends AbstractAirHandlingBlockEntity imp
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || isFuel(itemStack) && FluidUtil.getFluidContained(itemStack).isEmpty());
+                    (itemStack.isEmpty() || isFuel(itemStack) && FluidUtils.getFirstFluidContained(itemStack).isEmpty());
         }
 
         private boolean isFuel(ItemStack itemStack) {

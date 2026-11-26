@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PNCFluidTank;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
@@ -62,10 +63,10 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.SimpleFluidContent;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -162,7 +163,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
         if (newStats != inv.getStats()) {
             e.discard();
             if (toAdd > 1) {
-                xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
+                FluidUtils.drain(xpTank, MEMORY_ESSENCE_AMOUNT, false);
             }
             ItemStack stack = inv.getStackInSlot(0);
             stack.set(ModDataComponents.SPAWNER_CORE_STATS, newStats);
@@ -189,11 +190,11 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IFluidHandler getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<FluidResource> getFluidHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return xpTank;
     }
 
-    public IFluidTank getFluidTank() {
+    public PNCFluidTank getFluidTank() {
         return xpTank;
     }
 
@@ -204,7 +205,7 @@ public class VacuumTrapBlockEntity extends AbstractAirHandlingBlockEntity implem
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inv;
     }
 

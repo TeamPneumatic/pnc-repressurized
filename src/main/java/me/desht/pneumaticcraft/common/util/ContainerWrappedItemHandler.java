@@ -3,37 +3,41 @@ package me.desht.pneumaticcraft.common.util;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * Borrowed from 1.20.4 & earlier, since RecipeWrapper no longer implements Container...
  */
 public class ContainerWrappedItemHandler implements Container {
-    protected final IItemHandlerModifiable inv;
+    protected final ResourceHandler<ItemResource> inv;
 
-    public ContainerWrappedItemHandler(IItemHandlerModifiable inv) {
+    public ContainerWrappedItemHandler(ResourceHandler<ItemResource> inv) {
         this.inv = inv;
     }
 
     @Override
     public int getContainerSize() {
-        return inv.getSlots();
+        return inv.size();
     }
 
     @Override
     public ItemStack getItem(int slot) {
-        return inv.getStackInSlot(slot);
+        return IOHelper.getStack(inv, slot);
     }
 
     @Override
     public ItemStack removeItem(int slot, int count) {
-        ItemStack stack = inv.getStackInSlot(slot);
-        return stack.isEmpty() ? ItemStack.EMPTY : stack.split(count);
+        ItemStack stack = IOHelper.getStack(inv, slot).copy();
+        if (stack.isEmpty()) return ItemStack.EMPTY;
+        ItemStack removed = stack.split(count);
+        setItem(slot, stack);
+        return removed;
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
-        inv.setStackInSlot(slot, stack);
+        IOHelper.setStack(inv, slot, stack);
     }
 
     @Override
@@ -46,21 +50,21 @@ public class ContainerWrappedItemHandler implements Container {
 
     @Override
     public boolean isEmpty() {
-        for (int i = 0; i < inv.getSlots(); i++) {
-            if (!inv.getStackInSlot(i).isEmpty()) return false;
+        for (int i = 0; i < inv.size(); i++) {
+            if (!IOHelper.getStack(inv, i).isEmpty()) return false;
         }
         return true;
     }
 
     @Override
     public boolean canPlaceItem(int slot, ItemStack stack) {
-        return inv.isItemValid(slot, stack);
+        return inv.isValid(slot, ItemResource.of(stack));
     }
 
     @Override
     public void clearContent() {
-        for (int i = 0; i < inv.getSlots(); i++) {
-            inv.setStackInSlot(i, ItemStack.EMPTY);
+        for (int i = 0; i < inv.size(); i++) {
+            IOHelper.setStack(inv, i, ItemStack.EMPTY);
         }
     }
 

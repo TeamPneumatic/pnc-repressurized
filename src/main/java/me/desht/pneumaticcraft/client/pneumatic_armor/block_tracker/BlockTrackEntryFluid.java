@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.client.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.FluidTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,12 +64,12 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     public void addInformation(Level world, BlockPos pos, BlockEntity te, Direction face, List<Component> infoList) {
         try {
             IOHelper.getFluidHandlerForBlock(te, face).ifPresent(handler -> {
-                for (int i = 0; i < handler.getTanks(); i++) {
-                    FluidStack stack = handler.getFluidInTank(i);
+                for (int i = 0; i < handler.size(); i++) {
+                    FluidStack stack = FluidUtils.getFluid(handler, i);
                     if (stack.isEmpty()) {
-                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankEmpty", i + 1, handler.getTankCapacity(i)));
+                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankEmpty", i + 1, handler.getCapacityAsInt(i, FluidResource.EMPTY)));
                     } else {
-                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getHoverName().getString()));
+                        infoList.add(xlate("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getCapacityAsInt(i, FluidResource.EMPTY), stack.getHoverName().getString()));
                     }
                 }
             });

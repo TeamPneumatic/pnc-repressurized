@@ -18,14 +18,14 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.block.entity.drone.ProgrammableControllerBlockEntity;
+import me.desht.pneumaticcraft.common.inventory.slot.ItemHandlerSlot;
 import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.registry.ModMenuTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.neoforge.energy.EnergyStorage;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
 
 public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<ProgrammableControllerBlockEntity> {
 
@@ -36,16 +36,16 @@ public class ProgrammableControllerMenu extends AbstractPneumaticCraftMenu<Progr
     public ProgrammableControllerMenu(int i, Inventory playerInventory, BlockPos pos) {
         super(ModMenuTypes.PROGRAMMABLE_CONTROLLER.get(), i, playerInventory, pos);
 
-        addSlot(new SlotItemHandler(blockEntity.getItemHandler(), 0, 89, 36));
+        addSlot(new ItemHandlerSlot(blockEntity.getItemHandler(), 0, 89, 36));
 
         addUpgradeSlots(39, 28);
 
         addPlayerSlots(playerInventory, 84);
 
-        IEnergyStorage storage = blockEntity.getEnergyHandler(null);
+        EnergyHandler storage = blockEntity.getEnergyHandler(null);
         if (storage != null) {
             try {
-                addSyncedField(new SyncedField.SyncedInt(storage, EnergyStorage.class.getDeclaredField("energy")));
+                addSyncedField(new SyncedField.SyncedInt(storage, SimpleEnergyHandler.class.getDeclaredField("energy")));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }

@@ -62,8 +62,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -78,7 +78,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     private static final String FAKE_NAME = "Sentry Turret";
     private static final GameProfile FAKE_PROFILE = UUIDUtil.createOfflineProfile(FAKE_NAME);
 
-    private final ItemStackHandler inventory = new TurretItemStackHandler(this);
+    private final BaseItemStackHandler inventory = new TurretItemStackHandler(this);
 
     private Minigun minigun;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
@@ -156,7 +156,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     private void clearEmptyAmmo() {
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.getItem() instanceof AbstractGunAmmoItem && stack.getDamageValue() >= stack.getMaxDamage()) {
                 inventory.setStackInSlot(i, ItemStack.EMPTY);
@@ -253,7 +253,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return inventory;
     }
 
@@ -279,7 +279,7 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
 
     private void updateAmmo() {
         ItemStack ammo = ItemStack.EMPTY;
-        for (int i = 0; i < inventory.getSlots(); i++) {
+        for (int i = 0; i < inventory.size(); i++) {
             ammo = inventory.getStackInSlot(i);
             if (!ammo.isEmpty()) {
                 break;
@@ -361,8 +361,8 @@ public class SentryTurretBlockEntity extends AbstractTickingBlockEntity implemen
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
+            super.onContentsChanged(slot, previousContents);
             updateAmmo();
         }
 

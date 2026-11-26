@@ -20,6 +20,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IEntityProvider;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
@@ -30,7 +31,6 @@ import net.minecraft.world.entity.vehicle.boat.Boat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity> {
 
@@ -45,7 +45,7 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
         } else if (entity instanceof LivingEntity || entity instanceof AbstractMinecart || entity instanceof Boat) {
             return drone.getCarryingEntities().isEmpty();
         } else if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && entity instanceof ExperienceOrb) {
-            return PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), (ExperienceOrb) entity, FluidAction.SIMULATE);
+            return PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), (ExperienceOrb) entity, true);
         }
         return false;
     }
@@ -53,13 +53,13 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
     @Override
     protected boolean doAction() {
         if (ConfigHelper.common().drones.dronesCanImportXPOrbs.get() && targetedEntity instanceof ExperienceOrb orb) {
-            ItemStack heldStack = drone.getInv().getStackInSlot(0);
+            ItemStack heldStack = IOHelper.getStack(drone.getInv(), 0);
             if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.has(heldStack, EnchantmentEffectComponents.REPAIR_WITH_XP)) {
                 int toRepair = Math.min((int)(orb.getValue() * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
                 orb.setValue(orb.getValue() - toRepair / 2);  // see ExperienceOrbEntity#durabilityToXp()
                 heldStack.setDamageValue(heldStack.getDamageValue() - toRepair);
             }
-            if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), orb, FluidAction.EXECUTE)) {
+            if (orb.getValue() <= 0 || PneumaticCraftUtils.fillTankWithOrb(drone.getFluidTank(), orb, false)) {
                 targetedEntity.discard();
             }
         } else {

@@ -25,11 +25,12 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.CountedFluidStacks;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -140,8 +141,8 @@ public class LogisticsManager {
                 counted = null;
             }
 
-            for (int i = 0; i < providerHandler.getSlots(); i++) {
-                ItemStack providedStack = providerHandler.extractItem(i, 64, true);
+            for (int i = 0; i < providerHandler.size(); i++) {
+                ItemStack providedStack = IOHelper.extract(providerHandler, i, 64, true);
                 if (!providedStack.isEmpty() && (!(provider instanceof ISpecificProvider sp) || sp.canProvide(providedStack))) {
                     int requested = getRequestedAmount(requester, providedStack, true);
                     if (requested > 0) {
@@ -176,9 +177,9 @@ public class LogisticsManager {
                 counted = null;
             }
 
-            FluidStack providingStack = providerHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
+            FluidStack providingStack = FluidUtils.drain(providerHandler, 16000, true);
             if (!providingStack.isEmpty()) {
-                boolean canDrain = IntStream.range(0, providerHandler.getTanks()).anyMatch(i -> providerHandler.isFluidValid(i, providingStack));
+                boolean canDrain = IntStream.range(0, providerHandler.size()).anyMatch(i -> providerHandler.isValid(i, FluidResource.of(providingStack)));
                 if (canDrain && (!(provider instanceof ISpecificProvider sp) || sp.canProvide(providingStack))) {
                     int requested = getRequestedAmount(requester, providingStack, true);
                     if (requested > 0) {
@@ -221,7 +222,7 @@ public class LogisticsManager {
             FluidStack toProvide = providedStack.copyWithAmount(Math.min(providedStack.getAmount(), requestedAmount));
             FluidStack remainder = toProvide.copyWithAmount(toProvide.getAmount() + requester.getIncomingFluid(toProvide.getFluid()));
             IOHelper.getFluidHandlerForBlock(requester.getCachedTileEntity(), requester.getSide()).ifPresent(fluidHandler -> {
-                int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
+                int fluidFilled = FluidUtils.fill(fluidHandler, remainder, true);
                 if (fluidFilled > 0) {
                     remainder.shrink(fluidFilled);
                 }

@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.InventorySearcherMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.GPSAreaToolItem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -36,7 +37,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -45,7 +45,7 @@ import java.util.function.Predicate;
 public class InventorySearcherScreen extends AbstractContainerScreen<InventorySearcherMenu> {
     private static final int SEARCH_SLOT = 36;
 
-    private final ItemStackHandler inventory = new ItemStackHandler(1);
+    private final BaseItemStackHandler inventory = new BaseItemStackHandler(1);
     private final Screen parentScreen;
     private Predicate<ItemStack> stackPredicate = itemStack -> true;
     private WidgetLabel label;

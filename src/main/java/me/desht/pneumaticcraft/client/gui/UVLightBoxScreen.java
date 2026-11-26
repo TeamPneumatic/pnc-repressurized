@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.block.UVLightBoxBlock;
 import me.desht.pneumaticcraft.common.block.entity.processing.UVLightBoxBlockEntity;
 import me.desht.pneumaticcraft.common.inventory.UVLightBoxMenu;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -83,7 +84,7 @@ public class UVLightBoxScreen extends AbstractPneumaticCraftContainerScreen<UVLi
     protected void addProblems(List<Component> textList) {
         super.addProblems(textList);
 
-        if (te.getItemHandler().getStackInSlot(UVLightBoxBlockEntity.PCB_SLOT).isEmpty()) {
+        if (IOHelper.getStack(te.getItemHandler(), UVLightBoxBlockEntity.PCB_SLOT).isEmpty()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
         }
     }

@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.registry.ModBlockEntityTypes;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import net.minecraft.core.BlockPos;
@@ -36,8 +35,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -281,16 +280,16 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
                     int initialHeldAmount = heldStack.getCount();
                     boolean foundIt = false;
                     int needed = searchedItemStack.getCount() - heldStack.getCount();
-                    for (int i = 0; i < sourceInv.getSlots() && !foundIt; i++) {
-                        ItemStack stack = sourceInv.getStackInSlot(i);
+                    for (int i = 0; i < sourceInv.size() && !foundIt; i++) {
+                        ItemStack stack = IOHelper.getStack(sourceInv, i);
                         if (stack.isEmpty()) continue;
                         if (heldStack.isEmpty() && ItemStack.isSameItem(stack, searchedItemStack)
                                 || ItemStack.isSameItemSameComponents(heldStack, stack)) {
-                            ItemStack takenStack = sourceInv.extractItem(i, needed, false);
-                            ItemStack excess = itemHandler.insertItem(0, takenStack, false);
+                            ItemStack takenStack = IOHelper.extract(sourceInv, i, needed, false);
+                            ItemStack excess = IOHelper.insert(itemHandler, 0, takenStack, false);
                             needed -= (takenStack.getCount() - excess.getCount());
                             // excess will be empty under all normal circumstances, but let's be careful...
-                            ItemHandlerHelper.insertItem(sourceInv, excess, false);
+                            IOHelper.insert(sourceInv, excess, false);
                         }
                         foundIt = needed <= 0;
                     }
@@ -448,15 +447,15 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
      * locations, but any other BE which provides CAPABILITY_ITEM_HANDLER on the top face is a valid candidate.
      *
      * @param exportedItem item to export
-     * @param te where the item is being attempted to insert to (will use the top face for IItemHandler cap.)
+     * @param te where the item is being attempted to insert to (will use the top face for ResourceHandler<ItemResource> cap.)
      * @return the placement slot, or -1 when the item can't be placed / accessed
      */
     private static int getPlacementSlot(ItemStack exportedItem, BlockEntity te) {
         if (te == null || te instanceof AbstractAssemblyRobotBlockEntity) return -1;
 
         return IOHelper.getInventoryForBlock(te, Direction.UP).map(handler -> {
-            for (int slot = 0; slot < handler.getSlots(); slot++) {
-                ItemStack excess = handler.insertItem(slot, exportedItem, true);
+            for (int slot = 0; slot < handler.size(); slot++) {
+                ItemStack excess = IOHelper.insert(handler, slot, exportedItem, true);
                 if (excess.getCount() < exportedItem.getCount()) {
                     return slot;
                 }
@@ -476,7 +475,7 @@ public class AssemblyIOUnitBlockEntity extends AbstractAssemblyRobotBlockEntity 
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 

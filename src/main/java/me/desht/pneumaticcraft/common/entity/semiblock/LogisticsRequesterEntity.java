@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2RequesterIntegration;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.core.HolderLookup;
@@ -168,8 +169,8 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
         if (totalRequestingAmount > 0) {
             return IOHelper.getInventoryForBlock(getCachedTileEntity(), getSide()).map(itemHandler -> {
                 int count = 0;
-                for (int i = 0; i < itemHandler.getSlots(); i++) {
-                    ItemStack s = itemHandler.getStackInSlot(i);
+                for (int i = 0; i < itemHandler.size(); i++) {
+                    ItemStack s = IOHelper.getStack(itemHandler, i);
                     // important that the request stack is passed first to matchOneItem()
                     // otherwise tag filters in the dest inventory will count as that item, messing up amounts
                     if (!s.isEmpty() && getItemFilterHandler().matchOneItem(stack, s)) {
@@ -189,8 +190,8 @@ public class LogisticsRequesterEntity extends AbstractLogisticsFrameEntity imple
         if (totalRequestingAmount > 0) {
             return IOHelper.getFluidHandlerForBlock(getCachedTileEntity(), getSide()).map(fluidHandler -> {
                 int count = 0;
-                for (int i = 0; i < fluidHandler.getTanks(); i++) {
-                    FluidStack contents = fluidHandler.getFluidInTank(i);
+                for (int i = 0; i < fluidHandler.size(); i++) {
+                    FluidStack contents = FluidUtils.getFluid(fluidHandler, i);
                     if (contents.getFluid() == stack.getFluid()) {
                         count += contents.getAmount();
                     }

@@ -178,7 +178,7 @@ public class MinigunItem extends PressurizableItem implements
             boolean repaired = false;
             float pressure = minigun.getAirCapability().orElseThrow(RuntimeException::new).getPressure();
             if (world.getGameTime() % (200 - itemLife * 35L) == 0) {
-                for (int i = 0; i < handler.getSlots() && pressure > 0.25f; i++) {
+                for (int i = 0; i < handler.size() && pressure > 0.25f; i++) {
                     ItemStack ammo = handler.getStackInSlot(i);
                     if (ammo.getItem() instanceof AbstractGunAmmoItem && ammo.getDamageValue() > 0) {
                         ammo.setDamageValue(ammo.getDamageValue() - 1);
@@ -290,7 +290,7 @@ public class MinigunItem extends PressurizableItem implements
     @Override
     public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks) {
         MagazineHandler handler = getMagazine(stack);
-        for (int i = 0; i < handler.getSlots(); i++) {
+        for (int i = 0; i < handler.size(); i++) {
             if (!handler.getStackInSlot(i).isEmpty()) {
                 curStacks.add(handler.getStackInSlot(i));
             }
@@ -384,7 +384,7 @@ public class MinigunItem extends PressurizableItem implements
 
         public ItemStack getAmmo() {
             int slot = getLockedSlot(gunStack);
-            if (slot >= 0 && slot < getSlots()) {
+            if (slot >= 0 && slot < size()) {
                 return getStackInSlot(slot);
             }
             for (int i = 0; i < MAGAZINE_SIZE; i++) {

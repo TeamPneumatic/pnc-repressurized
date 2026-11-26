@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.registry.ModBlocks;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -334,7 +335,7 @@ public class UniversalSensorScreen extends AbstractPneumaticCraftContainerScreen
     protected void addWarnings(List<Component> curInfo) {
         super.addWarnings(curInfo);
 
-        if (!te.getItemHandler().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
+        if (!IOHelper.getStack(te.getItemHandler(), 0).isEmpty() && te.outOfRange > 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.universalSensor.outOfRange", te.outOfRange));
         }
     }

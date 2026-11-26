@@ -18,16 +18,16 @@
 package me.desht.pneumaticcraft.common.inventory.slot;
 
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 /**
  * @author CovertJaguar <http://www.railcraft.info>
  */
-public class PhantomSlot extends SlotItemHandler implements IPhantomSlot {
+public class PhantomSlot extends ItemHandlerSlot implements IPhantomSlot {
 
     // used for filters
-    public PhantomSlot(IItemHandler handler, int index, int x, int y) {
+    public PhantomSlot(ResourceHandler<ItemResource> handler, int index, int x, int y) {
         super(handler, index, x, y);
     }
 

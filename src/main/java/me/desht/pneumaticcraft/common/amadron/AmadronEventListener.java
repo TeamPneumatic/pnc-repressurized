@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
@@ -55,12 +56,12 @@ public class AmadronEventListener {
                 offer.getInput().accept(
                         itemStack -> {
                             int requiredCount = offer.getInput().getAmount() * amadrone.getOfferTimes();
-                            for (int i = 0; i < amadrone.getInv().getSlots(); i++) {
-                                requiredCount -= amadrone.getInv().getStackInSlot(i).getCount();
+                            for (int i = 0; i < amadrone.getInv().size(); i++) {
+                                requiredCount -= IOHelper.getStack(amadrone.getInv(), i).getCount();
                             }
                             if (requiredCount <= 0) {
-                                for (int i = 0; i < amadrone.getInv().getSlots(); i++) {
-                                    amadrone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                                for (int i = 0; i < amadrone.getInv().size(); i++) {
+                                    IOHelper.setStack(amadrone.getInv(), i, ItemStack.EMPTY);
                                 }
                                 NeoForge.EVENT_BUS.post(new AmadronRetrievalEvent(event.drone));
                             } else {

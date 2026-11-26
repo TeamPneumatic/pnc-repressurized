@@ -19,21 +19,21 @@ package me.desht.pneumaticcraft.common.inventory.slot;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import java.util.function.Predicate;
 
-public class ItemFilteredSlot extends SlotItemHandler {
+public class ItemFilteredSlot extends ItemHandlerSlot {
     private final Predicate<ItemStack> itemAllowed;
 
-    public ItemFilteredSlot(IItemHandler handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
+    public ItemFilteredSlot(ResourceHandler<ItemResource> handler, Predicate<ItemStack> itemAllowed, int index, int x, int y) {
         super(handler, index, x, y);
         this.itemAllowed = itemAllowed;
     }
 
-    public ItemFilteredSlot(IItemHandler handler, Item item, int index, int x, int y) {
+    public ItemFilteredSlot(ResourceHandler<ItemResource> handler, Item item, int index, int x, int y) {
         this(handler, stack -> stack.getItem() == item, index, x, y);
     }
 

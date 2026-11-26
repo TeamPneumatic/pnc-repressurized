@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.registry.ModDataComponents;
 import me.desht.pneumaticcraft.common.registry.ModItems;
 import me.desht.pneumaticcraft.common.upgrades.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -42,7 +43,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.apache.commons.lang3.Validate;
 
@@ -104,7 +104,7 @@ public class UpgradeItem extends Item implements IUpgradeItem, CreativeTabStackP
     @Override
     public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer() instanceof ServerPlayer sp && context.getLevel().getBlockEntity(context.getClickedPos()) instanceof IUpgradeHolder holder) {
-            ItemStack excess = ItemHandlerHelper.insertItem(holder.getUpgradeHandler(), context.getItemInHand().copyWithCount(1), false);
+            ItemStack excess = IOHelper.insert(holder.getUpgradeHandler(), context.getItemInHand().copyWithCount(1), false);
             if (excess.isEmpty()) {
                 context.getItemInHand().shrink(1);
                 holder.onUpgradesChanged();

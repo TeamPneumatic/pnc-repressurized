@@ -19,6 +19,7 @@ package me.desht.pneumaticcraft.common.drone.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.common.drone.progwidgets.IItemFiltering;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -37,8 +38,8 @@ public class DroneAIVoidItem extends Goal {
 
     @Override
     public boolean canUse() {
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
                 return true;
             }
@@ -48,10 +49,10 @@ public class DroneAIVoidItem extends Goal {
 
     @Override
     public void start() {
-        for (int i = 0; i < drone.getInv().getSlots(); i++) {
-            ItemStack stack = drone.getInv().getStackInSlot(i);
+        for (int i = 0; i < drone.getInv().size(); i++) {
+            ItemStack stack = IOHelper.getStack(drone.getInv(), i);
             if (!stack.isEmpty() && widget.isItemValidForFilters(stack)) {
-                drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                IOHelper.setStack(drone.getInv(), i, ItemStack.EMPTY);
                 drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_VOID * stack.getCount());
                 if (drone.getDroneLevel() instanceof ServerLevel) {
                     Vec3 vec = drone.getDronePos();

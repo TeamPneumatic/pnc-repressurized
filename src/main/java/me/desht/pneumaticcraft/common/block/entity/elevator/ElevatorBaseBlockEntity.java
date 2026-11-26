@@ -40,7 +40,7 @@ import me.desht.pneumaticcraft.common.registry.ModSounds;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.BlockEntityConstants;
 import me.desht.pneumaticcraft.lib.Log;
@@ -50,7 +50,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -67,8 +66,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nullable;
 import java.util.ArrayDeque;
@@ -699,9 +698,9 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
             camoState = ((ElevatorBaseBlockEntity) brokenTE).camoState;
             sendDescriptionPacket();
 
-            for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
+            for (int i = 0; i < getUpgradeHandler().size(); i++) {
                 ItemStack stack = ((ElevatorBaseBlockEntity) brokenTE).getUpgradeHandler().getStackInSlot(i);
-                ItemStack excess = ItemHandlerHelper.insertItem(getUpgradeHandler(), stack, false);
+                ItemStack excess = IOHelper.insert(getUpgradeHandler(), stack, false);
                 if (!excess.isEmpty()) PneumaticCraftUtils.dropItemOnGround(excess, level, getBlockPos());
                 ((ElevatorBaseBlockEntity) brokenTE).getUpgradeHandler().setStackInSlot(i, ItemStack.EMPTY);
             }
@@ -1057,7 +1056,7 @@ public class ElevatorBaseBlockEntity extends AbstractAirHandlingBlockEntity impl
     }
 
     @Override
-    public IItemHandler getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@org.jetbrains.annotations.Nullable Direction dir) {
         return null;
     }
 

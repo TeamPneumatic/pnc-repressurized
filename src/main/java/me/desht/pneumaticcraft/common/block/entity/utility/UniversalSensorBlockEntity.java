@@ -30,6 +30,7 @@ import me.desht.pneumaticcraft.common.block.entity.*;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.block.entity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.inventory.UniversalSensorMenu;
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.GPSToolItem;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -42,13 +43,13 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.upgrades.ModUpgrades;
 import me.desht.pneumaticcraft.common.util.GlobalBlockEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ValueIOBridge;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -61,8 +62,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.Event;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -103,7 +104,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private boolean requestPollPullEvent;  // computer support
     private final Set<BlockPos> positions = new HashSet<>();
 
-    private final ItemStackHandler itemHandler = new UniversalSensorItemHandler();
+    private final BaseItemStackHandler itemHandler = new UniversalSensorItemHandler();
     @GuiSynced
     public int outOfRange;
     private final RangeManager rangeManager = new RangeManager(this, 0x605050D0);
@@ -180,7 +181,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     private SensorStatus updateStatus(ISensorSetting sensor) {
         sensorStatus = SensorStatus.OK;
         if (sensor != null) {
-            if (sensor.needsGPSTool() && getItemHandler().getStackInSlot(0).isEmpty()) {
+            if (sensor.needsGPSTool() && IOHelper.getStack(getItemHandler(), 0).isEmpty()) {
                 sensorStatus = SensorStatus.MISSING_GPS;
             } else {
                 for (PNCUpgrade upgrade: sensor.getRequiredUpgrades()) {
@@ -498,7 +499,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
     }
 
     @Override
-    public IItemHandler getItemHandler(@Nullable Direction dir) {
+    public ResourceHandler<ItemResource> getItemHandler(@Nullable Direction dir) {
         return itemHandler;
     }
 
@@ -539,7 +540,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
         this.playerId = playerId;
     }
 
-    private class UniversalSensorItemHandler extends ItemStackHandler {
+    private class UniversalSensorItemHandler extends BaseItemStackHandler {
         UniversalSensorItemHandler() {
             super(1);
         }
@@ -554,7 +555,7 @@ public class UniversalSensorBlockEntity extends AbstractAirHandlingBlockEntity i
         }
 
         @Override
-        protected void onContentsChanged(int slot) {
+        protected void onContentsChanged(int slot, ItemStack previousContents) {
             setupGPSPositions();
         }
     }

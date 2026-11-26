@@ -42,7 +42,7 @@ public class DroneAIEnergyExport extends DroneAIImportExportBase<ProgWidgetInven
 
     private boolean exportEnergy(BlockPos pos, boolean simulate) {
         boolean didWork = false;
-        int energy = drone.getEnergyStorage().getEnergyStored();
+        int energy = drone.getEnergyStorage().getAmountAsInt();
         if (energy == 0) {
             abort();
         } else {
@@ -61,13 +61,13 @@ public class DroneAIEnergyExport extends DroneAIImportExportBase<ProgWidgetInven
 
     private boolean tryExportToSide(BlockEntity te, Direction face, boolean simulate) {
         return IOHelper.getEnergyStorageForBlock(te, face).map(tileHandler -> {
-            int receivable = tileHandler.receiveEnergy(progWidget.useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
+            int receivable = IOHelper.insertEnergy(tileHandler, progWidget.useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = extractFromDrone(receivable, true);
             if (toTransfer > 0) {
                 if (!simulate) {
                     decreaseCount(toTransfer);
                     extractFromDrone(toTransfer, false);
-                    tileHandler.receiveEnergy(toTransfer, false);
+                    IOHelper.insertEnergy(tileHandler, toTransfer, false);
                 }
                 return true;
             }
@@ -76,6 +76,6 @@ public class DroneAIEnergyExport extends DroneAIImportExportBase<ProgWidgetInven
     }
 
     private int extractFromDrone(int maxEnergy, boolean simulate) {
-        return drone.getEnergyStorage().extractEnergy(maxEnergy, simulate);
+        return IOHelper.extractEnergy(drone.getEnergyStorage(), maxEnergy, simulate);
     }
 }

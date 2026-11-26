@@ -32,6 +32,8 @@ import me.desht.pneumaticcraft.common.entity.semiblock.AbstractLogisticsFrameEnt
 import me.desht.pneumaticcraft.common.registry.ModProgWidgetTypes;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -82,8 +84,8 @@ public class DroneAILogistics extends Goal {
     }
 
     private boolean doLogistics() {
-        ItemStack item = drone.getInv().getStackInSlot(0);
-        FluidStack fluid = drone.getFluidTank().getFluid();
+        ItemStack item = IOHelper.getStack(drone.getInv(), 0);
+        FluidStack fluid = FluidUtils.getFluid(drone.getFluidTank(), 0);
         PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item, true);
         if (!tasks.isEmpty()) {
             curTask = tasks.poll();
@@ -114,7 +116,7 @@ public class DroneAILogistics extends Goal {
 
     private boolean clearAIAndProvideAgain() {
         curAI = null;
-        if (curTask.isStillValid(drone.getInv().getStackInSlot(0).isEmpty() ? drone.getFluidTank().getFluid() : drone.getInv().getStackInSlot(0)) && execute(curTask)) {
+        if (curTask.isStillValid(IOHelper.getStack(drone.getInv(), 0).isEmpty() ? FluidUtils.getFluid(drone.getFluidTank(), 0) : IOHelper.getStack(drone.getInv(), 0)) && execute(curTask)) {
             return true;
         } else {
             curTask = null;
@@ -123,10 +125,10 @@ public class DroneAILogistics extends Goal {
     }
 
     public boolean execute(LogisticsTask task) {
-        if (!drone.getInv().getStackInSlot(0).isEmpty() && !task.itemStack().isEmpty()) {
+        if (!IOHelper.getStack(drone.getInv(), 0).isEmpty() && !task.itemStack().isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone, FakeWidgetLogistics.requestItem(task));
-        } else if (drone.getFluidTank().getFluidAmount() > 0 && !task.fluidStack().isEmpty()) {
+        } else if (drone.getFluidTank().getAmountAsInt(0) > 0 && !task.fluidStack().isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneAILiquidExport<>(drone, FakeWidgetLogistics.requestFluid(task));
         } else if (!task.itemStack().isEmpty()) {

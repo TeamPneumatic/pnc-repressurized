@@ -17,12 +17,14 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -307,39 +309,43 @@ public abstract class SyncedField<T> {
         }
     }
 
-    public static class SyncedItemHandler extends SyncedField<IItemHandlerModifiable> {
+    public static class SyncedItemHandler extends SyncedField<ResourceHandler<ItemResource>> {
         SyncedItemHandler(Object te, Field field) {
             super(te, field, FieldType.SYNCED_ITEM_HANDLER);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected ItemStackHandler getValueForArray(Object array, int index) {
-            return ((ItemStackHandler[]) array)[index];
+        protected ResourceHandler<ItemResource> getValueForArray(Object array, int index) {
+            return ((ResourceHandler<ItemResource>[]) array)[index];
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected void setValueForArray(Object array, int index, IItemHandlerModifiable value) {
-            ((IItemHandlerModifiable[]) array)[index] = value;
+        protected void setValueForArray(Object array, int index, ResourceHandler<ItemResource> value) {
+            ((ResourceHandler<ItemResource>[]) array)[index] = value;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected IItemHandlerModifiable retrieveValue(Field field, Object te) throws Exception {
-            return (IItemHandlerModifiable) field.get(te);
+        protected ResourceHandler<ItemResource> retrieveValue(Field field, Object te) throws Exception {
+            return (ResourceHandler<ItemResource>) field.get(te);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        protected void injectValue(Field field, Object te, IItemHandlerModifiable value) throws Exception {
-            IItemHandlerModifiable handler = (IItemHandlerModifiable) field.get(te);
-            for (int i = 0; i < value.getSlots(); i++) {
-                handler.setStackInSlot(i, value.getStackInSlot(i));
+        protected void injectValue(Field field, Object te, ResourceHandler<ItemResource> value) throws Exception {
+            ResourceHandler<ItemResource> handler = (ResourceHandler<ItemResource>) field.get(te);
+            for (int i = 0; i < value.size() && i < handler.size(); i++) {
+                IOHelper.setStack(handler, i, IOHelper.getStack(value, i));
             }
         }
 
         @Override
-        protected boolean equals(IItemHandlerModifiable oldValue, IItemHandlerModifiable newValue) {
-            if (oldValue.getSlots() != newValue.getSlots()) return false;
-            for (int i = 0; i < oldValue.getSlots(); i++) {
-                if (!ItemStack.matches(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
+        protected boolean equals(ResourceHandler<ItemResource> oldValue, ResourceHandler<ItemResource> newValue) {
+            if (oldValue.size() != newValue.size()) return false;
+            for (int i = 0; i < oldValue.size(); i++) {
+                if (!oldValue.getResource(i).equals(newValue.getResource(i)) || oldValue.getAmountAsLong(i) != newValue.getAmountAsLong(i)) {
                     return false;
                 }
             }
@@ -347,11 +353,10 @@ public abstract class SyncedField<T> {
         }
 
         @Override
-        protected IItemHandlerModifiable copyWhenNecessary(IItemHandlerModifiable oldValue) {
-            ItemStackHandler result = new ItemStackHandler(oldValue.getSlots());
-            for (int i = 0; i < oldValue.getSlots(); i++) {
-                ItemStack stack = oldValue.getStackInSlot(i);
-                result.setStackInSlot(i, stack.isEmpty() ? ItemStack.EMPTY : stack.copy());
+        protected ResourceHandler<ItemResource> copyWhenNecessary(ResourceHandler<ItemResource> oldValue) {
+            BaseItemStackHandler result = new BaseItemStackHandler(oldValue.size());
+            for (int i = 0; i < oldValue.size(); i++) {
+                result.setStackInSlot(i, IOHelper.getStack(oldValue, i));
             }
             return result;
         }
@@ -371,7 +376,7 @@ public abstract class SyncedField<T> {
             case SYNCED_FLUIDSTACK -> FluidStack.OPTIONAL_STREAM_CODEC.decode(buf);
             case SYNCED_ITEM_HANDLER -> {
                 int len = buf.readVarInt();
-                ItemStackHandler handler = new ItemStackHandler(len);
+                BaseItemStackHandler handler = new BaseItemStackHandler(len);
                 for (int i = 0; i < len; i++) {
                     handler.setStackInSlot(buf.readVarInt(), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
                 }
@@ -391,11 +396,11 @@ public abstract class SyncedField<T> {
             case SYNCED_ITEMSTACK -> ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, value == null ? ItemStack.EMPTY : (ItemStack) value);
             case SYNCED_FLUIDSTACK -> FluidStack.OPTIONAL_STREAM_CODEC.encode(buf, ((FluidStack) value));
             case SYNCED_ITEM_HANDLER -> {
-                ItemStackHandler h = (ItemStackHandler) value;
-                buf.writeVarInt(h.getSlots());
-                for (int i = 0; i < h.getSlots(); i++) {
+                @SuppressWarnings("unchecked") ResourceHandler<ItemResource> h = (ResourceHandler<ItemResource>) value;
+                buf.writeVarInt(h.size());
+                for (int i = 0; i < h.size(); i++) {
                     buf.writeVarInt(i);
-                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, h.getStackInSlot(i));
+                    ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, IOHelper.getStack(h, i));
                 }
             }
         }

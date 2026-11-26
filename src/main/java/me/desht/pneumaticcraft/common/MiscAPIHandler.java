@@ -27,7 +27,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.apache.commons.lang3.Validate;
 import org.joml.Vector3f;
 
@@ -66,7 +67,7 @@ public enum MiscAPIHandler implements IMiscHelpers {
     }
 
     @Override
-    public IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
+    public ResourceHandler<ItemResource> deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
         return SmartChestBlockEntity.deserializeSmartChest(tag, provider);
     }
 

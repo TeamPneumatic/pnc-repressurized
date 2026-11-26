@@ -24,7 +24,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.crafting.SizedIngredient;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -44,11 +45,11 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
      *
      * @param chamberHandler what's currently in the pressure chamber
-     * @param ingredientSlots a list of slots in {@code chamberHandler} (as returned by {@link #findIngredients(IItemHandler)})
+     * @param ingredientSlots a list of slots in {@code chamberHandler} (as returned by {@link #findIngredients(ResourceHandler<ItemResource>)})
      *                        where the ingredients can be found
      * @return threshold pressure
      */
-    public abstract float getCraftingPressure(IItemHandler chamberHandler, IntList ingredientSlots);
+    public abstract float getCraftingPressure(ResourceHandler<ItemResource> chamberHandler, IntList ingredientSlots);
 
     /**
      * Get the required crafting pressure for the items specified by {@link #getInputsForDisplay(HolderLookup.Provider)}, for display
@@ -60,8 +61,8 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * When called (by the pressure chamber BE when it detects a change in the chamber contents), try to find the
      * ingredients for this recipe in the given item handler, which represents all the items currently in the
      * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
-     * ingredients; those indices will be passed promptly to {@link #getCraftingPressure(IItemHandler, IntList)} and
-     * {@link #craftRecipe(IItemHandler, IntList, boolean)} by the pressure chamber.
+     * ingredients; those indices will be passed promptly to {@link #getCraftingPressure(ResourceHandler<ItemResource>, IntList)} and
+     * {@link #craftRecipe(ResourceHandler<ItemResource>, IntList, boolean)} by the pressure chamber.
      * <p><strong>Do not cache this list across ticks</strong>, since the chamber contents are quite likely to
      * change in the meantime.</p>
      *
@@ -69,7 +70,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found;
      *         otherwise, an empty list
      */
-    public abstract IntCollection findIngredients(@Nonnull IItemHandler chamberHandler);
+    public abstract IntCollection findIngredients(@Nonnull ResourceHandler<ItemResource> chamberHandler);
 
     /**
      * Get the input items for this recipe. This is primarily intended for recipe display purposes by
@@ -151,19 +152,19 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
 
     /**
      * This method is called when the Pressure Chamber is ready to craft with this recipe, and will only be called when
-     * {@link #findIngredients(IItemHandler)} returns a non-empty list of slot numbers, i.e. the necessary
+     * {@link #findIngredients(ResourceHandler<ItemResource>)} returns a non-empty list of slot numbers, i.e. the necessary
      * items are definitely in the chamber.
      * The implementation is responsible for removing the items that have been used from the {@code chamberHandler}.
      * The implementation must also return the list of crafted items, for the Pressure Chamber to insert into its
      * output item handler.
      *
      * @param chamberHandler  items in the pressure chamber; should be modified to remove recipe input items.
-     * @param ingredientSlots slots in the chamber handler where the ingredients can be found, as returned from {@link #findIngredients(IItemHandler)}
+     * @param ingredientSlots slots in the chamber handler where the ingredients can be found, as returned from {@link #findIngredients(ResourceHandler<ItemResource>)}
      * @param simulate        pass on to uses of {@code chamberHandler}
      * @return the resulting items; these do not have to be copies, since the Pressure Chamber itself will insert copies of these items
      */
     @Nonnull
-    public abstract List<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, IntList ingredientSlots, boolean simulate);
+    public abstract List<ItemStack> craftRecipe(@Nonnull ResourceHandler<ItemResource> chamberHandler, IntList ingredientSlots, boolean simulate);
 
     /**
      * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For

@@ -34,7 +34,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 import java.util.List;
 
@@ -88,7 +88,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
             }
 
             private int getEnergy(BlockEntity te, Direction side) {
-                return IOHelper.getEnergyStorageForBlock(te, side).map(IEnergyStorage::getEnergyStored).orElse(0);
+                return IOHelper.getEnergyStorageForBlock(te, side).map(EnergyHandler::getAmountAsInt).orElse(0);
             }
         };
     }

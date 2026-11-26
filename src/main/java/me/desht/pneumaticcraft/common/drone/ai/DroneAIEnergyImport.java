@@ -59,12 +59,12 @@ public class DroneAIEnergyImport extends DroneAIImportExportBase<ProgWidgetInven
 
     private boolean tryImportFromSide(BlockEntity te, Direction face, boolean simulate) {
         return IOHelper.getEnergyStorageForBlock(te, face).map(tileHandler -> {
-            int toExtract = tileHandler.extractEnergy(useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
+            int toExtract = IOHelper.extractEnergy(tileHandler, useCount() ? getRemainingCount() : Integer.MAX_VALUE, true);
             int toTransfer = insertToDrone(toExtract, true);
             if (toTransfer > 0) {
                 if (!simulate) {
                     decreaseCount(toTransfer);
-                    tileHandler.extractEnergy(toTransfer, false);
+                    IOHelper.extractEnergy(tileHandler, toTransfer, false);
                     insertToDrone(toTransfer, false);
                 }
                 return true;
@@ -74,10 +74,10 @@ public class DroneAIEnergyImport extends DroneAIImportExportBase<ProgWidgetInven
     }
 
     private int insertToDrone(int maxTransfer, boolean simulate) {
-        return drone.getEnergyStorage().receiveEnergy(maxTransfer, simulate);
+        return IOHelper.insertEnergy(drone.getEnergyStorage(), maxTransfer, simulate);
     }
 
     private boolean droneIsFull() {
-        return drone.getEnergyStorage().getEnergyStored() >= drone.getEnergyStorage().getMaxEnergyStored();
+        return drone.getEnergyStorage().getAmountAsInt() >= drone.getEnergyStorage().getCapacityAsInt();
     }
 }
