@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.block.entity.utility.SecurityStationBlockE
 import me.desht.pneumaticcraft.common.block.entity.utility.SmartChestBlockEntity;
 import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketNotifyBlockUpdate;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -68,13 +67,6 @@ public enum MiscAPIHandler implements IMiscHelpers {
     @Override
     public IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider) {
         return SmartChestBlockEntity.deserializeSmartChest(tag, provider);
-    }
-
-    @Override
-    public void forceClientShapeRecalculation(Level world, BlockPos pos) {
-        if (!world.isClientSide()) {
-            NetworkHandler.sendToAllTracking(new PacketNotifyBlockUpdate(pos), world, pos);
-        }
     }
 
     @Override

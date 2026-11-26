@@ -70,22 +70,6 @@ public interface IMiscHelpers {
     IItemHandler deserializeSmartChest(CompoundTag tag, HolderLookup.Provider provider);
 
     /**
-     * Notify tracking clients to recalculate the block shapes of all neighbours of the block at the given world
-     * and position. You should call this for any blocks which can connect pneumatically to neighbours when those
-     * blocks are changed server-side only (e.g. rotated, sneak-wrenched). This should only be called server-side
-     * (it is no-op if called on the client).
-     * <p>
-     * This is a bit of a kludge, but necessary since blocks do not normally get signalled about neighbour changes
-     * on the client, which is needed for blocks such as Pressure Tubes to recalculate their cached block shapes.
-     *
-     * @param world the world
-     * @param pos the position of the block that has been changed or removed
-     * @deprecated this kludge is no longer necessary as of v8.0.4
-     */
-    @Deprecated(since = "8.0.4", forRemoval = true)
-    void forceClientShapeRecalculation(Level world, BlockPos pos);
-
-    /**
      * Play the standard PNC effect when a pneumatic machine (which contains some air) is broken with a pickaxe;
      * a puff of air particles, and a short pneumatic "hiss". This is intended to be called from the overridden
      * {@link net.minecraft.world.level.block.Block#onRemove(BlockState, Level, BlockPos, BlockState, boolean)} in
